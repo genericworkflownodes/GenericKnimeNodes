@@ -69,8 +69,8 @@ public class NodeGenerator
 		installMimeTypes();
 		processDescriptors();
 				
-		
 		post();
+		
 		
 		
 		///
@@ -82,6 +82,8 @@ public class NodeGenerator
 		tf.replace("__NAME__", _modulename_);
 		tf.write(_abspackagedir_ + "/knime/"+_modulename_+"PluginActivator.java");
 		template.close();
+		
+		
 	}
 	
 
@@ -178,8 +180,8 @@ public class NodeGenerator
 			
 			System.out.println(name+" "+ext+" "+descr);
 			
-			createMimeTypeLoader(name,ext);
-			createMimeCell(name);
+			createMimeTypeLoader(name, ext);
+			createMimeCell(name, ext);
 			createMimeValue(name);
 		
 			ext2type.put(ext,name);
@@ -340,15 +342,15 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		registerNode(_packagename_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",package_root+"/IO");
 	}
 
-	private static void createMimeCell(String ext) throws IOException
+	private static void createMimeCell(String name, String ext) throws IOException
 	{
 		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileCell.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__NAME__", ext);
+		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext);
 		tf.replace("__BASE__", _packagename_);
-		tf.write(_absnodedir_ + "/mimetypes/" + ext + "FileCell.java");
+		tf.write(_absnodedir_ + "/mimetypes/" + name + "FileCell.java");
 	}
 
 	private static void createMimeValue(String ext) throws IOException

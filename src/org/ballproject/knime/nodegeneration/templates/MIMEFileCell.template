@@ -23,7 +23,7 @@ public class __NAME__FileCell extends BlobDataCell implements __NAME__FileValue,
 	@Override
 	public String getExtension()
 	{
-		String ext = "__NAME__";
+		String ext = "__EXT__";
 	    return ext.toLowerCase();
 	}
 	
@@ -37,7 +37,7 @@ public class __NAME__FileCell extends BlobDataCell implements __NAME__FileValue,
 	@Override
 	public String toString()
 	{
-		return null;
+		return "__NAME__MimeFileCell";
 	}
 
 	@Override
