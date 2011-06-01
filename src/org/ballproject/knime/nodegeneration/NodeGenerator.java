@@ -68,6 +68,10 @@ public class NodeGenerator
 		pre();
 		installMimeTypes();
 		processDescriptors();
+				
+		
+		post();
+		
 		
 		///
 		
@@ -236,9 +240,7 @@ public class NodeGenerator
 		createXMLDescriptor(nodeName);
 		writeModel(nodeName);
 		
-		registerNode( _packagename_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");		
-		
-		post();
+		registerNode( _packagename_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");
 	}
 	
 	static public boolean deleteDirectory(File path)
@@ -598,7 +600,7 @@ private static Set<String> ext_loaders = new HashSet<String>();
 	}
 	
 	public static void post() throws IOException
-	{
+	{	
 		registerNode(_packagename_ + ".knime.nodes.io.MimeFileExporterNodeFactory",package_root+"/IO");
 		
 		OutputFormat format = OutputFormat.createPrettyPrint();
