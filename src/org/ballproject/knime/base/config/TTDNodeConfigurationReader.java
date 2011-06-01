@@ -1,6 +1,5 @@
 package org.ballproject.knime.base.config;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -84,7 +83,7 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 				
 				for(String mt : toks2)
 				{
-					port.addMimeType(new MIMEtype(mt));
+					port.addMimeType(new MIMEtype(mt.trim()));
 				}
 				
 			}
