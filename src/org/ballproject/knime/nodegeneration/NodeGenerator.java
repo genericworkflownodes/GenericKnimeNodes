@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
@@ -172,10 +174,12 @@ public class NodeGenerator
 			
 			System.out.println(name+" "+ext+" "+descr);
 			
-			createMimeTypeLoader(ext);
-			createMimeCell(ext);
-			createMimeValue(ext);
+			createMimeTypeLoader(name,ext);
+			createMimeCell(name);
+			createMimeValue(name);
 		
+			ext2type.put(ext,name);
+			
 			String s = tpl.replace("__EXT__", ext.toLowerCase());
 			s = s.replace("__NAME__",name); 
 			data += s;
@@ -287,54 +291,51 @@ public class NodeGenerator
 	
 private static Set<String> ext_loaders = new HashSet<String>();
 	
-	private static void createMimeTypeLoader(String ext) throws IOException
+	private static void createMimeTypeLoader(String name, String ext) throws IOException
 	{
-		if(ext.equals(""))
-			return;
-		
 		if(ext_loaders.contains(ext))
 			return;
 		ext_loaders.add(ext);
 		
-		String extension = ext.toUpperCase();
+		//String extension = ext.toUpperCase();
 		InputStream template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
-		tf.replace("__NAME__", extension);
-		tf.replace("__EXT__", extension.toLowerCase());
-		tf.write(_absnodedir_ + "/io/" + extension + "FileImporterNodeDialog.java");
+		tf.replace("__NAME__", name);
+		tf.replace("__EXT__", ext.toLowerCase());
+		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeDialog.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeModel.template");
 		tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
-		tf.replace("__NAME__", extension);
-		tf.write(_absnodedir_ + "/io/" + extension + "FileImporterNodeModel.java");
+		tf.replace("__NAME__", name);
+		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeModel.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.template");
 		tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
-		tf.replace("__NAME__", extension);
-		tf.write(_absnodedir_ + "/io/" + extension + "FileImporterNodeFactory.java");
+		tf.replace("__NAME__", name);
+		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeView.template");
 		tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
-		tf.replace("__NAME__", extension);
-		tf.write(_absnodedir_ + "/io/" + extension + "FileImporterNodeView.java");
+		tf.replace("__NAME__", name);
+		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeView.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.xml.template");
 		tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
-		tf.replace("__NAME__", extension);
-		tf.replace("__EXT__", extension.toLowerCase());
-		tf.write(_absnodedir_ + "/io/" + extension + "FileImporterNodeFactory.xml");
+		tf.replace("__NAME__", name);
+		tf.replace("__EXT__", ext.toLowerCase());
+		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.xml");
 
-		registerNode(_packagename_ + ".knime.nodes.io." + ext.toUpperCase() + "FileImporterNodeFactory",package_root+"/IO");
+		registerNode(_packagename_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",package_root+"/IO");
 	}
 
 	private static void createMimeCell(String ext) throws IOException
@@ -342,10 +343,10 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileCell.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__NAME__", ext.toUpperCase());
-		tf.replace("__EXT__", ext.toUpperCase());
+		tf.replace("__NAME__", ext);
+		tf.replace("__EXT__", ext);
 		tf.replace("__BASE__", _packagename_);
-		tf.write(_absnodedir_ + "/mimetypes/" + ext.toUpperCase() + "FileCell.java");
+		tf.write(_absnodedir_ + "/mimetypes/" + ext + "FileCell.java");
 	}
 
 	private static void createMimeValue(String ext) throws IOException
@@ -353,10 +354,10 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileValue.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__NAME__", ext.toUpperCase());
-		tf.replace("__EXT__", ext.toUpperCase());
+		tf.replace("__NAME__", ext);
+		tf.replace("__EXT__", ext);
 		tf.replace("__BASE__", _packagename_);
-		tf.write(_absnodedir_ + "/mimetypes/" + ext.toUpperCase() + "FileValue.java");
+		tf.write(_absnodedir_ + "/mimetypes/" + ext + "FileValue.java");
 	}
 
 	public static Set<String> categories = new HashSet<String>();
@@ -512,6 +513,9 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		curmodel_tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeModel.java");
 	}
 	
+	
+	public static Map<String,String> ext2type = new HashMap<String,String>();
+	
 	private static void fillMimeTypes() throws IOException
 	{
 		String clazzez = "";
@@ -520,8 +524,13 @@ private static Set<String> ext_loaders = new HashSet<String>();
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = type.getExt();
-				tmp += "DataType.getType(" + ext.toUpperCase() + "FileCell.class),";
+				String ext = ext2type.get(type.getExt());
+				if(ext==null)
+				{
+					System.out.println("unknown mime type : "+type.getExt());
+					System.exit(1);
+				}
+				tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
@@ -537,8 +546,13 @@ private static Set<String> ext_loaders = new HashSet<String>();
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = type.getExt();
-				tmp += "DataType.getType(" + ext.toUpperCase() + "FileCell.class),";
+				String ext = ext2type.get(type.getExt());
+				if(ext==null)
+				{
+					System.out.println("unknown mime type : "+type.getExt());
+					System.exit(1);
+				}
+				tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
