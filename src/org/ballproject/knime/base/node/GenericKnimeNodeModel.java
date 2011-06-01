@@ -119,6 +119,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		int filenum=1;
 		for(int i=0;i<inData.length;i++)
 		{
+			// skip optional and unconnected inport ports
+			if(inData[i]==null)
+				continue;
+			
 			String   name = config.getInputPorts()[i].getName();
 			DataRow  row  = inData[i].iterator().next();
 			DataCell cell = row.getCell(0);
