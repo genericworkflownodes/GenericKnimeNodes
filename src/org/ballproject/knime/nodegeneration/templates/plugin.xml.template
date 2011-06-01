@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+
+<plugin>   
+   <extension point="org.knime.workbench.repository.categories">      
+   </extension>
+
+   <extension point="org.knime.workbench.repository.nodes">
+   </extension>
+   
+   <extension point="org.eclipse.ui.preferencePages">
+      <page class="org.ballproject.knime.preferences.BALLPreferencePage" id="org.ballproject.knime.preferences.BALLPreferencePage" name="BALLPreferences">
+      </page>
+   </extension>
+   <extension point="org.eclipse.core.runtime.preferences">
+      <initializer class="org.ballproject.knime.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   
+</plugin>

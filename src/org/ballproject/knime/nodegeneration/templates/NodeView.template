@@ -1,0 +1,11 @@
+package __BASE__.knime.nodes.__NODENAME__;
+
+import org.ballproject.knime.base.node.*;
+
+public class __NODENAME__NodeView extends GenericKnimeNodeView
+{
+	protected __NODENAME__NodeView(GenericKnimeNodeModel nodeModel)
+	{
+		super(nodeModel);
+	}
+}

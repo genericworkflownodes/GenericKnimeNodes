@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin> 
+  <extension point="org.knime.workbench.repository.categories"> 
+    <category description="BALL/" icon="icons/category.png" path="/community/" name="BALL" level-id="BALL"/>
+    <category description="BALL/CADDSuite/" icon="icons/category.png" path="/community/BALL/" name="CADDSuite" level-id="CADDSuite"/>
+    <category description="BALL/CADDSuite/IO/" icon="icons/category.png" path="/community/BALL/CADDSuite/" name="IO" level-id="IO"/>
+    <category description="BALL/CADDSuite/Preparation/" icon="icons/category.png" path="/community/BALL/CADDSuite/" name="Preparation" level-id="Preparation"/>
+  </extension>  
+  <extension point="org.knime.workbench.repository.nodes"> 
+    <node factory-class="de.openms.knime.nodes.io.PDBFileImporterNodeFactory" id="de.openms.knime.nodes.io.PDBFileImporterNodeFactory" category-path="/community/BALL/CADDSuite/IO"/>
+    <node factory-class="de.openms.knime.nodes.io.SDFFileImporterNodeFactory" id="de.openms.knime.nodes.io.SDFFileImporterNodeFactory" category-path="/community/BALL/CADDSuite/IO"/>
+    <node factory-class="de.openms.knime.nodes.io.MOL2FileImporterNodeFactory" id="de.openms.knime.nodes.io.MOL2FileImporterNodeFactory" category-path="/community/BALL/CADDSuite/IO"/>
+    <node factory-class="de.openms.knime.nodes.io.DRFFileImporterNodeFactory" id="de.openms.knime.nodes.io.DRFFileImporterNodeFactory" category-path="/community/BALL/CADDSuite/IO"/>
+    <node factory-class="de.openms.knime.nodes.PDBCutter.PDBCutterNodeFactory" id="de.openms.knime.nodes.PDBCutter.PDBCutterNodeFactory" category-path="/community/BALL/CADDSuite/Preparation"/>
+    <node factory-class="de.openms.knime.nodes.io.MimeFileExporterNodeFactory" id="de.openms.knime.nodes.io.MimeFileExporterNodeFactory" category-path="/community/BALL/CADDSuite/IO"/>
+  </extension>  
+  <extension point="org.eclipse.ui.preferencePages"> 
+    <page class="org.ballproject.knime.preferences.BALLPreferencePage" id="org.ballproject.knime.preferences.BALLPreferencePage" name="BALLPreferences"></page> 
+  </extension>  
+  <extension point="org.eclipse.core.runtime.preferences"> 
+    <initializer class="org.ballproject.knime.preferences.PreferenceInitializer"></initializer> 
+  </extension> 
+</plugin>

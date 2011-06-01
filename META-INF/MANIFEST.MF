@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test-Node extension for KNIME Workbench
+Bundle-SymbolicName: de.openms.knime;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: test.jar,
+ lib/dom4j-1.6.1.jar,
+ lib/jaxen-1.1-beta-6.jar,
+ lib/swingx-core-1.6.2.jar
+Bundle-Activator: de.openms.knime.OpenMSPluginActivator
+Bundle-Vendor: roettig
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base
+Bundle-ActivationPolicy: lazy
+Export-Package: de.openms.knime
+

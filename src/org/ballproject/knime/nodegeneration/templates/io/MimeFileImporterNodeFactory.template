@@ -1,0 +1,61 @@
+package __BASE__.knime.nodes.io;
+
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
+
+/**
+ * <code>NodeFactory</code> for the "MimeFileImporter" Node.
+ * 
+ *
+ * @author roettig
+ */
+public class __NAME__FileImporterNodeFactory extends NodeFactory<__NAME__FileImporterNodeModel> 
+{
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public __NAME__FileImporterNodeModel createNodeModel() 
+    {
+        return new __NAME__FileImporterNodeModel();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() 
+    {
+        return 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<__NAME__FileImporterNodeModel> createNodeView(final int viewIndex, final __NAME__FileImporterNodeModel nodeModel) 
+    {
+        return new __NAME__FileImporterNodeView(nodeModel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() 
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() 
+    {
+        return new __NAME__FileImporterNodeDialog(new Object());
+    }
+
+}
