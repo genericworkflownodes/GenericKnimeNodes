@@ -56,4 +56,12 @@ public class DoubleParameter extends NumberParameter<Double>
 			return true;
 		return false;
 	}
+	
+	@Override
+	public String getMnemonic()
+	{
+		String lb = (this.lowerBound==Double.NEGATIVE_INFINITY?"-inf":String.format("%e", this.lowerBound));
+		String ub = (this.upperBound==Double.POSITIVE_INFINITY?"+inf":String.format("%e", this.upperBound));
+		return String.format("double [%s:%s]",lb,ub);
+	}
 }

@@ -30,4 +30,10 @@ public class StringParameter extends Parameter<String>
 	{
 		return true;
 	}
+	
+	@Override
+	public String getMnemonic()
+	{
+		return "string";
+	}
 }

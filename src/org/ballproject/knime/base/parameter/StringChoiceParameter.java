@@ -61,4 +61,10 @@ public class StringChoiceParameter extends Parameter<String>
 	{
 		return true;
 	}
+	
+	@Override
+	public String getMnemonic()
+	{
+		return "string choice";
+	}
 }

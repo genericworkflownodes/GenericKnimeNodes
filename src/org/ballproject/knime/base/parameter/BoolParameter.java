@@ -39,4 +39,10 @@ public class BoolParameter extends Parameter<Boolean>
 	{
 		return true;
 	}
+
+	@Override
+	public String getMnemonic()
+	{
+		return "bool";
+	}
 }

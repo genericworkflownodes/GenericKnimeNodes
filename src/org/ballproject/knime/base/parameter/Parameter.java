@@ -73,6 +73,8 @@ public abstract class Parameter<T> implements Serializable
 	{
 		this.isOptional = isOptional;
 	}
+	
+	public abstract String getMnemonic();
 
 	public abstract void fillFromString(String s) throws InvalidParameterValueException;
 	

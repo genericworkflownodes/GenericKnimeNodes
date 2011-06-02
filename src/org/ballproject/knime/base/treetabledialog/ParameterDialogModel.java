@@ -94,7 +94,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 		
 	}
 
-	static protected Class[] cTypes = { TreeTableModel.class, String.class };
+	static protected Class[] cTypes = { TreeTableModel.class, String.class, String.class };
 	
 	@Override
 	public Class<?> getColumnClass(int column)
@@ -108,7 +108,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 		return cNames.length;
 	}
 
-	private static String[] cNames = {"Parameter","Value"};
+	private static String[] cNames = {"Parameter","Value","Type"};
 	
 	@Override
 	public String getColumnName(int idx)
@@ -143,7 +143,15 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 			else
 				return n.getPayload();
 		}
-			
+		if(column==2)
+		{
+			if(n.getPayload()==null)
+				return "";
+			else
+			{
+				return n.getPayload().getMnemonic();
+			}
+		}	
 		return null;
 	}
 

@@ -55,4 +55,12 @@ public class IntegerParameter extends NumberParameter<Integer>
 			return true;
 		return false;
 	}
+	
+	@Override
+	public String getMnemonic()
+	{
+		String lb = (this.lowerBound==Integer.MIN_VALUE?"-inf":String.format("%d", this.lowerBound));
+		String ub = (this.upperBound==Integer.MAX_VALUE?"+inf":String.format("%d", this.upperBound));
+		return String.format("integer [%s:%s]",lb,ub);
+	}
 }
