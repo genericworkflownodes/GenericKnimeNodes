@@ -20,6 +20,8 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 		
 		final IPreferenceStore pStore = __NAME__PluginActivator.getDefault().getPreferenceStore();
 		binpath = pStore.getString("binaries_path");
+		props   = __NAME__PluginActivator.PROPERTIES;
+		env     = __NAME__PluginActivator.ENVIRONMENT;
 	}
 	
 	@Override

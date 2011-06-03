@@ -5,7 +5,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.KNIMEConstants;
 import org.osgi.framework.BundleContext;
-
+import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 import __BASE__.knime.nodes.binres.BinaryResources;
 
 /**
@@ -21,6 +23,9 @@ public class __NAME__PluginActivator extends AbstractUIPlugin
 	// The shared instance.
 	private static __NAME__PluginActivator plugin;
 
+	public static Properties PROPERTIES;
+	public static Map<String,String> ENVIRONMENT;
+	
 	/**
 	 * The constructor.
 	 */
@@ -45,14 +50,30 @@ public class __NAME__PluginActivator extends AbstractUIPlugin
 		
 		String home = KNIMEConstants.getKNIMEHomeDir();
 		String os =  System.getProperty("os.name");
+		
+		PROPERTIES = new Properties();
+		
 		if(os.toLowerCase().contains("linux"))
 		{
 			BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream(BinaryResources.BINARIES_LNX_x64));
+			PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_lnx_x64.ini"));
 		}
 		
 		final IPreferenceStore pStore = getDefault().getPreferenceStore();
 		pStore.setValue("binaries_path", home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME);
 		
+		ENVIRONMENT = new HashMap<String,String>();
+		
+		for(Object key: PROPERTIES.keySet())
+		{
+			if(key.toString().startsWith("env_"))
+			{
+				String k = key.toString().substring(4);
+				String v = (String) PROPERTIES.get(key);
+				ENVIRONMENT.put(k, v);
+				System.out.println(k+" -> "+v);
+			}
+		}
 	}
 
 	/**

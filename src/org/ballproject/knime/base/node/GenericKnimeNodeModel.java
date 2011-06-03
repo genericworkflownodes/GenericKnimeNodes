@@ -4,9 +4,9 @@ package org.ballproject.knime.base.node;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -29,14 +29,12 @@ import org.ballproject.knime.base.port.MIMEFileDelegate;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.data.DataValue;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
@@ -63,9 +61,25 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 
 	protected DataType[][] inports;
 	protected DataType[][] outports;
+	
 	protected String binpath;
 	
+	public String output="";
+	
+	/*
+	 * stores the node configuration (i.e. parameters, ports, ..) 
+	 */
 	protected NodeConfiguration config;
+	
+	/*
+	 * stores general properties 
+	 */
+	protected Properties props;
+	
+	/*
+	 * stores environment variables needed for program execution 
+	 */
+	protected Map<String,String> env;
 	
 	/**
 	 * Constructor for the node model.
@@ -92,7 +106,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	    return portTypes;
 	}
 	
-	public String output="";
 	
 	/**
 	 * {@inheritDoc}
@@ -100,17 +113,20 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
-		// fetch node descriptors
-		//String path    = BALLDockingToolsPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.P_PATH);		
+		// fetch node descriptors		
 		String tmpdir  = KNIMEConstants.getKNIMETempDir();
 		String exename = config.getName();
 			
 		// create job directory
 		File   jobdir = File.createTempFile(exename, "JOBDIR", new File(tmpdir));
+
+		// this might be risky
 		jobdir.delete();
 		jobdir.mkdirs();
+		
 		jobdir.deleteOnExit();
 		
+		String FILESEP = "/";//System.getProperty("path.separator");
 		
 		// fill params.xml
 		TTDNodeConfigurationWriter writer = new TTDNodeConfigurationWriter(config.getXML());
@@ -130,8 +146,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			{
 				MimeMarker mrk = (MimeMarker) cell;
 				MIMEFileDelegate del = mrk.getDelegate();
-				del.write(jobdir+"/"+filenum+"."+mrk.getExtension());
-				writer.setParameterValue(name, jobdir+"/"+filenum+"."+mrk.getExtension());
+				del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
+				writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
 				filenum++;
 			}
 		}
@@ -144,8 +160,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			String name = config.getOutputPorts()[i].getName();
 			// fixme
 			String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
-			writer.setParameterValue(name, jobdir+"/"+filenum+"."+ext);
-			my_outnames.add(jobdir+"/"+filenum+"."+ext);
+			writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+ext);
+			my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
 			filenum++;
 		}
 		
@@ -161,15 +177,22 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			writer.setParameterValue2(key, param.getValue().toString());
 		}
 		
-		writer.write(jobdir+"/params.xml");
+		writer.write(jobdir+FILESEP+"params.xml");
 
 		
 		// get path to executable
-		String exepath = binpath+"/"+exename+".sh";
+		String exepath = binpath+FILESEP+"bin"+FILESEP+exename+".bin";
+		
+		System.out.println("executing "+exepath);
 		
 		// build process
 		ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c",exepath+" -par params.xml" );
 		
+		for(String key: env.keySet())
+		{
+			builder.environment().put(key, binpath+FILESEP+env.get(key));
+		}
+				
 		builder.redirectErrorStream(true);
 	    builder.directory( jobdir );
 	    
@@ -224,7 +247,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return outtables;
 	}
 
-	
+	/**
+	 * template method to be overriden by children models; gives
+	 * the DataCell from a given file handle (MIMEtype based)
+	 */
 	public abstract DataCell makeDataCell(File f) throws IOException;
 	
 	/**

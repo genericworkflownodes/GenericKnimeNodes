@@ -65,7 +65,9 @@ public class NodeGenerator
 		_absnodedir_    = _abspackagedir_+"/knime/nodes"; 
 		
 		createPackageDirectory();
+		
 		pre();
+		
 		installMimeTypes();
 		processDescriptors();
 				
