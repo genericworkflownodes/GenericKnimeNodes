@@ -48,13 +48,15 @@ public class NodeGenerator
 	public static String cur_path;
 	public static String package_root;
 	public static String _BINPACKNAME_;
+	public static String _payloaddir_;
 	
 	public static void main(String[] args) throws Exception
 	{
-		_destdir_       = "/home/roettig/devel/knime/GenericKnimeNodes";
+		_destdir_       = "/home/roettig/devel/knime2/CADDSuite";
+		_payloaddir_    = "/home/roettig/coops/GenericKnimeNodes/payload";
 		_destsrcdir_    = _destdir_+"/src"; 
-		_packagename_   = "de.openms";
-		_modulename_    = "OpenMS";
+		_packagename_   = "org.ballproject.caddsuite";
+		_modulename_    = "CADDSuite";
 		package_root    = "BALL/CADDSuite";
 		_BINPACKNAME_   = "CADDSuite";
 		
@@ -82,7 +84,8 @@ public class NodeGenerator
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
 		tf.replace("__NAME__", _modulename_);
-		tf.write(_abspackagedir_ + "/knime/"+_modulename_+"PluginActivator.java");
+		//tf.write(_abspackagedir_ + "/knime/"+_modulename_+"PluginActivator.java");
+		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
 		template.close();
 		
 		
@@ -623,6 +626,10 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		curmodel_tf.replace("__BINPACKNAME__", _BINPACKNAME_);
 		curmodel_tf.write(_absnodedir_ + "/binres/BinaryResources.java");
 		template.close();
+		
+		//
+		copyFile(new File(_payloaddir_+"/binaries_lnx_x64.zip"),new File(_absnodedir_ + "/binres/binaries_lnx_x64.zip"));
+		copyFile(new File(_payloaddir_+"/binaries_lnx_x64.ini"),new File(_absnodedir_ + "/binres/binaries_lnx_x64.ini"));
 	}
 	
 	public static void registerNode(String clazz, String cat)

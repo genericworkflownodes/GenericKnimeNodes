@@ -5,7 +5,7 @@ import org.ballproject.knime.base.config.*;
 import __BASE__.knime.nodes.mimetypes.*;
 import org.knime.core.data.DataType;
 import org.eclipse.jface.preference.IPreferenceStore;
-import __BASE__.knime.__NAME__PluginActivator;
+import __BASE__.knime.PluginActivator;
 import java.io.File;
 import java.io.IOException;
 import org.knime.core.data.DataCell;
@@ -18,10 +18,10 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 		this.inports  = new DataType[][]{__INCLAZZEZ__};
 		this.outports = new DataType[][]{__OUTCLAZZEZ__};
 		
-		final IPreferenceStore pStore = __NAME__PluginActivator.getDefault().getPreferenceStore();
+		final IPreferenceStore pStore = PluginActivator.getDefault().getPreferenceStore();
 		binpath = pStore.getString("binaries_path");
-		props   = __NAME__PluginActivator.PROPERTIES;
-		env     = __NAME__PluginActivator.ENVIRONMENT;
+		props   = PluginActivator.PROPERTIES;
+		env     = PluginActivator.ENVIRONMENT;
 	}
 	
 	@Override
