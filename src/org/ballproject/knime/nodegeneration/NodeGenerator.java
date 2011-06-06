@@ -60,7 +60,7 @@ public class NodeGenerator
 		package_root    = "BALL/CADDSuite";
 		_BINPACKNAME_   = "CADDSuite";
 		
-		_descriptordir_ = "/home/roettig/devel/knime/GenericKnimeNodes/descriptors";
+		_descriptordir_ = "/home/roettig/devel/knime2/GenericKnimeNodes/descriptors";
 		
 		_packagedir_    = _packagename_.replace(".","/");
 		_abspackagedir_ = _destsrcdir_+"/"+_packagedir_;
@@ -630,6 +630,9 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		//
 		copyFile(new File(_payloaddir_+"/binaries_lnx_x64.zip"),new File(_absnodedir_ + "/binres/binaries_lnx_x64.zip"));
 		copyFile(new File(_payloaddir_+"/binaries_lnx_x64.ini"),new File(_absnodedir_ + "/binres/binaries_lnx_x64.ini"));
+		
+		copyFile(new File(_payloaddir_+"/binaries_mac_x64.zip"),new File(_absnodedir_ + "/binres/binaries_mac_x64.zip"));
+		copyFile(new File(_payloaddir_+"/binaries_mac_x64.ini"),new File(_absnodedir_ + "/binres/binaries_mac_x64.ini"));
 	}
 	
 	public static void registerNode(String clazz, String cat)

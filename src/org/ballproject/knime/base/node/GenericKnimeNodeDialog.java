@@ -39,13 +39,13 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) throws InvalidSettingsException
 	{
-		System.out.println("Dialog"+config.getName()+" saveSettingsTo START");
+		//System.out.println("Dialog"+config.getName()+" saveSettingsTo START");
 		for(Parameter<?> param: config.getParameters())
 		{
-			System.out.println("processing Param "+param.getKey()+" value="+param.toString());
+			//System.out.println("processing Param "+param.getKey()+" value="+param.toString());
 			settings.addString(param.getKey(), param.toString());
 		}		
-		System.out.println("Dialog"+config.getName()+" saveSettingsTo END");
+		//System.out.println("Dialog"+config.getName()+" saveSettingsTo END");
 		
 	}
 

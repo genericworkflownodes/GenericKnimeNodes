@@ -88,6 +88,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		super(createOPOs(config.getInputPorts()),createOPOs(config.getOutputPorts()));
 		this.config = config;
+		this.reset();
 	}
 
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(BufferedDataTable.class, true);
@@ -120,6 +121,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// create job directory
 		File   jobdir = File.createTempFile(exename, "JOBDIR", new File(tmpdir));
 
+		
+		System.out.println("jobdir="+jobdir);
+		
 		// this might be risky
 		jobdir.delete();
 		jobdir.mkdirs();
@@ -218,7 +222,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	    
 	    // .. in case of problems
 	    if(retcode!=0)
+	    {
+	    	logger.error(out.toString());
 	    	throw new Exception("execution of external tool failed");
+	    }
 	    
 	    out.append("return code="+retcode);
         output = out.toString();
@@ -262,6 +269,14 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// TODO Code executed on reset.
 		// Models build during execute are cleared here.
 		// Also data handled in load/saveInternals will be erased here.
+		
+		//System.out.println("## reset");
+		
+		
+		for(Parameter<?> param: config.getParameters())
+		{
+			param.setValue(null);
+		}
 	}
 
 	protected DataTableSpec[] outspec;
@@ -342,6 +357,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
+		//System.out.println("## saveSettingsTo");
 		for(Parameter<?> param: config.getParameters())
 		{
 			settings.addString(param.getKey(), param.toString());
@@ -357,6 +373,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
+		
+		//System.out.println("## loadValidatedSettingsFrom");
+		
 		for(Parameter<?> param: config.getParameters())
 		{
 			String value = settings.getString(param.getKey());
@@ -380,12 +399,23 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// - we validate incoming settings values here
 		// - we do not xfer values to member variables
 		// - we throw an exception if something is invalid
+		
+		//System.out.println("## validateSettings ");
+		
 		for(Parameter<?> param: config.getParameters())
 		{
 			if(!param.getIsOptional())
 			{
 				if(!settings.containsKey(param.getKey()))
+				{
+					//System.out.println("\t no key found for mand. param");
 					throw new InvalidSettingsException("no value for mandatory parameter "+param.getKey()+" supplied");
+				}
+				if(settings.getString(param.getKey())==null)
+				{
+					//System.out.println("\t null value found for mand. param");
+					throw new InvalidSettingsException("no value for mandatory parameter "+param.getKey()+" supplied");
+				}
 			}
 			
 			String value = settings.getString(param.getKey());

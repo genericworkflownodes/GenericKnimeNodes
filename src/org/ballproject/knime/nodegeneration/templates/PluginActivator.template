@@ -53,10 +53,15 @@ public class PluginActivator extends AbstractUIPlugin
 		
 		PROPERTIES = new Properties();
 		
-		if(os.toLowerCase().contains("linux"))
+		if(os.toLowerCase().contains("nux")||os.toLowerCase().contains("nix"))
 		{
 			BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream(BinaryResources.BINARIES_LNX_x64));
 			PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_lnx_x64.ini"));
+		}
+		if(os.toLowerCase().contains("mac"))
+		{
+			BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream(BinaryResources.BINARIES_MAC_x64));
+			PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_mac_x64.ini"));
 		}
 		
 		final IPreferenceStore pStore = getDefault().getPreferenceStore();
