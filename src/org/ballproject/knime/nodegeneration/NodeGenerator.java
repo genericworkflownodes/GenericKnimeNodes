@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -421,10 +422,22 @@ private static Set<String> ext_loaders = new HashSet<String>();
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeDialog.java");
 	}
 
+	public static String join(Collection<String> col)
+	{
+		String ret = "";
+		for(String s: col)
+		{
+			ret += s+",";
+		}
+		ret = ret.substring(0,ret.length()-1);
+		return ret;
+	}
+	
 	public static void createXMLDescriptor(String nodeName) throws IOException
 	{
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE____OPT__]\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
+		//String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE____OPT__]\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
+		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
 		String inports = "";
 		int idx = 0;
 		for (Port port : config.getInputPorts())
@@ -435,7 +448,13 @@ private static Set<String> ext_loaders = new HashSet<String>();
 			ipp = ipp.replace("__IDX__", String.format("%d", idx++));
 			
 			// fix me
-			ipp = ipp.replace("__MIMETYPE__", port.getMimeTypes().get(0).getExt());
+			//ipp = ipp.replace("__MIMETYPE__", port.getMimeTypes().get(0).getExt());
+			List<String> mts = new ArrayList<String>();
+			for(MIMEtype mt: port.getMimeTypes())
+			{
+				mts.add(mt.getExt());
+			}
+			ipp = ipp.replace("__MIMETYPE__", join(mts));
 			
 			ipp = ipp.replace("__OPT__", (port.isOptional()?",opt.":""));
 			inports += ipp + "\n";
