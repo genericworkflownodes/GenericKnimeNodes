@@ -299,7 +299,7 @@ public class NodeGenerator
 		return toks[toks.length-1];
 	}
 	
-private static Set<String> ext_loaders = new HashSet<String>();
+	private static Set<String> ext_loaders = new HashSet<String>();
 	
 	private static void createMimeTypeLoader(String name, String ext) throws IOException
 	{
@@ -555,7 +555,7 @@ private static Set<String> ext_loaders = new HashSet<String>();
 				String ext = ext2type.get(type.getExt());
 				if(ext==null)
 				{
-					System.out.println("unknown mime type : "+type.getExt());
+					System.out.println("unknown mime type : |"+type.getExt()+"|");
 					System.exit(1);
 				}
 				tmp += "DataType.getType(" + ext + "FileCell.class),";
@@ -564,6 +564,7 @@ private static Set<String> ext_loaders = new HashSet<String>();
 			tmp+="},";
 			clazzez += tmp;
 		}
+		
 		clazzez = clazzez.substring(0,clazzez.length()-1);
 		clazzez += "}";
 		createInClazzezModel(clazzez);

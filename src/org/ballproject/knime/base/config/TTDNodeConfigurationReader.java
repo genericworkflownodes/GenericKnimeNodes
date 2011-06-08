@@ -41,65 +41,105 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 	
 	protected Set<String> captured_ports = new HashSet<String>();
 	
+	private static List<Port>    in_ports;
+	private static List<Port>    out_ports;
+	
 	private void readPorts() throws Exception
 	{
-		List<Node>    nodes     = doc.selectNodes("//ITEM");
-		List<Port>    in_ports  = new ArrayList<Port>();
-		List<Port>    out_ports = new ArrayList<Port>();
+		in_ports  = new ArrayList<Port>();
+		out_ports = new ArrayList<Port>();
 		
-		for(Node node : nodes)
-		{
-			Element element = (Element) node;
-			String  name    = element.valueOf("@name");
-			String  tags    = element.valueOf("@tags");
-			String  descr   = element.valueOf("@description");
-			
-			if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
-			{
-				continue;
-			}
-			
-			Port port = new Port();
-			
-			if(tags.contains(INPUTFILE_TAG)||tags.contains(OUTPUTFILE_TAG))
-			{				
-				String  formats  = element.valueOf("@supported_formats");
-				
-				MIMEtype mtype   = null;
-				String[] toks    = tags.split(",");
-				String[] toks2   = formats.split(",");
-
-				port.setName(name);
-				port.setDescription(descr);
-				
-				boolean optional = true;
-				if(tags.contains("mandatory"))
-					optional = false;
-				else
-					optional = true;
-				port.setOptional(optional);
-				
-				
-				
-				for(String mt : toks2)
-				{
-					port.addMimeType(new MIMEtype(mt.trim()));
-				}
-				
-			}
-			if(tags.contains(OUTPUTFILE_TAG))
-			{
-				out_ports.add(port);
-				captured_ports.add(name);
-			}
-			if(tags.contains(INPUTFILE_TAG))
-			{
-				in_ports.add(port);
-				captured_ports.add(name);
-			}		
-		}
+		Node node  = doc.selectSingleNode("/tool/PARAMETERS");
+		Element root = (Element) node;
+		processPorts(root);
+		
 		config.setInports((Port[]) in_ports.toArray(new Port[in_ports.size()]));
 		config.setOutports((Port[]) out_ports.toArray(new Port[out_ports.size()]));
+	}
+	
+	public void processPorts(Element root) throws Exception
+	{
+		//System.out.println("process ports");
+		String prefix = "";
+		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
+        {
+            Element elem = (Element) i.next();
+            if(elem.getName().equals("NODE"))
+            	iterPortNodes(prefix, elem);
+            else
+            	if(elem.getName().equals("ITEM"))
+            		processPortItem(prefix, elem);
+        }
+	}
+	 
+	
+	public void processPortItem(String prefix, Element elem) throws Exception
+	{
+		String tags = elem.valueOf("@tags");
+		String name = elem.attributeValue("name");
+		
+		if(!tags.contains(INPUTFILE_TAG)&&!tags.contains(OUTPUTFILE_TAG))
+		{
+			return;
+		}
+		
+		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		{
+			return;
+		}
+			
+		//System.out.println("	processing PORTITEM "+prefix+"."+elem.attributeValue("name"));
+		
+		createPortFromNode(elem, prefix);
+		//System.out.println("adding port under key "+prefix+"."+name);
+	}
+	
+	private void createPortFromNode(Node node,String prefix) throws Exception
+	{
+		
+		String name   = node.valueOf("@name");
+		String descr  = node.valueOf("@description");
+		String tags   = node.valueOf("@tags");
+		
+		Port port = new Port();
+		
+		if(tags.contains(INPUTFILE_TAG)||tags.contains(OUTPUTFILE_TAG))
+		{				
+			String  formats  = node.valueOf("@supported_formats");
+			
+			String[] toks2   = formats.split(",");
+
+			port.setName(prefix+"."+name);
+			
+			
+			
+			port.setDescription(descr);
+			
+			boolean optional = true;
+			if(tags.contains("mandatory"))
+				optional = false;
+			else
+				optional = true;
+			port.setOptional(optional);
+			
+			
+			for(String mt : toks2)
+			{
+				port.addMimeType(new MIMEtype(mt.trim()));
+			}
+			
+		}
+		if(tags.contains(OUTPUTFILE_TAG))
+		{
+			out_ports.add(port);
+			captured_ports.add(prefix+"."+name);	
+		}
+		if(tags.contains(INPUTFILE_TAG))
+		{
+			in_ports.add(port);
+			captured_ports.add(prefix+"."+name);
+		}		
+		
 	}
 	
 	private void readParameters() throws Exception
@@ -138,12 +178,27 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
         }
 	}
 	
+	public void iterPortNodes(String prefix, Element root) throws Exception
+	{
+		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
+		//System.out.println("visiting "+root.attributeValue("name")+"  prefix="+prefix);
+		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
+        {
+            Element elem = (Element) i.next();
+            if(elem.getName().equals("NODE"))
+            	iterNode(pref, elem);
+            else
+            	if(elem.getName().equals("ITEM"))
+            		processPortItem(pref, elem);
+        }
+	}
+	
 	public void processItem(String prefix, Element elem) throws Exception
 	{
 		//System.out.println("	processing ITEM "+prefix+"."+elem.attributeValue("name"));
 		String name = elem.attributeValue("name");
 		
-		if(captured_ports.contains(name))
+		if(captured_ports.contains(prefix+"."+name))
 			return;
 		
 		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
@@ -155,36 +210,6 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		//System.out.println("adding parameter under key "+prefix+"."+name);
 		config.addParameter(prefix+"."+name, param);
 	}
-	
-	/*
-	private void readParameters2() throws Exception
-	{
-		List<Node>    nodes  = doc.selectNodes("//ITEM");
-		
-		
-		for(Node node : nodes)
-		{
-			Element element = (Element) node;
-			String  name    = element.valueOf("@name");
-			
-			if(captured_ports.contains(name))
-				continue;
-			
-			if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
-			{
-				continue;
-			}
-			
-			Parameter<?> param = getParameterFromNode(node);
-			Node parent = node.selectSingleNode("..");
-			if(parent.getName().equals(SECTION_NODE_NAME))
-			{
-				param.setSection(parent.valueOf("@name"));
-			}
-			config.addParameter(name, param);
-		}
-	}
-	*/
 	
 	private void readDescription()
 	{

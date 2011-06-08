@@ -151,7 +151,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				MimeMarker mrk = (MimeMarker) cell;
 				MIMEFileDelegate del = mrk.getDelegate();
 				del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
-				writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
+				System.out.println("< setting param "+name);
+				writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
 				filenum++;
 			}
 		}
@@ -164,7 +165,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			String name = config.getOutputPorts()[i].getName();
 			// fixme
 			String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
-			writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+ext);
+			System.out.println("> setting param "+name);
+			writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+ext);
 			my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
 			filenum++;
 		}
@@ -178,6 +180,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				if(param.getIsOptional())
 					continue;					
 			}
+			System.out.println("@ setting param "+key);
 			writer.setParameterValue2(key, param.getValue().toString());
 		}
 		
