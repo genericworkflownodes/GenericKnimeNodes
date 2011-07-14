@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+    <name>PDBCutter</name>
+    <version>0.92</version>
+    <description>separate ligand and receptor  </description>
+    <manual><![CDATA[This tool splits a given pdb-file into two files containing receptor and reference ligand, respectively.
+
+The name of the reference ligand (exactly as it appears in the pdb-file) and the name of its chain need to be specified by '-lig_name' and '-lig_chain'.
+Optionally, chains (e.g. in case of multimers) or pdb-residues (e.g. water or ions) that you don't need can be deleted from the receptor. In this case, specify their names with '-rm_ch' or '-rm_res'.
+
+Output of this tool is one pdb-file containing the receptor-structure, i.e. the protein w/o reference ligand and w/o undesired chains/residues (if any were specified), and one pdb-file containing the reference ligand.]]></manual>
+    <docurl>http://www.ball-project.org/doc/CADDS/V1.0/PDBCutter.html</docurl>
+    <category>BALL/CADDSuite/Preparation</category>
+    <type/>
+    <PARAMETERS version="1.3">
+    	<NODE name="IO" description="IO">
+    		<ITEM name="i" type="string" description="input pdb-file" tags="input file, mandatory" value="" supported_formats="pdb"/>
+            <ITEM name="rec" type="string" description="receptor output pdb-file" tags="output file, mandatory" value="" supported_formats="pdb"/>
+            <ITEM name="lig" type="string" description="ligand output pdb-file" tags="output file, mandatory" value="" supported_formats="pdb,sdf"/>
+    	</NODE>
+    	<NODE name="Cut" description="Cut">    	
+    		<ITEM name="rm_res" type="string" description="pdb-residues that are to be deleted (e.g. water or ions)" value=""/>
+    		<ITEM name="lig_chain" type="string" description="chain-name of ligand" tags="mandatory" value="" restrictions="A,B,C,D"/>
+        	<ITEM name="lig_name" type="string" description="ligand name" tags="mandatory" value=""/>
+        	<ITEM name="rm_ch" type="string" description="protein chains that are to be deleted" value=""/>
+        	<ITEM name="write_par" type="string" description="write xml parameter file for this tool" tags="output file" value=""/>
+        	<ITEM name="par" type="string" description="read parameters from parameter-xml-file" tags="input file" value=""/>
+        	<ITEM name="help" type="int" description="show help about parameters and flags of this program" value="" restrictions="0:1"/>
+        </NODE>
+    </PARAMETERS>
+</tool>

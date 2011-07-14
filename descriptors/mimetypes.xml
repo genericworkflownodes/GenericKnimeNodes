@@ -1,0 +1,12 @@
+<mimetypes>
+ <mimetype name="PDB" ext="pdb" description="PDB"/>
+ <mimetype name="SDF" ext="sdf" description="SDF"/>
+ <mimetype name="MOL2" ext="mol2" description="MOL2"/>
+ <mimetype name="DRF" ext="drf" description="DRF"/>
+ <mimetype name="Grid" ext="grd" description="Grid"/>
+ <mimetype name="BinaryGrid" ext="bgrd" description="Binary Grid"/>
+ <mimetype name="GzippedBinaryGrid" ext="bgrd.gz" description="Gzipped Binary Grid"/>
+ <mimetype name="GzippedGrid" ext="grd.gz" description="Gzipped Grid"/>
+ <mimetype name="Ini" ext="ini" description="BALL Ini file"/>
+ <mimetype name="Txt" ext="txt" description="Flat text file"/>
+</mimetypes>

@@ -122,6 +122,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		File   jobdir = File.createTempFile(exename, "JOBDIR", new File(tmpdir));
 
 		
+		
 		System.out.println("jobdir="+jobdir);
 		
 		// this might be risky

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+    <name>GridBuilder</name>
+    <version>0.92</version>
+    <description>create score-grids for docking</description>
+    <manual><![CDATA[This tool precalculates a score-grid for a binding pocket of a given receptor.
+
+As input we need:
+    * a file containing a protonated protein in pdb-format
+    * a file containing a reference ligand.
+      This reference ligand should be located in the binding pocket, 
+      so that a grid can be precalculated around it.
+      Supported formats are mol2, sdf or drf (DockResultFile, xml-based).
+
+Output of this tool is a file containing the score-grids that can be used by docking-/scoring-tools (e.g. IMeedyDock).]]></manual>
+    <docurl>http://www.ball-project.org/doc/CADDS/V1.0/GridBuilder.html</docurl>
+    <category>BALL/CADDSuite/Docking</category>
+    <type/>
+    <PARAMETERS version="1.3">
+        <NODE name="1" description="Instance '1' section for 'GridBuilder'">
+            <ITEM name="rec" type="string" description="receptor pdb-file" tags="input file, mandatory" value="" supported_formats="pdb"/>
+            <ITEM name="rl" type="string" description="reference-ligand" tags="input file, mandatory" value="" supported_formats="sdf, mol2, drf, pdb"/>
+            <ITEM name="ini" type="string" description="configuration file" tags="input file" value="" supported_formats="ini"/>
+            <ITEM name="write_ini" type="string" description="write ini-file w/ default parameters (and don't do anything else)" tags="output file" value=""/>
+            <ITEM name="grd" type="string" description="ScoreGrid file" tags="output file, mandatory" value="" supported_formats="grd, bgrd, bgrd.gz"/>
+            <ITEM name="write_par" type="string" description="write xml parameter file for this tool" tags="output file" value=""/>
+            <ITEM name="par" type="string" description="read parameters from parameter-xml-file" tags="input file" value=""/>
+            <ITEM name="help" type="int" description="show help about parameters and flags of this program" value="" restrictions="0:1"/>
+        </NODE>
+    </PARAMETERS>
+</tool>
