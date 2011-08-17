@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
@@ -53,16 +54,18 @@ public class NodeGenerator
 	
 	public static void main(String[] args) throws Exception
 	{
-		_destdir_       = "/home/roettig/devel/knime2/CADDSuite";
-		_payloaddir_    = "/home/roettig/coops/GenericKnimeNodes/payload";
-		_destsrcdir_    = _destdir_+"/src"; 
-		_packagename_   = "org.ballproject.caddsuite";
-		_modulename_    = "CADDSuite";
-		package_root    = "BALL/CADDSuite";
-		_BINPACKNAME_   = "CADDSuite";
-		
-		_descriptordir_ = "/home/roettig/devel/knime2/GenericKnimeNodes/descriptors";
-		
+		Properties props = new Properties();
+		props.load(new FileInputStream("plugin.properties"));
+			
+		_destdir_       = props.getProperty("destdir");
+		_payloaddir_    = props.getProperty("payloaddir");
+		_packagename_   = props.getProperty("packagename");
+		_modulename_    = props.getProperty("modulename");
+		package_root    = props.getProperty("package_root");
+		_BINPACKNAME_   = props.getProperty("BINPACKNAME");
+		_descriptordir_ = props.getProperty("descriptordir");
+				
+		_destsrcdir_    = _destdir_+"/src";
 		_packagedir_    = _packagename_.replace(".","/");
 		_abspackagedir_ = _destsrcdir_+"/"+_packagedir_;
 		_absnodedir_    = _abspackagedir_+"/knime/nodes"; 
