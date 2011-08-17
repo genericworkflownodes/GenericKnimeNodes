@@ -59,7 +59,7 @@ public class NodeGenerator
 			
 		_destdir_       = props.getProperty("destdir");
 		_payloaddir_    = props.getProperty("payloaddir");
-		_packagename_   = props.getProperty("packagename");
+		_packagename_   = props.getProperty("pluginname");
 		_modulename_    = props.getProperty("modulename");
 		package_root    = props.getProperty("package_root");
 		_BINPACKNAME_   = props.getProperty("BINPACKNAME");

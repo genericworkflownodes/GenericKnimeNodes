@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Knime plugin @@pluginname@@
+Bundle-SymbolicName: @@pluginname@@;singleton:=true
+Bundle-Version: @@pluginversion@@
+Bundle-ClassPath: lib.jar
+Bundle-Activator: @@pluginname@@.knime.PluginActivator
+Bundle-Vendor: roettig
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base,
+ org.ballproject.knime
+Bundle-ActivationPolicy: lazy
