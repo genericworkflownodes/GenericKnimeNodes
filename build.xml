@@ -22,6 +22,18 @@
   <mkdir dir="${temp.folder}"/>
  </target>
 
+ <target name="buildgenerator" depends="prepare">
+		<antcall target="library.jar"/>
+ 		 	 	
+ 	 	<copy todir="." failonerror="true" overwrite="true">
+ 				<fileset dir="${temp.folder}">
+ 					<include name="library.jar"/>
+ 				</fileset>	
+ 	 	</copy>
+ 	 	
+ 		<delete dir="${temp.folder}"/>
+ </target>
+	
  <target name="buildplugin" depends="prepare">
 		<antcall target="library.jar"/>
 			
