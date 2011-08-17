@@ -1,0 +1,188 @@
+<project name="pluginbuilder" default="buildplugin" basedir=".">
+
+ <property file="build.properties"/>
+
+ <!-- fixed/automatic properties -->	
+ <property name="pluginname"   value="org.ballproject.knime"/>
+ 
+ <buildnumber file="build.number"/>	
+ <property name="major" value="0"/>
+ <property name="minor" value="1"/>
+ <property name="patch" value="${build.number}"/>
+	
+ <property name="pluginversion" value="${major}.${minor}.${patch}"/>
+
+ <property name="temp.folder" value="${java.io.tmpdir}/temp.folder"/>
+ <property name="src" value="src"/>
+ <property name="libdest" value="${temp.folder}/lib.jar.bin"/>
+
+ <target name="prepare">
+  <delete dir="${temp.folder}"/>
+  <mkdir dir="${libdest}"/>
+  <mkdir dir="${temp.folder}"/>
+ </target>
+
+ <target name="buildplugin" depends="prepare">
+		<antcall target="library.jar"/>
+			
+        <mkdir dir="${temp.folder}/package"/>
+		<mkdir dir="${temp.folder}/package/META-INF"/>
+ 	
+ 		<copy todir="${temp.folder}/package" failonerror="true" overwrite="true">
+			<fileset dir="${temp.folder}">
+				<include name="library.jar"/>
+			</fileset>	
+ 		</copy>
+ 		<copy todir="${temp.folder}/package/lib" failonerror="true" overwrite="true"> 			
+ 			<fileset dir="lib/">
+ 				<include name="dom4j-1.6.1.jar"/>
+ 				<include name="jaxen-1.1-beta-6.jar"/>
+ 				<include name="swingx-core-1.6.2.jar"/>
+ 			</fileset>
+		</copy>
+ 	
+		<copy todir="${temp.folder}/package/META-INF" failonerror="true" overwrite="false">
+			<fileset dir="data">
+            	<include name="MANIFEST.MF"/>
+        	</fileset>
+		</copy>
+ 	
+		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginname}" />
+		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${pluginversion}" />
+ 	
+		<zip destfile="${pluginname}_${pluginversion}.jar" basedir="${temp.folder}/package"/>
+ 	
+		<delete dir="${temp.folder}"/>
+ </target>
+
+ <target name="library.jar" depends="prepare" unless="library.jar" description="Creating library.jar.">
+	<path id="lib.jar.classpath">
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.osgi_3.6.1.R36x_v20100806.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.runtime.compatibility.auth_3.2.200.v20100517.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.osgi.services_3.2.100.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/javax.servlet_2.5.0.v200910301333.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.knime.workbench.core_2.3.1.0028148.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.jface_3.6.1.M20100825-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.swt_3.6.1.v3655c.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.swt.gtk.linux.x86_64_3.6.1.v3655c.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.commands_3.6.0.I20100512-1500.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.knime.core_2.3.1.0028244/knime-core.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.log4j_1.2.15.v201005080500.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.resources_3.6.0.R36x_v20100825-0600.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ant.core_3.2.200.v20100427.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.variables_3.2.400.v20100505.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.expressions_3.4.200.v20100505.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.filesystem_1.3.1.R36x_v20100727-0745.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.filesystem.linux.x86_64_1.2.0.v20100505-1235.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.platform_3.6.1.v201009090800/platform.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.intro_3.4.0.v20100427.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.help_3.5.0.v20100524.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/com.ibm.icu_4.2.1.v20100412.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.help.base_3.5.2.v201009090800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.http.jetty_2.0.0.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.http.servlet_1.1.0.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.mortbay.jetty.util_6.1.23.v201004211559.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.mortbay.jetty.server_6.1.23.v201004211559.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.jasper_5.5.17.v201004212143.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/javax.servlet.jsp_2.0.0.v200806031607.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.commons.el_1.0.0.v201004212143.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.commons.logging_1.0.4.v201005080501.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bcel.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bsf.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-log4j.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-oro.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-regexp.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-resolver.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-logging.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-net.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jai.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-javamail.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jdepend.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jmf.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jsch.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-junit.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-launcher.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-netrexx.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-nodeps.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-starteam.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-stylebook.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-swing.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-trax.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-weblogic.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.lucene_1.9.1.v20100518-1140.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.apache.lucene.analysis_1.9.1.v20100518-1140.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui_3.6.1.M20100826-1330.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.workbench_3.6.1.M20100826-1330.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.workbench.compatibility_3.2.100.I20100511-0800/compatibility.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.workbench.compatibility_3.2.100.I20100511-0800/e4-workbench.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.workbench.compatibility_3.2.100.I20100511-0800"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.jface.databinding_1.4.0.I20100601-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.databinding.observable_1.3.0.I20100601-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.databinding.property_1.3.0.I20100601-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.databinding_1.3.100.I20100601-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.forms_3.5.2.r36_v20100702.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.cheatsheets_3.4.0.v20100427.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.help.ui_3.5.2.r36_v20100702.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.text_3.5.0.v20100601-1300.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.compare.core_3.5.100.I20100526-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.knime.workbench.repository_2.3.1.0028148.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.views_3.5.0.I20100527-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.gef_3.6.2.v20110110-2020.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.draw2d_3.6.2.v20110128-0100.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ui.ide_3.6.1.M20100825-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.p2.engine_2.0.0.v20100606.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.p2.core_2.0.2.R36x_v20100804.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.p2.metadata_2.0.0.v20100601.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.p2.repository_2.0.1.R36x_v20100823.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.security_1.0.200.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ecf.filetransfer_4.0.0.v20100529-0735.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ecf_3.1.0.v20100529-0735.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ecf.ssl_1.0.0.v20100529-0735.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.concurrent_1.0.100.v20100503.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ecf.identity_3.1.0.v20100529-0735.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ecf.provider.filetransfer_3.1.0.v20100529-0735.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.ecf.provider.filetransfer.ssl_1.0.0.v20100529-0735.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.net_1.2.100.I20100511-0800.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.core.net.linux.x86_64_1.1.0.I20100505-1245.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.eclipse.equinox.p2.metadata.repository_1.1.0.v20100513.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.knime.base_2.3.1.0028217/knime-base.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.knime.base_2.3.1.0028217/lib/Jama-1.0.2.jar"/>
+			<pathelement path="${knimeSDKpath}/plugins/org.knime.deprecated_2.3.1.0028148.jar"/>
+			<pathelement path="lib/dom4j-1.6.1.jar"/>
+			<pathelement path="lib/jaxen-1.1-beta-6.jar"/>
+			<pathelement path="lib/swingx-core-1.6.2.jar"/>
+			<pathelement path="lib/library.jar"/>
+	</path>
+
+	<javac srcdir="${src}" destdir="${libdest}" includeantruntime="false">
+	   <classpath refid="lib.jar.classpath"/>
+	</javac>
+
+	<!-- copy factory-xmls and other stuff -->
+	<copy todir="${libdest}" failonerror="true" overwrite="true">
+		<fileset dir="${src}">
+			<exclude name="**/*.java"/>
+			<exclude name="**/package.htm*"/>
+		</fileset>
+	</copy>
+
+	<!-- build jar -->
+	<jar destfile="${temp.folder}/library.jar" basedir="${libdest}"/>
+ </target>
+
+
+</project>
