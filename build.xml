@@ -5,10 +5,9 @@
  <!-- fixed/automatic properties -->	
  <property name="basepluginname"   value="org.ballproject.knime"/>
  
- <buildnumber file="build.number"/>	
  <property name="major" value="0"/>
  <property name="minor" value="1"/>
- <property name="patch" value="${build.number}"/>
+ <property name="patch" value="1"/>
 	
  <property name="basepluginversion" value="${major}.${minor}.${patch}"/>
 
