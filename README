@@ -31,5 +31,8 @@ The final dependent plugin jar can the be built by issuing
 
 ant buildplugin
 
+and finally copying the resulting jar file into the plugins
+folder of KNIME.
+
  
 
