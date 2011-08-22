@@ -1,6 +1,8 @@
 package org.ballproject.knime;
 
 
+import java.util.Properties;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -18,7 +20,11 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	// The shared instance.
 	private static GenericNodesPlugin plugin;
 
-	
+	public static void log(String message)
+	{
+		if(GenericNodesPlugin.DEBUG)
+			System.out.println(message);
+	}
 	
 	/**
 	 * The constructor.
@@ -41,8 +47,13 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
-		System.out.println("starting plugin: GenericNodesPlugin");
+		Properties props = new Properties();
+		props.load(GenericNodesPlugin.class.getResourceAsStream("baseplugin.properties"));
+		DEBUG = (props.getProperty("debug","false").toLowerCase().equals("true") ? true : false);
+		log("starting plugin: GenericNodesPlugin");
 	}
+	
+	public static boolean DEBUG = false;
 
 	/**
 	 * This method is called when the plug-in is stopped.

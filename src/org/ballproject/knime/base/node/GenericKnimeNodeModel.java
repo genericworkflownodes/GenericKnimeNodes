@@ -21,6 +21,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
+import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.TTDNodeConfigurationWriter;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
@@ -121,17 +122,15 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// create job directory
 		File   jobdir = File.createTempFile(exename, "JOBDIR", new File(tmpdir));
 
-		
-		
-		System.out.println("jobdir="+jobdir);
+		GenericNodesPlugin.log("jobdir="+jobdir);
 		
 		// this might be risky
 		jobdir.delete();
 		jobdir.mkdirs();
-		
+				
 		jobdir.deleteOnExit();
 		
-		String FILESEP = "/";//System.getProperty("path.separator");
+		String FILESEP = File.separator;
 		
 		// fill params.xml
 		TTDNodeConfigurationWriter writer = new TTDNodeConfigurationWriter(config.getXML());
@@ -152,7 +151,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				MimeMarker mrk = (MimeMarker) cell;
 				MIMEFileDelegate del = mrk.getDelegate();
 				del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
-				System.out.println("< setting param "+name);
+				GenericNodesPlugin.log("< setting param "+name+"->"+jobdir+FILESEP+filenum+"."+mrk.getExtension());
 				writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
 				filenum++;
 			}
@@ -166,7 +165,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			String name = config.getOutputPorts()[i].getName();
 			// fixme
 			String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
-			System.out.println("> setting param "+name);
+			GenericNodesPlugin.log("> setting param "+name+"->"+jobdir+FILESEP+filenum+"."+ext);
 			writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+ext);
 			my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
 			filenum++;
@@ -181,7 +180,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				if(param.getIsOptional())
 					continue;					
 			}
-			System.out.println("@ setting param "+key);
+			GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
 			writer.setParameterValue2(key, param.getValue().toString());
 		}
 		
@@ -191,7 +190,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// get path to executable
 		String exepath = binpath+FILESEP+"bin"+FILESEP+exename+".bin";
 		
-		System.out.println("executing "+exepath);
+		
+		GenericNodesPlugin.log("executing "+exepath);
 		
 		// build process
 		ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c",exepath+" -par params.xml" );
@@ -199,6 +199,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		for(String key: env.keySet())
 		{
 			builder.environment().put(key, binpath+FILESEP+env.get(key));
+			GenericNodesPlugin.log(key+"->"+binpath+FILESEP+env.get(key));
 		}
 				
 		builder.redirectErrorStream(true);

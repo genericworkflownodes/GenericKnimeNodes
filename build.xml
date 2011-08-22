@@ -1,7 +1,11 @@
 <project name="pluginbuilder" default="buildbaseplugin" basedir=".">
 
+ <property name="debug" value="false"/>
+	
  <property file="build.properties"/>
 
+	
+	
  <!-- fixed/automatic properties -->	
  <property name="basepluginname"   value="org.ballproject.knime"/>
  
@@ -34,6 +38,13 @@
  </target>
 	
  <target name="buildbaseplugin" depends="prepare">
+
+ 		<echo message="Debug is:  ${debug}"/> 
+ 	
+ 		<!--<replace file="src/org/ballproject/knime/GenericNodesPlugin.java" token="@@debug@@" value="${debug}" />-->
+ 		
+ 		
+
 		<antcall target="library.jar"/>
 			
         <mkdir dir="${temp.folder}/package"/>
@@ -44,6 +55,9 @@
 				<include name="library.jar"/>
 			</fileset>	
  		</copy>
+ 	
+ 		
+ 	
  		<copy todir="${temp.folder}/package/lib" failonerror="true" overwrite="true"> 			
  			<fileset dir="lib/">
  				<include name="dom4j-1.6.1.jar"/>
@@ -85,7 +99,7 @@
  		  </fileset>
  		</path>
 
-	        <javac srcdir="${destdir}/src" destdir="${libdest}" includeantruntime="false">
+	    <javac srcdir="${destdir}/src" destdir="${libdest}" includeantruntime="false">
 		   <classpath refid="lib.jar.classpath"/>
 		</javac>
 
@@ -118,6 +132,12 @@
 	   <classpath refid="lib.jar.classpath"/>
 	</javac>
 
+ 	<touch file="${libdest}/org/ballproject/knime/baseplugin.properties"/>
+ 	<propertyfile file="${libdest}/org/ballproject/knime/baseplugin.properties">
+ 		<entry  key="debug" value="${debug}"/> 	 
+ 	</propertyfile>
+ 	
+ 	
 	<!-- copy factory-xmls and other stuff -->
 	<copy todir="${libdest}" failonerror="true" overwrite="true">
 		<fileset dir="${src}">

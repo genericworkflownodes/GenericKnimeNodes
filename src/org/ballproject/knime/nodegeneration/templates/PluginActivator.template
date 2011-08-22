@@ -121,7 +121,6 @@ public class PluginActivator extends AbstractUIPlugin
 				String k = key.toString().substring(4);
 				String v = (String) PROPERTIES.get(key);
 				ENVIRONMENT.put(k, v);
-				System.out.println(k+" -> "+v);
 			}
 		}
 	}
