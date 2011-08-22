@@ -41,7 +41,6 @@ public class NodeGenerator
 	public static String _destsrcdir_;
 	public static String _packagename_;
 	public static String _packagedir_;
-	public static String _modulename_;
 	public static String _descriptordir_;
 	public static String _abspackagedir_;
 	public static String _absnodedir_;
@@ -57,12 +56,12 @@ public class NodeGenerator
 		Properties props = new Properties();
 		props.load(new FileInputStream("plugin.properties"));
 			
-		_destdir_       = props.getProperty("destdir");
+		
+		_destdir_       = props.getProperty("destdir",System.getProperty("java.io.tmpdir")+File.separator+"/GENERIC_KNIME_NODES_PLUGINSRC");
 		_payloaddir_    = props.getProperty("payloaddir");
 		_packagename_   = props.getProperty("pluginname");
-		_modulename_    = props.getProperty("modulename");
 		package_root    = props.getProperty("package_root");
-		_BINPACKNAME_   = props.getProperty("BINPACKNAME");
+		_BINPACKNAME_   = _packagename_;
 		_descriptordir_ = props.getProperty("descriptordir");
 				
 		_destsrcdir_    = _destdir_+"/src";
@@ -87,8 +86,6 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _packagename_);
-		tf.replace("__NAME__", _modulename_);
-		//tf.write(_abspackagedir_ + "/knime/"+_modulename_+"PluginActivator.java");
 		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
 		template.close();
 		
@@ -535,7 +532,6 @@ public class NodeGenerator
 		curmodel_tf.read(template);
 		curmodel_tf.replace("__NODENAME__", nodeName);
 		curmodel_tf.replace("__BASE__", _packagename_);
-		curmodel_tf.replace("__NAME__", _modulename_);
 		curmodel_tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeModel.java");
 	}
 
