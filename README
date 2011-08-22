@@ -1,6 +1,6 @@
 This package provides the source code for the KNIME plugin
 
-            org.ballproject.kime
+  org.ballproject.kime
 
 providing basic functionality for further plugins depending 
 on the GenericKnimeNodes mechanism.
@@ -9,30 +9,24 @@ The base plugin can be built by issuing
 
 ant buildbaseplugin
 
-which will produce the respective jar file that has to be 
-copied into the plugins folder of the KNIME installation.
+which will produce the respective jar file 
+
+  org.ballproject.knime_x.y.z.jar
+ 
+that has to be  copied into the plugins folder of the KNIME
+installation.
 
 The NodeGenerator, that creates the source code of further
 plugins from the tool description files, can be built by
 issuing
 
-ant buildgenerator
+ant nodegen
 
-which will create the relevant jar file. The NodeGenerator
-can then be used to build the source code of new plugins by
-adjusting the properties file plugin.properties and executing
-the script file
+which will create the relevant jar file based on the properties 
+set in the file plugin.properties.
 
-./nodegenerator.sh 
-
-which will the generate the relevant source code.
-
-The final dependent plugin jar can the be built by issuing
-
-ant buildplugin
-
-and finally copying the resulting jar file into the plugins
-folder of KNIME.
+Finally, you should copy the resulting two jar file into the 
+plugins folder of KNIME.
 
  
 
