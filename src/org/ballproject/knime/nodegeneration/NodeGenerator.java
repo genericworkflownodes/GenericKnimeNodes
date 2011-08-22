@@ -650,12 +650,14 @@ public class NodeGenerator
 		curmodel_tf.write(_absnodedir_ + "/binres/BinaryResources.java");
 		template.close();
 		
-		//
-		copyFile(new File(_payloaddir_+"/binaries_lnx_x64.zip"),new File(_absnodedir_ + "/binres/binaries_lnx_x64.zip"));
-		copyFile(new File(_payloaddir_+"/binaries_lnx_x64.ini"),new File(_absnodedir_ + "/binres/binaries_lnx_x64.ini"));
+		String pathsep = System.getProperty("file.separator");
 		
-		copyFile(new File(_payloaddir_+"/binaries_mac_x64.zip"),new File(_absnodedir_ + "/binres/binaries_mac_x64.zip"));
-		copyFile(new File(_payloaddir_+"/binaries_mac_x64.ini"),new File(_absnodedir_ + "/binres/binaries_mac_x64.ini"));
+		//
+		String[] binFiles =  new File(_payloaddir_).list();
+		for(String filename: binFiles)
+		{
+			copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+		}
 	}
 	
 	public static void registerNode(String clazz, String cat)
