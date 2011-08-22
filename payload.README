@@ -1,0 +1,53 @@
+
+The plugins built using the GenericKnimeNodes functionality need the binary programs
+executed by each node to reside in a payload directory containing zip archives with
+binaries for each target platform (mac, lnx, win).
+
+For each supported platform the payload directory should contain two files :
+
+- binaries_<platform>_<wordsize>.ini - a ini file containing needed environment variables
+- binaries_<platform>_<wordsize>.zip - a zip file containing a bin folder with executable 
+  binaries and a lib folder with needed libraries
+  
+Where <platform> is either: win, mac or lnx and <wordsize> 32 or 64.  
+
+For Linux 64 bit systems as target a ini-file named 
+
+binaries_lnx_64.ini
+
+might look like :
+
+env_LD_LIBRARY_PATH=lib/
+env_DATA_PATH=data/
+
+
+where anything prefixed with "env_" will be put in the environment of the binary to
+be executed by each node. 
+
+The corresponding binaries_lnx_64.zip content would look like this :
+
+ bin/
+  |
+  +---  foo
+  |
+  +---- bar
+ lib/
+  |
+  +---- baz.so
+ data/
+  |
+  +---- data.dat 
+  
+ where foo and bar are executables placed in the bin directory, baz.so is a needed 
+ library that is placed in the lib directory. The data directory contains a file
+ with some addtional data foo or bar might need during execution.
+ 
+ 
+So fo each target OS and word size you need to prepare a corresponding pair of files
+(binaries_<platform>_<wordsize>.ini,binaries_<platform>_<wordsize>.zip) that all reside
+in a payload directory. The contents of the whole payload directory will be packaged
+into the final plugin jar and (depending on the execution platform) will be extracted
+upon execution on a host system.
+
+
+
