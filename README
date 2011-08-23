@@ -25,6 +25,10 @@ ant nodegen
 which will create the relevant jar file based on the properties 
 set in the file plugin.properties.
 
+The wrapped binaries have to be supplied in a payload directory
+specified by the respective property in the plugin.properties
+file. Pleaser refer to payload.README for further details.
+
 Finally, you should copy the resulting two jar file into the 
 plugins folder of KNIME.
 
