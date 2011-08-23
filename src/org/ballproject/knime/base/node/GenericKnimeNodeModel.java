@@ -30,6 +30,7 @@ import org.ballproject.knime.base.port.MIMEFileDelegate;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.util.ToolRunner;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -193,48 +194,26 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		GenericNodesPlugin.log("executing "+exepath);
 		
-		// build process
-		ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c",exepath+" -par params.xml" );
+		ToolRunner tr = new ToolRunner();
+		
+		tr.setJobDir(jobdir.getAbsolutePath());
 		
 		for(String key: env.keySet())
 		{
-			builder.environment().put(key, binpath+FILESEP+env.get(key));
+			tr.addEnvironmentEntry(key, binpath+FILESEP+env.get(key));
 			GenericNodesPlugin.log(key+"->"+binpath+FILESEP+env.get(key));
 		}
-				
-		builder.redirectErrorStream(true);
-	    builder.directory( jobdir );
-	    
-	    // execute
-	    Process p = builder.start();
-	    
-	    
-	    // fetch output data (stdio+stderr)
-	    InputStreamReader isr = new InputStreamReader(p.getInputStream());
-        BufferedReader    br  = new BufferedReader(isr);
-        
-        String line = null;
-        StringBuffer out = new StringBuffer();
-        
-        while ( (line = br.readLine()) != null)
-        {
-            out.append(line+System.getProperty("line.separator"));
-        }
-        
-        
-        // fetch return code
-	    int retcode = p.waitFor();
-	    
-	    // .. in case of problems
-	    if(retcode!=0)
+		
+		tr.run(exepath+" -par params.xml");
+		
+		output = tr.getOutput();
+		
+		if(tr.getReturnCode()!=0)
 	    {
-	    	logger.error(out.toString());
+	    	logger.error(output);
 	    	throw new Exception("execution of external tool failed");
 	    }
-	    
-	    out.append("return code="+retcode);
-        output = out.toString();
-
+				
         // create output tables
         BufferedDataTable[] outtables = new BufferedDataTable[nOut];
         for(int i=0;i<nOut;i++)
