@@ -709,7 +709,12 @@ public class NodeGenerator
 		String[] binFiles =  new File(_payloaddir_).list();
 		for(String filename: binFiles)
 		{
-			copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+			// do not copy directories
+			if(new File(_payloaddir_+pathsep+filename).isDirectory())
+				continue;
+			// only copy zip and ini files
+			if(filename.toLowerCase().endsWith("zip")||filename.toLowerCase().endsWith("ini"))
+				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
 		}
 	}
 	
