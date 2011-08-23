@@ -1,12 +1,14 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,11 +19,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.TTDNodeConfigurationReader;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -42,6 +46,7 @@ public class NodeGenerator
 	public static String _packagename_;
 	public static String _packagedir_;
 	public static String _descriptordir_;
+	public static String _executabledir_;
 	public static String _abspackagedir_;
 	public static String _absnodedir_;
 	
@@ -50,6 +55,8 @@ public class NodeGenerator
 	public static String package_root;
 	public static String _BINPACKNAME_;
 	public static String _payloaddir_;
+	
+	
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -62,7 +69,19 @@ public class NodeGenerator
 		_packagename_   = props.getProperty("pluginname");
 		package_root    = props.getProperty("package_root");
 		_BINPACKNAME_   = _packagename_;
+		
 		_descriptordir_ = props.getProperty("descriptordir");
+		
+		// no descriptor directory supplied ...
+		if(_descriptordir_==null)
+		{
+			// .. extract tool descriptor information from executable
+			_executabledir_ = props.getProperty("executabledir");
+			if(_executabledir_==null)
+				panic("neither tool descriptors nor executables were supplied");
+			
+			generateDescriptors(props);
+		}
 				
 		_destsrcdir_    = _destdir_+"/src";
 		_packagedir_    = _packagename_.replace(".","/");
@@ -93,7 +112,36 @@ public class NodeGenerator
 	}
 	
 
-
+	public static void generateDescriptors(Properties props) throws Exception
+	{
+		String   par_switch = props.getProperty("parswitch","-write_par");
+		String[] exes       = new File(_executabledir_+File.separator+"bin").list();
+		String   ttd_dir    = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES_TTD"; 
+		File outdir = new File(ttd_dir);
+		outdir.mkdirs();
+		outdir.deleteOnExit();
+		
+		for(String exe: exes)
+		{
+			ToolRunner tr = new ToolRunner();
+			File outfile = File.createTempFile("TTD","");
+			outfile.deleteOnExit();
+			
+			// FixMe: this is so *nix style, wont hurt on windows
+			// but probably wont help either
+			tr.addEnvironmentEntry("LD_LIBRARY_PATH", _executabledir_+File.separator+"lib");
+			
+			String cmd = _executabledir_+File.separator+"bin"+File.separator+exe+" "+par_switch+" "+outfile.getAbsolutePath();
+			tr.run(cmd);
+			
+			if(tr.getReturnCode()==0)
+			{
+				copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
+			}
+		}
+		_descriptordir_ = ttd_dir;
+	}
+	
 	private static void createPackageDirectory()
 	{
 		File packagedir = new File(_destsrcdir_+"/"+_packagedir_);
@@ -710,6 +758,12 @@ public class NodeGenerator
 			if (outChannel != null)
 				outChannel.close();
 		}
+	}
+	
+	public static void panic(String message)
+	{
+		System.err.println("PANIC - "+message+" - EXITING\n\n");
+		System.exit(1);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
