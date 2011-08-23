@@ -10,7 +10,7 @@
     <fullDescription>
         <intro>__MANUAL__
         <br/>
-        <a href="__DOCURL__">Web Documentation for __NODENAME__</a>
+        __DOCLINK__
         </intro>
         
         __OPTIONS__

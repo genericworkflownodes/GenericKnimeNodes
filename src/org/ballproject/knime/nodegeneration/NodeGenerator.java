@@ -495,14 +495,23 @@ public class NodeGenerator
 		tf.replace("__DESCRIPTION__", config.getDescription());
 		String pp = prettyPrint(config.getManual());
 		tf.replace("__MANUAL__", pp);
-		tf.replace("__DOCURL__", config.getDocUrl());
-		
+		if(!config.getDocUrl().equals(""))
+		{
+			String ahref = "<a href=\""+config.getDocUrl()+"\">Web Documentation for "+nodeName+"</a>";
+			tf.replace("__DOCLINK__", ahref);	
+		}
+		else
+		{
+			tf.replace("__DOCLINK__", "");
+		}
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeFactory.xml");
 
 	}
 
 	private static String prettyPrint(String manual)
 	{
+		if(manual.equals(""))
+			return "";
 		StringBuffer sb = new StringBuffer();
 		String[] toks = manual.split("\\n");
 		for(String tok: toks)

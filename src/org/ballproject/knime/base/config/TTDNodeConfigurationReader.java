@@ -166,7 +166,7 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 	public void iterNode(String prefix, Element root) throws Exception
 	{
 		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
-		//System.out.println("visiting "+root.attributeValue("name")+"  prefix="+prefix);
+
 		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
         {
             Element elem = (Element) i.next();
@@ -181,7 +181,7 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 	public void iterPortNodes(String prefix, Element root) throws Exception
 	{
 		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
-		//System.out.println("visiting "+root.attributeValue("name")+"  prefix="+prefix);
+
 		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
         {
             Element elem = (Element) i.next();
@@ -195,7 +195,6 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 	
 	public void processItem(String prefix, Element elem) throws Exception
 	{
-		//System.out.println("	processing ITEM "+prefix+"."+elem.attributeValue("name"));
 		String name = elem.attributeValue("name");
 		
 		if(captured_ports.contains(prefix+"."+name))
@@ -207,30 +206,45 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		
 		Parameter<?> param = getParameterFromNode(elem);
-		//System.out.println("adding parameter under key "+prefix+"."+name);
 		config.addParameter(prefix+"."+name, param);
+	}
+	
+	private void panic(String message)
+	{
+		System.err.println(message);
+		System.exit(1);
 	}
 	
 	private void readDescription()
 	{
 		Node   node  = doc.selectSingleNode("/tool/name");
+		if(node==null)
+			panic("TTD has no tool name");
 		String name  = node.valueOf("text()");  
 		config.setName(name);
 		
 		node  = doc.selectSingleNode("/tool/description");
-		String sdescr  = node.valueOf("text()");  
+		String sdescr  = "";
+		if(node!=null)
+			sdescr  = node.valueOf("text()");
 		config.setDescription(sdescr);
 		
 		node  = doc.selectSingleNode("/tool/manual");
-		String ldescr  = node.valueOf("text()");
+		String ldescr = "";
+		if(node!=null)
+			ldescr  = node.valueOf("text()");
 		config.setManual(ldescr);
 		
 		node  = doc.selectSingleNode("/tool/docurl");
-		String docurl  = node.valueOf("text()");  
+		String docurl  = "";
+		if(node!=null)
+			docurl = node.valueOf("text()");  
 		config.setDocUrl(docurl);
 		
 		node  = doc.selectSingleNode("/tool/category");
-		String cat  = node.valueOf("text()");  
+		String cat = "";
+		if(node!=null)
+			cat = node.valueOf("text()");  
 		config.setCategory(cat);
 	}
 	
@@ -244,7 +258,6 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		String descr  = node.valueOf("@description");
 		String tags   = node.valueOf("@tags");
 		
-		//name = name+prefix;
 		if (type.toLowerCase().equals("double")||type.toLowerCase().equals("float"))
 		{
 			ret = processDoubleParameter(name, value, restrs, tags);
@@ -270,7 +283,6 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		if(tagset.contains("mandatory"))
 			ret.setIsOptional(false);
 		
-		//config.addParameter(prefix+name, ret);
 		return ret;
 	}
 
@@ -455,12 +467,4 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		
 		return config;
 	}
-
-	
-	
-	
-	public static void main(String[] args) throws FileNotFoundException, Exception
-	{
-	}
-
 }
