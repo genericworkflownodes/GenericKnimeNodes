@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.NodeConfiguration;
@@ -264,6 +266,8 @@ public class NodeGenerator
 		}
 	}
 	
+	private static Set<String> node_names = new HashSet<String>();
+	
 	public static void processNode(String name, File descriptor) throws Exception
 	{
 
@@ -272,6 +276,8 @@ public class NodeGenerator
 
 		String nodeName = config.getName();
 		System.out.println("## processing Node "+nodeName);
+		
+		node_names.add(nodeName);
 		
 		cur_cat  = config.getCategory();
 		cur_path = getPathPrefix(cur_cat); 
@@ -712,11 +718,76 @@ public class NodeGenerator
 			// do not copy directories
 			if(new File(_payloaddir_+pathsep+filename).isDirectory())
 				continue;
+			
 			// only copy zip and ini files
-			if(filename.toLowerCase().endsWith("zip")||filename.toLowerCase().endsWith("ini"))
+			if(filename.toLowerCase().endsWith("zip"))
+			{
 				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+				verifyZip(_absnodedir_ +pathsep+"binres"+pathsep+filename);
+			}
+			if(filename.toLowerCase().endsWith("ini"))
+			{
+				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+			}
 		}
 	}
+	
+	public static void verifyZip(String filename)
+	{
+		boolean ok = false;
+		
+		Set<String> found_exes = new HashSet<String>();
+		
+		try
+		{
+			ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
+			ZipEntry ze = null;
+
+			while ((ze = zin.getNextEntry()) != null)
+			{
+				if (ze.isDirectory())
+				{
+					// we need a bin directory at the top level
+					if(ze.getName().equals("bin/") || ze.getName().equals("bin"))
+					{
+						ok = true;
+					}
+					
+				}
+				else
+				{
+					File f = new File(ze.getName());
+					if((f.getParent()!=null)&&f.getParent().equals("bin"))
+					{
+						found_exes.add(f.getName());
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if(!ok)
+		{
+			panic("binary archive has no toplevel bin directory : "+filename);
+		}
+		
+		for(String nodename: node_names)
+		{
+			boolean found = false;
+			if(found_exes.contains(nodename)||found_exes.contains(nodename+".bin")||found_exes.contains(nodename+".exe"))
+			{
+				found = true;
+			}
+			if(!found)
+			{
+				panic("binary archive has no executable in bin directory for node : "+nodename);
+			}
+		}
+	}
+	
 	
 	public static void registerNode(String clazz, String cat)
 	{
