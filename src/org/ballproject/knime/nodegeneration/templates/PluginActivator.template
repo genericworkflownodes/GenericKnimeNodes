@@ -116,12 +116,9 @@ public class PluginActivator extends AbstractUIPlugin
 		
 		for(Object key: PROPERTIES.keySet())
 		{
-			if(key.toString().startsWith("env_"))
-			{
-				String k = key.toString().substring(4);
-				String v = (String) PROPERTIES.get(key);
-				ENVIRONMENT.put(k, v);
-			}
+			String k = key.toString();
+			String v = PROPERTIES.getProperty(k);
+			ENVIRONMENT.put(k, v);
 		}
 	}
 
