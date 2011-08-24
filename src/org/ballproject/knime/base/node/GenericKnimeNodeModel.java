@@ -28,6 +28,7 @@ import org.ballproject.knime.base.port.MIMEFileDelegate;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -116,10 +117,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		// fetch node descriptors		
 		String tmpdir  = KNIMEConstants.getKNIMETempDir();
-		String exename = config.getName();
+		String nodeName = config.getName();
 			
 		// create job directory
-		File   jobdir = File.createTempFile(exename, "JOBDIR", new File(tmpdir));
+		File   jobdir = File.createTempFile(nodeName, "JOBDIR", new File(tmpdir));
 
 		GenericNodesPlugin.log("jobdir="+jobdir);
 		
@@ -185,10 +186,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		writer.write(jobdir+FILESEP+"params.xml");
 
+		// get executable name
+		String exepath = Helper.getExecutableName(nodeName, binpath+FILESEP+"bin");
 		
-		// get path to executable
-		String exepath = binpath+FILESEP+"bin"+FILESEP+exename+".bin";
-		
+		if(exepath==null)
+		{
+			throw new Exception("execution of external tool failed: due to missing executable file");
+		}
 		
 		GenericNodesPlugin.log("executing "+exepath);
 		

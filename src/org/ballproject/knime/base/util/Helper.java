@@ -1,5 +1,7 @@
 package org.ballproject.knime.base.util;
 
+import java.io.File;
+
 public class Helper
 {
 	public static class OS
@@ -26,11 +28,22 @@ public class Helper
 		
 		return OS.WIN;
 	}
-	
-	public static void main(String[] args)
-	{
-		System.out.println(getOS());
 
+	public static String getExecutableName(String nodename, String path)
+	{
+		String test = path+File.separator+nodename; 
+		if(new File(test).exists())
+			return test;
+		
+		test = path+File.separator+nodename+".bin";
+		if(new File(test).exists())
+			return test;
+		
+		test = path+File.separator+nodename+".exe";
+		if(new File(test).exists())
+			return test;
+		
+		return null;
 	}
 
 }
