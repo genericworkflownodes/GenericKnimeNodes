@@ -261,21 +261,44 @@ public class NodeGenerator
 			String filename = f.getName();
 			
 			if (filename.endsWith(".ttd"))
+			{
+				System.out.println("start processing node "+f);
 				processNode(filename, f);
-			
+			}
 		}
 	}
 	
 	private static Set<String> node_names = new HashSet<String>();
 	
+	public static boolean checkNodeName(String name)
+	{
+		if(!name.matches("[[A-Z]|[a-z]][[0-9]|[A-Z]|[a-z]]+"))
+			return false;
+		return true;
+	}
+	
 	public static void processNode(String name, File descriptor) throws Exception
 	{
-
+		
+		System.out.println("## processing Node "+name);
 		TTDNodeConfigurationReader reader = new TTDNodeConfigurationReader();
-		config = reader.read(new FileInputStream(descriptor));
-
+		try
+		{
+			config = reader.read(new FileInputStream(descriptor));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		String nodeName = config.getName();
-		System.out.println("## processing Node "+nodeName);
+		
+		if(!checkNodeName(nodeName))
+		{
+			panic("NodeName with invalid name detected "+nodeName);
+		}
+		
 		
 		node_names.add(nodeName);
 		
@@ -627,10 +650,12 @@ public class NodeGenerator
 			clazzez += tmp;
 		}
 		
-		clazzez = clazzez.substring(0,clazzez.length()-1);
+		if(!clazzez.equals(""))
+			clazzez = clazzez.substring(0,clazzez.length()-1);
+		
 		clazzez += "}";
 		createInClazzezModel(clazzez);
-
+		
 		clazzez = "";
 		for (Port port : config.getOutputPorts())
 		{
@@ -640,7 +665,7 @@ public class NodeGenerator
 				String ext = ext2type.get(type.getExt());
 				if(ext==null)
 				{
-					System.out.println("unknown mime type : "+type.getExt());
+					System.out.println("unknown mime type : |"+type.getExt()+"|");
 					System.exit(1);
 				}
 				tmp += "DataType.getType(" + ext + "FileCell.class),";
@@ -649,7 +674,10 @@ public class NodeGenerator
 			tmp+="},";
 			clazzez += tmp;
 		}
-		clazzez = clazzez.substring(0,clazzez.length()-1);
+	
+		if(!clazzez.equals(""))
+			clazzez = clazzez.substring(0,clazzez.length()-1);
+		
 		clazzez += "}";
 		
 		createOutClazzezModel(clazzez);
