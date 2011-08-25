@@ -288,7 +288,7 @@ public class NodeGenerator
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			panic(e.getMessage());
 			System.exit(1);
 		}
 		

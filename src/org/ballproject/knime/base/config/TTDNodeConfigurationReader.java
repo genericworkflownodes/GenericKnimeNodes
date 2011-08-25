@@ -106,6 +106,7 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 	
 	private void createPortFromNode(Node node,String prefix) throws Exception
 	{
+		Element elem = (Element) node;
 		
 		String name   = node.valueOf("@name");
 		String descr  = node.valueOf("@description");
@@ -114,7 +115,12 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		Port port = new Port();
 		
 		if(tags.contains(INPUTFILE_TAG)||tags.contains(OUTPUTFILE_TAG))
-		{				
+		{
+			if(elem.attributeValue("supported_formats")==null)
+			{
+				throw new Exception("i/o item with missing attribute supported_formats detected");
+			}
+			
 			String  formats  = node.valueOf("@supported_formats");
 			
 			String[] toks2   = formats.split(",");
@@ -219,18 +225,14 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		config.addParameter(prefix+"."+name, param);
 	}
 	
-	private void panic(String message)
-	{
-		System.err.println(message);
-		System.exit(1);
-	}
-	
-	private void readDescription()
+	private void readDescription() throws Exception
 	{
 		Node   node  = doc.selectSingleNode("/tool/name");
 		if(node==null)
-			panic("TTD has no tool name");
+			throw new Exception("TTD has no tool name");
 		String name  = node.valueOf("text()");  
+		if(name.equals(""))
+			throw new Exception("TTD has no tool name");
 		config.setName(name);
 		
 		node  = doc.selectSingleNode("/tool/description");
