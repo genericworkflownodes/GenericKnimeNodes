@@ -1,14 +1,12 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +19,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.TTDNodeConfigurationReader;
 import org.ballproject.knime.base.parameter.Parameter;
@@ -29,6 +26,7 @@ import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -79,8 +77,14 @@ public class NodeGenerator
 		{
 			// .. extract tool descriptor information from executable
 			_executabledir_ = props.getProperty("executabledir");
+			
 			if(_executabledir_==null)
 				panic("neither tool descriptors nor executables were supplied");
+			
+			File exedir = new File(_executabledir_); 
+			
+			if(!exedir.exists()||!exedir.isDirectory())
+				panic("supplied executables directory does not exist");
 			
 			generateDescriptors(props);
 		}
@@ -117,11 +121,32 @@ public class NodeGenerator
 	public static void generateDescriptors(Properties props) throws Exception
 	{
 		String   par_switch = props.getProperty("parswitch","-write_par");
-		String[] exes       = new File(_executabledir_+File.separator+"bin").list();
-		String   ttd_dir    = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES_TTD"; 
-		File outdir = new File(ttd_dir);
-		outdir.mkdirs();
-		outdir.deleteOnExit();
+		File     bindir     = new File(_executabledir_+File.separator+"bin");
+		
+		if(!bindir.exists()||!bindir.isDirectory())
+		{
+			panic("could not find bin directory with executables at executabledir: "+_executabledir_);
+		}
+			
+		String ttd_dir  = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES_TTD";
+		
+		try
+		{			 
+			File outdir   = new File(ttd_dir);
+			outdir.mkdirs();
+			outdir.deleteOnExit();
+		}
+		catch(Exception e)
+		{
+			panic("could not create temporary directory "+ttd_dir);
+		}
+		
+		String[] exes = bindir.list();
+		
+		if(exes.length==0)
+		{
+			panic("found no executables at "+bindir);
+		}
 		
 		for(String exe: exes)
 		{
@@ -140,7 +165,12 @@ public class NodeGenerator
 			{
 				copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
 			}
+			else
+			{
+				panic("could not execute tool : "+cmd);
+			}
 		}
+		
 		_descriptordir_ = ttd_dir;
 	}
 	
@@ -153,8 +183,6 @@ public class NodeGenerator
 	
 	public static void pre() throws DocumentException, IOException
 	{
-		
-
 		InputStream template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
@@ -186,20 +214,9 @@ public class NodeGenerator
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeFactory.template.xml");
 		tf = new TemplateFiller();
 		tf.read(template);
-		//tf.replace("__BASE__", _packagename_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeFactory.xml");
 		template.close();
-		
-		/*
-		template = TemplateResources.class.getResourceAsStream("MimeFileCellFactory.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
-		tf.write(_abspackagedir_ + "/knime/nodes/io/MimeFileCellFactory.java");
-		template.close();
-		*/
-		//copyStream(TemplateResources.class.getResourceAsStream("MimeFileCellFactory.template"),new File(_abspackagedir_ + "/knime/nodes/io/MimeFileCellFactory.java"));
-		
+				
 		copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
 		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
@@ -289,7 +306,6 @@ public class NodeGenerator
 		catch(Exception e)
 		{
 			panic(e.getMessage());
-			System.exit(1);
 		}
 		
 		String nodeName = config.getName();
@@ -311,18 +327,20 @@ public class NodeGenerator
 
 		copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
 		
-		
 		registerCategoryPath(cur_cat);
-		
 		
 		createFactory(nodeName);
 		
 		createDialog(nodeName);
+		
 		createView(nodeName);
 		
 		createModel(nodeName);
+		
 		fillMimeTypes();
+		
 		createXMLDescriptor(nodeName);
+		
 		writeModel(nodeName);
 		
 		registerNode( _packagename_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");
@@ -513,7 +531,6 @@ public class NodeGenerator
 	public static void createXMLDescriptor(String nodeName) throws IOException
 	{
 		// ports
-		//String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE____OPT__]\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
 		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
 		String inports = "";
 		int idx = 0;
