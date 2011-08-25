@@ -1,6 +1,6 @@
 package org.ballproject.knime.base.config;
 
-import java.io.FileNotFoundException;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,6 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
@@ -16,11 +23,14 @@ import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class TTDNodeConfigurationReader implements NodeConfigurationReader
 {
@@ -446,18 +456,28 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 
 	@Override
 	public NodeConfiguration read(InputStream xmlstream) throws Exception
-	{
-		SAXReader reader = new SAXReader();
+	{	
+		SAXParserFactory factory       = SAXParserFactory.newInstance();
+		SchemaFactory    schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		
-		try
-		{
-			doc = reader.read(xmlstream);
-		}
-		catch (DocumentException e)
-		{
-			e.printStackTrace();
-		}
+		factory.setSchema(schemaFactory.newSchema(new Source[] {new StreamSource(SchemaProvider.class.getResourceAsStream("TTD.xsd")), new StreamSource(SchemaProvider.class.getResourceAsStream("Param_1_3.xsd"))}));
 		
+		SAXParser parser = factory.newSAXParser();
+
+		SAXReader reader = new SAXReader(parser.getXMLReader());
+		reader.setValidation(false);
+		
+		SimpleErrorHandler errorHandler = new SimpleErrorHandler();
+					
+		reader.setErrorHandler(errorHandler);
+		
+		doc = reader.read(xmlstream);
+		
+		if(!errorHandler.isValid())
+		{
+			System.err.println(errorHandler.getErrorReport());
+			throw new Exception("TTD file is not valid !");
+		}
 		
 		readPorts();
 		readParameters();
@@ -466,5 +486,40 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 		config.setXml(doc.asXML());
 		
 		return config;
+	}
+	
+	private static class SimpleErrorHandler implements ErrorHandler
+	{
+		private boolean valid = true;
+		private StringBuffer errors = new StringBuffer();
+		
+		public boolean isValid()
+		{
+			return valid;
+		}
+		
+		public String getErrorReport()
+		{
+			return errors.toString();
+		}
+		
+		@Override
+		public void error(SAXParseException ex) throws SAXException
+		{	
+			errors.append("Line "+ex.getLineNumber()+" "+ex.getMessage()+System.getProperty("line.separator"));
+			valid = false;
+		}
+
+		@Override
+		public void fatalError(SAXParseException ex) throws SAXException
+		{
+			errors.append("Line "+ex.getLineNumber()+" "+ex.getMessage()+System.getProperty("line.separator"));
+			valid = false;
+		}
+
+		@Override
+		public void warning(SAXParseException ex) throws SAXException
+		{
+		}
 	}
 }

@@ -1,0 +1,112 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:include schemaLocation="Param_1_3.xsd" />
+
+	<xs:element name="tool">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1">
+					<xs:annotation>
+							<xs:documentation>Name of the tool.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="version" type="xs:string" minOccurs="1">
+					<xs:annotation>
+							<xs:documentation>Version string of the tool.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="description" type="xs:string" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>One line description of the tool.</xs:documentation>
+					</xs:annotation>	
+				</xs:element>
+				<xs:element name="manual" type="xs:string" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>More detailed description of the tool (about 10 lines).</xs:documentation>
+					</xs:annotation>	
+				</xs:element>
+				<xs:element name="docurl" type="xs:string" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>URL to further documentation (WWW).</xs:documentation>
+					</xs:annotation>	
+				</xs:element>				
+				<xs:element name="category" type="xs:string" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>Whats this (FIX-ME!).</xs:documentation>
+					</xs:annotation>	
+				</xs:element>
+				<xs:element name="type" type="xs:string" maxOccurs="unbounded">
+					<xs:annotation>
+							<xs:documentation>Whats this (FIX-ME!).</xs:documentation>
+					</xs:annotation>	
+				</xs:element>
+				<xs:element name="cloptions" type="clExprType" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>Command-line options with placeholders.</xs:documentation>
+					</xs:annotation>	
+				</xs:element>
+				<xs:element name="path" type="xs:string" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>Whats this exactly (FIX-ME!).</xs:documentation>
+					</xs:annotation>	
+				</xs:element>
+				<xs:element name="mappings" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="mapping" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:nonNegativeInteger" use="required"/>
+									<xs:attribute name="cl" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="file">
+								<xs:complexType>
+									<xs:attribute name="location" type="xs:string" use="required"/>
+									<xs:attribute name="target" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<!-- reference PARAMETERS schema instead of redefinition -->
+				<xs:element name="PARAMETERS" minOccurs="0"/>
+
+			</xs:sequence>
+			<xs:attribute name="status" type="StatusType" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="StatusType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of possible status</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="internal"/>
+			<xs:enumeration value="external"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="clExprType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of possible status</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".*([^%]|%[0-9]+).*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="clVarType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of possible status</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="%+\S+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="locationType">
+		<xs:annotation>
+			<xs:documentation>Enumeration of possible status</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".*([^%]|%TMP|[%%S+]|%BASENAME\[%+S+\])"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
