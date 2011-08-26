@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -38,6 +39,8 @@ import org.dom4j.io.XMLWriter;
 
 public class NodeGenerator
 {	
+	public static Logger logger = Logger.getLogger(NodeGenerator.class.getCanonicalName());
+	
 	public static Document          plugindoc;
 	public static NodeConfiguration config;
 	
@@ -80,7 +83,16 @@ public class NodeGenerator
 		File dir = new File(dirname);
 		if ( !(dir.exists() && dir.isDirectory()) )
 		{
-			panic(dirname+" supllied as "+id+" is no valid directory");
+			panic(dirname+" supplied as "+id+" is no valid directory");
+		}
+	}
+	
+	public static void assertFileExistence(String filename, String id)
+	{
+		File f = new File(filename);
+		if ( !f.exists() )
+		{
+			panic(filename+" supplied as "+id+" is no valid file");
 		}
 	}
 	
@@ -262,10 +274,13 @@ public class NodeGenerator
 		SAXReader reader = new SAXReader();
 		reader.setDocumentFactory(factory);
 
+		assertFileExistence(_descriptordir_ + "/mimetypes.xml","mimetypes.xml");
+		
 		Document doc = reader.read(new FileInputStream(new File(_descriptordir_ + "/mimetypes.xml")));
 		
-		InputStream template = TemplateResources.class.getResourceAsStream("MimeFileCellFactory.template");
-		TemplateFiller tf = new TemplateFiller();
+		InputStream    template = TemplateResources.class.getResourceAsStream("MimeFileCellFactory.template");
+		
+		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
 		
 		String tpl = "\t\tif(f.getName().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = __NAME__FileCell.createMimeFileCell(f);\n\t\t}\n";
@@ -279,8 +294,6 @@ public class NodeGenerator
 			String  name    = elem.valueOf("@name");
 			String  ext     = elem.valueOf("@ext");
 			String  descr   = elem.valueOf("@description");
-			
-			System.out.println(name+" "+ext+" "+descr);
 			
 			createMimeTypeLoader(name, ext);
 			createMimeCell(name, ext);
@@ -308,7 +321,7 @@ public class NodeGenerator
 			
 			if (filename.endsWith(".ttd"))
 			{
-				System.out.println("start processing node "+f);
+				logger.info("start processing node "+f);
 				processNode(filename, f);
 			}
 		}
@@ -373,6 +386,7 @@ public class NodeGenerator
 		writeModel(nodeName);
 		
 		registerNode( _pluginname_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");
+		
 	}
 	
 	static public boolean deleteDirectory(File path)
@@ -919,7 +933,8 @@ public class NodeGenerator
 	
 	public static void panic(String message)
 	{
-		System.err.println("PANIC - "+message+" - EXITING\n\n");
+		logger.severe("PANIC - "+message+" - EXITING");
+		//System.err.println("PANIC - "+message+" - EXITING\n\n");
 		System.exit(1);
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////////
