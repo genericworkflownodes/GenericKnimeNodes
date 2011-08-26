@@ -43,7 +43,7 @@ public class NodeGenerator
 	
 	public static String _destdir_;
 	public static String _destsrcdir_;
-	public static String _packagename_;
+	public static String _pluginname_;
 	public static String _packagedir_;
 	public static String _descriptordir_;
 	public static String _executabledir_;
@@ -52,24 +52,60 @@ public class NodeGenerator
 	
 	public static String cur_cat;
 	public static String cur_path;
-	public static String package_root;
+	public static String _package_root_;
 	public static String _BINPACKNAME_;
 	public static String _payloaddir_;
 	
+	public static void assertDefinition(Object obj, String id)
+	{
+		if(obj==null||obj.toString().equals(""))
+		{
+			panic(id+" was not properly defined");
+		}
+	}
 	
+	public static void assertValidPackageName(String pname, String id)
+	{
+		if(pname==null||pname.equals(""))
+		{
+			panic(id+" is no proper Java package name");
+		}
+		String re = "^([a-z_]{1}[a-z0-9_]*(\\.[a-z_]{1}[a-z0-9_]*)*)$";
+		if(!pname.matches(re))
+			panic(id+" is no proper Java package name");
+	}
+	
+	public static void assertDirectoryExistence(String dirname, String id)
+	{
+		File dir = new File(dirname);
+		if ( !(dir.exists() && dir.isDirectory()) )
+		{
+			panic(dirname+" supllied as "+id+" is no valid directory");
+		}
+	}
 	
 	public static void main(String[] args) throws Exception
 	{
+		// read in properties for building the plugin
 		Properties props = new Properties();
 		props.load(new FileInputStream("plugin.properties"));
-			
+				
+		// ... these are ..
 		
-		_destdir_       = props.getProperty("destdir",System.getProperty("java.io.tmpdir")+File.separator+"/GENERIC_KNIME_NODES_PLUGINSRC");
+		// the directory containing the payload (= ini-file,zip with binaries for each platform)
 		_payloaddir_    = props.getProperty("payloaddir");
-		_packagename_   = props.getProperty("pluginname");
-		package_root    = props.getProperty("package_root");
-		_BINPACKNAME_   = _packagename_;
+		assertDefinition(_payloaddir_,"payloaddir");
+		assertDirectoryExistence(_payloaddir_,"payloaddir");
 		
+		// the name of the package (i.e. org.roettig.foo)
+		_pluginname_   = props.getProperty("pluginname");
+		assertDefinition(_pluginname_,"pluginname");
+		assertValidPackageName(_pluginname_,"pluginname");
+		
+		// the root node where to attach the generated nodes 
+		_package_root_    = props.getProperty("package_root");
+		assertDefinition(_package_root_,"package_root");
+				
 		_descriptordir_ = props.getProperty("descriptordir");
 		
 		// no descriptor directory supplied ...
@@ -88,32 +124,25 @@ public class NodeGenerator
 			
 			generateDescriptors(props);
 		}
-				
+		
+		_destdir_       = System.getProperty("java.io.tmpdir")+File.separator+"/GENERIC_KNIME_NODES_PLUGINSRC";
+		// the name of the binary package is simply copied from the plugin name
+		_BINPACKNAME_   = _pluginname_;
 		_destsrcdir_    = _destdir_+"/src";
-		_packagedir_    = _packagename_.replace(".","/");
+		_packagedir_    = _pluginname_.replace(".","/");
 		_abspackagedir_ = _destsrcdir_+"/"+_packagedir_;
 		_absnodedir_    = _abspackagedir_+"/knime/nodes"; 
+		
 		
 		createPackageDirectory();
 		
 		pre();
 		
 		installMimeTypes();
+		
 		processDescriptors();
 				
-		post();
-		
-		
-		
-		///
-		
-		InputStream template = TemplateResources.class.getResourceAsStream("PluginActivator.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
-		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
-		template.close();
-		
+		post();		
 		
 	}
 	
@@ -186,28 +215,28 @@ public class NodeGenerator
 		InputStream template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeDialog.java");
 		template.close();
 		
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeModel.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeModel.java");
 		template.close();
 		
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeView.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeView.java");
 		template.close();
 		
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeFactory.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeFactory.java");
 		template.close();
 		
@@ -265,7 +294,7 @@ public class NodeGenerator
 		}
 		
 		tf.replace("__DATA__", data);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();
 	}
@@ -343,7 +372,7 @@ public class NodeGenerator
 		
 		writeModel(nodeName);
 		
-		registerNode( _packagename_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");
+		registerNode( _pluginname_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");
 	}
 	
 	static public boolean deleteDirectory(File path)
@@ -406,7 +435,7 @@ public class NodeGenerator
 		InputStream template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext.toLowerCase());
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeDialog.java");
@@ -414,33 +443,33 @@ public class NodeGenerator
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeModel.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.replace("__NAME__", name);
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeModel.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.replace("__NAME__", name);
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeView.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.replace("__NAME__", name);
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeView.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.xml.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext.toLowerCase());
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.xml");
 
-		registerNode(_packagename_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",package_root+"/IO");
+		registerNode(_pluginname_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",_package_root_+"/IO");
 	}
 
 	private static void createMimeCell(String name, String ext) throws IOException
@@ -450,7 +479,7 @@ public class NodeGenerator
 		tf.read(template);
 		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/mimetypes/" + name + "FileCell.java");
 	}
 
@@ -461,7 +490,7 @@ public class NodeGenerator
 		tf.read(template);
 		tf.replace("__NAME__", ext);
 		tf.replace("__EXT__", ext);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/mimetypes/" + ext + "FileValue.java");
 	}
 
@@ -503,7 +532,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeFactory.java");
 	}
 
@@ -513,7 +542,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeDialog.java");
 	}
 
@@ -621,7 +650,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _packagename_);
+		tf.replace("__BASE__", _pluginname_);
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeView.java");
 	}
 
@@ -634,7 +663,7 @@ public class NodeGenerator
 
 		curmodel_tf.read(template);
 		curmodel_tf.replace("__NODENAME__", nodeName);
-		curmodel_tf.replace("__BASE__", _packagename_);
+		curmodel_tf.replace("__BASE__", _pluginname_);
 		curmodel_tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeModel.java");
 	}
 
@@ -735,7 +764,7 @@ public class NodeGenerator
 	
 	public static void post() throws IOException
 	{	
-		registerNode(_packagename_ + ".knime.nodes.io.MimeFileExporterNodeFactory",package_root+"/IO");
+		registerNode(_pluginname_ + ".knime.nodes.io.MimeFileExporterNodeFactory",_package_root_+"/IO");
 		
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
@@ -749,7 +778,7 @@ public class NodeGenerator
 		curmodel_tf = new TemplateFiller();
 
 		curmodel_tf.read(template);
-		curmodel_tf.replace("__BASE__", _packagename_);
+		curmodel_tf.replace("__BASE__", _pluginname_);
 		curmodel_tf.replace("__BINPACKNAME__", _BINPACKNAME_);
 		curmodel_tf.write(_absnodedir_ + "/binres/BinaryResources.java");
 		template.close();
@@ -775,6 +804,13 @@ public class NodeGenerator
 				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
 			}
 		}
+		
+		template = TemplateResources.class.getResourceAsStream("PluginActivator.template");
+		TemplateFiller tf = new TemplateFiller();
+		tf.read(template);
+		tf.replace("__BASE__", _pluginname_);
+		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
+		template.close();
 	}
 	
 	public static void verifyZip(String filename)
