@@ -287,6 +287,8 @@ public class NodeGenerator
 		String tpl = "\t\tif(f.getName().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = __NAME__FileCell.createMimeFileCell(f);\n\t\t}\n";
 		String data = "";
 		
+		Set<String> mimetypes = new HashSet<String>();
+		
 		List<Node> nodes = doc.selectNodes("//mimetype");
 		for(Node node: nodes)
 		{
@@ -295,6 +297,11 @@ public class NodeGenerator
 			String  name    = elem.valueOf("@name");
 			String  ext     = elem.valueOf("@ext");
 			String  descr   = elem.valueOf("@description");
+			
+			if(mimetypes.contains(name))
+			{
+				warn("skipping duplicate mime type "+name);
+			}
 			
 			createMimeTypeLoader(name, ext);
 			createMimeCell(name, ext);
@@ -384,9 +391,24 @@ public class NodeGenerator
 		}
 		
 		if(oldNodeName==null)
+		{
+			if(node_names.contains(nodeName))
+			{
+				warn("duplicate tool detected "+nodeName);
+				return;
+			}
 			node_names.add(nodeName);
+			
+		}
 		else
+		{
+			if(node_names.contains(oldNodeName))
+			{
+				warn("duplicate tool detected "+oldNodeName);
+				return;
+			}
 			node_names.add(oldNodeName);
+		}
 		
 		cur_cat  = config.getCategory();
 		cur_path = getPathPrefix(cur_cat); 
@@ -985,6 +1007,11 @@ public class NodeGenerator
 	{
 		logger.severe("PANIC - "+message+" - EXITING");
 		System.exit(1);
+	}
+	
+	public static void warn(String message)
+	{
+		logger.warning(message);
 	}
 
 }
