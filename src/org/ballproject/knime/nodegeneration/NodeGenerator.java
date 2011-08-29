@@ -315,6 +315,7 @@ public class NodeGenerator
 	private static void processDescriptors() throws Exception
 	{
 		File files[] = (new File(_descriptordir_)).listFiles();
+		
 		for (File f : files)
 		{
 			String filename = f.getName();
@@ -339,7 +340,8 @@ public class NodeGenerator
 	public static void processNode(String name, File descriptor) throws Exception
 	{
 		
-		System.out.println("## processing Node "+name);
+		logger.info("## processing Node "+name);
+		
 		TTDNodeConfigurationReader reader = new TTDNodeConfigurationReader();
 		try
 		{
@@ -409,6 +411,14 @@ public class NodeGenerator
 		return (path.delete());
 	}	
 	
+	/**
+	 * returns the prefix path of the given path.
+	 * 
+	 * foo/bar/baz   ---> foo/bar/
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public static String getPathPrefix(String path)
 	{
 		String ret = "";
@@ -418,6 +428,14 @@ public class NodeGenerator
 		return ret;
 	}
 	
+	/**
+	 * returns all prefix paths of a given path.
+	 * 
+	 * foo/bar/baz --> [foo/bar/,foo/]
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public static List<String> getPathPrefixes(String path)
 	{
 		List<String> ret = new ArrayList<String>();
@@ -431,6 +449,14 @@ public class NodeGenerator
 		return ret;
 	}
 	
+	/**
+	 * returns the path suffix for a given path.
+	 * 
+	 * foo/bar/baz --> baz
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public static String getPathSuffix(String path)
 	{
 		String[] toks = path.split("/");
@@ -522,7 +548,7 @@ public class NodeGenerator
 	
 	public static void registerCategory(String path)
 	{
-		System.out.println("registering Category " + path);
+		logger.info("registering Category " + path);
 	
 		if(categories.contains(path))
 			return;
@@ -700,8 +726,7 @@ public class NodeGenerator
 				String ext = ext2type.get(type.getExt());
 				if(ext==null)
 				{
-					System.out.println("unknown mime type : |"+type.getExt()+"|");
-					System.exit(1);
+					panic("unknown mime type : |"+type.getExt()+"|");
 				}
 				tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
@@ -725,8 +750,7 @@ public class NodeGenerator
 				String ext = ext2type.get(type.getExt());
 				if(ext==null)
 				{
-					System.out.println("unknown mime type : |"+type.getExt()+"|");
-					System.exit(1);
+					panic("unknown mime type : |"+type.getExt()+"|");
 				}
 				tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
@@ -769,7 +793,7 @@ public class NodeGenerator
 	
 	public static void registerNode(String clazz)
 	{
-		System.out.println("registering Node " + clazz);
+		logger.info("registering Node " + clazz);
 		Node node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
 		Element elem = (Element) node;
 
@@ -886,10 +910,10 @@ public class NodeGenerator
 	
 	public static void registerNode(String clazz, String cat)
 	{
-		System.out.println("registering Node " + clazz);
+		logger.info("registering Node " + clazz);
 		registerCategoryPath(cat);
 		
-		Node node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
+		Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
 		Element elem = (Element) node;
 
 		elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("id", clazz).addAttribute("category-path", "/community/"+cat);
@@ -934,9 +958,7 @@ public class NodeGenerator
 	public static void panic(String message)
 	{
 		logger.severe("PANIC - "+message+" - EXITING");
-		//System.err.println("PANIC - "+message+" - EXITING\n\n");
 		System.exit(1);
 	}
-///////////////////////////////////////////////////////////////////////////////////////////////
 
 }
