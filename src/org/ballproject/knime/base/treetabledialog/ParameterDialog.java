@@ -5,14 +5,9 @@ import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -47,6 +42,9 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 		treeTable.getColumn(1).setCellEditor(model.getCellEditor());
 		JScrollPane     scrollpane     = new JScrollPane(treeTable);
 		treeTable.getSelectionModel().addListSelectionListener(this);
+		
+		// expand full tree by default
+		treeTable.expandAll();
 		
 		addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,2.0f);
 		help = new JTextPane();
