@@ -13,8 +13,8 @@ which will produce the respective jar file
 
   org.ballproject.knime_x.y.z.jar
  
-that has to be  copied into the plugins folder of the KNIME
-installation.
+in the build directory that has to be  copied into the plugins
+folder of the KNIME installation.
 
 The NodeGenerator, that creates the source code of further
 plugins from the tool description files, can be built by
@@ -22,8 +22,11 @@ issuing
 
 ant nodegen
 
-which will create the relevant jar file based on the properties 
-set in the file plugin.properties.
+which will create the relevant jar file in the build directory 
+based on the properties set in the file plugin.properties.
+
+Along with the tool descriptor files a mimetypes.xml is needed
+that defines all used mimetypes.
 
 The wrapped binaries have to be supplied in a payload directory
 specified by the respective property in the plugin.properties
