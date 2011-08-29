@@ -25,6 +25,8 @@ import org.ballproject.knime.base.config.TTDNodeConfigurationReader;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.schemas.SchemaProvider;
+import org.ballproject.knime.base.schemas.SchemaValidator;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 
@@ -271,11 +273,19 @@ public class NodeGenerator
 	
 	private static void installMimeTypes() throws DocumentException, IOException
 	{
+		assertFileExistence(_descriptordir_ + "/mimetypes.xml","mimetypes.xml");
+		
+		
+		SchemaValidator val = new SchemaValidator();
+		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
+		if(!val.validates(_descriptordir_ + "/mimetypes.xml"))
+		{
+			panic("supplied mimetypes.xml does not conform to schema "+val.getErrorReport());
+		}
+		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
 		reader.setDocumentFactory(factory);
-
-		assertFileExistence(_descriptordir_ + "/mimetypes.xml","mimetypes.xml");
 		
 		Document doc = reader.read(new FileInputStream(new File(_descriptordir_ + "/mimetypes.xml")));
 		
