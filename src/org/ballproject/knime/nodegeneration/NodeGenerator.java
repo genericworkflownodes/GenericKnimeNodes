@@ -34,10 +34,14 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.dom4j.XPath;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.jaxen.JaxenException;
+import org.jaxen.SimpleNamespaceContext;
+import org.jaxen.dom4j.Dom4jXPath;
 
 public class NodeGenerator
 {	
@@ -271,7 +275,7 @@ public class NodeGenerator
 		
 	}
 	
-	private static void installMimeTypes() throws DocumentException, IOException
+	private static void installMimeTypes() throws DocumentException, IOException, JaxenException
 	{
 		assertFileExistence(_descriptordir_ + "/mimetypes.xml","mimetypes.xml");
 		
@@ -282,6 +286,7 @@ public class NodeGenerator
 		{
 			panic("supplied mimetypes.xml does not conform to schema "+val.getErrorReport());
 		}
+		
 		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
@@ -299,7 +304,13 @@ public class NodeGenerator
 		
 		Set<String> mimetypes = new HashSet<String>();
 		
-		List<Node> nodes = doc.selectNodes("//mimetype");
+		Map<String,String> map = new HashMap<String,String>();
+		map.put( "bp", "http://www.ball-project.org/mimetypes");
+		  
+		Dom4jXPath xpath = new Dom4jXPath( "//bp:mimetype");
+		xpath.setNamespaceContext( new SimpleNamespaceContext(map));
+
+		List<Node> nodes = xpath.selectNodes(doc);
 		for(Node node: nodes)
 		{
 			Element elem    = (Element) node;
@@ -307,6 +318,8 @@ public class NodeGenerator
 			String  name    = elem.valueOf("@name");
 			String  ext     = elem.valueOf("@ext");
 			String  descr   = elem.valueOf("@description");
+			
+			logger.info("read mime type "+name);
 			
 			if(mimetypes.contains(name))
 			{
