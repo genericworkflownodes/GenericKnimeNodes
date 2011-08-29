@@ -138,6 +138,7 @@ public class NodeGenerator
 		}
 		
 		_destdir_       = System.getProperty("java.io.tmpdir")+File.separator+"/GENERIC_KNIME_NODES_PLUGINSRC";
+
 		// the name of the binary package is simply copied from the plugin name
 		_BINPACKNAME_   = _pluginname_;
 		_destsrcdir_    = _destdir_+"/src";
@@ -337,6 +338,20 @@ public class NodeGenerator
 		return true;
 	}
 	
+	public static String fixNodeName(String name)
+	{
+		logger.info("trying to fix node class name "+name);
+		name = name.replace(".", "");
+		name = name.replace("-", "");
+		name = name.replace("_", "");
+		name = name.replace("#", "");
+		name = name.replace("+", "");
+		name = name.replace("$", "");
+		name = name.replace(":", "");
+		logger.info("fixed node name "+name);
+		return name;
+	}
+	
 	public static void processNode(String name, File descriptor) throws Exception
 	{
 		
@@ -354,13 +369,24 @@ public class NodeGenerator
 		
 		String nodeName = config.getName();
 		
+		String oldNodeName = null;
+		
 		if(!checkNodeName(nodeName))
 		{
-			panic("NodeName with invalid name detected "+nodeName);
+			oldNodeName = nodeName;
+			
+			// we try to fix the nodename
+			nodeName = fixNodeName(nodeName);
+			
+			if(!checkNodeName(nodeName))
+				panic("NodeName with invalid name detected "+nodeName);
+			
 		}
 		
-		
-		node_names.add(nodeName);
+		if(oldNodeName==null)
+			node_names.add(nodeName);
+		else
+			node_names.add(oldNodeName);
 		
 		cur_cat  = config.getCategory();
 		cur_path = getPathPrefix(cur_cat); 
