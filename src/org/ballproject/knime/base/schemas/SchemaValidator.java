@@ -2,6 +2,7 @@ package org.ballproject.knime.base.schemas;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class SchemaValidator
 {
 	
 	private List<InputStream> schemas = new ArrayList<InputStream>();
+	private String error_report = "";
 	
 	public void addSchema(InputStream in)
 	{
@@ -38,11 +40,45 @@ public class SchemaValidator
 		return ret;
 	}
 
+	public boolean validates(String filename)
+	{
+		boolean         ret = true;
+		FileInputStream fin = null;
+		
+		try
+		{
+			fin = new FileInputStream(filename);
+			ret = validates(fin);
+			fin.close();
+		}
+		catch(FileNotFoundException e)
+		{
+			throw new RuntimeException(e);
+		} 
+		catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			try
+			{
+				if(fin!=null)
+					fin.close();
+			} 
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return ret;
+	}
+	
 	public boolean validates(InputStream xmlstream)
 	{
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SchemaFactory schemaFactory = SchemaFactory
-				.newInstance("http://www.w3.org/2001/XMLSchema");
+		SAXParserFactory factory       = SAXParserFactory.newInstance();
+		SchemaFactory    schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
 		SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 		
@@ -74,20 +110,15 @@ public class SchemaValidator
 		
 		if (!errorHandler.isValid())
 		{
+			error_report = errorHandler.getErrorReport();
 			return false;
 		}
 		
 		return true;
 	}
 	
-	public static void main(String[] args) throws FileNotFoundException, Exception
+	public String getErrorReport()
 	{
-		SchemaValidator val = new SchemaValidator();
-		val.addSchema(SchemaProvider.class.getResourceAsStream("Param_1_3.xsd"));
-		val.addSchema(SchemaProvider.class.getResourceAsStream("TTD.xsd"));
-		
-		val.validates(new FileInputStream("/tmp/descriptors/GridBuilder.ttd"));
-		
-		System.out.println("validates");
+		return error_report;
 	}
 }
