@@ -1,7 +1,9 @@
 package org.ballproject.knime.base.treetabledialog;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,17 +12,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.tree.TreePath;
 
 
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.Highlighter;
 
 
 public class ParameterDialog extends JPanel implements ListSelectionListener
@@ -42,6 +48,49 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 		treeTable.getColumn(1).setCellEditor(model.getCellEditor());
 		JScrollPane     scrollpane     = new JScrollPane(treeTable);
 		treeTable.getSelectionModel().addListSelectionListener(this);
+		
+		
+		treeTable.setHighlighters(new Highlighter(){
+
+			@Override
+			public void addChangeListener(ChangeListener arg0)
+			{				
+			}
+
+			@Override
+			public ChangeListener[] getChangeListeners()
+			{
+				return null;
+			}
+
+			@Override
+			public Component highlight(Component comp, ComponentAdapter adapter)
+			{
+				boolean optional = true;
+				
+				TreePath path = table.getPathForRow(adapter.row);
+
+				if(path!=null&&path.getLastPathComponent()!=null)
+				{
+					Node<Parameter<?>> node = (Node<Parameter<?>>) path.getLastPathComponent();
+					if(node.getPayload()!=null)
+						optional = node.getPayload().getIsOptional();
+				}
+				if(!optional)
+				{
+					comp.setForeground(Color.red);
+					return comp;
+				}
+				else
+					return comp;
+			}
+
+			@Override
+			public void removeChangeListener(ChangeListener arg0)
+			{	
+			}
+			
+		});
 		
 		// expand full tree by default
 		treeTable.expandAll();
