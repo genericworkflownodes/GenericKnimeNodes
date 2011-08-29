@@ -23,12 +23,13 @@
   <delete dir="${temp.folder}"/>
   <mkdir dir="${libdest}"/>
   <mkdir dir="${temp.folder}"/>
+  <mkdir dir="build"/>
  </target>
 
  <target name="buildgenerator" depends="prepare">
 		<antcall target="library.jar"/>
  		 	 	
- 	 	<copy todir="." failonerror="true" overwrite="true">
+ 	 	<copy todir="build/" failonerror="true" overwrite="true">
  				<fileset dir="${temp.folder}">
  					<include name="library.jar"/>
  				</fileset>	
@@ -40,14 +41,11 @@
  <target name="buildbaseplugin" depends="prepare">
 
  		<echo message="Debug is:  ${debug}"/> 
- 	
- 		<!--<replace file="src/org/ballproject/knime/GenericNodesPlugin.java" token="@@debug@@" value="${debug}" />-->
- 		
- 		
 
 		<antcall target="library.jar"/>
 			
         <mkdir dir="${temp.folder}/package"/>
+ 	
 		<mkdir dir="${temp.folder}/package/META-INF"/>
  	
  		<copy todir="${temp.folder}/package" failonerror="true" overwrite="true">
@@ -75,7 +73,7 @@
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${basepluginversion}" />
  	
-		<zip destfile="${basepluginname}_${basepluginversion}.jar" basedir="${temp.folder}/package"/>
+		<zip destfile="build/${basepluginname}_${basepluginversion}.jar" basedir="${temp.folder}/package"/>
  	
 		<delete dir="${temp.folder}"/>
  </target>
@@ -94,7 +92,7 @@
  		  <fileset dir="lib">
  		     <include name="*.jar"/>
  		  </fileset>
- 		  <fileset dir=".">
+ 		  <fileset dir="build">
  		     <include name="library.jar"/>
  		  </fileset>
  		</path>
@@ -156,11 +154,10 @@
  	
  		<property name="destdir" value="${java.io.tmpdir}${file.separator}GENERIC_KNIME_NODES_PLUGINSRC"/>
  	
- 	
- 	
 		<antcall target="lib.jar"/>
 
 	    <mkdir dir="${temp.folder}/package"/>
+ 	
 		<mkdir dir="${temp.folder}/package/META-INF"/>
  	
 	 	<copy todir="${temp.folder}/package" failonerror="true" overwrite="false">
@@ -177,7 +174,7 @@
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginname}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${pluginversion}" />
  	
-		<zip destfile="${pluginname}_${pluginversion}.jar" basedir="${temp.folder}/package"/>
+		<zip destfile="build/${pluginname}_${pluginversion}.jar" basedir="${temp.folder}/package"/>
  	
 		<delete dir="${temp.folder}"/>
  </target>
@@ -188,7 +185,7 @@
      		<fileset dir="lib">
      	 	   <include name="*.jar"/>
      	 	</fileset>
-	       	<fileset dir=".">
+	       	<fileset dir="build">
 	       	   <include name="library.jar"/>
 	       	</fileset>
 	       </classpath>
