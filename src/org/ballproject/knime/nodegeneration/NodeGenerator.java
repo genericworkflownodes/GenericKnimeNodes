@@ -34,7 +34,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.dom4j.XPath;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
@@ -50,9 +49,10 @@ public class NodeGenerator
 	public static Document          plugindoc;
 	public static NodeConfiguration config;
 	
+	public static String _pluginname_;
 	public static String _destdir_;
 	public static String _destsrcdir_;
-	public static String _pluginname_;
+	public static String _pluginpackage_;
 	public static String _packagedir_;
 	public static String _descriptordir_;
 	public static String _executabledir_;
@@ -64,6 +64,19 @@ public class NodeGenerator
 	public static String _package_root_;
 	public static String _BINPACKNAME_;
 	public static String _payloaddir_;
+	
+	public static void assertRestrictedAlphaNumeric(Object obj, String id)
+	{
+		if(obj==null||obj.toString().equals(""))
+		{
+			panic(id+" was not properly defined");
+		}
+		String re = "^\\w+$";
+		if(!obj.toString().matches(re))
+		{
+			panic(id+" is not a proper alpha numeric value "+obj.toString());
+		}
+	}
 	
 	public static void assertDefinition(Object obj, String id)
 	{
@@ -79,7 +92,7 @@ public class NodeGenerator
 		{
 			panic(id+" is no proper Java package name");
 		}
-		String re = "^([a-z_]{1}[a-z0-9_]*(\\.[a-z_]{1}[a-z0-9_]*)*)$";
+		String re = "^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$";
 		if(!pname.matches(re))
 			panic(id+" is no proper Java package name");
 	}
@@ -102,6 +115,14 @@ public class NodeGenerator
 		}
 	}
 	
+	public static String makePluginName(String s)
+	{
+		int idx = s.lastIndexOf(".");
+		if(idx==-1)
+			return s;
+		return s.substring(idx+1);
+	}
+	
 	public static void main(String[] args) throws Exception
 	{
 		// read in properties for building the plugin
@@ -116,13 +137,19 @@ public class NodeGenerator
 		assertDirectoryExistence(_payloaddir_,"payloaddir");
 		
 		// the name of the package (i.e. org.roettig.foo)
-		_pluginname_   = props.getProperty("pluginname");
-		assertDefinition(_pluginname_,"pluginname");
-		assertValidPackageName(_pluginname_,"pluginname");
+		_pluginpackage_   = props.getProperty("pluginpackage");
+		assertDefinition(_pluginpackage_,"pluginpackage");
+		assertValidPackageName(_pluginpackage_,"pluginpackage");
+		
+		_pluginname_      = props.getProperty("pluginname", makePluginName(_pluginpackage_));
+		assertRestrictedAlphaNumeric(_pluginname_,"pluginname");
 		
 		// the root node where to attach the generated nodes 
 		_package_root_    = props.getProperty("package_root");
 		assertDefinition(_package_root_,"package_root");
+		
+		if( ! (_package_root_.equals("community")||_package_root_.equals("chemistry")) )
+				panic("invalid package root given :"+_package_root_);
 				
 		_descriptordir_ = props.getProperty("descriptordir");
 		
@@ -146,9 +173,9 @@ public class NodeGenerator
 		_destdir_       = System.getProperty("java.io.tmpdir")+File.separator+"/GENERIC_KNIME_NODES_PLUGINSRC";
 
 		// the name of the binary package is simply copied from the plugin name
-		_BINPACKNAME_   = _pluginname_;
+		_BINPACKNAME_   = _pluginpackage_;
 		_destsrcdir_    = _destdir_+"/src";
-		_packagedir_    = _pluginname_.replace(".","/");
+		_packagedir_    = _pluginpackage_.replace(".","/");
 		_abspackagedir_ = _destsrcdir_+"/"+_packagedir_;
 		_absnodedir_    = _abspackagedir_+"/knime/nodes"; 
 		
@@ -234,28 +261,28 @@ public class NodeGenerator
 		InputStream template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeDialog.java");
 		template.close();
 		
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeModel.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeModel.java");
 		template.close();
 		
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeView.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeView.java");
 		template.close();
 		
 		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeFactory.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeFactory.java");
 		template.close();
 		
@@ -338,7 +365,7 @@ public class NodeGenerator
 		}
 		
 		tf.replace("__DATA__", data);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();
 	}
@@ -380,6 +407,13 @@ public class NodeGenerator
 		name = name.replace(":", "");
 		logger.info("fixed node name "+name);
 		return name;
+	}
+
+	public static String combine (String path1, String path2)
+	{
+	    File file1 = new File(path1);
+	    File file2 = new File(file1, path2);
+	    return file2.getPath();
 	}
 	
 	public static void processNode(String name, File descriptor) throws Exception
@@ -433,7 +467,8 @@ public class NodeGenerator
 			node_names.add(oldNodeName);
 		}
 		
-		cur_cat  = config.getCategory();
+		cur_cat  = combine("/"+_package_root_+"/"+_pluginname_,config.getCategory());
+		
 		cur_path = getPathPrefix(cur_cat); 
 		
 		
@@ -442,7 +477,7 @@ public class NodeGenerator
 
 		copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
 		
-		registerCategoryPath(cur_cat);
+		registerPath(cur_cat);
 		
 		createFactory(nodeName);
 		
@@ -458,7 +493,7 @@ public class NodeGenerator
 		
 		writeModel(nodeName);
 		
-		registerNode( _pluginname_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory");
+		registerNode( _pluginpackage_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory", cur_cat);
 		
 	}
 	
@@ -485,24 +520,21 @@ public class NodeGenerator
 	/**
 	 * returns the prefix path of the given path.
 	 * 
-	 * foo/bar/baz   ---> foo/bar/
+	 * /foo/bar/baz   ---> /foo/bar/
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public static String getPathPrefix(String path)
 	{
-		String ret = "";
-		String[] toks = path.split("/");
-		for(int i=0;i<(toks.length-1);i++)
-			ret += toks[i]+"/";
-		return ret;
+		File pth = new File(path);
+		return pth.getParent();
 	}
 	
 	/**
 	 * returns all prefix paths of a given path.
 	 * 
-	 * foo/bar/baz --> [foo/bar/,foo/]
+	 * /foo/bar/baz --> [/foo/bar/,/foo/,/]
 	 * 
 	 * @param path
 	 * @return
@@ -510,12 +542,12 @@ public class NodeGenerator
 	public static List<String> getPathPrefixes(String path)
 	{
 		List<String> ret = new ArrayList<String>();
-		String[] toks = path.split("/");
-		String prefix="";
-		for(int i=0;i<toks.length;i++)
+		File pth = new File(path);
+		ret.add(path);
+		while(pth.getParent()!=null)
 		{
-			prefix+=toks[i]+"/";
-			ret.add(prefix);
+			ret.add(pth.getParent());
+			pth = pth.getParentFile();
 		}
 		return ret;
 	}
@@ -523,15 +555,15 @@ public class NodeGenerator
 	/**
 	 * returns the path suffix for a given path.
 	 * 
-	 * foo/bar/baz --> baz
+	 * /foo/bar/baz --> baz
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public static String getPathSuffix(String path)
 	{
-		String[] toks = path.split("/");
-		return toks[toks.length-1];
+		File pth = new File(path);
+		return pth.getName();
 	}
 	
 	private static Set<String> ext_loaders = new HashSet<String>();
@@ -540,13 +572,14 @@ public class NodeGenerator
 	{
 		if(ext_loaders.contains(ext))
 			return;
+		
 		ext_loaders.add(ext);
 		
-		//String extension = ext.toUpperCase();
+		
 		InputStream template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext.toLowerCase());
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeDialog.java");
@@ -554,33 +587,33 @@ public class NodeGenerator
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeModel.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.replace("__NAME__", name);
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeModel.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.replace("__NAME__", name);
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeView.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.replace("__NAME__", name);
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeView.java");
 
 		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.xml.template");
 		tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext.toLowerCase());
 		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.xml");
-
-		registerNode(_pluginname_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",_package_root_+"/IO");
+		
+		registerNode(_pluginpackage_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
 	}
 
 	private static void createMimeCell(String name, String ext) throws IOException
@@ -590,7 +623,7 @@ public class NodeGenerator
 		tf.read(template);
 		tf.replace("__NAME__", name);
 		tf.replace("__EXT__", ext);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/" + name + "FileCell.java");
 	}
 
@@ -601,29 +634,34 @@ public class NodeGenerator
 		tf.read(template);
 		tf.replace("__NAME__", ext);
 		tf.replace("__EXT__", ext);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/" + ext + "FileValue.java");
 	}
 
 	public static Set<String> categories = new HashSet<String>();
 	
 	
-	public static void registerCategoryPath(String path)
+	public static void registerPath(String path)
 	{
 		List<String> prefixes = getPathPrefixes(path);
+		
 		for(String prefix: prefixes)
 		{
-			registerCategory(prefix);
+			registerPathPrefix(prefix);
 		}
 	}
 	
-	public static void registerCategory(String path)
+	public static void registerPathPrefix(String path)
 	{
-		logger.info("registering Category " + path);
-	
+		// do not register any top level or root path
+		if(path.equals("/")||new File(path).getParent().equals("/"))
+			return;
+		
 		if(categories.contains(path))
 			return;
-
+		
+		logger.info("registering path prefix " + path);
+		
 		categories.add(path);
 		
 		String   cat_name    = getPathSuffix(path);
@@ -632,9 +670,10 @@ public class NodeGenerator
 		Node node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
 		
 		Element elem = (Element) node;
+		logger.info("name="+cat_name);
 		
 		elem.addElement("category").addAttribute("description", path).addAttribute("icon", "icons/category.png")
-				.addAttribute("path", "/community/"+path_prefix).addAttribute("name", cat_name).addAttribute("level-id", cat_name);
+			.addAttribute("path", path_prefix).addAttribute("name", cat_name).addAttribute("level-id", cat_name);
 	}
 	
 	public static void createFactory(String nodeName) throws IOException
@@ -643,7 +682,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeFactory.java");
 	}
 
@@ -653,7 +692,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeDialog.java");
 	}
 
@@ -761,7 +800,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeView.java");
 	}
 
@@ -774,7 +813,7 @@ public class NodeGenerator
 
 		curmodel_tf.read(template);
 		curmodel_tf.replace("__NODENAME__", nodeName);
-		curmodel_tf.replace("__BASE__", _pluginname_);
+		curmodel_tf.replace("__BASE__", _pluginpackage_);
 		curmodel_tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeModel.java");
 	}
 
@@ -862,18 +901,22 @@ public class NodeGenerator
 		curmodel_tf.replace("__OUTCLAZZEZ__", clazzez);
 	}
 	
-	public static void registerNode(String clazz)
+	public static void registerNode(String clazz, String path)
 	{
 		logger.info("registering Node " + clazz);
-		Node node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
+		registerPath(path);
+		
+		Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
 		Element elem = (Element) node;
 
-		elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("id", clazz).addAttribute("category-path", "/community/"+cur_cat);
+
+		elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("id", clazz).addAttribute("category-path", path);
 	}
 	
 	public static void post() throws IOException
 	{	
-		registerNode(_pluginname_ + ".knime.nodes.io.MimeFileExporterNodeFactory",_package_root_+"/IO");
+		
+		registerNode(_pluginpackage_ + ".knime.nodes.io.MimeFileExporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
 		
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
@@ -887,7 +930,7 @@ public class NodeGenerator
 		curmodel_tf = new TemplateFiller();
 
 		curmodel_tf.read(template);
-		curmodel_tf.replace("__BASE__", _pluginname_);
+		curmodel_tf.replace("__BASE__", _pluginpackage_);
 		curmodel_tf.replace("__BINPACKNAME__", _BINPACKNAME_);
 		curmodel_tf.write(_absnodedir_ + "/binres/BinaryResources.java");
 		template.close();
@@ -917,7 +960,7 @@ public class NodeGenerator
 		template = TemplateResources.class.getResourceAsStream("PluginActivator.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginname_);
+		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
 		template.close();
 	}
@@ -931,7 +974,7 @@ public class NodeGenerator
 		try
 		{
 			ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
-			ZipEntry ze = null;
+			ZipEntry       ze  = null;
 
 			while ((ze = zin.getNextEntry()) != null)
 			{
@@ -978,18 +1021,6 @@ public class NodeGenerator
 		}
 	}
 	
-	
-	public static void registerNode(String clazz, String cat)
-	{
-		logger.info("registering Node " + clazz);
-		registerCategoryPath(cat);
-		
-		Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
-		Element elem = (Element) node;
-
-		elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("id", clazz).addAttribute("category-path", "/community/"+cat);
-	}
-
 
 	public static void copyStream(InputStream in, File dest) throws IOException
 	{
