@@ -444,6 +444,7 @@ public class TTDNodeConfigurationReader implements NodeConfigurationReader
 			else
 			{
 				rets = new StringChoiceParameter(name, toks);
+				((StringChoiceParameter) rets).setValue(value);
 			}
 		}
 		else
