@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-import org.ballproject.knime.base.util.Helper.OS;
 
 public class ToolRunner
 {
-	
-	private String shell      = "/bin/sh";
-	private String shell_opts = "-c";
-	private String command    = "";
 	private File   jobdir;
 	private int    retcode;
+	private Process p;
 	
 	private Map<String,String> env = new HashMap<String,String>();
 	
@@ -25,17 +22,6 @@ public class ToolRunner
 	
 	public ToolRunner()
 	{
-		if(Helper.getOS()==OS.MAC || Helper.getOS()==OS.UNIX)
-		{
-			shell      = "/bin/sh";
-			shell_opts = "-c";
-		}
-		else
-		{
-			// FixMe
-			shell      = "command.com";
-			shell_opts ="/C";
-		}
 	}
 	
 	public void addEnvironmentEntry(String key, String value)
@@ -66,8 +52,7 @@ public class ToolRunner
 	public int run(String... cmds) throws Exception
 	{
 		List<String> opts = new ArrayList<String>();
-		opts.add(shell);
-		opts.add(shell_opts);
+
 		for(String cmd: cmds)
 			opts.add(cmd);
 
@@ -87,7 +72,7 @@ public class ToolRunner
 				builder.directory( jobdir );
 
 			// execute
-			Process p = builder.start();
+			p = builder.start();
 
 
 			// fetch output data (stdio+stderr)
@@ -115,17 +100,44 @@ public class ToolRunner
 		return retcode;
 	}
 	
-	
-	public static void main(String[] args) throws Exception
+	public void kill()
 	{
-		ToolRunner tr = new ToolRunner();
-		tr.addEnvironmentEntry("LD_LIBRARY_PATH", "/tmp/CADD/lib");
-		tr.setJobDir("/tmp/CADD");
-		tr.run("bin/GridBuilder.bin","-write_par /tmp/raus.xml");
+		p.destroy();
+	}
+	
+	public static class AsyncToolRunner implements Callable<Integer>
+	{
+		private ToolRunner tr = new ToolRunner();
+		private String[]   cmds = new String[]{};
 		
-		System.out.println(tr.getReturnCode());
-		System.out.println(tr.getOutput());
-
+		public ToolRunner getToolRunner()
+		{
+			return tr;
+		}
+		
+		public AsyncToolRunner(String... cmds)
+		{
+			this.cmds = cmds;
+		}
+		
+		@Override
+		public Integer call() throws Exception
+		{
+			try
+			{
+				tr.run(cmds);
+			} 
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			return tr.getReturnCode();
+		}
+		
+		public void kill()
+		{
+			tr.kill();
+		}
 	}
 
 }
