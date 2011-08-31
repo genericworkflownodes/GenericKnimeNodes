@@ -7,6 +7,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -30,6 +34,7 @@ import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner;
+import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -196,21 +201,56 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		GenericNodesPlugin.log("executing "+exepath);
 		
-		ToolRunner tr = new ToolRunner();
-		
-		tr.setJobDir(jobdir.getAbsolutePath());
+		AsyncToolRunner     t      = new AsyncToolRunner(exepath,"-par", "params.xml");
+		t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
 		
 		for(String key: env.keySet())
 		{
-			tr.addEnvironmentEntry(key, binpath+FILESEP+env.get(key));
+			t.getToolRunner().addEnvironmentEntry(key, binpath+FILESEP+env.get(key));
 			GenericNodesPlugin.log(key+"->"+binpath+FILESEP+env.get(key));
 		}
 		
-		tr.run(exepath+" -par params.xml");
+		FutureTask<Integer> future = new FutureTask<Integer>(t);
+			
+		ExecutorService     executor = Executors.newFixedThreadPool(1);
+		executor.execute(future);
 		
-		output = tr.getOutput();
+		while (!future.isDone())
+        {
+            try
+            {
+                Thread.sleep(5000);
+            } 
+            catch (InterruptedException ie)
+            {
+            }
+            
+            try
+            {
+            	exec.checkCanceled();	
+            }
+            catch(CanceledExecutionException e)
+            {
+            	t.kill();
+            	executor.shutdown();
+            	throw e;
+            }
+        }
 		
-		if(tr.getReturnCode()!=0)
+		int retcode = -1;
+        try
+        {
+        	retcode = future.get();
+        } 
+        catch (ExecutionException ex)
+        {
+        }
+        
+        executor.shutdown();
+				
+		output = t.getToolRunner().getOutput();
+		
+		if(retcode!=0)
 	    {
 	    	logger.error(output);
 	    	throw new Exception("execution of external tool failed");
@@ -254,11 +294,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		// TODO Code executed on reset.
 		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
-		
-		//System.out.println("## reset");
-		
-		
+		// Also data handled in load/saveInternals will be erased here.		
 		for(Parameter<?> param: config.getParameters())
 		{
 			param.setValue(null);
