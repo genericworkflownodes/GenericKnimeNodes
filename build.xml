@@ -171,10 +171,10 @@
 
  	    <copy file="data/PluginMANIFEST.MF" tofile="${temp.folder}/package/META-INF/MANIFEST.MF"/>
  	
-		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginname}" />
+		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginpackage}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${pluginversion}" />
  	
-		<zip destfile="build/${pluginname}_${pluginversion}.jar" basedir="${temp.folder}/package"/>
+		<zip destfile="build/${pluginpackage}_${pluginversion}.jar" basedir="${temp.folder}/package"/>
  	
 		<delete dir="${temp.folder}"/>
  </target>
