@@ -33,7 +33,6 @@ import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -379,7 +378,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
-		//System.out.println("## saveSettingsTo");
+		GenericNodesPlugin.log("## saveSettingsTo");
 		for(Parameter<?> param: config.getParameters())
 		{
 			settings.addString(param.getKey(), param.toString());
@@ -396,8 +395,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
 		
-		//System.out.println("## loadValidatedSettingsFrom");
-		
+		GenericNodesPlugin.log("## loadValidatedSettingsFrom");
 		for(Parameter<?> param: config.getParameters())
 		{
 			String value = settings.getString(param.getKey());
@@ -421,8 +419,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// - we validate incoming settings values here
 		// - we do not xfer values to member variables
 		// - we throw an exception if something is invalid
+
 		
-		//System.out.println("## validateSettings ");
+		GenericNodesPlugin.log("## validateSettings ");
 		
 		for(Parameter<?> param: config.getParameters())
 		{
@@ -430,12 +429,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			{
 				if(!settings.containsKey(param.getKey()))
 				{
-					//System.out.println("\t no key found for mand. param");
+					GenericNodesPlugin.log("\t no key found for mand. parameter "+param.getKey());
 					throw new InvalidSettingsException("no value for mandatory parameter "+param.getKey()+" supplied");
 				}
 				if(settings.getString(param.getKey())==null)
 				{
-					//System.out.println("\t null value found for mand. param");
+					GenericNodesPlugin.log("\t null value found for mand. parameter "+param.getKey());
 					throw new InvalidSettingsException("no value for mandatory parameter "+param.getKey()+" supplied");
 				}
 			}
@@ -447,6 +446,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			}
 			catch (InvalidParameterValueException e)
 			{
+				GenericNodesPlugin.log("\t invalid value for parameter "+param.getKey());
 				throw new InvalidSettingsException("invalid value for parameter "+param.getKey());
 			}
 			
@@ -470,6 +470,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	    while(entries.hasMoreElements()) 
 	    {
 	        ZipEntry entry = (ZipEntry)entries.nextElement();
+	        
 	        if(entry.getName().equals("rawdata.bin"))
 	        {
 	        	int  size   = (int) entry.getSize(); 
@@ -484,6 +485,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	        	}
 	        	output = new String(data);
 	        }
+	        
+	        // store internal Node Configuration
 	        if(entry.getName().equals("config.bin"))
 	        {
 	        	InputStream       in  = zip.getInputStream(entry);
