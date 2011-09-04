@@ -27,6 +27,7 @@ import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SchemaValidator;
+import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 
@@ -252,7 +253,7 @@ public class NodeGenerator
 	private static void createPackageDirectory()
 	{
 		File packagedir = new File(_destsrcdir_+"/"+_packagedir_);
-		deleteDirectory(packagedir);
+		Helper.deleteDirectory(packagedir);
 		packagedir.mkdirs();
 	}
 	
@@ -495,26 +496,6 @@ public class NodeGenerator
 		
 		registerNode( _pluginpackage_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory", cur_cat);
 		
-	}
-	
-	static public boolean deleteDirectory(File path)
-	{
-		if (path.exists())
-		{
-			File[] files = path.listFiles();
-			for (int i = 0; i < files.length; i++)
-			{
-				if (files[i].isDirectory())
-				{
-					deleteDirectory(files[i]);
-				}
-				else
-				{
-					files[i].delete();
-				}
-			}
-		}
-		return (path.delete());
 	}	
 	
 	/**
