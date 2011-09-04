@@ -26,6 +26,11 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 			System.out.println(message);
 	}
 	
+	public static boolean isDebug()
+	{
+		return GenericNodesPlugin.DEBUG;
+	}
+	
 	/**
 	 * The constructor.
 	 */
