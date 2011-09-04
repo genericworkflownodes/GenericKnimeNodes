@@ -52,6 +52,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortType;
 
 /**
@@ -66,7 +67,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 
 	protected DataType[][] inports;
 	protected DataType[][] outports;
-	
+	protected int[]        selected_output_type;
 	protected String binpath;
 	
 	public String output="";
@@ -93,9 +94,25 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		super(createOPOs(config.getInputPorts()),createOPOs(config.getOutputPorts()));
 		this.config = config;
+		init();
 		this.reset();
 	}
+	
+	protected void init()
+	{
+		// init with [0,0,....,0]
+		selected_output_type = new int[this.config.getNumberOfOutputPorts()];
+	}
 
+	protected MIMEtype getOutputType(int idx)
+	{
+		return this.config.getOutputPorts()[idx].getMimeTypes().get(selected_output_type[idx]);
+	}
+	
+	protected int getOutputTypeIndex(int idx)
+	{
+		return selected_output_type[idx];
+	}
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(BufferedDataTable.class, true);
 
 	private static PortType[] createOPOs(Port[] ports)
@@ -168,7 +185,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		{
 			String name = config.getOutputPorts()[i].getName();
 			// fixme
-			String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
+			//String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
+			String ext  = this.getOutputType(i).getExt();
 			GenericNodesPlugin.log("> setting param "+name+"->"+jobdir+FILESEP+filenum+"."+ext);
 			writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+ext);
 			my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
@@ -276,6 +294,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel
     		outtables[i] = table;
         }
 		
+        if(!GenericNodesPlugin.isDebug())
+        	Helper.deleteDirectory(jobdir);
+        
 		return outtables;
 	}
 
@@ -363,7 +384,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		for(int i=0;i<nOutPorts;i++)
 		{
 			DataColumnSpec[] out_colspec = new DataColumnSpec[1];
-			out_colspec[0] =  new DataColumnSpecCreator(out_ports[i].getName(), this.outports[i][0]).createSpec();
+			
+			out_colspec[0] =  new DataColumnSpecCreator(out_ports[i].getName(), this.outports[i][getOutputTypeIndex(i)]).createSpec();
+			
 			DataTableSpec outputSpec = new DataTableSpec(out_colspec);
 			out_spec[i] = outputSpec;
 		}
@@ -382,6 +405,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		for(Parameter<?> param: config.getParameters())
 		{
 			settings.addString(param.getKey(), param.toString());
+		}
+		
+		for(int i=0;i<this.config.getNumberOfOutputPorts();i++)
+		{
+			settings.addInt("GENERIC_KNIME_NODES_outtype#"+i,this.getOutputTypeIndex(i));
 		}
 	}
 
@@ -407,6 +435,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			{
 				e.printStackTrace();
 			}
+		}
+		
+		for(int i=0;i<this.config.getNumberOfOutputPorts();i++)
+		{
+			int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#"+i);
+			this.selected_output_type[i] = idx; 
 		}
 	}
 
