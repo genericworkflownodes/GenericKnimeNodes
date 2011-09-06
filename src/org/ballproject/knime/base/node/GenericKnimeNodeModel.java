@@ -304,7 +304,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	 * template method to be overriden by children models; gives
 	 * the DataCell from a given file handle (MIMEtype based)
 	 */
-	public abstract DataCell makeDataCell(File f) throws IOException;
+	public abstract DataCell makeDataCell(File f) throws Exception;
 	
 	/**
 	 * {@inheritDoc}
