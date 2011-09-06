@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+
+<plugin>   
+   <extension point="org.knime.workbench.repository.categories">
+    <category description="/community/GenericKnimeNodes" icon="icons/category.png" path="/community" name="GenericKnimeNodes" level-id="GenericKnimeNodes"/>
+    <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" path="/community/GenericKnimeNodes" name="IO" level-id="IO"/>      
+   </extension>
+
+   <extension point="org.knime.workbench.repository.nodes">
+    <node factory-class="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
+    <node factory-class="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
+   </extension>
+    
+</plugin>

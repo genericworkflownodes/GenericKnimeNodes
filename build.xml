@@ -70,6 +70,8 @@
         	</fileset>
 		</copy>
  	
+		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/> 	
+ 	
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${basepluginversion}" />
  	
