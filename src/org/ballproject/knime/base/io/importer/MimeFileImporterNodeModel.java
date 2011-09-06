@@ -70,7 +70,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
-		System.out.println("execute");
 		String filename = m_filename.getStringValue();
 		
 		File f = new File(filename);
@@ -99,7 +98,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void reset()
 	{
-		System.out.println("reset");
 		// TODO Code executed on reset.
 		// Models build during execute are cleared here.
 		// Also data handled in load/saveInternals will be erased here.
@@ -112,17 +110,19 @@ public class MimeFileImporterNodeModel extends NodeModel
 	 */
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{
-		System.out.println("configure");
-		
+	{		
 		try
 		{
 			cell = resolver.getCell(this.m_filename.getStringValue());
 		} 
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new InvalidSettingsException("could not resolve MIME type of file");
 		}
+		
+		if(cell==null)
+			throw new InvalidSettingsException("no file chosen");
+		
 		// TODO: check if user settings are available, fit to the incoming
 		// table structure, and the incoming types are feasible for the node
 		// to execute. If the node can execute in its current state return
@@ -136,7 +136,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	
 	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
 	{
-		System.out.println("getDataTableSpec");
         DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
        
 		allColSpecs[0] =  new DataColumnSpecCreator("MIMEFILE", cell.getDataType() ).createSpec();
@@ -154,7 +153,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
-		System.out.println("saveSettingsTo");
 		m_filename.saveSettingsTo(settings);
 	}
 
@@ -167,7 +165,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// TODO load (valid) settings from the config object.
 		// It can be safely assumed that the settings are valided by the
 		// method below.
-		System.out.println("loadValidatedSettingsFrom");
 		m_filename.loadSettingsFrom(settings);
 	}
 
@@ -182,7 +179,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// e.g. if the count is in a certain range (which is ensured by the
 		// SettingsModel).
 		// Do not actually set any values of any member variables.
-		System.out.println("validateSettings");
+
 		m_filename.validateSettings(settings);
 
 	}

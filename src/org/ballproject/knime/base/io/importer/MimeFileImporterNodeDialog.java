@@ -25,7 +25,7 @@ public class MimeFileImporterNodeDialog extends DefaultNodeSettingsPane
 	protected MimeFileImporterNodeDialog(Object obj)
 	{
 		super();
-		addDialogComponent(new DialogComponentFileChooser(MimeFileImporterNodeDialog.createFileChooserModel(), "dunno","__EXT__"));
+		addDialogComponent(new DialogComponentFileChooser(MimeFileImporterNodeDialog.createFileChooserModel(),"MimeFileImporterNodeDialog"));
 	}
 	
 	static SettingsModelString createFileChooserModel()
