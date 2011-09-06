@@ -4,6 +4,7 @@ package __BASE__.knime.nodes.mimetypes;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.container.BlobDataCell;
+import org.ballproject.knime.base.mime.*;
 import org.ballproject.knime.base.port.*;
 
 
@@ -11,13 +12,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class __NAME__FileCell extends BlobDataCell implements __NAME__FileValue, MimeMarker
+public class __NAME__FileCell extends MIMEFileCell
 {
-	public transient DataType TYPE = DataType.getType(__NAME__FileCell.class);
-
-	public DataType getDataType()
+	//public transient DataType TYPE = DataType.getType(__NAME__FileCell.class);
+	
+	public __NAME__FileCell()
 	{
-		return TYPE;
+		TYPE = DataType.getType(__NAME__FileCell.class);
 	}
 	
 	@Override
@@ -26,14 +27,7 @@ public class __NAME__FileCell extends BlobDataCell implements __NAME__FileValue,
 		String ext = "__EXT__";
 	    return ext.toLowerCase();
 	}
-	
-	public __NAME__FileCell()
-	{
-		data = new MIMEFileDelegate(); 
-	}
-	
-	private MIMEFileDelegate data;	
-	
+		
 	@Override
 	public String toString()
 	{
@@ -52,40 +46,4 @@ public class __NAME__FileCell extends BlobDataCell implements __NAME__FileValue,
 	{
 		return data.getHash();
 	}	
-	
-	@Override
-	public byte[] getData()
-	{
-		return data.getByteArrayReference();
-	}
-
-	@Override
-	public void setData(byte[] dat)
-	{
-		data.setContent(dat);
-	}
-	
-	@Override
-	public MIMEFileDelegate getDelegate()
-	{
-		return data;
-	}
-	
-	public static __NAME__FileCell createMimeFileCell(final File file) throws IOException
-	{		
-		FileInputStream fin = new FileInputStream(file);		 
-		
-		int    len = (int) file.length();
-		byte[] b   = new byte[len];
-		
-		fin.read(b);
-		fin.close();
-		
-		
-		__NAME__FileCell cell = new __NAME__FileCell();
-		
-		cell.setData(b);
-		
-		return cell;
-	}
 }
