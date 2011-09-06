@@ -258,41 +258,7 @@ public class NodeGenerator
 	}
 	
 	public static void pre() throws DocumentException, IOException
-	{
-		InputStream template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeDialog.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeDialog.java");
-		template.close();
-		
-		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeModel.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeModel.java");
-		template.close();
-		
-		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeView.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeView.java");
-		template.close();
-		
-		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeFactory.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeFactory.java");
-		template.close();
-		
-		template = TemplateResources.class.getResourceAsStream("io/exporter/MimeFileExporterNodeFactory.template.xml");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.write(_absnodedir_ + "/io/MimeFileExporterNodeFactory.xml");
-		template.close();
-				
+	{				
 		copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
 		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
@@ -327,7 +293,7 @@ public class NodeGenerator
 		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
 		
-		String tpl = "\t\tif(f.getName().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = __NAME__FileCell.createMimeFileCell(f);\n\t\t}\n";
+		String tpl = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
 		String data = "";
 		
 		Set<String> mimetypes = new HashSet<String>();
@@ -354,7 +320,8 @@ public class NodeGenerator
 				warn("skipping duplicate mime type "+name);
 			}
 			
-			createMimeTypeLoader(name, ext);
+			//createMimeTypeLoader(name, ext);
+			
 			createMimeCell(name, ext);
 			createMimeValue(name);
 		
@@ -369,6 +336,7 @@ public class NodeGenerator
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();
+		
 	}
 	
 	private static void processDescriptors() throws Exception
@@ -547,56 +515,6 @@ public class NodeGenerator
 		return pth.getName();
 	}
 	
-	private static Set<String> ext_loaders = new HashSet<String>();
-	
-	private static void createMimeTypeLoader(String name, String ext) throws IOException
-	{
-		if(ext_loaders.contains(ext))
-			return;
-		
-		ext_loaders.add(ext);
-		
-		
-		InputStream template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeDialog.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__NAME__", name);
-		tf.replace("__EXT__", ext.toLowerCase());
-		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeDialog.java");
-
-		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeModel.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__NAME__", name);
-		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeModel.java");
-
-		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__NAME__", name);
-		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.java");
-
-		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeView.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__NAME__", name);
-		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeView.java");
-
-		template = TemplateResources.class.getResourceAsStream("io/MimeFileImporterNodeFactory.xml.template");
-		tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__NAME__", name);
-		tf.replace("__EXT__", ext.toLowerCase());
-		tf.write(_absnodedir_ + "/io/" + name + "FileImporterNodeFactory.xml");
-		
-		registerNode(_pluginpackage_ + ".knime.nodes.io." + name + "FileImporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
-	}
-
 	private static void createMimeCell(String name, String ext) throws IOException
 	{
 		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileCell.template");
@@ -897,7 +815,7 @@ public class NodeGenerator
 	public static void post() throws IOException
 	{	
 		
-		registerNode(_pluginpackage_ + ".knime.nodes.io.MimeFileExporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
+		//registerNode(_pluginpackage_ + ".knime.nodes.io.MimeFileExporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
 		
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
