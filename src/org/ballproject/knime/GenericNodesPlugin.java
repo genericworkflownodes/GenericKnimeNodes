@@ -3,6 +3,9 @@ package org.ballproject.knime;
 
 import java.util.Properties;
 
+import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
+import org.ballproject.knime.base.mime.MIMEtypeRegistry;
+import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -29,6 +32,13 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	public static boolean isDebug()
 	{
 		return GenericNodesPlugin.DEBUG;
+	}
+	
+	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry(); 
+	
+	public static MIMEtypeRegistry getMIMEtypeRegistry()
+	{
+		return registry;
 	}
 	
 	/**

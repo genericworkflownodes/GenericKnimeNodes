@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.File;
 import __BASE__.knime.nodes.binres.BinaryResources;
+import __BASE__.knime.nodes.mimetypes.*;
+import org.ballproject.knime.*;
+import org.ballproject.knime.base.mime.*;
 
 /**
  * This is the eclipse bundle activator. Note: KNIME node developers probably
@@ -127,6 +130,10 @@ public class PluginActivator extends AbstractUIPlugin
 			String v = PROPERTIES.getProperty(k);
 			ENVIRONMENT.put(k, v);
 		}
+		
+		// register mime types
+		//MIMEtypeRegistry reg = GenericNodesPlugin.getMIMEtypeRegistry();
+		GenericNodesPlugin.getMIMEtypeRegistry().addResolver(MimeFileCellFactory.getInstance());
 	}
 
 	/**

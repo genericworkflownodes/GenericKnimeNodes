@@ -2,6 +2,8 @@ package __BASE__.knime.nodes.__NODENAME__;
 
 import org.ballproject.knime.base.node.*;
 import org.ballproject.knime.base.config.*;
+import org.ballproject.knime.base.mime.*;
+import org.ballproject.knime.GenericNodesPlugin;
 import __BASE__.knime.nodes.mimetypes.*;
 import org.knime.core.data.DataType;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -25,8 +27,10 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 	}
 	
 	@Override
-	public DataCell makeDataCell(File f) throws IOException
+	public DataCell makeDataCell(File f) throws Exception
 	{
-		return MimeFileCellFactory.getDataCell(f);
+		MIMEFileCell cell = GenericNodesPlugin.getMIMEtypeRegistry().getCell(f.getName());
+		cell.read(f);
+		return cell;
 	}
 }
