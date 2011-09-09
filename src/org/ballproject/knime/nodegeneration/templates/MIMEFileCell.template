@@ -6,7 +6,7 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.container.BlobDataCell;
 import org.ballproject.knime.base.mime.*;
 import org.ballproject.knime.base.port.*;
-
+import org.knime.core.data.DataValue; 
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +14,6 @@ import java.io.IOException;
 
 public class __NAME__FileCell extends MIMEFileCell
 {
-	//public transient DataType TYPE = DataType.getType(__NAME__FileCell.class);
-	
 	public __NAME__FileCell()
 	{
 		TYPE = DataType.getType(__NAME__FileCell.class);
@@ -45,5 +43,11 @@ public class __NAME__FileCell extends MIMEFileCell
 	public int hashCode()
 	{
 		return data.getHash();
-	}	
+	}
+	
+	public static final Class<? extends DataValue> getPreferredValueClass() 
+	{
+		return __NAME__FileValue.class;
+   	}
+		
 }
