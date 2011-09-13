@@ -8,7 +8,7 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 	
 	public __NODENAME__NodeFactory() 
 	{
-		TTDNodeConfigurationReader reader = new TTDNodeConfigurationReader(); 
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader(); 
 		try
 		{
 			config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
