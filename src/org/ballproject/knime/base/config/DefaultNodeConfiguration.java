@@ -36,9 +36,10 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	protected int nInPorts;
 	protected int nOutPorts;	
 	
-	protected String status;
+	
 	protected String name;
 	protected String version;
+	protected String status="";
 	protected String docurl="";
 	protected String shortdescription="";
 	protected String longdescription="";
