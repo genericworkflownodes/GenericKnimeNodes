@@ -40,6 +40,7 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	protected String name;
 	protected String version;
 	protected String status="";
+	protected String command="";
 	protected String docurl="";
 	protected String shortdescription="";
 	protected String longdescription="";
@@ -120,6 +121,12 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	public String getStatus()
 	{
 		return this.status;
+	}
+	
+	@Override
+	public String getCommand()
+	{
+		return command;
 	}
 	
 	/// protected setters
@@ -218,5 +225,10 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	public void setStatus(String status)
 	{
 		this.status = status;
+	}
+
+	public void setCommand(String command)
+	{
+		this.command = command;
 	}
 }

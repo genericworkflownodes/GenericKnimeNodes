@@ -27,6 +27,7 @@ public interface NodeConfiguration
 {
 	public String getName();
 	
+	public String getCommand();
 	public String getStatus();
 	public String getDescription();
 	public String getManual();
