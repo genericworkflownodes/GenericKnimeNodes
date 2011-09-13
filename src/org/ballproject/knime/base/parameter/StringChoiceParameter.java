@@ -25,6 +25,7 @@ import java.util.List;
 public class StringChoiceParameter extends Parameter<String>
 {
 	private List<String> values;
+	private List<String> labels;
 	
 	public StringChoiceParameter(String key, String value)
 	{
@@ -35,12 +36,28 @@ public class StringChoiceParameter extends Parameter<String>
 	{
 		super(key, values.get(0));
 		this.values = values;
+		this.labels = values;
 	}	
 	
 	public StringChoiceParameter(String key, String[] values)
 	{
 		super(key, values[0]);
 		this.values = Arrays.asList(values);
+		this.labels = Arrays.asList(values);
+	}
+	
+	public StringChoiceParameter(String key, List<String> values, List<String> labels)
+	{
+		super(key, values.get(0));
+		this.values = values;
+		this.labels = labels;
+	}	
+	
+	public StringChoiceParameter(String key, String[] values, String[] labels)
+	{
+		super(key, values[0]);
+		this.values = Arrays.asList(values);
+		this.labels = Arrays.asList(labels);
 	}
 	
 	@Override
@@ -53,6 +70,11 @@ public class StringChoiceParameter extends Parameter<String>
 	public List<String> getAllowedValues()
 	{
 		return values;
+	}
+	
+	public List<String> getLabels()
+	{
+		return labels;
 	}
 	
 	@Override
