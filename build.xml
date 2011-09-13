@@ -196,4 +196,18 @@
  	 <antcall target="buildplugin"/>
  </target>
 
+ <target name="test" depends="library.jar">
+ 	<junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+ 		<classpath>
+ 			<pathelement location="build/library.jar"/>
+ 			<fileset dir="lib">
+ 			 	 <include name="*.jar"/>
+ 			 </fileset>
+ 		</classpath>
+
+ 		<!--<formatter type="plain"/>-->
+ 		<test name="org.ballproject.knime.test.CTDNodeConfigurationWriterTest"/>
+ 	  	<test name="org.ballproject.knime.test.CTDNodeConfigurationReaderTest"/>
+ 	</junit>
+ </target>
 </project>
