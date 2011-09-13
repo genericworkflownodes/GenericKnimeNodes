@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+    <name>DBExporter</name>
+    <version>0.9.6 (ob)</version>
+    <description>export molecules from data base</description>
+    <manual><![CDATA[manual text.]]></manual>
+    <docurl>http://www.google.de</docurl>
+    <category>Get Data</category>
+    <type/>
+    <PARAMETERS version="1.3">
+        <NODE name="1" description="Instance '1' section for 'DBExporter'">
+            <ITEM name="o" type="string" description="output file" tags="output file, mandatory" supported_formats="mol2, sdf, drf" value=""/>
+            <ITEM name="start_id" type="int" description="ID of the first conformation to be exported" value=""/>
+            <ITEM name="end_id" type="int" description="ID of the last conformation to be exported" value=""/>
+            <ITEM name="min_logP" type="float" description="minimal logP value" restrictions="-10.000000:10.000000" value=""/>
+            <ITEM name="max_logP" type="float" description="maximal logP value" restrictions="-10.000000:10.000000" value=""/>
+            <ITEM name="min_MW" type="float" description="minimal molecular weight" value=""/>
+            <ITEM name="max_MW" type="float" description="maximal molecular weight" value=""/>
+            <ITEM name="max_mols" type="int" description="max. number of molecules to be exported" value=""/>
+            <ITEM name="target" type="string" description="target/dataset name whose molecules should be exported" value=""/>
+            <ITEM name="q" type="string" description="query molecules for similarity searching" tags="input file" supported_formats="mol2, sdf, drf, pdb, ac, ent, brk, hin, mol, xyz, mol2.gz, sdf.gz, drf.gz, pdb.gz, ac.gz, ent.gz, brk.gz, hin.gz, mol.gz, xyz.gz" value=""/>
+            <ITEM name="min_sim" type="float" description="minimal average similarity" restrictions="0.000000:1.000000" value=""/>
+            <ITEM name="max_sim" type="float" description="maximal similarity" restrictions="0.000000:1.000000" value=""/>
+            <ITEM name="smarts" type="string" description="SMARTS pattern" value=""/>
+            <ITEM name="smarts_file" type="string" description="SMARTS pattern" tags="input file" value="" supported_formats="txt"/>
+            <ITEM name="uck" type="string" description="UCK key" value=""/>
+            <ITEM name="d" type="string" description="database name" tags="mandatory" value=""/>
+            <ITEM name="u" type="string" description="database username" tags="mandatory" value=""/>
+            <ITEM name="h" type="string" description="database host" tags="mandatory" value=""/>
+            <ITEM name="port" type="int" description="database port" value="3306"/>
+            <ITEM name="p" type="string" description="database password" tags="mandatory" value=""/>
+            <ITEM name="write_par" type="string" description="write xml parameter file for this tool" tags="output file" value=""/>
+            <ITEM name="par" type="string" description="read parameters from parameter-xml-file" tags="input file" value=""/>
+            <ITEM name="s" type="int" description="show summary of datasets in database" restrictions="0:1" value=""/>
+            <ITEM name="help" type="int" description="show help about parameters and flags of this program" restrictions="0:1" value=""/>
+        </NODE>
+    </PARAMETERS>
+</tool>
