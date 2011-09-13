@@ -36,6 +36,7 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	protected int nInPorts;
 	protected int nOutPorts;	
 	
+	protected String status;
 	protected String name;
 	protected String version;
 	protected String docurl="";
@@ -112,6 +113,12 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	public String getCategory()
 	{
 		return category;
+	}
+	
+	@Override
+	public String getStatus()
+	{
+		return this.status;
 	}
 	
 	/// protected setters
@@ -206,5 +213,9 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	{
 		this.version = version;
 	}
-	
+
+	public void setStatus(String status)
+	{
+		this.status = status;
+	}
 }

@@ -244,13 +244,23 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 	
 	private void readDescription() throws Exception
 	{
-		Node   node  = doc.selectSingleNode("/tool/name");
+		Node   node  = doc.selectSingleNode("/tool");
 		if(node==null)
-			throw new Exception("TTD has no tool name");
+			throw new Exception("CTD has no root named tool");
+		String lstatus  = node.valueOf("@status");  
+		if(lstatus!=null && lstatus.equals(""))
+			throw new Exception("CTD has no status");
+		config.setStatus(lstatus);
+		
+		node  = doc.selectSingleNode("/tool/name");
+		if(node==null)
+			throw new Exception("CTD has no tool name");
 		String name  = node.valueOf("text()");  
 		if(name.equals(""))
-			throw new Exception("TTD has no tool name");
+			throw new Exception("CTD has no tool name");
 		config.setName(name);
+		
+		
 		
 		node  = doc.selectSingleNode("/tool/description");
 		String sdescr  = "";

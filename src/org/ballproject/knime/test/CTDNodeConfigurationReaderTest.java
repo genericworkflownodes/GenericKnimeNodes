@@ -17,6 +17,7 @@ public class CTDNodeConfigurationReaderTest
 		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(TestDataSource.class.getResourceAsStream("test.ctd"));
 		
+		assertEquals("internal",config.getStatus());
 		assertEquals("Get Data",config.getCategory());
 		assertEquals("export molecules from data base",config.getDescription());
 		assertEquals("http://www.google.de",config.getDocUrl());
