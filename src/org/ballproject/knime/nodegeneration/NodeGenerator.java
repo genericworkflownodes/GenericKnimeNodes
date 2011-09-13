@@ -40,7 +40,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
-import org.ballproject.knime.base.config.TTDNodeConfigurationReader;
+import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
@@ -409,7 +409,7 @@ public class NodeGenerator
 		
 		logger.info("## processing Node "+name);
 		
-		TTDNodeConfigurationReader reader = new TTDNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		try
 		{
 			config = reader.read(new FileInputStream(descriptor));

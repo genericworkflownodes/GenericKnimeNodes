@@ -33,12 +33,12 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class TTDNodeConfigurationWriter
+public class CTDNodeConfigurationWriter
 {
 	
 	private Document doc;
 	
-	public TTDNodeConfigurationWriter(String xml)
+	public CTDNodeConfigurationWriter(String xml)
 	{
 		SAXReader reader = new SAXReader();	
 		try

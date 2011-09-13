@@ -49,15 +49,15 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-public class TTDNodeConfigurationReader implements NodeConfigurationReader
+public class CTDNodeConfigurationReader implements NodeConfigurationReader
 {
 	
-	private static Logger log = Logger.getLogger(TTDNodeConfigurationReader.class.getCanonicalName());
+	private static Logger log = Logger.getLogger(CTDNodeConfigurationReader.class.getCanonicalName());
 	
 	private Document doc;
 	private DefaultNodeConfiguration config = new DefaultNodeConfiguration();
 	
-	public TTDNodeConfigurationReader()
+	public CTDNodeConfigurationReader()
 	{	
 	}
 	

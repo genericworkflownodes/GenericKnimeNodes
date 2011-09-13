@@ -44,7 +44,7 @@ import java.io.ObjectOutputStream;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.NodeConfiguration;
-import org.ballproject.knime.base.config.TTDNodeConfigurationWriter;
+import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.MIMEFileDelegate;
@@ -71,12 +71,16 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortType;
 
 /**
- * This is the model implementation of GenericKnimeNode.
+ * The GenericKnimeNodeModel is the base class for all derived classes within the GenericKnimeNodes system.
  * 
+ * The base class is configured using a {@link NodeConfiguration} object, holding information about:
+ * <ul>
+ *  <li>number of input and output ports</li>
+ *  <li> {@link MIMEtype}s of these ports</li>
+ * </ul> 
  * 
  * @author
  */
@@ -132,6 +136,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		return selected_output_type[idx];
 	}
+	
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(BufferedDataTable.class, true);
 
 	private static PortType[] createOPOs(Port[] ports)
@@ -173,7 +178,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		String FILESEP = File.separator;
 		
 		// fill params.xml
-		TTDNodeConfigurationWriter writer = new TTDNodeConfigurationWriter(config.getXML());
+		CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
 		
 		// .. input files
 		int filenum=1;
@@ -185,7 +190,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			
 			String   name = config.getInputPorts()[i].getName();
 			DataRow  row  = inData[i].iterator().next();
+			
+			// MIMEFileCells are always stored in first column
 			DataCell cell = row.getCell(0);
+			
 			if( cell instanceof MimeMarker)
 			{
 				MimeMarker mrk = (MimeMarker) cell;
