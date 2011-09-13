@@ -20,13 +20,10 @@
 package org.ballproject.knime.base.port;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.knime.core.data.DataCell;
 
 public class MIMEFileDelegate implements Serializable
 {

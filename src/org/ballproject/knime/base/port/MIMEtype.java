@@ -21,28 +21,41 @@ package org.ballproject.knime.base.port;
 
 import java.io.Serializable;
 
+/**
+ * The MIMEtype class represents a classical MIME type of a file identified by
+ * the associated file extension.
+ *  
+ * @author roettig
+ *
+ */
 public class MIMEtype implements Serializable
 {
 	
-	protected String type;
+	protected String file_extension;
 	
-	public MIMEtype(String type)
+	/**
+	 * constructs a new MIMEtype object associated with supplied file extension.
+	 * 
+	 * @param extension
+	 */
+	public MIMEtype(String extension)
 	{
-		this.type = type;
+		this.file_extension = extension;
 	}
 	
+	/**
+	 * returns the file extension associated with the MIME type.
+	 * 
+	 * @return file extension
+	 */
 	public String getExt()
 	{
-		return type;
+		return file_extension;
 	}
 	
 	public static MIMEtype resolveMIMEtype(String filename)
 	{
-		String toks[] = filename.split("\\.");
-		
-		//if(toks.length==0||filename.isEmpty())
-		//	throw new Exception("filename is invalid");
-			
+		String toks[] = filename.split("\\.");			
 		return new MIMEtype(toks[toks.length-1].toLowerCase());
 	}
 }

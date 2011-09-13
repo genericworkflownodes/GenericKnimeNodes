@@ -23,6 +23,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Port class represents a incoming or outgoing port of a KNIME node. 
+ * 
+ * Getters can be used to find out the: <br/>
+ * <ul>
+ * <li> name of the port </li>
+ * <li> description for the port </li>
+ * <li> list of MIMEtypes supported by this port </li>
+ * </ul>
+ *   
+ * @author roettig
+ *
+ */
 public class Port implements Serializable
 {
 
@@ -32,41 +45,81 @@ public class Port implements Serializable
 		
 	protected List<MIMEtype> types = new ArrayList<MIMEtype>();
 	
+	/**
+	 * adds a supported MIMEtype to the port
+	 * 
+	 * @param MIMEtype
+	 */
 	public void addMimeType(MIMEtype type)
 	{
 		types.add(type);
 	}
 	
+	/**
+	 * returns the list of supported MIMEtypes of this port
+	 * 
+	 * @return MIMEtypes list
+	 */
 	public List<MIMEtype> getMimeTypes()
 	{
 		return types;
 	}
 	
+	/**
+	 * returns whether this port is optional or needs a mandatory incoming connection
+	 * 
+	 * @return isOptional
+	 */
 	public boolean isOptional()
 	{
 		return isOptional;
 	}
 
+	/**
+	 * sets whether this port is optional or needs a mandatory incoming connection
+	 * 
+	 * @param isOptional boolean
+	 */
 	public void setOptional(boolean isOptional)
 	{
 		this.isOptional = isOptional;
 	}
 
+	/**
+	 * returns the name of the port
+	 * 
+	 * @return port name
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * sets the name of the port
+	 * 
+	 * @param port name
+	 */
 	public void setName(String name)
 	{
 		this.name = name;
 	}
 
+	/**
+	 * returns the description for this port
+	 * 
+	 * @return description
+	 */
 	public String getDescription()
 	{
 		return description;
 	}
 
+	/**
+	 * sets the description for this port
+	 * 
+	 * @param description
+	 */
 	public void setDescription(String description)
 	{
 		this.description = description;
