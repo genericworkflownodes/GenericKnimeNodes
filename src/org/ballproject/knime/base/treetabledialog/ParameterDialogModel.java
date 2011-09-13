@@ -23,9 +23,12 @@ import java.awt.Component;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.AbstractCellEditor;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
@@ -226,11 +229,22 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 				}
 				catch (InvalidParameterValueException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			if(param instanceof StringChoiceParameter||param instanceof BoolParameter)
+			if(param instanceof StringChoiceParameter)
+			{
+				StringChoiceParameter scp = (StringChoiceParameter) param;
+				String txt = field.getText();
+				int idx = 0;
+				for(String label: scp.getLabels())
+				{
+					if(label.equals(txt))
+						scp.setValue(scp.getAllowedValues().get(idx));
+					idx++;
+				}
+			}
+			if(param instanceof BoolParameter)
 			{
 				try
 				{
@@ -238,7 +252,6 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 				}
 				catch (InvalidParameterValueException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -254,9 +267,9 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 			if(value instanceof StringChoiceParameter)
 			{
 				StringChoiceParameter scp = (StringChoiceParameter) value;
-				String[] values = new String[scp.getAllowedValues().size()];
+				String[] values = new String[scp.getLabels().size()];
 				int i = 0;
-				for(String s: scp.getAllowedValues())
+				for(String s: scp.getLabels())
 					values[i++] = s;
 				box = new JComboBox(values);
 				return box;
