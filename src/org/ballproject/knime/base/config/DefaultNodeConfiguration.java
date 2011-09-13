@@ -202,6 +202,9 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 		this.category = category;
 	}
 
-	
+	public void setVersion(String version)
+	{
+		this.version = version;
+	}
 	
 }

@@ -264,6 +264,12 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			ldescr  = node.valueOf("text()");
 		config.setManual(ldescr);
 		
+		node  = doc.selectSingleNode("/tool/version");
+		String lversion = "";
+		if(node!=null)
+			lversion  = node.valueOf("text()");
+		config.setVersion(lversion);
+		
 		node  = doc.selectSingleNode("/tool/docurl");
 		String docurl  = "";
 		if(node!=null)
