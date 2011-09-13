@@ -50,17 +50,8 @@ public class CTDNodeConfigurationWriter
 			e.printStackTrace();
 		}
 	}
-	
-	public void setParameterValue(String name, String value)
-	{
-		Node    node  = doc.selectSingleNode("//ITEM[@name='"+name+"']");
-		if(node==null)
-			return;
-		Element elem  = (Element) node;
-		elem.addAttribute("value", value);
-	}
 		
-	public void setParameterValue2(String name, String value)
+	public void setParameterValue(String name, String value)
 	{
 		String[] toks = name.split("\\.");
 		String query = "/tool/PARAMETERS/";

@@ -200,7 +200,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				MIMEFileDelegate del = mrk.getDelegate();
 				del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
 				GenericNodesPlugin.log("< setting param "+name+"->"+jobdir+FILESEP+filenum+"."+mrk.getExtension());
-				writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
+				writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
 				filenum++;
 			}
 		}
@@ -215,7 +215,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			//String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
 			String ext  = this.getOutputType(i).getExt();
 			GenericNodesPlugin.log("> setting param "+name+"->"+jobdir+FILESEP+filenum+"."+ext);
-			writer.setParameterValue2(name, jobdir+FILESEP+filenum+"."+ext);
+			writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+ext);
 			my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
 			filenum++;
 		}
@@ -230,7 +230,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 					continue;					
 			}
 			GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
-			writer.setParameterValue2(key, param.getValue().toString());
+			writer.setParameterValue(key, param.getValue().toString());
 		}
 		
 		writer.write(jobdir+FILESEP+"params.xml");
