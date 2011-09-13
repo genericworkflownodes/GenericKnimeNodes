@@ -7,6 +7,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1-beta-6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/swingx-core-1.6.2.jar"/>
 	<classpathentry kind="var" path="KNIME_SDK"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
