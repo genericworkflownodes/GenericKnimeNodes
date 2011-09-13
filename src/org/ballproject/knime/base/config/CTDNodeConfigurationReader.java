@@ -142,7 +142,10 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			
 			String[] toks2   = formats.split(",");
 
-			port.setName(prefix+"."+name);
+			if(!prefix.equals(""))
+				port.setName(prefix+"."+name);
+			else
+				port.setName(name);
 			
 			
 			
@@ -165,12 +168,12 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		if(tags.contains(OUTPUTFILE_TAG))
 		{
 			out_ports.add(port);
-			captured_ports.add(prefix+"."+name);	
+			captured_ports.add(port.getName());
 		}
 		if(tags.contains(INPUTFILE_TAG))
 		{
 			in_ports.add(port);
-			captured_ports.add(prefix+"."+name);
+			captured_ports.add(port.getName());
 		}		
 		
 	}
@@ -230,7 +233,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 	{
 		String name = elem.attributeValue("name");
 		
-		if(captured_ports.contains(prefix+"."+name))
+		if(captured_ports.contains(prefix+"."+name)||captured_ports.contains(name))
 			return;
 		
 		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
@@ -239,7 +242,10 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		
 		Parameter<?> param = getParameterFromNode(elem);
-		config.addParameter(prefix+"."+name, param);
+		if(!prefix.equals(""))
+			config.addParameter(prefix+"."+name, param);
+		else
+			config.addParameter(name, param);
 	}
 	
 	private void readDescription() throws Exception
@@ -267,6 +273,12 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		if(node!=null)
 			sdescr  = node.valueOf("text()");
 		config.setDescription(sdescr);
+		
+		node  = doc.selectSingleNode("/tool/path");
+		String spath  = "";
+		if(node!=null)
+			spath  = node.valueOf("text()");
+		config.setCommand(spath);
 		
 		node  = doc.selectSingleNode("/tool/manual");
 		String ldescr = "";
