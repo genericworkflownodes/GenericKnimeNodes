@@ -53,7 +53,7 @@ public class GalaxyNodeConfigurationReaderTest
 		
 		Parameter<?> p1 = config.getParameter("gapopen");
 		Parameter<?> p2 = config.getParameter("gapextend");
-		Parameter<?> p3 = config.getParameter("menu");
+		StringChoiceParameter p3 = (StringChoiceParameter) config.getParameter("menu");
 		
 		assertTrue( p1 instanceof StringParameter);
 		assertTrue( p2 instanceof DoubleParameter);
@@ -63,5 +63,8 @@ public class GalaxyNodeConfigurationReaderTest
 		assertEquals(p2.getValue(),0.5);
 		assertEquals("1",p3.getValue());
 		
+		assertEquals("A",p3.getLabels().get(0));
+		assertEquals("B",p3.getLabels().get(1));
+		assertEquals("C",p3.getLabels().get(2));
 	}
 }

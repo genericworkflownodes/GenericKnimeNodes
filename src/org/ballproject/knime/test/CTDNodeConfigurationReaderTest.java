@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
@@ -67,6 +68,19 @@ public class CTDNodeConfigurationReaderTest
 		assertNotNull(config.getParameter("1.s"));
 		
 		
+	}
+	
+	@Test
+	public void testReader2() throws Exception
+	{
+		NodeConfiguration config = null;
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		config = reader.read(TestDataSource.class.getResourceAsStream("test2.ctd"));
+		for(Parameter<?> p: config.getParameters())
+		{
+			System.out.println(p.getKey());
+		}
+		assertNotNull(config.getParameter("c"));
 	}
 
 }
