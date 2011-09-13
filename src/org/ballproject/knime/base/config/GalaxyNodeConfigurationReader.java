@@ -148,13 +148,15 @@ public class GalaxyNodeConfigurationReader implements NodeConfigurationReader
 		{
 			List<Node> options = DOMHelper.selectNodes(n, "option");
 			List<String> opts = new ArrayList<String>();
+			List<String> labs = new ArrayList<String>();
 			for(Node option: options)
 			{
 				String optval = option.valueOf("@value");
-				//String label  = option.valueOf("text()");
+				String label  = option.valueOf("text()");
 				opts.add(optval);
+				labs.add(label);
 			}
-			ret = new StringChoiceParameter(key,opts);
+			ret = new StringChoiceParameter(key,opts,labs);
 		}
 		String descr = n.valueOf("label/text()");
 		
