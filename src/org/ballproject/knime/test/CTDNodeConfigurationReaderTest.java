@@ -47,6 +47,8 @@ public class CTDNodeConfigurationReaderTest
 		assertEquals(2,config.getNumberOfInputPorts());
 		assertEquals(1,config.getNumberOfOutputPorts());
 
+		assertNotNull(config.getParameter("x"));
+		assertNotNull(config.getParameter("y"));
 		assertNotNull(config.getParameter("1.start_id"));
 		assertNotNull(config.getParameter("1.end_id"));
 		assertNotNull(config.getParameter("1.min_logP"));
@@ -66,8 +68,7 @@ public class CTDNodeConfigurationReaderTest
 		assertNotNull(config.getParameter("1.port"));
 		assertNotNull(config.getParameter("1.p"));
 		assertNotNull(config.getParameter("1.s"));
-		
-		
+		assertNotNull(config.getParameter("1.2.z"));
 	}
 	
 	@Test
