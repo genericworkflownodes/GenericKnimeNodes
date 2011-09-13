@@ -14,6 +14,7 @@ import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.Parameter;
+import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
@@ -100,6 +101,11 @@ public class GalaxyNodeConfigurationReader implements NodeConfigurationReader
 		{
 			processParameter(n);
 		}
+		nodes = DOMHelper.selectNodes(doc,"/tool/inputs/param[@type='select']");
+		for(Node n: nodes)
+		{
+			processParameter(n);
+		}
 	}
 
 	private void processParameter(Node n) throws Exception
@@ -122,7 +128,18 @@ public class GalaxyNodeConfigurationReader implements NodeConfigurationReader
 			ret = new BoolParameter(key,val);
 		if(type.equals("text"))
 			ret = new StringParameter(key,val);
-		
+		if(type.equals("select"))
+		{
+			List<Node> options = DOMHelper.selectNodes(n, "option");
+			List<String> opts = new ArrayList<String>();
+			for(Node option: options)
+			{
+				String optval = option.valueOf("@value");
+				//String label  = option.valueOf("text()");
+				opts.add(optval);
+			}
+			ret = new StringChoiceParameter(key,opts);
+		}
 		String descr = n.valueOf("label/text()");
 		
 		if(ret!=null)

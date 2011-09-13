@@ -6,6 +6,7 @@ import org.ballproject.knime.base.config.GalaxyNodeConfigurationReader;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.Parameter;
+import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
@@ -33,11 +34,15 @@ public class GalaxyNodeConfigurationReaderTest
 		
 		Parameter<?> p1 = config.getParameter("gapopen");
 		Parameter<?> p2 = config.getParameter("gapextend");
+		Parameter<?> p3 = config.getParameter("menu");
 		
 		assertTrue( p1 instanceof StringParameter);
 		assertTrue( p2 instanceof DoubleParameter);
+		assertTrue( p3 instanceof StringChoiceParameter);
+		
 		assertEquals(p1.getValue(),"10.0");
 		assertEquals(p2.getValue(),0.5);
+		assertEquals("1",p3.getValue());
 		
 	}
 }

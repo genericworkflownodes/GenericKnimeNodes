@@ -35,6 +35,12 @@
       <option value="srspair">SRS pair (p)</option>
       <option value="score">Score (p)</option>
     </param>
+    <param name="menu" type="select">
+      <label>label</label>
+      <option value="1">A</option>
+      <option value="2">B</option>
+      <option value="3">C</option>
+    </param>
   </inputs>
   <outputs>
     <data format="srs" name="out_file1" />
