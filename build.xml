@@ -10,8 +10,8 @@
  <property name="basepluginname"   value="org.ballproject.knime"/>
  
  <property name="major" value="0"/>
- <property name="minor" value="2"/>
- <property name="patch" value="1"/>
+ <property name="minor" value="3"/>
+ <property name="patch" value="0"/>
 	
  <property name="basepluginversion" value="${major}.${minor}.${patch}"/>
 
