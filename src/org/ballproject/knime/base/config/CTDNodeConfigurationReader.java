@@ -84,9 +84,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		config.setOutports((Port[]) out_ports.toArray(new Port[out_ports.size()]));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void processPorts(Element root) throws Exception
 	{
-		//System.out.println("process ports");
 		String prefix = "";
 		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
         {
@@ -185,6 +185,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		processParameters(root);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void processParameters(Element root) throws Exception
 	{
 		String prefix = "";
@@ -199,6 +200,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
         }
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void iterNode(String prefix, Element root) throws Exception
 	{
 		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
@@ -214,6 +216,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
         }
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void iterPortNodes(String prefix, Element root) throws Exception
 	{
 		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");

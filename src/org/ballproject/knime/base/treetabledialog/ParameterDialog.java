@@ -91,6 +91,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 
 				if(path!=null&&path.getLastPathComponent()!=null)
 				{
+					@SuppressWarnings("unchecked")
 					Node<Parameter<?>> node = (Node<Parameter<?>>) path.getLastPathComponent();
 					if(node.getPayload()!=null)
 						optional = node.getPayload().getIsOptional();

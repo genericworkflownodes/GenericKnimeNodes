@@ -106,6 +106,7 @@
 
 		<javac srcdir="${destdir}/src" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
+			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 
 		<!-- copy factory-xmls and other stuff -->
@@ -135,6 +136,7 @@
 
 		<javac srcdir="${src}" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
+			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 
 		<touch file="${libdest}/org/ballproject/knime/baseplugin.properties"/>
