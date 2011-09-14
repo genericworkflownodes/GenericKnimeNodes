@@ -1,106 +1,112 @@
 <project name="pluginbuilder" default="buildbaseplugin" basedir=".">
 
- <property name="debug" value="false"/>
-	
- <property file="build.properties"/>
+	<property name="debug" value="false"/>
 
-	
-	
- <!-- fixed/automatic properties -->	
- <property name="basepluginname"   value="org.ballproject.knime"/>
- 
- <property name="major" value="0"/>
- <property name="minor" value="2"/>
- <property name="patch" value="1"/>
-	
- <property name="basepluginversion" value="${major}.${minor}.${patch}"/>
+	<property file="build.properties"/>
 
- <property name="temp.folder" value="${java.io.tmpdir}/temp.folder"/>
- <property name="src" value="src"/>
- <property name="libdest" value="${temp.folder}/lib.jar.bin"/>
 
- <target name="prepare">
-  <delete dir="${temp.folder}"/>
-  <mkdir dir="${libdest}"/>
-  <mkdir dir="${temp.folder}"/>
-  <mkdir dir="build"/>
- </target>
 
- <target name="buildgenerator" depends="prepare">
+	<!-- fixed/automatic properties -->
+	<property name="basepluginname"   value="org.ballproject.knime"/>
+
+	<property name="major" value="0"/>
+	<property name="minor" value="3"/>
+	<property name="patch" value="1"/>
+
+	<property name="basepluginversion" value="${major}.${minor}.${patch}"/>
+
+	<property name="temp.folder" value="${java.io.tmpdir}/temp.folder"/>
+	<property name="src" value="src"/>
+	<property name="libdest" value="${temp.folder}/lib.jar.bin"/>
+
+	<target name="clean">
+		<delete dir="${libdest}"/>
+		<delete dir="${temp.folder}"/>
+		<delete dir="build"/>
+	</target>
+		
+	<target name="prepare" depends="clean">
+		<mkdir dir="${libdest}"/>
+		<mkdir dir="${temp.folder}"/>
+		<mkdir dir="build"/>
+	</target>
+
+	<target name="buildgenerator" depends="prepare">
 		<antcall target="library.jar"/>
- 		 	 	
- 	 	<copy todir="build/" failonerror="true" overwrite="true">
- 				<fileset dir="${temp.folder}">
- 					<include name="library.jar"/>
- 				</fileset>	
- 	 	</copy>
- 	 	
- 		<delete dir="${temp.folder}"/>
- </target>
-	
- <target name="buildbaseplugin" depends="prepare">
 
- 		<echo message="Debug is:  ${debug}"/> 
-
-		<antcall target="library.jar"/>
-			
-        <mkdir dir="${temp.folder}/package"/>
- 	
-		<mkdir dir="${temp.folder}/package/META-INF"/>
- 	
- 		<copy todir="${temp.folder}/package" failonerror="true" overwrite="true">
+		<copy todir="build/" failonerror="true" overwrite="true">
 			<fileset dir="${temp.folder}">
 				<include name="library.jar"/>
-			</fileset>	
- 		</copy>
- 	
- 		
- 	
- 		<copy todir="${temp.folder}/package/lib" failonerror="true" overwrite="true"> 			
- 			<fileset dir="lib/">
- 				<include name="dom4j-1.6.1.jar"/>
- 				<include name="jaxen-1.1-beta-6.jar"/>
- 				<include name="swingx-core-1.6.2.jar"/>
- 			</fileset>
+			</fileset>
 		</copy>
- 	
+
+		<delete dir="${temp.folder}"/>
+	</target>
+
+	<target name="buildbaseplugin" depends="prepare">
+
+		<echo message="Debug is:  ${debug}"/>
+
+		<antcall target="library.jar"/>
+
+		<mkdir dir="${temp.folder}/package"/>
+
+		<mkdir dir="${temp.folder}/package/META-INF"/>
+
+		<copy todir="${temp.folder}/package" failonerror="true" overwrite="true">
+			<fileset dir="${temp.folder}">
+				<include name="library.jar"/>
+			</fileset>
+		</copy>
+
+
+
+		<copy todir="${temp.folder}/package/lib" failonerror="true" overwrite="true">
+			<fileset dir="lib/">
+				<include name="dom4j-1.6.1.jar"/>
+				<include name="jaxen-1.1-beta-6.jar"/>
+				<include name="swingx-core-1.6.2.jar"/>
+			</fileset>
+		</copy>
+
 		<copy todir="${temp.folder}/package/META-INF" failonerror="true" overwrite="false">
 			<fileset dir="data">
-            	<include name="MANIFEST.MF"/>
-        	</fileset>
+				<include name="MANIFEST.MF"/>
+			</fileset>
 		</copy>
- 	
-		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/> 	
- 	
+
+		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>
+
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${basepluginversion}" />
- 	
+
 		<zip destfile="build/${basepluginname}_${basepluginversion}.jar" basedir="${temp.folder}/package"/>
- 	
+
 		<delete dir="${temp.folder}"/>
- </target>
+	</target>
 
- <target name="lib.jar" depends="prepare" unless="library.jar" description="Creating lib.jar.">
+	<target name="lib.jar" depends="prepare" unless="library.jar" description="Creating lib.jar.">
 
-        <antcall target="library.jar"/>
-        <antcall target="prepare"/>
+		<antcall target="library.jar"/>
+		<antcall target="prepare"/>
 
- 		<path id="lib.jar.classpath">
- 	 	  <!-- include all jars found in KNIME SDK plugins -->
- 	 	  <fileset dir="${knimeSDKpath}/plugins">
- 	 	     <include name="**/*.jar"/>
- 	 	  </fileset>
- 		  <!-- include our own dependencies -->
- 		  <fileset dir="lib">
- 		     <include name="*.jar"/>
- 		  </fileset>
- 		  <fileset dir="build">
- 		     <include name="library.jar"/>
- 		  </fileset>
- 		</path>
+		<path id="lib.jar.classpath">
+			<!-- include all jars found in KNIME SDK plugins -->
+			<fileset dir="${knimeSDKpath}/plugins">
+				<include name="**/*.jar"/>
+			</fileset>
+			<!-- include our own dependencies -->
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="build">
+				<include name="library.jar"/>
+			</fileset>
+		</path>
 
-	    <javac srcdir="${destdir}/src" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
-		   <classpath refid="lib.jar.classpath"/>
+		<javac srcdir="${destdir}/src" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="lib.jar.classpath"/>
+			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 
 		<!-- copy factory-xmls and other stuff -->
@@ -113,101 +119,103 @@
 
 		<!-- build jar -->
 		<jar destfile="${temp.folder}/lib.jar" basedir="${libdest}"/>
- </target>
-	
- <target name="library.jar" depends="prepare" unless="library.jar" description="Creating library.jar.">
-	
- 	<path id="lib.jar.classpath">
- 	  <!-- include all jars found in KNIME SDK plugins -->
- 	  <fileset dir="${knimeSDKpath}/plugins">
- 	     <include name="**/*.jar"/>
- 	  </fileset>
- 	  <!-- include our own dependencies -->
- 	  <fileset dir="lib">
- 	      <include name="*.jar"/>
- 	  </fileset>
- 	</path>
- 	
-	<javac srcdir="${src}" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
-	   <classpath refid="lib.jar.classpath"/>
-	</javac>
+	</target>
 
- 	<touch file="${libdest}/org/ballproject/knime/baseplugin.properties"/>
- 	<propertyfile file="${libdest}/org/ballproject/knime/baseplugin.properties">
- 		<entry  key="debug" value="${debug}"/> 	 
- 	</propertyfile>
- 	
- 	
-	<!-- copy factory-xmls and other stuff -->
-	<copy todir="${libdest}" failonerror="true" overwrite="true">
-		<fileset dir="${src}">
-			<!--<exclude name="**/*.java"/>-->
-			<exclude name="**/package.htm*"/>
-		</fileset>
-	</copy>
+	<target name="library.jar" depends="prepare" unless="library.jar" description="Creating library.jar.">
 
-	<!-- build jar -->
-	<jar destfile="${temp.folder}/library.jar" basedir="${libdest}"/>
- </target>
-		
- <target name="buildplugin" depends="prepare">
- 	
- 	    <property file="plugin.properties"/>
- 	
- 		<property name="destdir" value="${java.io.tmpdir}${file.separator}GENERIC_KNIME_NODES_PLUGINSRC"/>
- 	
+		<path id="lib.jar.classpath">
+			<!-- include all jars found in KNIME SDK plugins -->
+			<fileset dir="${knimeSDKpath}/plugins">
+				<include name="**/*.jar"/>
+			</fileset>
+			<!-- include our own dependencies -->
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+
+		<javac srcdir="${src}" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="lib.jar.classpath"/>
+			<compilerarg value="-Xlint:unchecked"/>
+		</javac>
+
+		<touch file="${libdest}/org/ballproject/knime/baseplugin.properties"/>
+		<propertyfile file="${libdest}/org/ballproject/knime/baseplugin.properties">
+			<entry  key="debug" value="${debug}"/>
+		</propertyfile>
+
+
+		<!-- copy factory-xmls and other stuff -->
+		<copy todir="${libdest}" failonerror="true" overwrite="true">
+			<fileset dir="${src}">
+				<!--<exclude name="**/*.java"/>-->
+				<exclude name="**/package.htm*"/>
+			</fileset>
+		</copy>
+
+		<!-- build jar -->
+		<jar destfile="${temp.folder}/library.jar" basedir="${libdest}"/>
+		<copy file="${temp.folder}/library.jar" tofile="build/library.jar"/>
+	</target>
+
+	<target name="buildplugin" depends="prepare">
+
+		<property file="plugin.properties"/>
+
+		<property name="destdir" value="${java.io.tmpdir}${file.separator}GENERIC_KNIME_NODES_PLUGINSRC"/>
+
 		<antcall target="lib.jar"/>
 
-	    <mkdir dir="${temp.folder}/package"/>
- 	
+		<mkdir dir="${temp.folder}/package"/>
+
 		<mkdir dir="${temp.folder}/package/META-INF"/>
- 	
-	 	<copy todir="${temp.folder}/package" failonerror="true" overwrite="false">
+
+		<copy todir="${temp.folder}/package" failonerror="true" overwrite="false">
 			<fileset dir="${temp.folder}">
 				<include name="lib.jar"/>
-			</fileset>	
+			</fileset>
 			<fileset dir="${destdir}">
 				<include name="plugin.xml"/>
 			</fileset>
 		</copy>
 
- 	    <copy file="data/PluginMANIFEST.MF" tofile="${temp.folder}/package/META-INF/MANIFEST.MF"/>
- 	
+		<copy file="data/PluginMANIFEST.MF" tofile="${temp.folder}/package/META-INF/MANIFEST.MF"/>
+
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginpackage}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${pluginversion}" />
- 	
+
 		<zip destfile="build/${pluginpackage}_${pluginversion}.jar" basedir="${temp.folder}/package"/>
- 	
+
 		<delete dir="${temp.folder}"/>
- </target>
- 
- <target name="nodegen" description="run node generator" depends="buildgenerator">    
-     <java classname="org.ballproject.knime.nodegeneration.NodeGenerator" failonerror="true" fork="false">
-	       <classpath>
-     		<fileset dir="lib">
-     	 	   <include name="*.jar"/>
-     	 	</fileset>
-	       	<fileset dir="build">
-	       	   <include name="library.jar"/>
-	       	</fileset>
-	       </classpath>
-	 </java>
- 	
- 	 <antcall target="buildplugin"/>
- </target>
+	</target>
 
- <target name="test" depends="library.jar">
- 	<junit printsummary="yes" haltonfailure="yes" showoutput="yes">
- 		<classpath>
- 			<pathelement location="build/library.jar"/>
- 			<fileset dir="lib">
- 			 	 <include name="*.jar"/>
- 			 </fileset>
- 		</classpath>
+	<target name="nodegen" description="run node generator" depends="buildgenerator">
+		<java classname="org.ballproject.knime.nodegeneration.NodeGenerator" failonerror="true" fork="false">
+			<classpath>
+				<fileset dir="lib">
+					<include name="*.jar"/>
+				</fileset>
+				<fileset dir="build">
+					<include name="library.jar"/>
+				</fileset>
+			</classpath>
+		</java>
 
- 		<!--<formatter type="plain"/>-->
- 		<test name="org.ballproject.knime.test.CTDNodeConfigurationWriterTest"/>
- 	  	<test name="org.ballproject.knime.test.CTDNodeConfigurationReaderTest"/>
- 	</junit>
- </target>
+		<antcall target="buildplugin"/>
+	</target>
+
+	<target name="test" depends="library.jar">
+		<junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+			<classpath>
+				<pathelement location="build/library.jar"/>
+				<fileset dir="lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+
+			<!--<formatter type="plain"/>-->
+			<test name="org.ballproject.knime.test.CTDNodeConfigurationWriterTest"/>
+			<test name="org.ballproject.knime.test.CTDNodeConfigurationReaderTest"/>
+		</junit>
+	</target>
 </project>

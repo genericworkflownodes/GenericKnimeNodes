@@ -18,8 +18,8 @@
             <ITEM name="start_id" type="int" description="ID of the first conformation to be exported" value=""/>
             <ITEM name="end_id" type="int" description="ID of the last conformation to be exported" value=""/>
             <ITEM name="min_logP" type="float" description="minimal logP value" restrictions="-10.000000:10.000000" value=""/>
-            <ITEM name="max_logP" type="float" description="maximal logP value" restrictions="-10.000000:10.000000" value=""/>
-            <ITEM name="min_MW" type="float" description="minimal molecular weight" value=""/>
+            <ITEM name="max_logP" type="float" description="maximal logP value" restrictions=":10.000000" value=""/>
+            <ITEM name="min_MW" type="float" description="minimal molecular weight" restrictions="-10.000000:" value=""/>
             <ITEM name="max_MW" type="float" description="maximal molecular weight" value=""/>
             <ITEM name="max_mols" type="int" description="max. number of molecules to be exported" value=""/>
             <ITEM name="target" type="string" description="target/dataset name whose molecules should be exported" value=""/>
@@ -33,6 +33,8 @@
             <ITEM name="u" type="string" description="database username" tags="mandatory" value=""/>
             <ITEM name="h" type="string" description="database host" tags="mandatory" value=""/>
             <ITEM name="port" type="int" description="database port" value="3306"/>
+            <ITEM name="flag" type="string" description="flag" value="true" restrictions="true,false"/>
+            <ITEM name="choice" type="string" description="choice" value="a" restrictions="a,b,c,d"/>
             <ITEM name="p" type="string" description="database password" tags="mandatory" value=""/>
             <ITEM name="write_par" type="string" description="write xml parameter file for this tool" tags="output file" value=""/>
             <ITEM name="par" type="string" description="read parameters from parameter-xml-file" tags="input file" value=""/>

@@ -21,9 +21,17 @@ package org.ballproject.knime.test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.parameter.BoolParameter;
+import org.ballproject.knime.base.parameter.DoubleParameter;
+import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.Parameter;
+import org.ballproject.knime.base.parameter.StringChoiceParameter;
+import org.ballproject.knime.base.parameter.StringParameter;
+import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
@@ -69,6 +77,74 @@ public class CTDNodeConfigurationReaderTest
 		assertNotNull(config.getParameter("1.p"));
 		assertNotNull(config.getParameter("1.s"));
 		assertNotNull(config.getParameter("1.2.z"));
+		
+		assertNull(config.getParameter("1.par"));
+		assertNull(config.getParameter("1.write_par"));
+		assertNull(config.getParameter("1.help"));
+		
+		Parameter<?> p1 =  config.getParameter("1.h");
+		assertTrue(p1 instanceof StringParameter);
+		
+		Parameter<?> p2 =  config.getParameter("1.port");
+		assertTrue(p2 instanceof IntegerParameter);
+		
+		
+		DoubleParameter p3 =  (DoubleParameter) config.getParameter("1.min_logP");
+		assertTrue(p3 instanceof DoubleParameter);
+		assertEquals(new Double(-10.0),p3.getLowerBound());
+		assertEquals(new Double(10.0),p3.getUpperBound());
+		
+		DoubleParameter p6 =  (DoubleParameter) config.getParameter("1.max_logP");
+		assertTrue(p6 instanceof DoubleParameter);
+		assertEquals(new Double(Double.NEGATIVE_INFINITY),p6.getLowerBound());
+		assertEquals(new Double(10.0),p6.getUpperBound());
+		
+		DoubleParameter p7 =  (DoubleParameter) config.getParameter("1.min_MW");
+		assertTrue(p7 instanceof DoubleParameter);
+		assertEquals(new Double(Double.POSITIVE_INFINITY),p7.getUpperBound());
+		assertEquals(new Double(-10.0),p7.getLowerBound());
+		
+		DoubleParameter p8 =  (DoubleParameter) config.getParameter("1.max_MW");
+		assertTrue(p8 instanceof DoubleParameter);
+		assertEquals(new Double(Double.POSITIVE_INFINITY),p8.getUpperBound());
+		assertEquals(new Double(Double.NEGATIVE_INFINITY),p8.getLowerBound());
+		
+		Parameter<?> p4 =  config.getParameter("1.flag");
+		assertTrue(p4 instanceof BoolParameter);
+		
+		Parameter<?> p5 =  config.getParameter("1.choice");
+		assertTrue(p5 instanceof StringChoiceParameter);
+		
+		List<MIMEtype> mimetypes = config.getOutputPorts()[0].getMimeTypes();
+		
+		assertEquals("1.o",config.getOutputPorts()[0].getName());
+		assertEquals("output file",config.getOutputPorts()[0].getDescription());
+		
+		String [] test = {"mol2", "sdf", "drf"};
+		int idx = 0;
+		for(MIMEtype mt: mimetypes)
+		{
+			assertEquals(test[idx],mt.getExt());
+			idx++;
+		}
+		
+		mimetypes = config.getInputPorts()[0].getMimeTypes();
+		String[] test2 = {"mol2", "sdf", "drf", "pdb", "ac", "ent", "brk", "hin", "mol", "xyz", "mol2.gz", "sdf.gz", "drf.gz", "pdb.gz", "ac.gz", "ent.gz", "brk.gz", "hin.gz", "mol.gz", "xyz.gz"};
+		idx = 0;
+		for(MIMEtype mt: mimetypes)
+		{
+			assertEquals(test2[idx],mt.getExt());
+			idx++;
+		}
+		
+		assertEquals("mol2",mimetypes.get(0).getExt());
+		assertEquals("1.q",config.getInputPorts()[0].getName());
+		assertEquals("query molecules for similarity searching",config.getInputPorts()[0].getDescription());
+		
+		mimetypes = config.getInputPorts()[1].getMimeTypes();
+		assertEquals("txt",mimetypes.get(0).getExt());
+		assertEquals("1.smarts_file",config.getInputPorts()[1].getName());
+		assertEquals("SMARTS pattern",config.getInputPorts()[1].getDescription());
 	}
 	
 	@Test
@@ -77,10 +153,6 @@ public class CTDNodeConfigurationReaderTest
 		NodeConfiguration config = null;
 		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(TestDataSource.class.getResourceAsStream("test2.ctd"));
-		for(Parameter<?> p: config.getParameters())
-		{
-			System.out.println(p.getKey());
-		}
 		assertNotNull(config.getParameter("c"));
 	}
 
