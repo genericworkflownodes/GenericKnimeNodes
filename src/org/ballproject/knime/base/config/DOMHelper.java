@@ -25,11 +25,10 @@ import org.dom4j.Node;
 
 public class DOMHelper
 {
+	@SuppressWarnings("unchecked")
 	public static List<Node> selectNodes(Node root, String query) throws Exception
 	{
 		List<Node> result = root.selectNodes(query);
-		//if(result==null)
-		//	throw new Exception("XPath query yielded null result");
 		return result;
 	}
 	

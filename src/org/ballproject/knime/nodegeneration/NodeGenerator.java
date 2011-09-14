@@ -323,7 +323,9 @@ public class NodeGenerator
 		Dom4jXPath xpath = new Dom4jXPath( "//bp:mimetype");
 		xpath.setNamespaceContext( new SimpleNamespaceContext(map));
 
+		@SuppressWarnings("unchecked")
 		List<Node> nodes = xpath.selectNodes(doc);
+		
 		for(Node node: nodes)
 		{
 			Element elem    = (Element) node;

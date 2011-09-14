@@ -71,6 +71,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public Object getChild(Object parent, int idx)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> par = (Node<Parameter<?>>) parent;
 		return par.getChild(idx);
 	}
@@ -78,6 +79,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public int getChildCount(Object parent)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> par = (Node<Parameter<?>>) parent;
 		return par.getNumChildren();
 	}
@@ -85,7 +87,9 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public int getIndexOfChild(Object parent, Object child_)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> par   = (Node<Parameter<?>>) parent;
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> child = (Node<Parameter<?>>) child_;
 		return par.getChildIndex(child);
 	}
@@ -99,6 +103,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public boolean isLeaf(Object parent)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> par   = (Node<Parameter<?>>) parent;
 		return par.isLeaf();
 	}
@@ -147,6 +152,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public Object getValueAt(Object node, int column)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> n = (Node<Parameter<?>>) node;
 
 		if(column==-1)
@@ -180,6 +186,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public boolean isCellEditable(Object value, int column)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> n = (Node<Parameter<?>>) value;
 		if(column==1)
 		{
@@ -195,6 +202,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public void setValueAt(Object value, Object node, int column)
 	{
+		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> n = (Node<Parameter<?>>) node;
 		String val = value.toString();
 		Parameter<?> p = n.getPayload();
