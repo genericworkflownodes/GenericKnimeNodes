@@ -243,14 +243,8 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 			if(param instanceof StringChoiceParameter)
 			{
 				StringChoiceParameter scp = (StringChoiceParameter) param;
-				String txt = field.getText();
-				int idx = 0;
-				for(String label: scp.getLabels())
-				{
-					if(label.equals(txt))
-						scp.setValue(scp.getAllowedValues().get(idx));
-					idx++;
-				}
+				int idx = box.getSelectedIndex();
+				scp.setValue(scp.getAllowedValues().get(idx));
 			}
 			if(param instanceof BoolParameter)
 			{
