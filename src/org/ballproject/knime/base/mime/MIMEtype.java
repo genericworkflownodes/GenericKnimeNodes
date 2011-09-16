@@ -19,44 +19,42 @@
 
 package org.ballproject.knime.base.mime;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-
-public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
+/**
+ * The MIMEtype class represents a classical MIME type of a file identified by
+ * the associated file extension.
+ *  
+ * @author roettig
+ *
+ */
+public class MIMEtype implements Serializable
 {
-	protected List<MIMEtypeRegistry>   resolvers = new ArrayList<MIMEtypeRegistry>();
 	
-	@Override
-	public MIMEFileCell getCell(String name)
+	protected String file_extension;
+	
+	/**
+	 * constructs a new MIMEtype object associated with supplied file extension.
+	 * 
+	 * @param extension
+	 */
+	public MIMEtype(String extension)
 	{
-		MIMEFileCell cell = null;
-		for(MIMEtypeRegistry resolver: resolvers)
-		{
-			MIMEFileCell rc = resolver.getCell(name); 
-			if(rc!=null)
-				cell = rc; 
-		}
-		return cell;
+		this.file_extension = extension;
 	}
-
-	@Override
-	public void addResolver(MIMEtypeRegistry resolver)
+	
+	/**
+	 * returns the file extension associated with the MIME type.
+	 * 
+	 * @return file extension
+	 */
+	public String getExt()
 	{
-		resolvers.add(resolver);
+		return file_extension;
 	}
-
-	@Override
-	public MIMEtype getMIMEtype(String name)
+	
+	public static boolean equals(MIMEtype type1, MIMEtype type2)
 	{
-		MIMEtype mt = null;
-		for(MIMEtypeRegistry resolver: resolvers)
-		{
-			MIMEtype rmt = resolver.getMIMEtype(name); 
-			if(rmt!=null)
-				mt = rmt; 
-		}
-		return mt;
+		return type1.getExt().equals(type2.getExt());
 	}
-
 }

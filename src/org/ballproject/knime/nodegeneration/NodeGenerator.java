@@ -41,8 +41,8 @@ import java.util.zip.ZipInputStream;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SchemaValidator;
@@ -315,6 +315,9 @@ public class NodeGenerator
 		String tpl = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
 		String data = "";
 		
+		String tpl2  = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\");\n\t\t}\n";
+		String data2 = "";
+		
 		Set<String> mimetypes = new HashSet<String>();
 		
 		Map<String,String> map = new HashMap<String,String>();
@@ -351,9 +354,14 @@ public class NodeGenerator
 			String s = tpl.replace("__EXT__", ext.toLowerCase());
 			s = s.replace("__NAME__",name); 
 			data += s;
+			
+			String s2 = tpl2.replace("__EXT__", ext.toLowerCase());
+			s2 = s2.replace("__NAME__",name); 
+			data2 += s2;
 		}
 		
 		tf.replace("__DATA__", data);
+		tf.replace("__DATA2__", data2);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();

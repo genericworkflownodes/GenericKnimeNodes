@@ -200,7 +200,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// Do not actually set any values of any member variables.
 
 		m_filename.validateSettings(settings);
-
+		
 	}
 
 	/**

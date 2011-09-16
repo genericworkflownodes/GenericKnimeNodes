@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ballproject.knime.base.mime.MIMEtype;
+
 /**
  * The Port class represents a incoming or outgoing port of a KNIME node. 
  * 

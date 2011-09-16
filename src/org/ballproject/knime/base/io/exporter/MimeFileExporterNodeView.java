@@ -39,7 +39,7 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 	 * Creates a new view.
 	 * 
 	 * @param nodeModel
-	 *            The model (class: {@link MimeFileImporterNodeModel})
+	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
 	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel)
 	{
