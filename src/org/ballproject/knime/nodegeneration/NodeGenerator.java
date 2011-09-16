@@ -630,7 +630,7 @@ public class NodeGenerator
 	public static void createXMLDescriptor(String nodeName) throws IOException
 	{
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
+		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inports = "";
 		int idx = 0;
 		for (Port port : config.getInputPorts())
@@ -653,7 +653,7 @@ public class NodeGenerator
 			inports += ipp + "\n";
 		}
 
-		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\">__PORTDESCR__ [__MIMETYPE__]</outPort>";
+		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outports = "";
 		idx = 0;
 		for (Port port : config.getOutputPorts())
@@ -672,7 +672,7 @@ public class NodeGenerator
 		StringBuffer buf = new StringBuffer();
 		for (Parameter<?> p : config.getParameters())
 		{
-			buf.append("\t\t<option name=\"" + p.getKey() + "\">" + p.getDescription() + "</option>\n");
+			buf.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA[" + p.getDescription() + "]]></option>\n");
 		}
 		String opts = buf.toString();
 
