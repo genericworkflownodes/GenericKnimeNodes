@@ -18,6 +18,7 @@
 	<property name="temp.folder" value="${java.io.tmpdir}/temp.folder"/>
 	<property name="src" value="src"/>
 	<property name="libdest" value="${temp.folder}/lib.jar.bin"/>
+	<property name="libdest2" value="${temp.folder}/library.jar.bin"/>
 
 	<target name="clean">
 		<delete dir="${libdest}"/>
@@ -25,7 +26,7 @@
 		<delete dir="build"/>
 	</target>
 		
-	<target name="prepare" depends="clean">
+	<target name="prepare">
 		<mkdir dir="${libdest}"/>
 		<mkdir dir="${temp.folder}"/>
 		<mkdir dir="build"/>
@@ -42,6 +43,7 @@
 
 		<delete dir="${temp.folder}"/>
 	</target>
+
 
 	<target name="buildbaseplugin" depends="prepare">
 
@@ -85,7 +87,7 @@
 		<delete dir="${temp.folder}"/>
 	</target>
 
-	<target name="lib.jar" depends="prepare" unless="library.jar" description="Creating lib.jar.">
+	<target name="lib.jar" depends="prepare" description="Creating lib.jar.">
 
 		<antcall target="library.jar"/>
 		<antcall target="prepare"/>
@@ -104,13 +106,14 @@
 			</fileset>
 		</path>
 
-		<javac srcdir="${destdir}/src" destdir="${libdest}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+		<mkdir dir="${libdest2}"/>
+		<javac srcdir="${destdir}/src" destdir="${libdest2}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 
 		<!-- copy factory-xmls and other stuff -->
-		<copy todir="${libdest}" failonerror="true" overwrite="true">
+		<copy todir="${libdest2}" failonerror="true" overwrite="true">
 			<fileset dir="${destdir}/src">
 				<exclude name="**/*.java"/>
 				<exclude name="**/package.htm*"/>
@@ -118,7 +121,7 @@
 		</copy>
 
 		<!-- build jar -->
-		<jar destfile="${temp.folder}/lib.jar" basedir="${libdest}"/>
+		<jar destfile="${temp.folder}/lib.jar" basedir="${libdest2}"/>
 	</target>
 
 	<target name="library.jar" depends="prepare" unless="library.jar" description="Creating library.jar.">
