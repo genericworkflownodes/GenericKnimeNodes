@@ -312,10 +312,10 @@ public class NodeGenerator
 		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
 		
-		String tpl = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
+		String tpl = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
 		String data = "";
 		
-		String tpl2  = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\");\n\t\t}\n";
+		String tpl2  = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\");\n\t\t}\n";
 		String data2 = "";
 		
 		Set<String> mimetypes = new HashSet<String>();
