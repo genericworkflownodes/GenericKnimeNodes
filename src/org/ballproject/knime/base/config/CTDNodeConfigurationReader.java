@@ -20,8 +20,11 @@
 package org.ballproject.knime.base.config;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -78,56 +81,82 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		
 		Node node  = doc.selectSingleNode("/tool/PARAMETERS");
 		Element root = (Element) node;
-		processPorts(root);
+		processIOPorts(root);
 		
 		config.setInports((Port[]) in_ports.toArray(new Port[in_ports.size()]));
 		config.setOutports((Port[]) out_ports.toArray(new Port[out_ports.size()]));
 	}
 	
+	
 	@SuppressWarnings("unchecked")
-	public void processPorts(Element root) throws Exception
+	public void processIOPorts(Element root) throws Exception
 	{
-		String prefix = "";
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterPortNodes(prefix, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processPortItem(prefix, elem);
-        }
-	}
-	 
-	
-	public void processPortItem(String prefix, Element elem) throws Exception
-	{
-		String tags = elem.valueOf("@tags");
-		String name = elem.attributeValue("name");
-		
-		if(!tags.contains(INPUTFILE_TAG)&&!tags.contains(OUTPUTFILE_TAG))
+		List<Node> items = root.selectNodes("//ITEM[contains(@tags,'"+OUTPUTFILE_TAG+"')]");
+		for(Node n: items)
 		{
-			return;
+			createPortFromNode(n);
 		}
-		
-		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		items = root.selectNodes("//ITEM[contains(@tags,'"+INPUTFILE_TAG+"')]");
+		for(Node n: items)
 		{
-			return;
+			createPortFromNode(n);
 		}
-			
-		//System.out.println("	processing PORTITEM "+prefix+"."+elem.attributeValue("name"));
-		
-		createPortFromNode(elem, prefix);
-		//System.out.println("adding port under key "+prefix+"."+name);
 	}
 	
-	private void createPortFromNode(Node node,String prefix) throws Exception
+	@SuppressWarnings("unchecked")
+	public void readParameters() throws Exception
+	{
+		Node root  = doc.selectSingleNode("/tool/PARAMETERS");
+		List<Node> items = root.selectNodes("//ITEM[not(contains(@tags,'"+OUTPUTFILE_TAG+"')) and not(contains(@tags,'"+INPUTFILE_TAG+"'))]");
+		for(Node n: items)
+		{
+			processItem(n);
+		}
+	}
+	
+	public String getPath(Node n)
+	{
+		
+		List<String> path_nodes = new ArrayList<String>();
+		while(n!=null&&!n.getName().equals("PARAMETERS"))
+		{
+			path_nodes.add(n.valueOf("@name"));
+			n = n.getParent();
+		}
+		
+		Collections.reverse(path_nodes);
+		
+		
+		String ret = "";
+		int N = path_nodes.size();
+		for(int i=0;i<N;i++)
+		{
+			if(i==N-1)
+				ret+=path_nodes.get(i);
+			else
+				ret+=path_nodes.get(i)+".";
+		}
+		return ret;
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException, Exception
+	{
+		CTDNodeConfigurationReader r = new CTDNodeConfigurationReader();
+		r.read((new FileInputStream("/home/roettig/coops/openms/descriptors/BaselineFilter.ttd")));
+	}
+		 		
+	private void createPortFromNode(Node node) throws Exception
 	{
 		Element elem = (Element) node;
 		
 		String name   = node.valueOf("@name");
 		String descr  = node.valueOf("@description");
 		String tags   = node.valueOf("@tags");
+		
+		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		{
+			return;
+		}
 		
 		Port port = new Port();
 		
@@ -142,17 +171,13 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			
 			String[] toks2   = formats.split(",");
 
-			if(!prefix.equals(""))
-				port.setName(prefix+"."+name);
-			else
-				port.setName(name);
-			
-			
+			String path = getPath(node); 
+			port.setName(path);
 			
 			port.setDescription(descr);
 			
 			boolean optional = true;
-			if(tags.contains("mandatory"))
+			if(tags.contains("mandatory")||tags.contains("required"))
 				optional = false;
 			else
 				optional = true;
@@ -178,65 +203,13 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		
 	}
 	
-	private void readParameters() throws Exception
+	public void processItem(Node elem) throws Exception
 	{
-		Node node  = doc.selectSingleNode("/tool/PARAMETERS");
-		Element root = (Element) node;
-		processParameters(root);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void processParameters(Element root) throws Exception
-	{
-		String prefix = "";
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterNode(prefix, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processItem(prefix, elem);
-        }
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void iterNode(String prefix, Element root) throws Exception
-	{
-		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
-
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterNode(pref, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processItem(pref, elem);
-        }
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void iterPortNodes(String prefix, Element root) throws Exception
-	{
-		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
-
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterNode(pref, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processPortItem(pref, elem);
-        }
-	}
-	
-	public void processItem(String prefix, Element elem) throws Exception
-	{
-		String name = elem.attributeValue("name");
+		String name = elem.valueOf("@name");
 		
-		if(captured_ports.contains(prefix+"."+name)||captured_ports.contains(name))
+		String path = getPath(elem);
+		
+		if(captured_ports.contains(path))
 			return;
 		
 		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
@@ -245,10 +218,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		
 		Parameter<?> param = getParameterFromNode(elem);
-		if(!prefix.equals(""))
-			config.addParameter(prefix+"."+name, param);
-		else
-			config.addParameter(name, param);
+		config.addParameter(path, param);
 	}
 	
 	private void readDescription() throws Exception
