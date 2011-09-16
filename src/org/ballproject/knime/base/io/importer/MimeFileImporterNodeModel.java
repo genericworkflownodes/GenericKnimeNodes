@@ -186,7 +186,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// method below.
 		m_filename.loadSettingsFrom(settings);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -200,7 +200,11 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// Do not actually set any values of any member variables.
 
 		m_filename.validateSettings(settings);
-		
+		String filename = settings.getString(CFG_FILENAME);
+		if(resolver.getMIMEtype(filename)==null)
+		{
+			throw new InvalidSettingsException("file of unknown MIMEtype selected "+filename);
+		}
 	}
 
 	/**
