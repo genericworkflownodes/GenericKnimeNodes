@@ -52,5 +52,37 @@ public class CTDNodeConfigurationWriterTest
         assertEquals("filename",value);
 	}
 	
+	@Test
+	public void test2() throws Exception
+	{
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		NodeConfiguration config = reader.read(TestDataSource.class.getResourceAsStream("test3.ctd"));
+		
+		CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
+		
+		writer.setMultiParameterValue("MascotAdapter.1.charges", "-2204");
+		writer.setMultiParameterValue("MascotAdapter.1.charges", "1979");
+		
+		File out = File.createTempFile("CTDWriter", "TEST");
+		//out.deleteOnExit();
+		
+		writer.write(out.getAbsolutePath());
+		
+		SAXReader rd = new SAXReader();
+		
+        Document doc = rd.read(new FileInputStream(out));
+		
+        String value = doc.valueOf("/tool/PARAMETERS/NODE[@name='MascotAdapter']/NODE[@name='1']/ITEMLIST[@name='charges']/LISTITEM[1]/@value");
+        assertEquals("-2204",value);
+        
+        value = doc.valueOf("/tool/PARAMETERS/NODE[@name='MascotAdapter']/NODE[@name='1']/ITEMLIST[@name='charges']/LISTITEM[2]/@value");
+        assertEquals("1979",value);
+        
+        value = doc.valueOf("/tool/PARAMETERS/NODE[@name='MascotAdapter']/NODE[@name='1']/ITEMLIST[@name='charges']/LISTITEM[3]/@value");
+        assertEquals("",value);
+        
+        value = doc.valueOf("/tool/PARAMETERS/NODE[@name='MascotAdapter']/NODE[@name='1']/ITEMLIST[@name='somefloats']/LISTITEM[1]/@value");
+        assertEquals("",value);
+	}
 	
 }

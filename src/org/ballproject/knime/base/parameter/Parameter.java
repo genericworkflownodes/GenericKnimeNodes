@@ -27,8 +27,7 @@ public abstract class Parameter<T> implements Serializable
 	protected T      value;
 	protected String description = "";
 	protected String section     = "default";
-	protected Boolean isOptional = true;
-	
+	protected boolean isOptional = true;
 	
 	public Parameter(String key, T value)
 	{
@@ -82,13 +81,13 @@ public abstract class Parameter<T> implements Serializable
 			return true;
 		return false;
 	}
-	
-	public Boolean getIsOptional()
+		
+	public boolean getIsOptional()
 	{
 		return isOptional;
 	}
 
-	public void setIsOptional(Boolean isOptional)
+	public void setIsOptional(boolean isOptional)
 	{
 		this.isOptional = isOptional;
 	}

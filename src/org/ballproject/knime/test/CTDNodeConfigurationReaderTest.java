@@ -21,6 +21,7 @@ package org.ballproject.knime.test;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
@@ -29,9 +30,11 @@ import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
+import org.ballproject.knime.base.parameter.MultiParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
+import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
@@ -156,4 +159,70 @@ public class CTDNodeConfigurationReaderTest
 		assertNotNull(config.getParameter("c"));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testReader3() throws Exception
+	{
+		NodeConfiguration config = null;
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		config = reader.read(TestDataSource.class.getResourceAsStream("test3.ctd"));
+		
+		boolean found = false;
+		for(Port port : config.getInputPorts())
+		{
+			if(port.getName().equals("MascotAdapter.1.in2"))
+			{
+				found = true;
+				assertTrue(port.isMultiFile());
+			}
+		}
+		assertTrue(found);
+		
+		MultiParameter<Parameter<?>> mp = (MultiParameter<Parameter<?>>) config.getParameter("MascotAdapter.1.charges");
+		assertNotNull(mp);
+		List<Parameter<?>> ps = mp.getValue();
+		for(Parameter<?> pp: ps)
+		{
+			assertTrue(pp instanceof StringParameter);
+			if(pp instanceof StringParameter)
+			{
+				StringParameter pps = (StringParameter) pp;
+				System.out.println(pps.getValue());
+			}
+		}
+		
+		MultiParameter<Parameter<?>> mp1 = (MultiParameter<Parameter<?>>) config.getParameter("MascotAdapter.1.charge");
+		assertTrue(mp1.getIsOptional());
+		assertNotNull(mp1);
+		List<Parameter<?>> ps1 = mp1.getValue();
+		Integer[] vals = {0,1,2};
+		int idx = 0;
+		for(Parameter<?> pp: ps1)
+		{
+			assertTrue(pp instanceof IntegerParameter);
+			if(pp instanceof IntegerParameter)
+			{
+				IntegerParameter pps = (IntegerParameter) pp;
+				System.out.println(pps.getValue());
+				assertEquals(vals[idx++],pps.getValue());
+			}
+		}
+		
+		MultiParameter<Parameter<?>> mp2 = (MultiParameter<Parameter<?>>) config.getParameter("MascotAdapter.1.somefloats");
+		assertTrue(!mp2.getIsOptional());
+		assertNotNull(mp2);
+		List<Parameter<?>> ps2 = mp2.getValue();
+		Double[] vals2 = {0.22,1.4,-2.2};
+		idx = 0;
+		for(Parameter<?> pp: ps2)
+		{
+			assertTrue(pp instanceof DoubleParameter);
+			if(pp instanceof DoubleParameter)
+			{
+				DoubleParameter pps = (DoubleParameter) pp;
+				System.out.println(pps.getValue());
+				assertEquals(vals2[idx++],pps.getValue());
+			}
+		}
+	}	
 }

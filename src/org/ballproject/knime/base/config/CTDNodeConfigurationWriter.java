@@ -49,8 +49,23 @@ public class CTDNodeConfigurationWriter
 		{
 			e.printStackTrace();
 		}
+		cleanItemLists();
 	}
-		
+	
+	@SuppressWarnings("unchecked")
+	private void cleanItemLists()
+	{
+		List<Node> itemlists = doc.selectNodes("//ITEMLIST");
+		for(Node itemlist: itemlists)
+		{
+			List<Node> listitems = itemlist.selectNodes("LISTITEM");
+			for(Node item: listitems)
+			{
+				item.detach();
+			}
+		}
+	}
+	
 	public void setParameterValue(String name, String value)
 	{
 		String[] toks = name.split("\\.");
@@ -66,6 +81,24 @@ public class CTDNodeConfigurationWriter
 			return;
 		Element elem  = (Element) node;
 		elem.addAttribute("value", value);
+	}
+	
+	public void setMultiParameterValue(String name, String value)
+	{
+		String[] toks = name.split("\\.");
+		String query = "/tool/PARAMETERS/";
+		for(int i=0;i<toks.length-1;i++)
+		{
+			query+="NODE[@name='"+toks[i]+"']/";
+		}
+		query+="ITEMLIST[@name='"+toks[toks.length-1]+"']";
+		
+		Node    node  = doc.selectSingleNode(query);
+		if(node==null)
+			return;
+		Element elem  = (Element) node;
+		Element item  = elem.addElement("LISTITEM");
+		item.addAttribute("value", value);
 	}
 	
 	public void write(String filename) throws IOException

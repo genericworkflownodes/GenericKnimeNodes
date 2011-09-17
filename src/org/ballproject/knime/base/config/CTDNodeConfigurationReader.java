@@ -41,6 +41,7 @@ import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
+import org.ballproject.knime.base.parameter.MultiParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
@@ -94,13 +95,19 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		List<Node> items = root.selectNodes("//ITEM[contains(@tags,'"+OUTPUTFILE_TAG+"')]");
 		for(Node n: items)
 		{
-			createPortFromNode(n);
+			createPortFromNode(n, false);
 		}
 		items = root.selectNodes("//ITEM[contains(@tags,'"+INPUTFILE_TAG+"')]");
 		for(Node n: items)
 		{
-			createPortFromNode(n);
+			createPortFromNode(n, false);
 		}
+		items = root.selectNodes("//ITEMLIST[contains(@tags,'"+INPUTFILE_TAG+"')]");
+		for(Node n: items)
+		{
+			createPortFromNode(n, true);
+		}
+
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -111,6 +118,11 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		for(Node n: items)
 		{
 			processItem(n);
+		}
+		items = root.selectNodes("//ITEMLIST[not(contains(@tags,'"+OUTPUTFILE_TAG+"')) and not(contains(@tags,'"+INPUTFILE_TAG+"'))]");
+		for(Node n: items)
+		{
+			processMultiItem(n);
 		}
 	}
 	
@@ -145,7 +157,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		r.read((new FileInputStream("/home/roettig/coops/openms/descriptors/BaselineFilter.ttd")));
 	}
 		 		
-	private void createPortFromNode(Node node) throws Exception
+	private void createPortFromNode(Node node, boolean multi) throws Exception
 	{
 		Element elem = (Element) node;
 		
@@ -159,6 +171,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		
 		Port port = new Port();
+		
+		
+		port.setMultiFile(multi);
 		
 		if(tags.contains(INPUTFILE_TAG)||tags.contains(OUTPUTFILE_TAG))
 		{
@@ -218,6 +233,24 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		
 		Parameter<?> param = getParameterFromNode(elem);
+		config.addParameter(path, param);
+	}
+	
+	public void processMultiItem(Node elem) throws Exception
+	{
+		String name = elem.valueOf("@name");
+		
+		String path = getPath(elem);
+		
+		if(captured_ports.contains(path))
+			return;
+		
+		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		{
+			return;
+		}
+		
+		Parameter<?> param = getMultiParameterFromNode(elem);
 		config.addParameter(path, param);
 	}
 	
@@ -314,6 +347,67 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			ret.setIsOptional(false);
 		
 		return ret;
+	}
+	
+	private Parameter<?> getMultiParameterFromNode(Node node) throws Exception
+	{
+		
+		
+		String type   = node.valueOf("@type");
+		String name   = node.valueOf("@name");
+		String value  = node.valueOf("@value");
+		String restrs = node.valueOf("@restrictions");
+		String descr  = node.valueOf("@description");
+		String tags   = node.valueOf("@tags");
+		
+		Set<String> tagset = tokenSet(tags);
+		
+		@SuppressWarnings("unchecked")
+		List<Node>   subnodes = node.selectNodes("/LISTITEM");
+		List<String> values   = new ArrayList<String>(); 
+		for(Node n: subnodes)
+		{
+			values.add(n.valueOf("@value"));
+		}
+		
+		List<Parameter<?>> params = new ArrayList<Parameter<?>>();
+		
+		for(String cur_val: values)
+		{
+			Parameter<?> ret = null;
+			if (type.toLowerCase().equals("double")||type.toLowerCase().equals("float"))
+			{
+				ret = processDoubleParameter(name, cur_val, restrs, tags);
+			}
+			else
+			{
+				if(type.toLowerCase().equals("int"))
+				{
+					ret = processIntParameter(name, cur_val, restrs, tags);
+				}
+				else
+				{
+					if(type.toLowerCase().equals("string"))
+					{
+						ret = processStringParameter(name, cur_val, restrs, tags);
+					}
+				}
+			}
+			
+			ret.setDescription(descr);
+			
+			if(tagset.contains("mandatory")||tagset.contains("required"))
+				ret.setIsOptional(false);
+			params.add(ret);
+		}
+		
+		Parameter<?> param =  new MultiParameter<Parameter<?>>(name,params);
+		param.setDescription(descr);
+		
+		if(tagset.contains("mandatory")||tagset.contains("required"))
+			param.setIsOptional(false);
+		
+		return param;
 	}
 
 	private Parameter<?> processDoubleParameter(String name, String value, String restrs, String tags) throws Exception
