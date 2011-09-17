@@ -754,7 +754,7 @@ public class NodeGenerator
 	public static Map<String,String> ext2type = new HashMap<String,String>();
 	
 	private static void fillMimeTypes() throws IOException
-	{
+	{		
 		String clazzez = "";
 		for (Port port : config.getInputPorts())
 		{
@@ -766,7 +766,10 @@ public class NodeGenerator
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
-				tmp += "DataType.getType(" + ext + "FileCell.class),";
+				if(port.isMultiFile())
+					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
+				else
+					tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
@@ -790,13 +793,16 @@ public class NodeGenerator
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
-				tmp += "DataType.getType(" + ext + "FileCell.class),";
+				if(port.isMultiFile())
+					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
+				else
+					tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
 			clazzez += tmp;
-		}
-	
+		}		
+		
 		if(!clazzez.equals(""))
 			clazzez = clazzez.substring(0,clazzez.length()-1);
 		
