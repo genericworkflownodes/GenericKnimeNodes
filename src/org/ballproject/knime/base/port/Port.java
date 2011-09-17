@@ -44,6 +44,7 @@ public class Port implements Serializable
 	protected boolean  isOptional;
 	protected String   name;
 	protected String   description;
+	protected boolean  isMultiFile;
 		
 	protected List<MIMEtype> types = new ArrayList<MIMEtype>();
 	
@@ -127,4 +128,23 @@ public class Port implements Serializable
 		this.description = description;
 	}
 
+	/**
+	 * returns whether this port allows multiple files of a given MIMEtype
+	 * 
+	 * @return flag
+	 */
+	public boolean isMultiFile()
+	{
+		return isMultiFile;
+	}
+
+	/**
+	 * set whether this port allows multiple files of a given MIMEtype
+	 * 
+	 * @param isMultiFile flag
+	 */
+	public void setMultiFile(boolean isMultiFile)
+	{
+		this.isMultiFile = isMultiFile;
+	}
 }
