@@ -28,11 +28,13 @@ import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
+import org.ballproject.knime.base.parameter.DoubleListParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
+import org.ballproject.knime.base.parameter.IntegerListParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
-import org.ballproject.knime.base.parameter.MultiParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
+import org.ballproject.knime.base.parameter.StringListParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.test.data.TestDataSource;
@@ -159,7 +161,6 @@ public class CTDNodeConfigurationReaderTest
 		assertNotNull(config.getParameter("c"));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testReader3() throws Exception
 	{
@@ -178,51 +179,40 @@ public class CTDNodeConfigurationReaderTest
 		}
 		assertTrue(found);
 		
-		MultiParameter<Parameter<?>> mp = (MultiParameter<Parameter<?>>) config.getParameter("MascotAdapter.1.charges");
-		assertNotNull(mp);
-		List<Parameter<?>> ps = mp.getValue();
-		for(Parameter<?> pp: ps)
-		{
-			assertTrue(pp instanceof StringParameter);
-			if(pp instanceof StringParameter)
-			{
-				StringParameter pps = (StringParameter) pp;
-				System.out.println(pps.getValue());
-			}
-		}
+		Parameter<?> p1 = config.getParameter("MascotAdapter.1.charges");
+		assertNotNull(p1);
 		
-		MultiParameter<Parameter<?>> mp1 = (MultiParameter<Parameter<?>>) config.getParameter("MascotAdapter.1.charge");
-		assertTrue(mp1.getIsOptional());
-		assertNotNull(mp1);
-		List<Parameter<?>> ps1 = mp1.getValue();
-		Integer[] vals = {0,1,2};
-		int idx = 0;
-		for(Parameter<?> pp: ps1)
-		{
-			assertTrue(pp instanceof IntegerParameter);
-			if(pp instanceof IntegerParameter)
-			{
-				IntegerParameter pps = (IntegerParameter) pp;
-				System.out.println(pps.getValue());
-				assertEquals(vals[idx++],pps.getValue());
-			}
-		}
+		assertTrue(p1 instanceof StringListParameter);
+		StringListParameter slp = (StringListParameter) p1;
+		assertEquals("the different charge states",slp.getDescription());
+		assertEquals(3,slp.getValue().size());
+		assertEquals("1+",slp.getValue().get(0));
+		assertEquals("2+",slp.getValue().get(1));
+		assertEquals("3+",slp.getValue().get(2));
 		
-		MultiParameter<Parameter<?>> mp2 = (MultiParameter<Parameter<?>>) config.getParameter("MascotAdapter.1.somefloats");
-		assertTrue(!mp2.getIsOptional());
-		assertNotNull(mp2);
-		List<Parameter<?>> ps2 = mp2.getValue();
-		Double[] vals2 = {0.22,1.4,-2.2};
-		idx = 0;
-		for(Parameter<?> pp: ps2)
-		{
-			assertTrue(pp instanceof DoubleParameter);
-			if(pp instanceof DoubleParameter)
-			{
-				DoubleParameter pps = (DoubleParameter) pp;
-				System.out.println(pps.getValue());
-				assertEquals(vals2[idx++],pps.getValue());
-			}
-		}
-	}	
+		Parameter<?> p2 = config.getParameter("MascotAdapter.1.charge");
+		assertNotNull(p2);
+		
+		assertTrue(p2 instanceof IntegerListParameter);
+		IntegerListParameter ilp = (IntegerListParameter) p2;
+		assertEquals("List of charge states; required if 'in_seq' is given",ilp.getDescription());
+		assertEquals(3,ilp.getValue().size());
+		assertEquals(new Integer(0),ilp.getValue().get(0));
+		assertEquals(new Integer(1),ilp.getValue().get(1));
+		assertEquals(new Integer(2),ilp.getValue().get(2));
+		
+		Parameter<?> p3 = config.getParameter("MascotAdapter.1.somefloats");
+		assertNotNull(p3);
+		
+		assertTrue(p3 instanceof DoubleListParameter);
+		DoubleListParameter dlp = (DoubleListParameter) p3;
+		assertEquals("List of charge states; required if 'in_seq' is given",dlp.getDescription());
+		assertEquals(3,dlp.getValue().size());
+		assertEquals(new Double(0.22),dlp.getValue().get(0));
+		assertEquals(new Double(1.4),dlp.getValue().get(1));
+		assertEquals(new Double(-2.2),dlp.getValue().get(2));
+		assertEquals(new Double(-3),dlp.getLowerBound());
+		assertEquals(new Double(5),dlp.getUpperBound());
+	}
+	
 }
