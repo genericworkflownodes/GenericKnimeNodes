@@ -19,55 +19,36 @@
 
 package org.ballproject.knime.base.parameter;
 
+import java.util.List;
 
-public class BoolParameter extends Parameter<Boolean>
+public abstract class NumberListParameter<T> extends Parameter<List<T>>
 {
-	public BoolParameter(String key, Boolean value)
+
+	protected T lowerBound;
+	protected T upperBound;
+	
+	public NumberListParameter(String key, List<T> value)
 	{
 		super(key, value);
 	}
-	
-	public BoolParameter(String key, String value)
+
+	public T getLowerBound()
 	{
-		super(key, Boolean.valueOf(value.toLowerCase()));
-	}
-	
-	@Override
-	public String toString()
-	{
-		if(value==null)
-			return null;
-		return (value?"true":"false");
-	}
-	
-	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException
-	{
-		if(s==null||s.equals(""))
-		{
-			value = null;
-			return;
-		}
-		if( !(s.equalsIgnoreCase("true")||s.equalsIgnoreCase("false")) )
-			throw new InvalidParameterValueException("");
-		value = Boolean.parseBoolean(s);
+		return lowerBound;
 	}
 
-	@Override
-	public boolean validate(Boolean val)
+	public void setLowerBound(T lowerBound)
 	{
-		return true;
+		this.lowerBound = lowerBound;
 	}
 
-	@Override
-	public String getMnemonic()
+	public T getUpperBound()
 	{
-		return "bool";
+		return upperBound;
 	}
 
-	@Override
-	public String getStringRep()
+	public void setUpperBound(T upperBound)
 	{
-		return toString();
+		this.upperBound = upperBound;
 	}
 }

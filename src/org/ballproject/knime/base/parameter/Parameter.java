@@ -96,5 +96,13 @@ public abstract class Parameter<T> implements Serializable
 
 	public abstract void fillFromString(String s) throws InvalidParameterValueException;
 	
+	public String getStringRep()
+	{
+		return toString();
+	}
+	
 	public abstract boolean validate(T val);
+	
+	protected static String SEPERATORTOKEN = "@@@__@@@";
+	
 }
