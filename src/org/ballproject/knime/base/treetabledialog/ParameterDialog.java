@@ -57,6 +57,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 	public ParameterDialog(NodeConfiguration config) throws FileNotFoundException, Exception
 	{
 		setLayout(new GridBagLayout());
+		
 		model = new ParameterDialogModel(config);
 		
 		JXTreeTable treeTable      = new JXTreeTable(model);
@@ -115,9 +116,9 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 		// expand full tree by default
 		treeTable.expandAll();
 		
-		addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,2.0f);
+		UIHelper.addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,2.0f);
 		help = new JTextPane();
-		addComponent(this, new JScrollPane(help), 0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
+		UIHelper.addComponent(this, new JScrollPane(help), 0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
 
 	}
 	
@@ -126,15 +127,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 		return model;
 	}
 	
-	private static final Insets insets = new Insets(2,2,2,2);
-
-	private static void addComponent(Container container, Component component, int gridx, int gridy, int gridwidth, int gridheight, int anchor, int fill, float weighty) 
-	{
-		GridBagConstraints gbc = new GridBagConstraints(gridx, gridy,
-		gridwidth, gridheight, 1.0, weighty, anchor, fill, insets, 0, 0);
-		container.add(component, gbc);
-	}
-
+	
 	@Override
 	public void valueChanged(ListSelectionEvent evt)
 	{

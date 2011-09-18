@@ -81,6 +81,11 @@ public class Node<T>
 		return payload;
 	}
 	
+	public void setPayload(T payload)
+	{
+		this.payload = payload;
+	}
+	
 	public String getName()
 	{
 		return name;

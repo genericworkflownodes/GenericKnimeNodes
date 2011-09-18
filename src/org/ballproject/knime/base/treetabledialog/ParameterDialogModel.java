@@ -20,12 +20,17 @@
 package org.ballproject.knime.base.treetabledialog;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.AbstractCellEditor;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ListDataListener;
@@ -38,9 +43,13 @@ import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
+import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
+import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialog;
+import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialogModel;
+import org.ballproject.knime.base.treetabledialog.itemlist.ListParameterModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
 
@@ -204,11 +213,13 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	{
 		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> n = (Node<Parameter<?>>) node;
-		String val = value.toString();
+		//String val = value.toString();
+		Parameter<?> v = (Parameter<?>) value;
 		Parameter<?> p = n.getPayload();
 		try
 		{
-			p.fillFromString(val);
+			//p.fillFromString(val);
+			p.fillFromString(v.getStringRep());
 		}
 		catch (InvalidParameterValueException e)
 		{
@@ -225,7 +236,8 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	{
 		private JComboBox  box;
 		private JTextField field; 
-			
+		private JLabel     label = new JLabel("");
+		
 		@Override
 		public Object getCellEditorValue()
 		{	
@@ -257,15 +269,31 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 					e.printStackTrace();
 				}
 			}
+			if(param instanceof ListParameter)
+			{
+				ListParameter lp = (ListParameter) param;
+				try
+				{
+					param.fillFromString(rep);
+				} 
+				catch (InvalidParameterValueException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			return param;
 		}
 
 		private Parameter<?> param;
+		private String rep;
 		
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
 		{
 			param = (Parameter<?>) value;
+			
 			if(value instanceof StringChoiceParameter)
 			{
 				StringChoiceParameter scp = (StringChoiceParameter) value;
@@ -286,6 +314,18 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 				String[] values = new String[]{"true","false"};
 				box = new JComboBox(values);
 				return box;
+			}
+			if(value instanceof ListParameter)
+			{
+				ListParameterModel   mpm = new ListParameterModel(param);
+				mpm.setSetLike(true);
+				ItemListFillerDialog sd  = new ItemListFillerDialog(mpm);
+            	sd.setVisible(true);
+            	String[] sel = mpm.getSelectedItems();
+            	ListParameter lp = (ListParameter) param;
+            	lp.fillFromStrings(sel);
+            	rep = param.getStringRep();
+            	return label;
 			}
 			return null;
 		}
