@@ -10,6 +10,7 @@
    <extension point="org.knime.workbench.repository.nodes">
     <node factory-class="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
     <node factory-class="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
+    <node factory-class="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
    </extension>
     
 </plugin>
