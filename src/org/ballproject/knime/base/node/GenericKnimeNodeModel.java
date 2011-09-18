@@ -53,12 +53,14 @@ import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
+
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
@@ -118,6 +120,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		super(createOPOs(config.getInputPorts()),createOPOs(config.getOutputPorts()));
 		this.config = config;
 		init();
+		
+		// FIXME
 		this.reset();
 	}
 	
@@ -194,6 +198,20 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			// MIMEFileCells are always stored in first column
 			DataCell cell = row.getCell(0);
 			
+			if(cell.getType().isCollectionType())
+			{
+				ListCell cells = (ListCell) cell;
+				for(int j=0;j<cells.size();j++)
+				{
+					MimeMarker mrk = (MimeMarker) cells.get(j);
+					MIMEFileDelegate del = mrk.getDelegate();
+					del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
+					GenericNodesPlugin.log("<< setting multi param "+name+"->"+jobdir+FILESEP+filenum+"."+mrk.getExtension());
+					writer.setMultiParameterValue(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
+					filenum++;
+				}
+			}
+			
 			if( cell instanceof MimeMarker)
 			{
 				MimeMarker mrk = (MimeMarker) cell;
@@ -210,14 +228,23 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		int nOut = config.getOutputPorts().length; 
 		for(int i=0;i<nOut;i++)
 		{
-			String name = config.getOutputPorts()[i].getName();
-			// fixme
-			//String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
+			Port   port = config.getOutputPorts()[i];
+			String name = port.getName();
+			
 			String ext  = this.getOutputType(i).getExt();
-			GenericNodesPlugin.log("> setting param "+name+"->"+jobdir+FILESEP+filenum+"."+ext);
-			writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+ext);
-			my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
-			filenum++;
+			
+			if(port.isMultiFile())
+			{
+				// FIXME 
+				// integrate field in parameter dialog to request output filenames from user
+			}
+			else
+			{
+				GenericNodesPlugin.log("> setting param "+name+"->"+jobdir+FILESEP+filenum+"."+ext);
+				writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+ext);
+				my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
+				filenum++;
+			}
 		}
 		
 		// .. node parameters
@@ -229,8 +256,24 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				if(param.getIsOptional())
 					continue;					
 			}
-			GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
-			writer.setParameterValue(key, param.getValue().toString());
+			// FIXME !!!!
+			/*
+			if(param instanceof MultiParameter<?>)
+			{
+				MultiParameter<?> mp = (MultiParameter<?>) param;
+				List<?> values = mp.getValue();
+				for(Object v: values)
+				{
+					GenericNodesPlugin.log("@@ setting param "+key+"->"+v.toString());
+					writer.setMultiParameterValue(key, v.toString());
+				}
+			}
+			*/
+			//else
+			{
+				GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
+				writer.setParameterValue(key, param.getValue().toString());
+			}
 		}
 		
 		writer.write(jobdir+FILESEP+"params.xml");
@@ -341,11 +384,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		// TODO Code executed on reset.
 		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.		
+		// Also data handled in load/saveInternals will be erased here.
+		/*
 		for(Parameter<?> param: config.getParameters())
 		{
 			param.setValue(null);
 		}
+		*/
 	}
 
 	protected DataTableSpec[] outspec;
@@ -372,11 +417,14 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	
 	protected void checkInput(final DataTableSpec[] inSpecs) throws InvalidSettingsException
 	{
+		// check compatability of the input types at each port
+		// with the list of allowed data types 
 		for(int i=0;i<config.getNumberOfInputPorts();i++)
 		{
 			// no connected input ports have nulls in inSpec
 			if(inSpecs[i]==null)
 			{
+				// .. if port is optional everything is fine
 				if(config.getInputPorts()[i].isOptional())
 				{
 					continue;
@@ -385,18 +433,22 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 					throw new InvalidSettingsException("non-optional input port not connected");
 			}
 			
-			
+			// check compatibility of input types
 			boolean ok = false;
 			List<MIMEtype> types = config.getInputPorts()[i].getMimeTypes();
 			
 			for(int j=0;j<types.size();j++)
 			{
-				DataType in_type  = inSpecs[i].getColumnSpec(0).getType();
-				DataType exp_type = inports[i][j];
-				if(in_type.equals(exp_type))
+				// the current type at input port
+				DataType input_type    = inSpecs[i].getColumnSpec(0).getType();
+				// a possible input type
+				DataType expected_type = inports[i][j];				
+				// we have found a compatible type in the list of allowed types
+				if(input_type.equals(expected_type))
 					ok = true;
 			}
 			
+			// we could not find a compatible type in the list of allowed types
 			if(!ok)
 				throw new InvalidSettingsException("invalid MIMEtype at port number "+i);			
 		}
@@ -429,9 +481,17 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
 		GenericNodesPlugin.log("## saveSettingsTo");
-		for(Parameter<?> param: config.getParameters())
+		/*
+		for(String key: this.config.getParameterKeys())
 		{
-			settings.addString(param.getKey(), param.toString());
+			GenericNodesPlugin.log(key+" -> "+this.config.getParameter(key).getStringRep());
+		}
+		GenericNodesPlugin.log("####");
+		*/
+		for(Parameter<?> param: this.config.getParameters())
+		{
+			//GenericNodesPlugin.log(param.getKey()+" -> "+param.getStringRep());
+			settings.addString(param.getKey(), param.getStringRep());
 		}
 		
 		for(int i=0;i<this.config.getNumberOfOutputPorts();i++)

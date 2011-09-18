@@ -64,7 +64,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 	{
 		for(Parameter<?> param: config.getParameters())
 		{
-			settings.addString(param.getKey(), param.toString());
+			settings.addString(param.getKey(), param.getStringRep());
 		}		
 		
 		int[] sel_ports = mtc.getSelectedTypes();
