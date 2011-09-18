@@ -39,11 +39,13 @@ import javax.xml.validation.SchemaFactory;
 
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
+import org.ballproject.knime.base.parameter.DoubleListParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
+import org.ballproject.knime.base.parameter.IntegerListParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
-import org.ballproject.knime.base.parameter.MultiParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
+import org.ballproject.knime.base.parameter.StringListParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
@@ -150,13 +152,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		return ret;
 	}
-	
-	public static void main(String[] args) throws FileNotFoundException, Exception
-	{
-		CTDNodeConfigurationReader r = new CTDNodeConfigurationReader();
-		r.read((new FileInputStream("/home/roettig/coops/openms/descriptors/BaselineFilter.ttd")));
-	}
-		 		
+			 		
 	private void createPortFromNode(Node node, boolean multi) throws Exception
 	{
 		Element elem = (Element) node;
@@ -343,7 +339,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		ret.setDescription(descr);
 		Set<String> tagset = tokenSet(tags);
 		
-		if(tagset.contains("mandatory"))
+		if(tagset.contains("mandatory")||tagset.contains("required"))
 			ret.setIsOptional(false);
 		
 		return ret;
@@ -351,8 +347,6 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 	
 	private Parameter<?> getMultiParameterFromNode(Node node) throws Exception
 	{
-		
-		
 		String type   = node.valueOf("@type");
 		String name   = node.valueOf("@name");
 		String value  = node.valueOf("@value");
@@ -363,45 +357,36 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		Set<String> tagset = tokenSet(tags);
 		
 		@SuppressWarnings("unchecked")
-		List<Node>   subnodes = node.selectNodes("/LISTITEM");
+		List<Node>   subnodes = node.selectNodes("LISTITEM");
+		
 		List<String> values   = new ArrayList<String>(); 
 		for(Node n: subnodes)
 		{
 			values.add(n.valueOf("@value"));
 		}
 		
-		List<Parameter<?>> params = new ArrayList<Parameter<?>>();
+		Parameter<?> param = null;
 		
-		for(String cur_val: values)
+
+		if (type.toLowerCase().equals("double")||type.toLowerCase().equals("float"))
 		{
-			Parameter<?> ret = null;
-			if (type.toLowerCase().equals("double")||type.toLowerCase().equals("float"))
+			param = processDoubleListParameter(name, values, restrs, tags);
+		}
+		else
+		{
+			if(type.toLowerCase().equals("int"))
 			{
-				ret = processDoubleParameter(name, cur_val, restrs, tags);
+				param = processIntListParameter(name, values, restrs, tags);
 			}
 			else
 			{
-				if(type.toLowerCase().equals("int"))
+				if(type.toLowerCase().equals("string"))
 				{
-					ret = processIntParameter(name, cur_val, restrs, tags);
-				}
-				else
-				{
-					if(type.toLowerCase().equals("string"))
-					{
-						ret = processStringParameter(name, cur_val, restrs, tags);
-					}
+					param = processStringListParameter(name, values, restrs, tags);
 				}
 			}
-			
-			ret.setDescription(descr);
-			
-			if(tagset.contains("mandatory")||tagset.contains("required"))
-				ret.setIsOptional(false);
-			params.add(ret);
 		}
 		
-		Parameter<?> param =  new MultiParameter<Parameter<?>>(name,params);
 		param.setDescription(descr);
 		
 		if(tagset.contains("mandatory")||tagset.contains("required"))
@@ -410,12 +395,61 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		return param;
 	}
 
-	private Parameter<?> processDoubleParameter(String name, String value, String restrs, String tags) throws Exception
+	private Parameter<?> processStringListParameter(String name, List<String> values, String restrs, String tags)
 	{
-		DoubleParameter retd = new DoubleParameter(name, value);
+		return new StringListParameter(name,values);
+	}
 
+
+	private Parameter<?> processIntListParameter(String name, List<String> values, String restrs, String tags)
+	{
+		List<Integer> vals = new ArrayList<Integer>();
+		for(String cur_val: values)
+		{
+			vals.add(Integer.parseInt(cur_val));
+		}
+		
+		IntegerListParameter ret = new IntegerListParameter(name,vals);
+		
+		Integer[] bounds = new Integer[2];
+		getIntegerBoundsFromRestrictions( restrs, bounds);
+		ret.setLowerBound(bounds[0]);
+		ret.setUpperBound(bounds[1]);
+		
+		return ret;
+	}
+
+
+	private Parameter<?> processDoubleListParameter(String name, List<String> values, String restrs, String tags)
+	{
+		List<Double> vals = new ArrayList<Double>();
+		for(String cur_val: values)
+		{
+			vals.add(Double.parseDouble(cur_val));
+		}
+		
+		DoubleListParameter ret = new DoubleListParameter(name,vals);
+		
+		Double[] bounds = new Double[2];
+		getDoubleBoundsFromRestrictions( restrs, bounds);
+		ret.setLowerBound(bounds[0]);
+		ret.setUpperBound(bounds[1]);
+		
+		return ret;
+	}
+
+
+	private void getDoubleBoundsFromRestrictions(String restrs, Double[] bounds)
+	{
+		Double UB = Double.POSITIVE_INFINITY;
+		Double LB = Double.NEGATIVE_INFINITY;
+		
 		if(restrs.equals(""))
-			return retd;
+		{
+			bounds[0] = LB;
+			bounds[1] = UB;
+			return;
+		}
 		
 		String[] toks = restrs.split(":");
 		if (toks.length != 0)
@@ -430,9 +464,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 				}
 				catch (NumberFormatException e)
 				{
-					throw new Exception(e);
+					throw new RuntimeException(e);
 				}
-				retd.setUpperBound(ub);
+				UB = ub;
 			}
 			else
 			{
@@ -448,10 +482,10 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					retd.setLowerBound(lb);
-					retd.setUpperBound(ub);
+					LB = lb;
+					UB = ub;
 				}
 				else
 				{
@@ -463,12 +497,23 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					retd.setLowerBound(lb);
+					LB = lb;
 				}
 			}
 		}
+		bounds[0] = LB;
+		bounds[1] = UB;		
+	}
+	
+	private Parameter<?> processDoubleParameter(String name, String value, String restrs, String tags) throws Exception
+	{
+		DoubleParameter retd = new DoubleParameter(name, value);
+		Double[] bounds = new Double[2];
+		getDoubleBoundsFromRestrictions( restrs, bounds);
+		retd.setLowerBound(bounds[0]);
+		retd.setUpperBound(bounds[1]);
 		return retd;
 	}
 	
@@ -481,12 +526,18 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		return ret;
 	}
 
-	private Parameter<?> processIntParameter(String name, String value, String restrs, String tags) throws Exception
+	private void getIntegerBoundsFromRestrictions(String restrs, Integer[] bounds)
 	{
-		IntegerParameter reti = new IntegerParameter(name, value);
-
+		Integer UB = Integer.MAX_VALUE;
+		Integer LB = Integer.MIN_VALUE;
+	
 		if(restrs.equals(""))
-			return reti;
+		{
+			bounds[0] = LB;
+			bounds[1] = UB;
+			return;
+		}
+
 		
 		String[] toks = restrs.split(":");
 		if (toks.length != 0)
@@ -501,9 +552,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 				}
 				catch (NumberFormatException e)
 				{
-					throw new Exception(e);
+					throw new RuntimeException(e);
 				}
-				reti.setUpperBound(ub);
+				UB = ub;
 			}
 			else
 			{
@@ -519,10 +570,10 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					reti.setLowerBound(lb);
-					reti.setUpperBound(ub);
+					LB = lb;
+					UB = ub;
 				}
 				else
 				{
@@ -534,12 +585,23 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					reti.setLowerBound(lb);
+					LB = lb;
 				}
 			}
 		}
+		bounds[0] = LB;
+		bounds[1] = UB;
+	}
+	
+	private Parameter<?> processIntParameter(String name, String value, String restrs, String tags) throws Exception
+	{
+		IntegerParameter reti = new IntegerParameter(name, value);
+		Integer[] bounds = new Integer[2];
+		getIntegerBoundsFromRestrictions(restrs, bounds);
+		reti.setLowerBound(bounds[0]);
+		reti.setUpperBound(bounds[1]);
 		return reti;
 	}
 
