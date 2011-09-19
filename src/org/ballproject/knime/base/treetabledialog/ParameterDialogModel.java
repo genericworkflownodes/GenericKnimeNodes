@@ -213,18 +213,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	{
 		@SuppressWarnings("unchecked")
 		Node<Parameter<?>> n = (Node<Parameter<?>>) node;
-		//String val = value.toString();
-		Parameter<?> v = (Parameter<?>) value;
-		Parameter<?> p = n.getPayload();
-		try
-		{
-			//p.fillFromString(val);
-			p.fillFromString(v.getStringRep());
-		}
-		catch (InvalidParameterValueException e)
-		{
-			e.printStackTrace();
-		}
+		n.setPayload((Parameter<?>) value);
 	}
 	
 	public TableCellEditor getCellEditor()
