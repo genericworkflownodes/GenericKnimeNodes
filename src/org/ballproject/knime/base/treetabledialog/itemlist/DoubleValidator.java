@@ -1,5 +1,30 @@
+/*
+ * Copyright (c) 2011, Marc Röttig.
+ *
+ * This file is part of GenericKnimeNodes.
+ * 
+ * GenericKnimeNodes is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.ballproject.knime.base.treetabledialog.itemlist;
 
+/**
+ * The DoubleValidator class checks whether supplied string values are valid doubles.
+ * 
+ * @author roettig
+ *
+ */
 public class DoubleValidator implements Validator
 {
 	private Double UB = Double.POSITIVE_INFINITY;
@@ -40,11 +65,21 @@ public class DoubleValidator implements Validator
 		return "double";
 	}
 	
+	/**
+	 * set the lower bound for any range validation.
+	 * 
+	 * @param d lower bound
+	 */
 	public void setLowerBound(Double d)
 	{
 		LB = d;
 	}
 	
+	/**
+	 * sets the upper bound for any range validation.
+	 * 
+	 * @param d upper bound
+	 */
 	public void setUpperBound(Double d)
 	{
 		UB = d;

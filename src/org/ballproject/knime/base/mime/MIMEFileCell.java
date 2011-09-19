@@ -28,6 +28,12 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.container.BlobDataCell;
 import org.ballproject.knime.base.port.*;
 
+/**
+ * The abstract MIMEFileCell class is the base class for any MIME-based cells within GenericKnimeNodes.
+ * 
+ * @author roettig
+ *
+ */
 public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue, MimeMarker
 {
 	public transient DataType TYPE;
@@ -43,6 +49,13 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 		data = new MIMEFileDelegate(); 
 	}
 	
+	/**
+	 * read in the byte data contained in the supplied file.
+	 * 
+	 * @param file file to read
+	 * 
+	 * @throws IOException
+	 */
 	public void read(File file) throws IOException
 	{
 		FileInputStream fin = new FileInputStream(file);		 
@@ -78,8 +91,5 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	public MIMEFileDelegate getDelegate()
 	{
 		return data;
-	}
-	
-	//public abstract MIMEFileCell createMimeFileCell(final File file) throws IOException;
-	
+	}	
 }

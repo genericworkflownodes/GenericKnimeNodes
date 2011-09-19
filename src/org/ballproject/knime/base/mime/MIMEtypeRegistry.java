@@ -19,10 +19,39 @@
 
 package org.ballproject.knime.base.mime;
 
-
+/**
+ * The interface MIMEtypeRegistry defines methods needed to build a (recursive) database or registry of MIME types known
+ * to GenericKnimeNodes.
+ * 
+ * @author roettig
+ *
+ */
 public interface MIMEtypeRegistry
 {
+	/**
+	 * recursively add an additional MIMEtype registry to an existing one.
+	 *  
+	 * This allows each new plugin the addition of new MIMEtypes into an existing global registry.  
+	 *  
+	 * @param resolver another registry
+	 */
 	void addResolver(MIMEtypeRegistry resolver);
+	
+	/**
+	 * returns the MIMEFileCell corresponding to a given filename.
+	 * 
+	 * @param filename name of the file
+	 * 
+	 * @return MIMEFileCell
+	 */
 	MIMEFileCell getCell(String filename);
+	
+	/**
+	 * returns MIMEtype of a given filename.
+	 * 
+	 * @param filename name of the file
+	 * 
+	 * @return MIMEtype
+	 */
 	MIMEtype getMIMEtype(String filename);
 }

@@ -24,7 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
-
+/**
+ * The MIMEFileDelegate stores the byte data contained within a MIME-typed file.
+ * 
+ * @author roettig
+ *
+ */
 public class MIMEFileDelegate implements Serializable
 {
 	private byte[] m_content;
@@ -46,7 +51,6 @@ public class MIMEFileDelegate implements Serializable
 	{
 		return false;
 	}
-	
 	
 	public int getHash()
 	{

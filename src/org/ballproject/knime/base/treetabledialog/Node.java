@@ -22,6 +22,13 @@ package org.ballproject.knime.base.treetabledialog;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Node class represents any nodes within a tree-like structure to be displayed by tree table widgets.
+ * 
+ * @author roettig
+ *
+ * @param <T>
+ */
 public class Node<T>
 {
 	private Node<T> parent;
