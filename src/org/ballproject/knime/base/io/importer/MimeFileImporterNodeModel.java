@@ -140,7 +140,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		}
 		
 		if(cell==null)
-			throw new InvalidSettingsException("no file chosen");
+			return new DataTableSpec[]{null};
 		
 		// TODO: check if user settings are available, fit to the incoming
 		// table structure, and the incoming types are feasible for the node
