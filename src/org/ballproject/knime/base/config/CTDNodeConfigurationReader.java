@@ -41,6 +41,7 @@ import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleListParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
+import org.ballproject.knime.base.parameter.FileListParameter;
 import org.ballproject.knime.base.parameter.IntegerListParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.Parameter;
@@ -109,7 +110,11 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		{
 			createPortFromNode(n, true);
 		}
-
+		items = root.selectNodes("//ITEMLIST[contains(@tags,'"+OUTPUTFILE_TAG+"')]");
+		for(Node n: items)
+		{
+			createPortFromNode(n, true);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -155,6 +160,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			 		
 	private void createPortFromNode(Node node, boolean multi) throws Exception
 	{
+		
 		Element elem = (Element) node;
 		
 		String name   = node.valueOf("@name");
@@ -165,6 +171,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		{
 			return;
 		}
+		
 		
 		Port port = new Port();
 		
@@ -212,6 +219,15 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			captured_ports.add(port.getName());
 		}		
 		
+		if(multi)
+		{
+			String path = getPath(node);
+			FileListParameter param = new FileListParameter(name, new ArrayList<String>());
+			param.setPort(port);
+			param.setDescription(descr);
+			param.setIsOptional(false);
+			config.addParameter(path, param);
+		}
 	}
 	
 	public void processItem(Node elem) throws Exception
