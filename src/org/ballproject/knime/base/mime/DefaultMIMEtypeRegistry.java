@@ -20,9 +20,8 @@
 package org.ballproject.knime.base.mime;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
@@ -34,14 +33,9 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 		MIMEFileCell cell = null;
 		for(MIMEtypeRegistry resolver: resolvers)
 		{
-			try
-			{
-				cell = resolver.getCell(name);
-			} 
-			catch (Exception e)
-			{
-				cell = null;
-			}
+			MIMEFileCell rc = resolver.getCell(name); 
+			if(rc!=null)
+				cell = rc; 
 		}
 		return cell;
 	}
@@ -50,6 +44,19 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	public void addResolver(MIMEtypeRegistry resolver)
 	{
 		resolvers.add(resolver);
+	}
+
+	@Override
+	public MIMEtype getMIMEtype(String name)
+	{
+		MIMEtype mt = null;
+		for(MIMEtypeRegistry resolver: resolvers)
+		{
+			MIMEtype rmt = resolver.getMIMEtype(name); 
+			if(rmt!=null)
+				mt = rmt; 
+		}
+		return mt;
 	}
 
 }

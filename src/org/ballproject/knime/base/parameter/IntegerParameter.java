@@ -19,6 +19,12 @@
 
 package org.ballproject.knime.base.parameter;
 
+/**
+ * The IntegerParameter class is used to store int values.
+ * 
+ * @author roettig
+ *
+ */
 public class IntegerParameter extends NumberParameter<Integer>
 {
 	public IntegerParameter(String key, Integer value)

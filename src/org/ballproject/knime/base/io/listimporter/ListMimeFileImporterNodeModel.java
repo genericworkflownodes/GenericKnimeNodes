@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.io.importer;
+package org.ballproject.knime.base.io.listimporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,11 +32,14 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.data.collection.CollectionCellFactory;
+import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.container.BlobDataCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.ExecutionContext;
@@ -47,7 +50,9 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -59,21 +64,21 @@ import java.io.FileOutputStream;
  * 
  * @author roettig
  */
-public class MimeFileImporterNodeModel extends NodeModel
+public class ListMimeFileImporterNodeModel extends NodeModel
 {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger.getLogger(MimeFileImporterNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(ListMimeFileImporterNodeModel.class);
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	private SettingsModelString  m_filename = MimeFileImporterNodeDialog.createFileChooserModel();
+	private SettingsModelStringArray  m_filename = ListMimeFileImporterNodeDialog.createFileChooserModel();
 	
 
 	/**
 	 * Constructor for the node model.
 	 */
-	protected MimeFileImporterNodeModel()
+	protected ListMimeFileImporterNodeModel()
 	{
 		super(0, 1);
 	}
@@ -89,18 +94,26 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
-		String filename = m_filename.getStringValue();
 		
-		File f = new File(filename);
+		List<MIMEFileCell> files = new ArrayList<MIMEFileCell>();
+		
+		String[] filenames = m_filename.getStringArrayValue();
+		for(String filename: filenames)
+		{
+			File f = new File(filename);
+			cell = resolver.getCell(filename);
+			cell.read(f);
+			files.add(cell);
+		}
 			
-		cell = resolver.getCell(f.getName());
-		cell.read(f);
+		// FixME
+		//data = cell.getData();
 		
-		data = cell.getData();
+		ListCell lc = CollectionCellFactory.createListCell(files);
 		
 		BufferedDataContainer container = exec.createDataContainer(outspec);
 		
-		DataRow row = new DefaultRow("Row 0", cell);
+		DataRow row = new DefaultRow("Row 0", lc);
 		container.addRowToTable(row);
 		
 		container.close();
@@ -132,7 +145,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 	{		
 		try
 		{
-			cell = resolver.getCell(this.m_filename.getStringValue());
+			cell = resolver.getCell(this.m_filename.getStringArrayValue()[0]);
 		} 
 		catch (Exception e)
 		{
@@ -140,7 +153,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		}
 		
 		if(cell==null)
-			return new DataTableSpec[]{null};
+			throw new InvalidSettingsException("no file chosen");
 		
 		// TODO: check if user settings are available, fit to the incoming
 		// table structure, and the incoming types are feasible for the node
@@ -156,8 +169,10 @@ public class MimeFileImporterNodeModel extends NodeModel
 	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
 	{
         DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-       
-		allColSpecs[0] =  new DataColumnSpecCreator("MIMEFILE", cell.getDataType() ).createSpec();
+        
+        DataType type = ListCell.getCollectionType(cell.getDataType());
+        
+		allColSpecs[0] =  new DataColumnSpecCreator("MIMEFILE", type ).createSpec();
         DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
 
         // save this internally
@@ -186,7 +201,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// method below.
 		m_filename.loadSettingsFrom(settings);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -200,11 +215,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// Do not actually set any values of any member variables.
 
 		m_filename.validateSettings(settings);
-		String filename = settings.getString(CFG_FILENAME);
-		if(resolver.getMIMEtype(filename)==null)
-		{
-			throw new InvalidSettingsException("file of unknown MIMEtype selected "+filename);
-		}
+
 	}
 
 	/**

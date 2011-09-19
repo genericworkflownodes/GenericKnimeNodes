@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.io.exporter;
+package org.ballproject.knime.base.io.listimporter;
 
 import java.awt.Font;
 
@@ -32,7 +32,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel>
+public class ListMimeFileImporterNodeView extends NodeView<ListMimeFileImporterNodeModel>
 {
 
 	/**
@@ -41,16 +41,17 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel)
+	protected ListMimeFileImporterNodeView(final ListMimeFileImporterNodeModel nodeModel)
 	{
 		super(nodeModel);
-		
 		JTextArea text = new JTextArea(new String(nodeModel.data), 40, 80);
 		JScrollPane scrollpane = new JScrollPane(text);
 		text.setFont(new Font("Monospaced", Font.BOLD, 12));
 		setComponent(scrollpane);
 		
 	}
+	
+	
 
 	/**
 	 * {@inheritDoc}
@@ -61,7 +62,7 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
-		MimeFileExporterNodeModel nodeModel = (MimeFileExporterNodeModel) getNodeModel();
+		ListMimeFileImporterNodeModel nodeModel = (ListMimeFileImporterNodeModel) getNodeModel();
 		assert nodeModel != null;
 
 		// be aware of a possibly not executed nodeModel! The data you retrieve

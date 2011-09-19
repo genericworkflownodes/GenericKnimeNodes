@@ -20,8 +20,11 @@
 package org.ballproject.knime.base.config;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -34,13 +37,17 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
+import org.ballproject.knime.base.parameter.DoubleListParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
+import org.ballproject.knime.base.parameter.FileListParameter;
+import org.ballproject.knime.base.parameter.IntegerListParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
+import org.ballproject.knime.base.parameter.StringListParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
-import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SimpleErrorHandler;
@@ -78,58 +85,98 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		
 		Node node  = doc.selectSingleNode("/tool/PARAMETERS");
 		Element root = (Element) node;
-		processPorts(root);
+		processIOPorts(root);
 		
 		config.setInports((Port[]) in_ports.toArray(new Port[in_ports.size()]));
 		config.setOutports((Port[]) out_ports.toArray(new Port[out_ports.size()]));
 	}
 	
+	
 	@SuppressWarnings("unchecked")
-	public void processPorts(Element root) throws Exception
+	public void processIOPorts(Element root) throws Exception
 	{
-		String prefix = "";
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterPortNodes(prefix, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processPortItem(prefix, elem);
-        }
-	}
-	 
-	
-	public void processPortItem(String prefix, Element elem) throws Exception
-	{
-		String tags = elem.valueOf("@tags");
-		String name = elem.attributeValue("name");
-		
-		if(!tags.contains(INPUTFILE_TAG)&&!tags.contains(OUTPUTFILE_TAG))
+		List<Node> items = root.selectNodes("//ITEM[contains(@tags,'"+OUTPUTFILE_TAG+"')]");
+		for(Node n: items)
 		{
-			return;
+			createPortFromNode(n, false);
 		}
-		
-		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		items = root.selectNodes("//ITEM[contains(@tags,'"+INPUTFILE_TAG+"')]");
+		for(Node n: items)
 		{
-			return;
+			createPortFromNode(n, false);
 		}
-			
-		//System.out.println("	processing PORTITEM "+prefix+"."+elem.attributeValue("name"));
-		
-		createPortFromNode(elem, prefix);
-		//System.out.println("adding port under key "+prefix+"."+name);
+		items = root.selectNodes("//ITEMLIST[contains(@tags,'"+INPUTFILE_TAG+"')]");
+		for(Node n: items)
+		{
+			createPortFromNode(n, true);
+		}
+		items = root.selectNodes("//ITEMLIST[contains(@tags,'"+OUTPUTFILE_TAG+"')]");
+		for(Node n: items)
+		{
+			createPortFromNode(n, true);
+		}
 	}
 	
-	private void createPortFromNode(Node node,String prefix) throws Exception
+	@SuppressWarnings("unchecked")
+	public void readParameters() throws Exception
 	{
+		Node root  = doc.selectSingleNode("/tool/PARAMETERS");
+		List<Node> items = root.selectNodes("//ITEM[not(contains(@tags,'"+OUTPUTFILE_TAG+"')) and not(contains(@tags,'"+INPUTFILE_TAG+"'))]");
+		for(Node n: items)
+		{
+			processItem(n);
+		}
+		items = root.selectNodes("//ITEMLIST[not(contains(@tags,'"+OUTPUTFILE_TAG+"')) and not(contains(@tags,'"+INPUTFILE_TAG+"'))]");
+		for(Node n: items)
+		{
+			processMultiItem(n);
+		}
+	}
+	
+	public String getPath(Node n)
+	{
+		
+		List<String> path_nodes = new ArrayList<String>();
+		while(n!=null&&!n.getName().equals("PARAMETERS"))
+		{
+			path_nodes.add(n.valueOf("@name"));
+			n = n.getParent();
+		}
+		
+		Collections.reverse(path_nodes);
+		
+		
+		String ret = "";
+		int N = path_nodes.size();
+		for(int i=0;i<N;i++)
+		{
+			if(i==N-1)
+				ret+=path_nodes.get(i);
+			else
+				ret+=path_nodes.get(i)+".";
+		}
+		return ret;
+	}
+			 		
+	private void createPortFromNode(Node node, boolean multi) throws Exception
+	{
+		
 		Element elem = (Element) node;
 		
 		String name   = node.valueOf("@name");
 		String descr  = node.valueOf("@description");
 		String tags   = node.valueOf("@tags");
 		
+		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		{
+			return;
+		}
+		
+		
 		Port port = new Port();
+		
+		
+		port.setMultiFile(multi);
 		
 		if(tags.contains(INPUTFILE_TAG)||tags.contains(OUTPUTFILE_TAG))
 		{
@@ -142,17 +189,13 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			
 			String[] toks2   = formats.split(",");
 
-			if(!prefix.equals(""))
-				port.setName(prefix+"."+name);
-			else
-				port.setName(name);
-			
-			
+			String path = getPath(node); 
+			port.setName(path);
 			
 			port.setDescription(descr);
 			
 			boolean optional = true;
-			if(tags.contains("mandatory"))
+			if(tags.contains("mandatory")||tags.contains("required"))
 				optional = false;
 			else
 				optional = true;
@@ -176,67 +219,24 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			captured_ports.add(port.getName());
 		}		
 		
+		if(multi)
+		{
+			String path = getPath(node);
+			FileListParameter param = new FileListParameter(name, new ArrayList<String>());
+			param.setPort(port);
+			param.setDescription(descr);
+			param.setIsOptional(false);
+			config.addParameter(path, param);
+		}
 	}
 	
-	private void readParameters() throws Exception
+	public void processItem(Node elem) throws Exception
 	{
-		Node node  = doc.selectSingleNode("/tool/PARAMETERS");
-		Element root = (Element) node;
-		processParameters(root);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void processParameters(Element root) throws Exception
-	{
-		String prefix = "";
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterNode(prefix, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processItem(prefix, elem);
-        }
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void iterNode(String prefix, Element root) throws Exception
-	{
-		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
-
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterNode(pref, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processItem(pref, elem);
-        }
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void iterPortNodes(String prefix, Element root) throws Exception
-	{
-		String pref = prefix + (prefix.equals("")?"":".") + root.attributeValue("name");
-
-		for ( Iterator<Node> i = root.elementIterator(); i.hasNext(); ) 
-        {
-            Element elem = (Element) i.next();
-            if(elem.getName().equals("NODE"))
-            	iterNode(pref, elem);
-            else
-            	if(elem.getName().equals("ITEM"))
-            		processPortItem(pref, elem);
-        }
-	}
-	
-	public void processItem(String prefix, Element elem) throws Exception
-	{
-		String name = elem.attributeValue("name");
+		String name = elem.valueOf("@name");
 		
-		if(captured_ports.contains(prefix+"."+name)||captured_ports.contains(name))
+		String path = getPath(elem);
+		
+		if(captured_ports.contains(path))
 			return;
 		
 		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
@@ -245,10 +245,25 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		}
 		
 		Parameter<?> param = getParameterFromNode(elem);
-		if(!prefix.equals(""))
-			config.addParameter(prefix+"."+name, param);
-		else
-			config.addParameter(name, param);
+		config.addParameter(path, param);
+	}
+	
+	public void processMultiItem(Node elem) throws Exception
+	{
+		String name = elem.valueOf("@name");
+		
+		String path = getPath(elem);
+		
+		if(captured_ports.contains(path))
+			return;
+		
+		if(name.equals("write_ini")||name.equals("write_par")||name.equals("par")||name.equals("help"))
+		{
+			return;
+		}
+		
+		Parameter<?> param = getMultiParameterFromNode(elem);
+		config.addParameter(path, param);
 	}
 	
 	private void readDescription() throws Exception
@@ -340,18 +355,117 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		ret.setDescription(descr);
 		Set<String> tagset = tokenSet(tags);
 		
-		if(tagset.contains("mandatory"))
+		if(tagset.contains("mandatory")||tagset.contains("required"))
 			ret.setIsOptional(false);
 		
 		return ret;
 	}
-
-	private Parameter<?> processDoubleParameter(String name, String value, String restrs, String tags) throws Exception
+	
+	private Parameter<?> getMultiParameterFromNode(Node node) throws Exception
 	{
-		DoubleParameter retd = new DoubleParameter(name, value);
+		String type   = node.valueOf("@type");
+		String name   = node.valueOf("@name");
+		String value  = node.valueOf("@value");
+		String restrs = node.valueOf("@restrictions");
+		String descr  = node.valueOf("@description");
+		String tags   = node.valueOf("@tags");
+		
+		Set<String> tagset = tokenSet(tags);
+		
+		@SuppressWarnings("unchecked")
+		List<Node>   subnodes = node.selectNodes("LISTITEM");
+		
+		List<String> values   = new ArrayList<String>(); 
+		for(Node n: subnodes)
+		{
+			values.add(n.valueOf("@value"));
+		}
+		
+		Parameter<?> param = null;
+		
 
+		if (type.toLowerCase().equals("double")||type.toLowerCase().equals("float"))
+		{
+			param = processDoubleListParameter(name, values, restrs, tags);
+		}
+		else
+		{
+			if(type.toLowerCase().equals("int"))
+			{
+				param = processIntListParameter(name, values, restrs, tags);
+			}
+			else
+			{
+				if(type.toLowerCase().equals("string"))
+				{
+					param = processStringListParameter(name, values, restrs, tags);
+				}
+			}
+		}
+		
+		param.setDescription(descr);
+		
+		if(tagset.contains("mandatory")||tagset.contains("required"))
+			param.setIsOptional(false);
+		
+		return param;
+	}
+
+	private Parameter<?> processStringListParameter(String name, List<String> values, String restrs, String tags)
+	{
+		return new StringListParameter(name,values);
+	}
+
+
+	private Parameter<?> processIntListParameter(String name, List<String> values, String restrs, String tags)
+	{
+		List<Integer> vals = new ArrayList<Integer>();
+		for(String cur_val: values)
+		{
+			vals.add(Integer.parseInt(cur_val));
+		}
+		
+		IntegerListParameter ret = new IntegerListParameter(name,vals);
+		
+		Integer[] bounds = new Integer[2];
+		getIntegerBoundsFromRestrictions( restrs, bounds);
+		ret.setLowerBound(bounds[0]);
+		ret.setUpperBound(bounds[1]);
+		
+		return ret;
+	}
+
+
+	private Parameter<?> processDoubleListParameter(String name, List<String> values, String restrs, String tags)
+	{
+		List<Double> vals = new ArrayList<Double>();
+		for(String cur_val: values)
+		{
+			vals.add(Double.parseDouble(cur_val));
+		}
+		
+		DoubleListParameter ret = new DoubleListParameter(name,vals);
+		
+		Double[] bounds = new Double[2];
+		getDoubleBoundsFromRestrictions( restrs, bounds);
+		ret.setLowerBound(bounds[0]);
+		ret.setUpperBound(bounds[1]);
+		
+		return ret;
+	}
+
+
+	private void getDoubleBoundsFromRestrictions(String restrs, Double[] bounds)
+	{
+		Double UB = Double.POSITIVE_INFINITY;
+		Double LB = Double.NEGATIVE_INFINITY;
+		
 		if(restrs.equals(""))
-			return retd;
+		{
+			bounds[0] = LB;
+			bounds[1] = UB;
+			return;
+		}
 		
 		String[] toks = restrs.split(":");
 		if (toks.length != 0)
@@ -366,9 +480,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 				}
 				catch (NumberFormatException e)
 				{
-					throw new Exception(e);
+					throw new RuntimeException(e);
 				}
-				retd.setUpperBound(ub);
+				UB = ub;
 			}
 			else
 			{
@@ -384,10 +498,10 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					retd.setLowerBound(lb);
-					retd.setUpperBound(ub);
+					LB = lb;
+					UB = ub;
 				}
 				else
 				{
@@ -399,12 +513,23 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					retd.setLowerBound(lb);
+					LB = lb;
 				}
 			}
 		}
+		bounds[0] = LB;
+		bounds[1] = UB;		
+	}
+	
+	private Parameter<?> processDoubleParameter(String name, String value, String restrs, String tags) throws Exception
+	{
+		DoubleParameter retd = new DoubleParameter(name, value);
+		Double[] bounds = new Double[2];
+		getDoubleBoundsFromRestrictions( restrs, bounds);
+		retd.setLowerBound(bounds[0]);
+		retd.setUpperBound(bounds[1]);
 		return retd;
 	}
 	
@@ -417,12 +542,18 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		return ret;
 	}
 
-	private Parameter<?> processIntParameter(String name, String value, String restrs, String tags) throws Exception
+	private void getIntegerBoundsFromRestrictions(String restrs, Integer[] bounds)
 	{
-		IntegerParameter reti = new IntegerParameter(name, value);
-
+		Integer UB = Integer.MAX_VALUE;
+		Integer LB = Integer.MIN_VALUE;
+	
 		if(restrs.equals(""))
-			return reti;
+		{
+			bounds[0] = LB;
+			bounds[1] = UB;
+			return;
+		}
+
 		
 		String[] toks = restrs.split(":");
 		if (toks.length != 0)
@@ -437,9 +568,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 				}
 				catch (NumberFormatException e)
 				{
-					throw new Exception(e);
+					throw new RuntimeException(e);
 				}
-				reti.setUpperBound(ub);
+				UB = ub;
 			}
 			else
 			{
@@ -455,10 +586,10 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					reti.setLowerBound(lb);
-					reti.setUpperBound(ub);
+					LB = lb;
+					UB = ub;
 				}
 				else
 				{
@@ -470,12 +601,23 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 					catch (NumberFormatException e)
 					{
-						throw new Exception(e);
+						throw new RuntimeException(e);
 					}
-					reti.setLowerBound(lb);
+					LB = lb;
 				}
 			}
 		}
+		bounds[0] = LB;
+		bounds[1] = UB;
+	}
+	
+	private Parameter<?> processIntParameter(String name, String value, String restrs, String tags) throws Exception
+	{
+		IntegerParameter reti = new IntegerParameter(name, value);
+		Integer[] bounds = new Integer[2];
+		getIntegerBoundsFromRestrictions(restrs, bounds);
+		reti.setLowerBound(bounds[0]);
+		reti.setUpperBound(bounds[1]);
 		return reti;
 	}
 

@@ -19,22 +19,34 @@
 
 package org.ballproject.knime.base.parameter;
 
+import java.util.List;
+
+import org.ballproject.knime.base.port.Port;
+
 /**
- * The InvalidParameterValueException is thrown when the supplied value for a
- * parameter could not be validated.
+ * The FileListParameter class is used to store lists of filenames.
+ * 
+ * This is a convenience class to handle user supplied output filenames.
  * 
  * @author roettig
  *
  */
-public class InvalidParameterValueException extends Exception
+public class FileListParameter extends StringListParameter
 {
-	public InvalidParameterValueException(String msg)
+	private Port port;
+	
+	public FileListParameter(String key, List<String> value)
 	{
-		super(msg);
+		super(key, value);
+	}
+
+	public void setPort(Port port)
+	{
+		this.port = port;
 	}
 	
-	public InvalidParameterValueException(String msg, Throwable t)
+	public Port getPort()
 	{
-		super(msg,t);
+		return port;
 	}
 }

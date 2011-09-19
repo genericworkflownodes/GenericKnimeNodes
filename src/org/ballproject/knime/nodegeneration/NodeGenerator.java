@@ -41,8 +41,8 @@ import java.util.zip.ZipInputStream;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SchemaValidator;
@@ -312,8 +312,11 @@ public class NodeGenerator
 		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
 		
-		String tpl = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
+		String tpl = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
 		String data = "";
+		
+		String tpl2  = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\");\n\t\t}\n";
+		String data2 = "";
 		
 		Set<String> mimetypes = new HashSet<String>();
 		
@@ -351,9 +354,14 @@ public class NodeGenerator
 			String s = tpl.replace("__EXT__", ext.toLowerCase());
 			s = s.replace("__NAME__",name); 
 			data += s;
+			
+			String s2 = tpl2.replace("__EXT__", ext.toLowerCase());
+			s2 = s2.replace("__NAME__",name); 
+			data2 += s2;
 		}
 		
 		tf.replace("__DATA__", data);
+		tf.replace("__DATA2__", data2);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();
@@ -630,7 +638,7 @@ public class NodeGenerator
 	public static void createXMLDescriptor(String nodeName) throws IOException
 	{
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
+		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inports = "";
 		int idx = 0;
 		for (Port port : config.getInputPorts())
@@ -653,7 +661,7 @@ public class NodeGenerator
 			inports += ipp + "\n";
 		}
 
-		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\">__PORTDESCR__ [__MIMETYPE__]</outPort>";
+		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outports = "";
 		idx = 0;
 		for (Port port : config.getOutputPorts())
@@ -672,7 +680,7 @@ public class NodeGenerator
 		StringBuffer buf = new StringBuffer();
 		for (Parameter<?> p : config.getParameters())
 		{
-			buf.append("\t\t<option name=\"" + p.getKey() + "\">" + p.getDescription() + "</option>\n");
+			buf.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA[" + p.getDescription() + "]]></option>\n");
 		}
 		String opts = buf.toString();
 
@@ -746,7 +754,7 @@ public class NodeGenerator
 	public static Map<String,String> ext2type = new HashMap<String,String>();
 	
 	private static void fillMimeTypes() throws IOException
-	{
+	{		
 		String clazzez = "";
 		for (Port port : config.getInputPorts())
 		{
@@ -758,7 +766,10 @@ public class NodeGenerator
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
-				tmp += "DataType.getType(" + ext + "FileCell.class),";
+				if(port.isMultiFile())
+					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
+				else
+					tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
@@ -782,13 +793,16 @@ public class NodeGenerator
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
-				tmp += "DataType.getType(" + ext + "FileCell.class),";
+				if(port.isMultiFile())
+					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
+				else
+					tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
 			clazzez += tmp;
-		}
-	
+		}		
+		
 		if(!clazzez.equals(""))
 			clazzez = clazzez.substring(0,clazzez.length()-1);
 		

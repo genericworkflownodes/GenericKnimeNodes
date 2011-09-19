@@ -22,12 +22,18 @@ public class MimeFileCellFactory implements MIMEtypeRegistry
 	}
 	
 	@Override 
-	public MIMEFileCell getCell(String name) throws Exception
+	public MIMEFileCell getCell(String name)
 	{
 		MIMEFileCell ret = null;
 __DATA__
-		if(ret==null)
-		  throw new Exception("could not resolve MIMEtype");
+		return ret;
+	}
+	
+	@Override 
+	public MIMEtype getMIMEtype(String name)
+	{
+		MIMEtype ret = null;
+__DATA2__
 		return ret;
 	}
 }

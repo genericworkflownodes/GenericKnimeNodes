@@ -27,13 +27,13 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.SchemaFactory;
 
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
-import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SimpleErrorHandler;
 import org.dom4j.Document;

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.port;
+package org.ballproject.knime.base.mime;
 
 import java.io.Serializable;
 
@@ -53,9 +53,8 @@ public class MIMEtype implements Serializable
 		return file_extension;
 	}
 	
-	public static MIMEtype resolveMIMEtype(String filename)
+	public static boolean equals(MIMEtype type1, MIMEtype type2)
 	{
-		String toks[] = filename.split("\\.");			
-		return new MIMEtype(toks[toks.length-1].toLowerCase());
+		return type1.getExt().equals(type2.getExt());
 	}
 }
