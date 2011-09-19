@@ -20,6 +20,8 @@
 package org.ballproject.knime.base.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Random;
 
 public class Helper
 {
@@ -83,5 +85,53 @@ public class Helper
 			}
 		}
 		return (path.delete());
+	}
+	
+	static private Random rng = new Random();
+	
+	static synchronized public String getTemporaryFilename(String directory, String suffix, boolean autodelete) throws IOException
+	{
+		
+		int num = Math.abs(rng.nextInt());
+		File f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		while(f.exists())
+		{
+			num = Math.abs(rng.nextInt());
+			f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		}
+		f.createNewFile();
+		
+		if(autodelete)
+			f.deleteOnExit();
+		
+		return f.getAbsolutePath();
+	}
+	
+	static synchronized public String getTemporaryFilename(String suffix, boolean autodelete) throws IOException
+	{
+		return getTemporaryFilename(System.getProperty("java.io.tmpdir"),suffix,autodelete);
+	}
+	
+	static synchronized public String getTemporaryDirectory(String directory, String prefix, boolean autodelete) throws IOException
+	{
+		
+		int num = Math.abs(rng.nextInt());
+		File f = new File(directory+File.separator+String.format("%s%06d",prefix,num));
+		while(f.exists())
+		{
+			num = Math.abs(rng.nextInt());
+			f = new File(directory+File.separator+String.format("%s%06d",prefix,num));
+		}
+		f.mkdirs();
+		
+		if(autodelete)
+			f.deleteOnExit();
+		
+		return f.getAbsolutePath();
+	}
+	
+	static synchronized public String getTemporaryDirectory(String prefix, boolean autodelete) throws IOException
+	{
+		return getTemporaryDirectory(System.getProperty("java.io.tmpdir"),prefix,autodelete);
 	}
 }
