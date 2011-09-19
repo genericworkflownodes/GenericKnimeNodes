@@ -21,6 +21,12 @@ package org.ballproject.knime.base.parameter;
 
 import java.util.List;
 
+/**
+ * The abstract NumberListParameter class is used to store lists of numeric values.
+ * 
+ * @author roettig
+ *
+ */
 public abstract class NumberListParameter<T> extends Parameter<List<T>>
 {
 
@@ -32,21 +38,41 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>>
 		super(key, value);
 	}
 
+	/**
+	 * returns the lower bound for constrained numeric parameters.
+	 * 
+	 * @return lower bound
+	 */
 	public T getLowerBound()
 	{
 		return lowerBound;
 	}
 
+	/**
+	 * sets the lower bound for constrained numeric parameters.
+	 * 
+	 * @param lowerBound
+	 */
 	public void setLowerBound(T lowerBound)
 	{
 		this.lowerBound = lowerBound;
 	}
 
+	/**
+	 * returns the upper bound for constrained numeric parameters.
+	 * 
+	 * @return upper bound
+	 */
 	public T getUpperBound()
 	{
 		return upperBound;
 	}
 
+	/**
+	 * sets the upper bound for constrained numeric parameters.
+	 * 
+	 * @param upperBound upper bound
+	 */
 	public void setUpperBound(T upperBound)
 	{
 		this.upperBound = upperBound;

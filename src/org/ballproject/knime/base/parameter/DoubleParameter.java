@@ -19,6 +19,12 @@
 
 package org.ballproject.knime.base.parameter;
 
+/**
+ * The DoubleParameter class is used to store double values.
+ * 
+ * @author roettig
+ *
+ */
 public class DoubleParameter extends NumberParameter<Double>
 {
 

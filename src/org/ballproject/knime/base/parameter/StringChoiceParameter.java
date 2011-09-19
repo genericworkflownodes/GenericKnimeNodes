@@ -22,6 +22,12 @@ package org.ballproject.knime.base.parameter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The StringChoiceParameter class reprents string values taken from a restricted set.
+ * 
+ * @author roettig
+ *
+ */
 public class StringChoiceParameter extends Parameter<String>
 {
 	private List<String> values;
@@ -67,11 +73,23 @@ public class StringChoiceParameter extends Parameter<String>
 			super.setValue(value);
 	}
 
+	/**
+	 * returns the list of allowed string values
+	 * 
+	 * @return allowed values
+	 */
 	public List<String> getAllowedValues()
 	{
 		return values;
 	}
 	
+	/**
+	 * returns the list of associated labels for each value.
+	 * 
+	 * This is mainly for display purposes within GUIs.
+	 * 
+	 * @return list of labels
+	 */
 	public List<String> getLabels()
 	{
 		return labels;

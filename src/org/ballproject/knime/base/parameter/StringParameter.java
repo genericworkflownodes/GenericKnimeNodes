@@ -19,6 +19,12 @@
 
 package org.ballproject.knime.base.parameter;
 
+/**
+ * The StringParameter class is used to store string values.
+ * 
+ * @author roettig
+ *
+ */
 public class StringParameter extends Parameter<String>
 {
 

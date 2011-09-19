@@ -19,7 +19,12 @@
 
 package org.ballproject.knime.base.parameter;
 
-
+/**
+ * The BoolParameter class is used to store boolean values.
+ * 
+ * @author roettig
+ *
+ */
 public class BoolParameter extends Parameter<Boolean>
 {
 	public BoolParameter(String key, Boolean value)

@@ -19,6 +19,13 @@
 
 package org.ballproject.knime.base.parameter;
 
+/**
+ * The InvalidParameterValueException is thrown when the supplied value for a
+ * parameter could not be validated.
+ * 
+ * @author roettig
+ *
+ */
 public class InvalidParameterValueException extends Exception
 {
 	public InvalidParameterValueException(String msg)

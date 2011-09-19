@@ -30,21 +30,41 @@ public abstract class NumberParameter<T> extends Parameter<T>
 		super(key, value);
 	}
 
+	/**
+	 * returns the lower bound for constrained numeric parameters.
+	 * 
+	 * @return lower bound
+	 */
 	public T getLowerBound()
 	{
 		return lowerBound;
 	}
 
+	/**
+	 * sets the lower bound for constrained numeric parameters.
+	 * 
+	 * @param lowerBound
+	 */
 	public void setLowerBound(T lowerBound)
 	{
 		this.lowerBound = lowerBound;
 	}
 
+	/**
+	 * returns the upper bound for constrained numeric parameters.
+	 * 
+	 * @return upper bound
+	 */
 	public T getUpperBound()
 	{
 		return upperBound;
 	}
 
+	/**
+	 * sets the upper bound for constrained numeric parameters.
+	 * 
+	 * @param upperBound
+	 */
 	public void setUpperBound(T upperBound)
 	{
 		this.upperBound = upperBound;
