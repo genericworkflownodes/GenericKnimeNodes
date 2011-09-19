@@ -134,4 +134,27 @@ public class Helper
 	{
 		return getTemporaryDirectory(System.getProperty("java.io.tmpdir"),prefix,autodelete);
 	}
+	
+	public static Object createObject(String className) 
+	{
+	      Object object = null;
+	      try 
+	      {
+	          Class classDefinition = Class.forName(className);
+	          object = classDefinition.newInstance();
+	      } 
+	      catch (InstantiationException e) 
+	      {
+	          System.out.println(e);
+	      } 
+	      catch (IllegalAccessException e) 
+	      {
+	          System.out.println(e);
+	      } 
+	      catch (ClassNotFoundException e) 
+	      {
+	          System.out.println(e);
+	      }
+	      return object;
+	}
 }

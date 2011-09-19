@@ -22,6 +22,10 @@ package org.ballproject.knime.base.mime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ballproject.knime.base.mime.demangler.Demangler;
+import org.ballproject.knime.base.mime.demangler.SDFileDemangler;
+import org.knime.core.data.DataType;
+
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
@@ -57,6 +61,19 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 				mt = rmt; 
 		}
 		return mt;
+	}
+
+	@Override
+	public Demangler getDemangler(DataType type)
+	{
+		Demangler d = null;
+		for(MIMEtypeRegistry resolver: resolvers)
+		{
+			Demangler rd = resolver.getDemangler(type); 
+			if(rd!=null)
+				d = rd; 
+		}
+		return d;
 	}
 
 }
