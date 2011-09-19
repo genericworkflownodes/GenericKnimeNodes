@@ -23,6 +23,7 @@ package org.ballproject.knime.base.node;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -45,9 +46,13 @@ import java.io.ObjectOutputStream;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
+import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.mime.MIMEtype;
+import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.Parameter;
+import org.ballproject.knime.base.parameter.ListParameter;
+import org.ballproject.knime.base.parameter.FileListParameter;
 import org.ballproject.knime.base.port.MIMEFileDelegate;
 import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
@@ -60,6 +65,7 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.data.collection.CollectionCellFactory;
 import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataContainer;
@@ -165,27 +171,34 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
 		// fetch node descriptors		
-		String tmpdir  = KNIMEConstants.getKNIMETempDir();
 		String nodeName = config.getName();
 			
 		// create job directory
-		File   jobdir = File.createTempFile(nodeName, "JOBDIR", new File(tmpdir));
-
+		File   jobdir = new File( Helper.getTemporaryDirectory(nodeName,!GenericNodesPlugin.isDebug()) );
 		GenericNodesPlugin.log("jobdir="+jobdir);
 		
-		// this might be risky
-		jobdir.delete();
-		jobdir.mkdirs();
+		
+		// prepare input and parameter data
+		List<List<String>> output_files = outputParameters(jobdir, inData);
+		
+		// launch executable
+		execute(jobdir, exec);
 				
-		jobdir.deleteOnExit();
+		// process result files
+		BufferedDataTable[] outtables = processOutput( output_files, exec);
 		
-		String FILESEP = File.separator;
-		
+        if(!GenericNodesPlugin.isDebug())
+        	Helper.deleteDirectory(jobdir);
+        
+		return outtables;
+	}
+
+	private List<List<String>> outputParameters(File jobdir, BufferedDataTable[] inData) throws IOException
+	{
 		// fill params.xml
 		CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
 		
 		// .. input files
-		int filenum=1;
 		for(int i=0;i<inData.length;i++)
 		{
 			// skip optional and unconnected inport ports
@@ -205,25 +218,30 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				{
 					MimeMarker mrk = (MimeMarker) cells.get(j);
 					MIMEFileDelegate del = mrk.getDelegate();
-					del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
-					GenericNodesPlugin.log("<< setting multi param "+name+"->"+jobdir+FILESEP+filenum+"."+mrk.getExtension());
-					writer.setMultiParameterValue(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
-					filenum++;
+					String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), mrk.getExtension(), !GenericNodesPlugin.isDebug());
+					del.write(filename);
+					GenericNodesPlugin.log("<< setting multi param "+name+"->"+filename);
+					writer.setMultiParameterValue(name, filename);
 				}
 			}
-			
-			if( cell instanceof MimeMarker)
+			else
 			{
-				MimeMarker mrk = (MimeMarker) cell;
-				MIMEFileDelegate del = mrk.getDelegate();
-				del.write(jobdir+FILESEP+filenum+"."+mrk.getExtension());
-				GenericNodesPlugin.log("< setting param "+name+"->"+jobdir+FILESEP+filenum+"."+mrk.getExtension());
-				writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+mrk.getExtension());
-				filenum++;
+				if( cell instanceof MimeMarker)
+				{
+					MimeMarker mrk = (MimeMarker) cell;
+					MIMEFileDelegate del = mrk.getDelegate();
+					String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), mrk.getExtension(), !GenericNodesPlugin.isDebug());
+					del.write(filename);
+					GenericNodesPlugin.log("< setting param "+name+"->"+filename);
+					writer.setParameterValue(name, filename);
+				}
 			}
 		}
 		
-		List<String> my_outnames = new ArrayList<String>();
+		List<List<String>> outfiles = new ArrayList<List<String>>();
+		
+		Map<Port,Integer>  port2slot   = new HashMap<Port,Integer>();
+		
 		// .. output files		
 		int nOut = config.getOutputPorts().length; 
 		for(int i=0;i<nOut;i++)
@@ -235,15 +253,20 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			
 			if(port.isMultiFile())
 			{
-				// FIXME 
-				// integrate field in parameter dialog to request output filenames from user
+				// keep this list empty for now ...
+				List<String> files = new ArrayList<String>();
+				outfiles.add(files);
+				// but store the slot index for later filling
+				port2slot.put( port, i);
 			}
 			else
 			{
-				GenericNodesPlugin.log("> setting param "+name+"->"+jobdir+FILESEP+filenum+"."+ext);
-				writer.setParameterValue(name, jobdir+FILESEP+filenum+"."+ext);
-				my_outnames.add(jobdir+FILESEP+filenum+"."+ext);
-				filenum++;
+				List<String> files = new ArrayList<String>();
+				String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), ext, !GenericNodesPlugin.isDebug());
+				GenericNodesPlugin.log("> setting param "+name+"->"+filename);
+				writer.setParameterValue(name, filename);
+				files.add(filename);
+				outfiles.add(files);
 			}
 		}
 		
@@ -256,20 +279,35 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				if(param.getIsOptional())
 					continue;					
 			}
-			// FIXME !!!!
-			/*
-			if(param instanceof MultiParameter<?>)
+			if(param instanceof ListParameter)
 			{
-				MultiParameter<?> mp = (MultiParameter<?>) param;
-				List<?> values = mp.getValue();
-				for(Object v: values)
+				ListParameter lp = (ListParameter) param;
+				if(param instanceof FileListParameter)
 				{
-					GenericNodesPlugin.log("@@ setting param "+key+"->"+v.toString());
-					writer.setMultiParameterValue(key, v.toString());
+					FileListParameter flp = (FileListParameter) param;
+					List<String> files = lp.getStrings();
+					
+					int slot = port2slot.get(flp.getPort()); 
+					
+					String ext  = this.getOutputType(slot).getExt();
+					
+					for(String file: files)
+					{
+						String filename = jobdir.getAbsolutePath()+File.separator+file+"."+ext;
+						outfiles.get(slot).add(filename);
+						writer.setMultiParameterValue(key, filename);
+					}
+				}
+				else
+				{
+					for(String val: lp.getStrings())
+					{
+						GenericNodesPlugin.log("@@ setting param "+key+"->"+val);
+						writer.setMultiParameterValue(key, val);	
+					}	
 				}
 			}
-			*/
-			//else
+			else
 			{
 				GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
 				writer.setParameterValue(key, param.getValue().toString());
@@ -278,6 +316,14 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		writer.write(jobdir+FILESEP+"params.xml");
 
+		return outfiles;
+	}
+
+	
+	private void execute(final File jobdir, final ExecutionContext exec) throws Exception
+	{
+		String nodeName = config.getName();
+		
 		// get executable name
 		String exepath = Helper.getExecutableName(nodeName, binpath+FILESEP+"bin");
 		
@@ -342,34 +388,62 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	    	logger.error(output);
 	    	throw new Exception("execution of external tool failed");
 	    }
-				
+	}
+
+	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
+	
+	private BufferedDataTable[] processOutput(List<List<String>> my_outnames, ExecutionContext exec) throws Exception
+	{
+		int nOut = config.getOutputPorts().length;
         // create output tables
         BufferedDataTable[] outtables = new BufferedDataTable[nOut];
         for(int i=0;i<nOut;i++)
         {
+        	Port port = config.getOutputPorts()[i];
         	BufferedDataContainer container = exec.createDataContainer(outspec[i]);
         	
-        	// fixme
-        	//String ext  = config.getOutputPorts()[i].getMimeTypes().get(0).getExt();
+        	DataCell outcell = null;
         	
-        	File f = new File(my_outnames.get(i));
+        	// multi output file
+        	if(my_outnames.get(i).size()>1)
+        	{
+        		List<MIMEFileCell> files = new ArrayList<MIMEFileCell>();
+        		
+        		for(String filename: my_outnames.get(i))
+        		{
+        			File f = new File(filename);
+        			MIMEFileCell cell = resolver.getCell(filename);
+        			cell.read(f);
+        			files.add(cell);
+        		}
+        			      		
+        		outcell = CollectionCellFactory.createListCell(files);
+        		
+        	}
+        	else
+        	{
+        		String filename = my_outnames.get(i).get(0);
+        		File f = new File(filename);
+
+        		outcell = this.makeDataCell(f);
+        		
+           	}
         	
-        	DataCell cell = this.makeDataCell(f);
-        	DataRow row = new DefaultRow("Row 0", cell);
+        	DataRow row = new DefaultRow("Row 0", outcell);
     		container.addRowToTable(row);
-    		
+
     		container.close();
-    		
+
     		BufferedDataTable table = container.getTable();
     		outtables[i] = table;
         }
-		
-        if(!GenericNodesPlugin.isDebug())
-        	Helper.deleteDirectory(jobdir);
         
-		return outtables;
+        return outtables;
 	}
 
+	private static String FILESEP = File.separator;
+	
+	
 	/**
 	 * template method to be overriden by children models; gives
 	 * the DataCell from a given file handle (MIMEtype based)
