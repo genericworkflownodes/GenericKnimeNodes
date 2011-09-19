@@ -22,23 +22,40 @@ package org.ballproject.knime.nodegeneration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
+/**
+ * The TemplateFiller class is used to replace within a string template designated tokens
+ * with variable text.
+ * 
+ * @author roettig
+ *
+ */
 public class TemplateFiller
 {
 	private String data;
 	
+	/**
+	 * reads in the template from file.
+	 * 
+	 * @param file template filename
+	 * @throws IOException
+	 */
 	public void read(String file) throws IOException
 	{
 		read(new File(file));
 	}
 	
+	/**
+	 * reads in the template from file.
+	 * 
+	 * @param file file
+	 * @throws IOException
+	 */
 	public void read(File file) throws IOException
 	{
 		FileInputStream in = new FileInputStream(file);
@@ -46,6 +63,12 @@ public class TemplateFiller
 		in.close();
 	}
 	
+	/**
+	 * reads in the template from input stream.
+	 * 
+	 * @param in input stream
+	 * @throws IOException
+	 */
 	public void read(InputStream in) throws IOException
 	{
 		StringBuffer buf = new StringBuffer();
@@ -58,16 +81,34 @@ public class TemplateFiller
 		data = buf.toString();
 	}
 	
+	/**
+	 * replaces the specified token within the template with the supplied text.
+	 * 
+	 * @param token target token
+	 * @param value text to fill in
+	 */
 	public void replace(String token, String value)
 	{
 		data = data.replace(token,value);
 	}
 	
+	/**
+	 * writes the filled template out to supplied stream.  
+	 * 
+	 * @param out output stream
+	 * @throws IOException
+	 */
 	public void write(OutputStream out) throws IOException
 	{
 		out.write(data.getBytes());
 	}
-	
+
+	/**
+	 * writes the filled template out to supplied file.  
+	 * 
+	 * @param file output file
+	 * @throws IOException
+	 */
 	public void write(File file) throws IOException
 	{
 		file.getParentFile().mkdirs();
@@ -76,19 +117,14 @@ public class TemplateFiller
 		out.close();
 	}
 	
+	/**
+	 * writes the filled template out to supplied file.  
+	 * 
+	 * @param file file name
+	 * @throws IOException
+	 */
 	public void write(String file) throws IOException
 	{
 		write(new File(file));
 	}
-
-	
-
-	public static void main(String[] args) throws IOException
-	{
-		TemplateFiller tf = new TemplateFiller();
-		tf.read("/tmp/templ");
-		tf.replace("__NAME__", "Marc");
-		tf.write("/tmp/raus");
-	}
-
 }
