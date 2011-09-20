@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: GenericKnimeNodes
 Bundle-SymbolicName: org.ballproject.knime;singleton:=true
 Bundle-Version: @@pluginversion@@
-Bundle-ClassPath: library.jar,
+Bundle-ClassPath: ., 
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
  lib/swingx-core-1.6.2.jar
