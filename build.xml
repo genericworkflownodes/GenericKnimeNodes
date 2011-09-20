@@ -122,6 +122,9 @@
 				<exclude name="**/package.htm*" />
 			</fileset>
 		</copy>
+		
+		<!--<zip destfile="${temp.folder}/pluginpackage/lib.jar" basedir="${temp.folder}/pluginpackage"/>-->
+		
 	</target>
 
 	<target name="buildplugin" depends="prepare">
@@ -136,6 +139,8 @@
 		
 		<antcall target="buildpluginclasses"/>
 
+		<copy file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/plugin.xml" todir="${temp.folder}/pluginpackage"/>
+		
 		<copy file="data/PluginMANIFEST.MF" tofile="${temp.folder}/pluginpackage/META-INF/MANIFEST.MF"/>
 
 		<replace file="${temp.folder}/pluginpackage/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginpackage}" />
@@ -143,7 +148,7 @@
 
 		<zip destfile="build/${pluginpackage}_${pluginversion}.jar" basedir="${temp.folder}/pluginpackage"/>
 		
-		<delete dir="${temp.folder}"/>
+		<!--<delete dir="${temp.folder}"/>-->
 	</target>
 
 	<target name="nodegen" description="run node generator" depends="buildbaseplugin">
