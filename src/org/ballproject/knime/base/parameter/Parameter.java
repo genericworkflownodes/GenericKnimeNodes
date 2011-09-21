@@ -30,10 +30,10 @@ import java.io.Serializable;
  */
 public abstract class Parameter<T> implements Serializable
 {
-	protected String key;
-	protected T      value;
-	protected String description = "";
-	protected String section     = "default";
+	protected String  key;
+	protected T       value;
+	protected String  description = "";
+	protected String  section     = "default";
 	protected boolean isOptional = true;
 	
 	/**

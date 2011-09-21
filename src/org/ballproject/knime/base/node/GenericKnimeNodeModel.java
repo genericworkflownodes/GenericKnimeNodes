@@ -99,7 +99,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	protected DataType[][] inports;
 	protected DataType[][] outports;
 	protected int[]        selected_output_type;
-	protected String binpath;
+	protected String       binpath;
 	
 	public String output="";
 	
@@ -126,9 +126,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		super(createOPOs(config.getInputPorts()),createOPOs(config.getOutputPorts()));
 		this.config = config;
 		init();
-		
-		// FIXME
-		this.reset();
 	}
 	
 	protected void init()
