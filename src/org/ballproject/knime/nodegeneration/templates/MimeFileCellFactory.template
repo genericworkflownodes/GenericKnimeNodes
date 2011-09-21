@@ -53,4 +53,10 @@ __DATA3__
 	{
 		// NOP
 	}
+	
+	@Override
+	public Demangler getMangler(DataType type)
+	{
+		// NOP
+	}
 }

@@ -11,5 +11,6 @@ public interface Demangler
 	DataType getSourceType();
 	DataType getTargetType();
 	Iterator<DataCell> demangle(MIMEFileCell cell);
+	MIMEFileCell mangle(Iterator<DataCell> iter);
 	void close();
 }

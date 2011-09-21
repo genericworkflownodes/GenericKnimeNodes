@@ -32,6 +32,7 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
 	protected List<MIMEtypeRegistry>   resolvers  = new ArrayList<MIMEtypeRegistry>();
 	protected Map<DataType,Demangler>  demanglers = new HashMap<DataType,Demangler>(); 
+	protected Map<DataType,Demangler>  manglers   = new HashMap<DataType,Demangler>();
 	
 	@Override
 	public MIMEFileCell getCell(String name)
@@ -75,6 +76,13 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	public void addDemangler(Demangler demangler)
 	{
 		demanglers.put(demangler.getSourceType(), demangler);
+		manglers.put(demangler.getTargetType(), demangler);
+	}
+
+	@Override
+	public Demangler getMangler(DataType type)
+	{
+		return manglers.get(type);
 	}
 
 }

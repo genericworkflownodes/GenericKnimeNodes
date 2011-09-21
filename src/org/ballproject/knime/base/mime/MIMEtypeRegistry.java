@@ -60,6 +60,8 @@ public interface MIMEtypeRegistry
 	
 	Demangler getDemangler(DataType type);
 	
+	Demangler getMangler(DataType type);
+	
 	void addDemangler(Demangler demangler);
 	
 }
