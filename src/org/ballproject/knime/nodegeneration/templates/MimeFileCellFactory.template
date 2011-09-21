@@ -58,5 +58,6 @@ __DATA3__
 	public Demangler getMangler(DataType type)
 	{
 		// NOP
+		return null;
 	}
 }
