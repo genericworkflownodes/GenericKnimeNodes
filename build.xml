@@ -56,6 +56,10 @@
 			</fileset>
 		</copy>
 
+		<mkdir dir="${temp.folder}/package/data"/>
+		
+		<copy file="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${temp.folder}/package/data"/>
+		
 		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>
 
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />

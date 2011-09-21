@@ -8,7 +8,8 @@ import org.knime.core.data.DataType;
 
 public interface Demangler
 {
-	DataType getType();
+	DataType getSourceType();
+	DataType getTargetType();
 	Iterator<DataCell> demangle(MIMEFileCell cell);
 	void close();
 }
