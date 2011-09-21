@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;
@@ -65,6 +66,8 @@ public class MimeFileImporterNodeModel extends NodeModel
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(MimeFileImporterNodeModel.class);
 
+	private static String BINARY_DATA_MESSAGE = "[MIMEFile content is binary]";
+	
 	static final String CFG_FILENAME = "FILENAME";
 
 	private SettingsModelString  m_filename = MimeFileImporterNodeDialog.createFileChooserModel();
@@ -96,7 +99,15 @@ public class MimeFileImporterNodeModel extends NodeModel
 		cell = resolver.getCell(f.getName());
 		cell.read(f);
 		
-		data = cell.getData();
+		MIMEtype mt = resolver.getMIMEtype(f.getName());
+		
+		if(mt.isBinary())
+		{
+			data = BINARY_DATA_MESSAGE.getBytes();
+		}
+		else
+			data = cell.getData();
+
 		
 		BufferedDataContainer container = exec.createDataContainer(outspec);
 		

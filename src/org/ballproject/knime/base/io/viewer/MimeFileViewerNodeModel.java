@@ -28,14 +28,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -57,7 +58,8 @@ public class MimeFileViewerNodeModel extends NodeModel
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(MimeFileViewerNodeModel.class);
 	
-
+	private static String BINARY_DATA_MESSAGE = "[MIMEFile content is binary]";
+	
 	/**
 	 * Constructor for the node model.
 	 */
@@ -77,14 +79,20 @@ public class MimeFileViewerNodeModel extends NodeModel
 	{			
 		DataRow  row  = inData[0].iterator().next();
 		DataCell cell = row.getCell(0);
+		
 		if( cell instanceof MimeMarker)
 		{
 			cell_ = (MIMEFileCell) cell;
 			
 			MimeMarker mrk = (MimeMarker) cell;
 			MIMEFileDelegate del = mrk.getDelegate();
-
-			data = del.getByteArrayReference();
+			MIMEtype mt = GenericNodesPlugin.getMIMEtypeRegistry().getMIMEtype(mrk.getExtension());
+			if(mt.isBinary())
+			{
+				data = BINARY_DATA_MESSAGE.getBytes();
+			}
+			else
+				data = del.getByteArrayReference();
 		}
 		return new BufferedDataTable[]{};
 	}
