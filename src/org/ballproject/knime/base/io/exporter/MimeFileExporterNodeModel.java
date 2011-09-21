@@ -87,7 +87,10 @@ public class MimeFileExporterNodeModel extends NodeModel
 			
 			MimeMarker mrk = (MimeMarker) cell;
 			MIMEFileDelegate del = mrk.getDelegate();
-		
+			if(!m_filename.getStringValue().toLowerCase().endsWith(mrk.getExtension().toLowerCase()))
+			{
+				throw new Exception("invalid extension given for filename. Must be "+mrk.getExtension());
+			}
 			del.write(m_filename.getStringValue());
 			data = del.getByteArrayReference();
 		}
