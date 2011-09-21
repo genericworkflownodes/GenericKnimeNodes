@@ -3,15 +3,15 @@
 <knimeNode icon="./default.png" type="Source">
     <name>Demangler</name>
     
-    <shortDescription>
-        
-    </shortDescription>
+    <shortDescription>Demangles a MIME file</shortDescription>
     
     <fullDescription>
-        <intro>Demangles a MIME file </intro>
+        <intro>The Demangler Node will demangle incoming MIMEFileCell data into corresponding classical KNIME FileCells. To register a Demangler for 
+    a MIMEFile use a plugin that delivers a DemanglerProvider for your Demangler by extending the DemanglerProvider extension point.</intro>
     </fullDescription>
     
     <ports>
+     <inPort index="0" name="mimefile"> MIMEFile </inPort>
      <outPort index="0" name="loaded file "> loaded file </outPort>   
     </ports>    
     <views>

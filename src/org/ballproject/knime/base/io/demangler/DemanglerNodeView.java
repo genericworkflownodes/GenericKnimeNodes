@@ -19,15 +19,10 @@
 
 package org.ballproject.knime.base.io.demangler;
 
-import java.awt.Font;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeView</code> for the "MimeFileImporter" Node.
+ * <code>NodeView</code> for the "Demangler" Node.
  * 
  * 
  * @author roettig
@@ -44,11 +39,6 @@ public class DemanglerNodeView extends NodeView<DemanglerNodeModel>
 	protected DemanglerNodeView(final DemanglerNodeModel nodeModel)
 	{
 		super(nodeModel);
-		JTextArea text = new JTextArea(new String(nodeModel.data), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		setComponent(scrollpane);
-		
 	}
 	
 	

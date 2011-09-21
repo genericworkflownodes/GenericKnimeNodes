@@ -24,7 +24,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeFactory</code> for the "MimeFileImporter" Node.
+ * <code>NodeFactory</code> for the "Demangler" Node.
  * 
  *
  * @author roettig
@@ -47,7 +47,7 @@ public class DemanglerNodeFactory extends NodeFactory<DemanglerNodeModel>
     @Override
     public int getNrNodeViews() 
     {
-        return 1;
+        return 0;
     }
 
     /**
@@ -65,7 +65,7 @@ public class DemanglerNodeFactory extends NodeFactory<DemanglerNodeModel>
     @Override
     public boolean hasDialog() 
     {
-        return true;
+        return false;
     }
 
     /**

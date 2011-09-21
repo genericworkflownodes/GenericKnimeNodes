@@ -21,25 +21,25 @@ package org.ballproject.knime.base.io.demangler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
-import org.ballproject.knime.base.port.*;
+
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.data.container.BlobDataCell;
+import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -48,16 +48,11 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
-import java.io.FileOutputStream;
+
+
 
 /**
- * This is the model implementation of MimeFileImporter.
+ * This is the model implementation of DemanglerNodeModel.
  * 
  * 
  * @author roettig
@@ -66,8 +61,11 @@ public class DemanglerNodeModel extends NodeModel
 {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger.getLogger(DemanglerNodeModel.class);	
-
+	private static final NodeLogger logger = NodeLogger.getLogger(DemanglerNodeModel.class);
+	
+	protected Demangler        demangler;
+	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
+	
 	/**
 	 * Constructor for the node model.
 	 */
@@ -76,28 +74,44 @@ public class DemanglerNodeModel extends NodeModel
 		super(1, 1);
 	}
 	
-	public byte[] data = new byte[]{};
-	
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
-	protected MIMEFileCell cell;
-	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
-		BufferedDataContainer container = exec.createDataContainer(outspec);
+		BufferedDataContainer container = null;
 		
-		MIMEFileCell inCell = (MIMEFileCell) inData[0].iterator().next().getCell(0); 
+		DataCell inCell0 = inData[0].iterator().next().getCell(0);
 		
-		Iterator<DataCell> iter = demangler.demangle(inCell);
-		int idx = 1;
-		while(iter.hasNext())
+		if(inCell0.getType().isCollectionType())
 		{
-			DataRow row = new DefaultRow("Row "+idx, iter.next());
-			container.addRowToTable(row);	
-			idx++;
+			ListCell lc = (ListCell) inCell0;
+			int N = lc.size();
+			container = exec.createDataContainer(adjustOutSpec(N));
+			List<Iterator<DataCell>> iters = new ArrayList<Iterator<DataCell>>();
+			for(DataCell dc: lc)
+			{
+				if(! (dc instanceof MIMEFileCell) )
+				{
+					throw new Exception("ListCell does not contain MIMEFileCells");
+				}
+				MIMEFileCell mfc = (MIMEFileCell) dc;
+				iters.add( resolver.getDemangler(inType).demangle(mfc) );
+			}
+			fillTable( iters, container);
+		}
+		else
+		{
+			container = exec.createDataContainer(outspec);
+			if(! (inCell0 instanceof MIMEFileCell) )
+			{
+				throw new Exception("first DataCell is not a MIMEFileCell");
+			}
+			List<Iterator<DataCell>> iters = new ArrayList<Iterator<DataCell>>();
+			MIMEFileCell mfc = (MIMEFileCell) inCell0;
+			iters.add( resolver.getDemangler(inType).demangle(mfc) );
+			fillTable( iters, container);
 		}
 		container.close();
 		
@@ -106,6 +120,39 @@ public class DemanglerNodeModel extends NodeModel
 		return new BufferedDataTable[]{ out };
 	}
 
+	private void fillTable(List<Iterator<DataCell>> iters, BufferedDataContainer container)
+	{
+		int C   = iters.size();
+		int idx = 1;
+		while(true)
+		{
+			DataCell[] rowcells = new DataCell[C];
+			int nDepleted = 0;
+			for(int i=0;i<C;i++)
+			{
+				if(iters.get(i).hasNext())
+				{
+					rowcells[i] = iters.get(i).next();
+				}
+				else
+				{
+					nDepleted++;
+					rowcells[i] = DataType.getMissingCell();
+				}
+			}
+			
+			// all iterators are depleted
+			if(nDepleted==C)
+			{
+				break;
+			}
+			
+			DataRow row = new DefaultRow("Row "+idx, rowcells);
+			
+			container.addRowToTable(row);	
+			idx++;
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -119,22 +166,37 @@ public class DemanglerNodeModel extends NodeModel
 	}
 	
 	
-	protected MIMEtype mimetype;
-	protected Demangler demangler;
+	protected DataType inType;
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{		
-		demangler = resolver.getDemangler(inSpecs[0].getColumnSpec(0).getType());
+	{	
+		// get data type of first column (where the MIMEFileCell is stored by convention)
+		inType = inSpecs[0].getColumnSpec(0).getType();
 		
-		// TODO: check if user settings are available, fit to the incoming
-		// table structure, and the incoming types are feasible for the node
-		// to execute. If the node can execute in its current state return
-		// the spec of its output data table(s) (if you can, otherwise an array
-		// with null elements), or throw an exception with a useful user message
+		boolean coll = false;
+		
+		if(inType.isCollectionType())
+		{
+			coll = true;
+			inType = inType.getCollectionElementType();
+		}
+		
+		// try to find a demangler for the data type ... 
+		demangler = resolver.getDemangler(inType);
+		
+		if(demangler==null)
+		{
+			throw new InvalidSettingsException("no Demangler found for "+inType.toString()+". Please register one first.");
+		}
+		
+		if(coll)
+		{
+			return new DataTableSpec[]{null};
+		}
 		
 		return new DataTableSpec[]{ getDataTableSpec() };
 	}
@@ -143,9 +205,26 @@ public class DemanglerNodeModel extends NodeModel
 	
 	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
 	{
-        DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-        DataType dt = demangler.getTargetType();
-		allColSpecs[0] =  new DataColumnSpecCreator("data",  dt).createSpec();
+		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
+        
+        DataType      dt =  demangler.getTargetType();
+		allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  dt).createSpec();
+        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
+
+        // save this internally
+        outspec = outputSpec;
+        
+        return outputSpec;
+	}
+	
+	private DataTableSpec adjustOutSpec(int N) throws InvalidSettingsException
+	{
+		DataColumnSpec[] allColSpecs = new DataColumnSpec[N];
+        for(int i=0;i<N;i++)
+        {
+        	allColSpecs[i] = new DataColumnSpecCreator("column "+i, demangler.getTargetType()).createSpec();	
+        }
+        
         DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
 
         // save this internally
@@ -184,33 +263,6 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
-		
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-		int    BUFFSIZE = 2048;
-		byte[] BUFFER   = new byte[BUFFSIZE];
-		
-	    while(entries.hasMoreElements()) 
-	    {
-	        ZipEntry entry = (ZipEntry)entries.nextElement();
-	        if(entry.getName().equals("rawdata.bin"))
-	        {
-	        	int  size = (int) entry.getSize(); 
-	        	data = new byte[size];
-	        	InputStream in = zip.getInputStream(entry);
-	        	int len;
-	        	int totlen=0;
-	        	while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
-	        	{
-	        		System.arraycopy(BUFFER, 0, data, totlen, len);
-	        		totlen+=len;
-	        	}
-	        }
-	    }
-	    zip.close();
-	    
 	}
 
 	/**
@@ -219,11 +271,6 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-	    out.putNextEntry(entry);
-	    out.write(data);
-	    out.close(); 
 	}
 
 }

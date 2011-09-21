@@ -22,7 +22,7 @@ package org.ballproject.knime.base.io.demangler;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
 /**
- * <code>NodeDialog</code> for the "MimeFileImporter" Node.
+ * <code>NodeDialog</code> for the "Demangler" Node.
  * 
  * 
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
@@ -36,7 +36,7 @@ public class DemanglerNodeDialog extends DefaultNodeSettingsPane
 {
 
 	/**
-	 * New pane for configuring MimeFileImporter node dialog. This is just a
+	 * New pane for configuring Demangler node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
 	 */
 	protected DemanglerNodeDialog(Object obj)
