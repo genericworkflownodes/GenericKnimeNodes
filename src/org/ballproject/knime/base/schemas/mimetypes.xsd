@@ -24,7 +24,18 @@
     	<xs:attribute name="description" type="xs:string">
     		<xs:annotation>
     			<xs:documentation>A descriptive sentence about the MIMEtype.</xs:documentation>
-    		</xs:annotation></xs:attribute>
+    		</xs:annotation>
+    	</xs:attribute>
+    	<xs:attribute name="binary">
+    		<xs:annotation>
+    			<xs:documentation>Are the files binary or human readable text.</xs:documentation>
+    		</xs:annotation>
+    		<xs:simpleType>
+    		 <xs:restriction base="xs:string">
+    				<xs:pattern value="true|false"></xs:pattern>
+    		 </xs:restriction>
+    		</xs:simpleType>
+    	</xs:attribute>
     	<xs:attribute name="ext">
             <xs:annotation>
             	<xs:documentation>The file extension of the file (e.g. doc).</xs:documentation>
