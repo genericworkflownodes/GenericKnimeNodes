@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>MimeFileViewer</name>
+    
+    <shortDescription>
+        Plain text view on any MimeFile.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Plain text view on any MimeFile.</intro>
+    </fullDescription>
+    
+    <ports>
+     <outPort index="0" name="MimeFile "> MimeFile </outPort>   
+    </ports>    
+    <views>
+        <view index="0" name="data view">View data in MIME File</view>
+    </views>
+</knimeNode>
