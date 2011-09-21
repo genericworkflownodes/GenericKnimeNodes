@@ -31,7 +31,8 @@ import java.io.Serializable;
 public class MIMEtype implements Serializable
 {
 	
-	protected String file_extension;
+	protected String  file_extension;
+	protected boolean binary;
 	
 	/**
 	 * constructs a new MIMEtype object associated with supplied file extension.
@@ -41,6 +42,18 @@ public class MIMEtype implements Serializable
 	public MIMEtype(String extension)
 	{
 		this.file_extension = extension;
+		this.binary = false;
+	}
+	
+	/**
+	 * constructs a new MIMEtype object associated with supplied file extension and binary flag.
+	 * 
+	 * @param extension
+	 */
+	public MIMEtype(String extension, boolean binary)
+	{
+		this.file_extension = extension;
+		this.binary = binary;
 	}
 	
 	/**
@@ -53,6 +66,26 @@ public class MIMEtype implements Serializable
 		return file_extension;
 	}
 	
+	/**
+	 * returns whether the file stores data in binary format.
+	 * 
+	 * @return isBinary
+	 */
+	public boolean isBinary()
+	{
+		return binary;
+	}
+
+	/**
+	 * sets whether the file stores data in binary format.
+	 * 
+	 * @param binary
+	 */
+	public void setBinary(boolean binary)
+	{
+		this.binary = binary;
+	}
+
 	public static boolean equals(MIMEtype type1, MIMEtype type2)
 	{
 		return type1.getExt().equals(type2.getExt());

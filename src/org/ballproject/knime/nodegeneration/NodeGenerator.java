@@ -315,7 +315,7 @@ public class NodeGenerator
 		String tpl = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
 		String data = "";
 		
-		String tpl2  = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\");\n\t\t}\n";
+		String tpl2  = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\",__BINARY__);\n\t\t}\n";
 		String data2 = "";
 		
 		String tpl3  = "\t\tif(dt==DataType.getType(__NAME__FileCell.class))\n\t\t{\n\t\tret = (Demangler) Helper.createObject(\"__CLAZZNAME__\");\n\t\t}\n";
@@ -336,10 +336,12 @@ public class NodeGenerator
 		{
 			Element elem    = (Element) node;
 			
-			String  name    = elem.valueOf("@name");
-			String  ext     = elem.valueOf("@ext");
-			String  descr   = elem.valueOf("@description");
+			String  name      = elem.valueOf("@name");
+			String  ext       = elem.valueOf("@ext");
+			String  descr     = elem.valueOf("@description");
 			String  demangler = elem.valueOf("@demangler");
+			String  binary    = elem.valueOf("@binary");
+			binary = (binary.equals("") ? "false" : binary);
 			
 			logger.info("read mime type "+name);
 			
@@ -361,6 +363,7 @@ public class NodeGenerator
 			
 			String s2 = tpl2.replace("__EXT__", ext.toLowerCase());
 			s2 = s2.replace("__NAME__",name); 
+			s2 = s2.replace("__BINARY__",binary);
 			data2 += s2;
 			
 			if(!demangler.equals(""))
