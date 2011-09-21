@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Knime plugin @@pluginname@@
 Bundle-SymbolicName: @@pluginname@@;singleton:=true
 Bundle-Version: @@pluginversion@@
-Bundle-ClassPath: lib.jar
 Bundle-Activator: @@pluginname@@.knime.PluginActivator
 Bundle-Vendor: roettig
 Require-Bundle: org.eclipse.core.runtime,
@@ -12,3 +11,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.knime.base,
  org.ballproject.knime
 Bundle-ActivationPolicy: lazy
+Export-Package: @@pluginname@@.knime.nodes.mimetypes

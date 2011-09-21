@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import org.knime.core.data.DataCell;
 import org.ballproject.knime.base.mime.*;
+import org.ballproject.knime.base.mime.demangler.*;
+import org.knime.core.data.DataType;
+import org.ballproject.knime.base.util.Helper;
 
 public class MimeFileCellFactory implements MIMEtypeRegistry
 {
@@ -35,5 +38,19 @@ __DATA__
 		MIMEtype ret = null;
 __DATA2__
 		return ret;
+	}
+	
+	@Override
+	public Demangler getDemangler(DataType dt)
+	{
+		Demangler ret = null;
+__DATA3__
+		return ret;
+	}
+	
+	@Override
+	public void addDemangler(Demangler demangler)
+	{
+		// NOP
 	}
 }

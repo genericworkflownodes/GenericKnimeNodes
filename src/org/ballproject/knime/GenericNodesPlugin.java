@@ -20,11 +20,27 @@
 package org.ballproject.knime;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
+import org.ballproject.knime.base.mime.demangler.Demangler;
+import org.ballproject.knime.base.mime.demangler.DemanglerProvider;
+import org.ballproject.knime.base.util.Helper;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPluginRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -85,6 +101,29 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 		props.load(GenericNodesPlugin.class.getResourceAsStream("baseplugin.properties"));
 		DEBUG = (props.getProperty("debug","false").toLowerCase().equals("true") ? true : false);
 		log("starting plugin: GenericNodesPlugin");
+        
+		IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.ballproject.knime.base.mime.demangler.DemanglerProvider");
+		try 
+		{
+			for (IConfigurationElement e : config) 
+			{
+				final Object o = e.createExecutableExtension("class");
+				if (o instanceof DemanglerProvider) 
+				{
+					DemanglerProvider dp = (DemanglerProvider) o;
+					for(Demangler dm : dp.getDemanglers())
+					{
+						System.out.println("registering Demangler for data type "+dm.getSourceType().toString());
+						registry.addDemangler(dm);
+					}
+				}
+			}
+		} 
+		catch (CoreException ex) 
+		{
+			System.out.println(ex.getMessage());
+		}
+		
 	}
 	
 	public static boolean DEBUG = false;

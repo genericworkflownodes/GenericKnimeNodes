@@ -20,12 +20,18 @@
 package org.ballproject.knime.base.mime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.ballproject.knime.base.mime.demangler.Demangler;
+import org.knime.core.data.DataType;
 
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
-	protected List<MIMEtypeRegistry>   resolvers = new ArrayList<MIMEtypeRegistry>();
+	protected List<MIMEtypeRegistry>   resolvers  = new ArrayList<MIMEtypeRegistry>();
+	protected Map<DataType,Demangler>  demanglers = new HashMap<DataType,Demangler>(); 
 	
 	@Override
 	public MIMEFileCell getCell(String name)
@@ -57,6 +63,18 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 				mt = rmt; 
 		}
 		return mt;
+	}
+
+	@Override
+	public Demangler getDemangler(DataType type)
+	{
+		return demanglers.get(type);
+	}
+
+	@Override
+	public void addDemangler(Demangler demangler)
+	{
+		demanglers.put(demangler.getSourceType(), demangler);
 	}
 
 }

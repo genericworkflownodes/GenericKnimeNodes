@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleListParameter;
@@ -21,6 +22,9 @@ public class ParameterTest
 	@Test
 	public void test() throws InvalidParameterValueException
 	{
+		Locale locale = new Locale("en", "UK");
+		Locale.setDefault(locale);
+
 		IntegerParameter ip = new IntegerParameter("i",2204);
 		assertEquals("2204",ip.getStringRep());
 		ip.fillFromString("1979");

@@ -318,6 +318,9 @@ public class NodeGenerator
 		String tpl2  = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\");\n\t\t}\n";
 		String data2 = "";
 		
+		String tpl3  = "\t\tif(dt==DataType.getType(__NAME__FileCell.class))\n\t\t{\n\t\tret = (Demangler) Helper.createObject(\"__CLAZZNAME__\");\n\t\t}\n";
+		String data3 = "";
+		
 		Set<String> mimetypes = new HashSet<String>();
 		
 		Map<String,String> map = new HashMap<String,String>();
@@ -336,6 +339,7 @@ public class NodeGenerator
 			String  name    = elem.valueOf("@name");
 			String  ext     = elem.valueOf("@ext");
 			String  descr   = elem.valueOf("@description");
+			String  demangler = elem.valueOf("@demangler");
 			
 			logger.info("read mime type "+name);
 			
@@ -358,10 +362,18 @@ public class NodeGenerator
 			String s2 = tpl2.replace("__EXT__", ext.toLowerCase());
 			s2 = s2.replace("__NAME__",name); 
 			data2 += s2;
+			
+			if(!demangler.equals(""))
+			{
+				String s3 = tpl3.replace("__CLAZZNAME__", demangler);
+				s3 = s3.replace("__NAME__",name); 
+				data3 += s3;
+			}
 		}
 		
 		tf.replace("__DATA__", data);
 		tf.replace("__DATA2__", data2);
+		tf.replace("__DATA3__", data3);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();

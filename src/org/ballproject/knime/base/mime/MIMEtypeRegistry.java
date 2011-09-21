@@ -19,6 +19,9 @@
 
 package org.ballproject.knime.base.mime;
 
+import org.ballproject.knime.base.mime.demangler.Demangler;
+import org.knime.core.data.DataType;
+
 /**
  * The interface MIMEtypeRegistry defines methods needed to build a (recursive) database or registry of MIME types known
  * to GenericKnimeNodes.
@@ -54,4 +57,9 @@ public interface MIMEtypeRegistry
 	 * @return MIMEtype
 	 */
 	MIMEtype getMIMEtype(String filename);
+	
+	Demangler getDemangler(DataType type);
+	
+	void addDemangler(Demangler demangler);
+	
 }
