@@ -19,14 +19,10 @@
 
 package org.ballproject.knime.base.config;
 
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -180,14 +176,33 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		
 		if(tags.contains(INPUTFILE_TAG)||tags.contains(OUTPUTFILE_TAG))
 		{
+			String[] file_extensions   = null; 
+			
 			if(elem.attributeValue("supported_formats")==null)
 			{
-				throw new Exception("i/o item with missing attribute supported_formats detected");
+				if(elem.attributeValue("restrictions")!=null)
+				{
+					String  formats = node.valueOf("@restrictions");
+					file_extensions = formats.split(",");
+					for(int i=0;i<file_extensions.length;i++)
+					{
+						file_extensions[i] = file_extensions[i].replace("*.", "");
+					}
+				}
+				else
+					throw new Exception("i/o item with missing attribute supported_formats detected");
+			}
+			else
+			{
+				String  formats = node.valueOf("@supported_formats");
+				file_extensions = formats.split(",");
+				for(int i=0;i<file_extensions.length;i++)
+					file_extensions[i] = file_extensions[i].trim();
 			}
 			
-			String  formats  = node.valueOf("@supported_formats");
 			
-			String[] toks2   = formats.split(",");
+			
+			
 
 			String path = getPath(node); 
 			port.setName(path);
@@ -202,7 +217,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			port.setOptional(optional);
 			
 			
-			for(String mt : toks2)
+			for(String mt : file_extensions)
 			{
 				port.addMimeType(new MIMEtype(mt.trim()));
 			}

@@ -215,4 +215,41 @@ public class CTDNodeConfigurationReaderTest
 		assertEquals(new Double(5),dlp.getUpperBound());
 	}
 	
+	@Test
+	public void testReader4() throws Exception
+	{
+		NodeConfiguration config = null;
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		config = reader.read(TestDataSource.class.getResourceAsStream("test4.ctd"));
+		
+		assertEquals(1,config.getNumberOfInputPorts());
+		assertEquals(1,config.getNumberOfOutputPorts());
+		
+		List<MIMEtype> mimetypes = config.getOutputPorts()[0].getMimeTypes();
+		
+		assertEquals("1.out",config.getOutputPorts()[0].getName());
+		assertEquals("output file",config.getOutputPorts()[0].getDescription());
+		
+		String [] test = {"mzML", "featureXML"};
+		int idx = 0;
+		for(MIMEtype mt: mimetypes)
+		{
+			assertEquals(test[idx],mt.getExt());
+			idx++;
+		}
+		
+		mimetypes = config.getInputPorts()[0].getMimeTypes();
+		
+		assertEquals("1.in",config.getInputPorts()[0].getName());
+		assertEquals("Input files separated by blank",config.getInputPorts()[0].getDescription());
+		
+		test = new String[]{"mzData","mzXML","mzML","DTA","DTA2D","mgf","featureXML","fid"};
+		idx = 0;
+		for(MIMEtype mt: mimetypes)
+		{
+			assertEquals(test[idx],mt.getExt());
+			idx++;
+		}
+		
+	}
 }
