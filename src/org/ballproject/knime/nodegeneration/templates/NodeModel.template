@@ -22,6 +22,15 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 	protected __NODENAME__NodeModel(NodeConfiguration config)
 	{
 		super(config);
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader(); 
+		try
+		{
+			this.config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		this.inports  = new DataType[][]{__INCLAZZEZ__};
 		this.outports = new DataType[][]{__OUTCLAZZEZ__};
 		
