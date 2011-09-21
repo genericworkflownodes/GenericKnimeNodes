@@ -57,11 +57,14 @@
 		</copy>
 
 		<mkdir dir="${temp.folder}/package/data"/>
+		<mkdir dir="${temp.folder}/package/icons"/>
 		
 		<copy file="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${temp.folder}/package/data"/>
 		
 		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>
-
+		
+		<copy file="data/GKN.png" todir="${temp.folder}/package/icons"/>
+		
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginversion@@" value="${basepluginversion}" />
 
