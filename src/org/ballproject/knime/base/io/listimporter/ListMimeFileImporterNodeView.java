@@ -27,7 +27,7 @@ import javax.swing.JTextArea;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeView</code> for the "MimeFileImporter" Node.
+ * <code>NodeView</code> for the "ListMimeFileImporter" Node.
  * 
  * 
  * @author roettig

@@ -25,7 +25,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 
 /**
- * <code>NodeDialog</code> for the "MimeFileImporter" Node.
+ * <code>NodeDialog</code> for the "ListMimeFileImporter" Node.
  * 
  * 
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
@@ -39,7 +39,7 @@ public class ListMimeFileImporterNodeDialog extends DefaultNodeSettingsPane
 {
 
 	/**
-	 * New pane for configuring MimeFileImporter node dialog. This is just a
+	 * New pane for configuring ListMimeFileImporter node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
 	 */
 	protected ListMimeFileImporterNodeDialog(Object obj)

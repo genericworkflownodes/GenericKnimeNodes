@@ -8,11 +8,11 @@
     </shortDescription>
     
     <fullDescription>
-        <intro>Load a set of MIME file </intro>
+        <intro>Load a set of MIME files </intro>
     </fullDescription>
     
     <ports>
-     <outPort index="0" name="loaded file "> loaded file </outPort>   
+     <outPort index="0" name="loaded file "> loaded files as collection </outPort>   
     </ports>    
     <views>
         <view index="0" name="data view">View loaded data</view>

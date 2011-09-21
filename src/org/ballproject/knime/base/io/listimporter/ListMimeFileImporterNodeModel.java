@@ -25,8 +25,6 @@ import java.io.IOException;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.port.*;
-import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -34,13 +32,10 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.collection.CollectionCellFactory;
 import org.knime.core.data.collection.ListCell;
-import org.knime.core.data.container.BlobDataCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
-import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -59,7 +54,7 @@ import java.util.zip.ZipOutputStream;
 import java.io.FileOutputStream;
 
 /**
- * This is the model implementation of MimeFileImporter.
+ * This is the model implementation of ListMimeFileImporter.
  * 
  * 
  * @author roettig
@@ -142,24 +137,17 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	 */
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{		
-		try
+	{	
+		if(this.m_filename.getStringArrayValue().length==0)
+			return new DataTableSpec[]{null};
+			
+		
+		for(String filename: this.m_filename.getStringArrayValue())
 		{
-			cell = resolver.getCell(this.m_filename.getStringArrayValue()[0]);
-		} 
-		catch (Exception e)
-		{
-			throw new InvalidSettingsException("could not resolve MIME type of file");
+			cell = resolver.getCell(filename);
+			if(cell==null)
+				throw new InvalidSettingsException("could not resolve MIME type of file");	
 		}
-		
-		if(cell==null)
-			throw new InvalidSettingsException("no file chosen");
-		
-		// TODO: check if user settings are available, fit to the incoming
-		// table structure, and the incoming types are feasible for the node
-		// to execute. If the node can execute in its current state return
-		// the spec of its output data table(s) (if you can, otherwise an array
-		// with null elements), or throw an exception with a useful user message
 		
 		return new DataTableSpec[]{ getDataTableSpec() };
 	}
