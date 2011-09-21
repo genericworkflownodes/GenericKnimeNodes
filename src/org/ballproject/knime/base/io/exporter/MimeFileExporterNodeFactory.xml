@@ -12,7 +12,7 @@
     </fullDescription>
     
     <ports>
-     <outPort index="0" name="MimeFile "> MimeFile </outPort>   
+     <inPort index="0" name="MimeFile "> MimeFile </inPort>   
     </ports>    
     <views>
         <view index="0" name="data view">View loaded data</view>

@@ -47,7 +47,7 @@ public class MimeFileExporterNodeFactory extends NodeFactory<MimeFileExporterNod
     @Override
     public int getNrNodeViews() 
     {
-        return 1;
+        return 0;
     }
 
     /**
