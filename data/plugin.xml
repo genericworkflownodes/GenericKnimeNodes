@@ -12,6 +12,7 @@
     <node factory-class="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
     <node factory-class="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
     <node factory-class="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" id="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
+    <node factory-class="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" id="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
    </extension>
    
    <extension-point id="base.mime.demangler.DemanglerProvider" name="DemanglerProvider" schema="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
