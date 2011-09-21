@@ -20,8 +20,6 @@
 package org.ballproject.knime.base.io.demangler;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
  * <code>NodeDialog</code> for the "MimeFileImporter" Node.
@@ -44,11 +42,6 @@ public class DemanglerNodeDialog extends DefaultNodeSettingsPane
 	protected DemanglerNodeDialog(Object obj)
 	{
 		super();
-		addDialogComponent(new DialogComponentFileChooser(DemanglerNodeDialog.createFileChooserModel(),"MimeFileImporterNodeDialog"));
 	}
 	
-	static SettingsModelString createFileChooserModel()
-	{
-		return new SettingsModelString(DemanglerNodeModel.CFG_FILENAME, "");
-	}
 }

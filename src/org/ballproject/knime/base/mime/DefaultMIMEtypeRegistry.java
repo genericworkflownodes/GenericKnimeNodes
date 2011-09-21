@@ -20,16 +20,18 @@
 package org.ballproject.knime.base.mime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ballproject.knime.base.mime.demangler.Demangler;
-import org.ballproject.knime.base.mime.demangler.SDFileDemangler;
 import org.knime.core.data.DataType;
 
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
-	protected List<MIMEtypeRegistry>   resolvers = new ArrayList<MIMEtypeRegistry>();
+	protected List<MIMEtypeRegistry>   resolvers  = new ArrayList<MIMEtypeRegistry>();
+	protected Map<DataType,Demangler>  demanglers = new HashMap<DataType,Demangler>(); 
 	
 	@Override
 	public MIMEFileCell getCell(String name)
@@ -66,14 +68,13 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	@Override
 	public Demangler getDemangler(DataType type)
 	{
-		Demangler d = null;
-		for(MIMEtypeRegistry resolver: resolvers)
-		{
-			Demangler rd = resolver.getDemangler(type); 
-			if(rd!=null)
-				d = rd; 
-		}
-		return d;
+		return demanglers.get(type);
+	}
+
+	@Override
+	public void addDemangler(Demangler demangler)
+	{
+		demanglers.put(demangler.getSourceType(), demangler);
 	}
 
 }

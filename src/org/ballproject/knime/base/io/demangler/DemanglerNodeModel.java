@@ -66,12 +66,7 @@ public class DemanglerNodeModel extends NodeModel
 {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger.getLogger(DemanglerNodeModel.class);
-
-	static final String CFG_FILENAME = "FILENAME";
-
-	private SettingsModelString  m_filename = DemanglerNodeDialog.createFileChooserModel();
-	
+	private static final NodeLogger logger = NodeLogger.getLogger(DemanglerNodeModel.class);	
 
 	/**
 	 * Constructor for the node model.
@@ -135,19 +130,6 @@ public class DemanglerNodeModel extends NodeModel
 	{		
 		demangler = resolver.getDemangler(inSpecs[0].getColumnSpec(0).getType());
 		
-		/*
-		try
-		{
-			mimetype = resolver.getMIMEtype(this.m_filename.getStringValue());
-		} 
-		catch (Exception e)
-		{
-			throw new InvalidSettingsException("could not resolve MIME type of file");
-		}
-		
-		if(cell==null)
-			return new DataTableSpec[]{null};
-		*/
 		// TODO: check if user settings are available, fit to the incoming
 		// table structure, and the incoming types are feasible for the node
 		// to execute. If the node can execute in its current state return
@@ -162,8 +144,8 @@ public class DemanglerNodeModel extends NodeModel
 	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
 	{
         DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-       
-		allColSpecs[0] =  new DataColumnSpecCreator("data", demangler.getType() ).createSpec();
+        DataType dt = demangler.getTargetType();
+		allColSpecs[0] =  new DataColumnSpecCreator("data",  dt).createSpec();
         DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
 
         // save this internally
@@ -178,7 +160,6 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
-		m_filename.saveSettingsTo(settings);
 	}
 
 	/**
@@ -187,10 +168,6 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-		// TODO load (valid) settings from the config object.
-		// It can be safely assumed that the settings are valided by the
-		// method below.
-		m_filename.loadSettingsFrom(settings);
 	}
 	
 	/**
@@ -199,18 +176,6 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-
-		// TODO check if the settings could be applied to our model
-		// e.g. if the count is in a certain range (which is ensured by the
-		// SettingsModel).
-		// Do not actually set any values of any member variables.
-
-		m_filename.validateSettings(settings);
-		String filename = settings.getString(CFG_FILENAME);
-		if(resolver.getMIMEtype(filename)==null)
-		{
-			throw new InvalidSettingsException("file of unknown MIMEtype selected "+filename);
-		}
 	}
 
 	/**

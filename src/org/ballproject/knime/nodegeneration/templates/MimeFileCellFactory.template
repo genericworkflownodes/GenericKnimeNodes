@@ -47,4 +47,10 @@ __DATA2__
 __DATA3__
 		return ret;
 	}
+	
+	@Override
+	public void addDemangler(Demangler demangler)
+	{
+		// NOP
+	}
 }

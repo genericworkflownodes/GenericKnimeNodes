@@ -59,4 +59,7 @@ public interface MIMEtypeRegistry
 	MIMEtype getMIMEtype(String filename);
 	
 	Demangler getDemangler(DataType type);
+	
+	void addDemangler(Demangler demangler);
+	
 }
