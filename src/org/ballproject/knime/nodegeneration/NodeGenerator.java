@@ -258,7 +258,7 @@ public class NodeGenerator
 			
 			if(tr.getReturnCode()==0)
 			{
-				copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
+				Helper.copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
 			}
 			else
 			{
@@ -278,7 +278,7 @@ public class NodeGenerator
 	
 	public static void pre() throws DocumentException, IOException
 	{				
-		copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
+		Helper.copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
 		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
@@ -488,7 +488,7 @@ public class NodeGenerator
 		File nodeConfigDir = new File(_absnodedir_ + "/" + nodeName + "/config");
 		nodeConfigDir.mkdirs();
 
-		copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
+		Helper.copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
 		
 		registerPath(cur_cat);
 		
@@ -897,12 +897,12 @@ public class NodeGenerator
 			// only copy zip and ini files
 			if(filename.toLowerCase().endsWith("zip"))
 			{
-				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+				Helper.copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
 				verifyZip(_absnodedir_ +pathsep+"binres"+pathsep+filename);
 			}
 			if(filename.toLowerCase().endsWith("ini"))
 			{
-				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+				Helper.copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
 			}
 		}
 		
@@ -967,42 +967,6 @@ public class NodeGenerator
 			{
 				panic("binary archive has no executable in bin directory for node : "+nodename);
 			}
-		}
-	}
-	
-
-	public static void copyStream(InputStream in, File dest) throws IOException
-	{
-		FileOutputStream    out = new FileOutputStream(dest);
-		BufferedInputStream bin = new BufferedInputStream(in);
-		byte[] buffer = new byte[2048];
-		int len;
- 		while((len=bin.read(buffer, 0, 2048))!=-1)
- 		{
- 			out.write(buffer,0,len);
- 		}
- 		out.close();
- 		bin.close();
-	}
-	
-	public static void copyFile(File in, File out) throws IOException
-	{
-		FileChannel inChannel = new FileInputStream(in).getChannel();
-		FileChannel outChannel = new FileOutputStream(out).getChannel();
-		try
-		{
-			inChannel.transferTo(0, inChannel.size(), outChannel);
-		}
-		catch (IOException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			if (inChannel != null)
-				inChannel.close();
-			if (outChannel != null)
-				outChannel.close();
 		}
 	}
 	

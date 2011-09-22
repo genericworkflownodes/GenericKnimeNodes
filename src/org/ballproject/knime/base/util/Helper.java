@@ -19,8 +19,13 @@
 
 package org.ballproject.knime.base.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.FileChannel;
 import java.util.Random;
 
 public class Helper
@@ -85,6 +90,41 @@ public class Helper
 			}
 		}
 		return (path.delete());
+	}
+	
+	public static void copyStream(InputStream in, File dest) throws IOException
+	{
+		FileOutputStream    out = new FileOutputStream(dest);
+		BufferedInputStream bin = new BufferedInputStream(in);
+		byte[] buffer = new byte[2048];
+		int len;
+ 		while((len=bin.read(buffer, 0, 2048))!=-1)
+ 		{
+ 			out.write(buffer,0,len);
+ 		}
+ 		out.close();
+ 		bin.close();
+	}
+	
+	public static void copyFile(File in, File out) throws IOException
+	{
+		FileChannel inChannel = new FileInputStream(in).getChannel();
+		FileChannel outChannel = new FileOutputStream(out).getChannel();
+		try
+		{
+			inChannel.transferTo(0, inChannel.size(), outChannel);
+		}
+		catch (IOException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			if (inChannel != null)
+				inChannel.close();
+			if (outChannel != null)
+				outChannel.close();
+		}
 	}
 	
 	static private Random rng = new Random();
