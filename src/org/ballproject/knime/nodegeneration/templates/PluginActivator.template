@@ -131,8 +131,9 @@ public class PluginActivator extends AbstractUIPlugin
 			ENVIRONMENT.put(k, v);
 		}
 		
+		PROPERTIES.put("use_ini","__USEINI__");
+		
 		// register mime types
-		//MIMEtypeRegistry reg = GenericNodesPlugin.getMIMEtypeRegistry();
 		GenericNodesPlugin.getMIMEtypeRegistry().addResolver(MimeFileCellFactory.getInstance());
 	}
 

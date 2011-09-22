@@ -19,14 +19,12 @@
 
 package org.ballproject.knime.nodegeneration;
 
-import java.io.BufferedInputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,6 +77,7 @@ public class NodeGenerator
 	public static String _abspackagedir_;
 	public static String _absnodedir_;
 	public static String _iconpath_;
+	public static String _useini_ = "true";
 	
 	public static String cur_cat;
 	public static String cur_path;
@@ -175,6 +174,7 @@ public class NodeGenerator
 		_descriptordir_ = props.getProperty("descriptordir");
 		
 		_iconpath_ = props.getProperty("icon");
+		_useini_   = props.getProperty("useini","true");
 		
 		// no descriptor directory supplied ...
 		if(_descriptordir_==null)
@@ -927,6 +927,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _pluginpackage_);
+		tf.replace("__USEINI__", _useini_);
 		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
 		template.close();
 	}

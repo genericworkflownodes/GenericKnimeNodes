@@ -312,7 +312,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			}
 		}
 		
-		writer.write(jobdir+FILESEP+"params.xml");
+		if(this.props.getProperty("use_ini").equals("true"))
+			writer.writeINI(jobdir+FILESEP+"params.xml");
+		else
+			writer.write(jobdir+FILESEP+"params.xml");
 
 		return outfiles;
 	}
