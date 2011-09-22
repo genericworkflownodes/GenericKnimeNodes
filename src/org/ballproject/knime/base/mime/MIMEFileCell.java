@@ -20,8 +20,6 @@
 package org.ballproject.knime.base.mime;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.knime.core.data.DataType;
@@ -37,7 +35,7 @@ import org.ballproject.knime.base.port.*;
 public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue, MimeMarker
 {
 	public transient DataType TYPE;
-	protected MIMEFileDelegate data;
+	protected MIMEFileDelegate data_delegate;
 	
 	public DataType getDataType()
 	{
@@ -46,7 +44,7 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	
 	public MIMEFileCell()
 	{
-		data = new MIMEFileDelegate(); 
+		data_delegate = new MIMEFileDelegate(); 
 	}
 	
 	/**
@@ -58,38 +56,32 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	 */
 	public void read(File file) throws IOException
 	{
-		FileInputStream fin = new FileInputStream(file);		 
-		
-		int    len = (int) file.length();
-		byte[] b   = new byte[len];
-		
-		fin.read(b);
-		fin.close();
-		
-		setData(b);
+		data_delegate.read(file);
 	}
 		
 	@Override
 	public int hashCode()
 	{
-		return data.getHash();
+		// hashCode is considered to give hash code of
+		// wrapped content
+		return data_delegate.getHash();
 	}	
 	
 	@Override
 	public byte[] getData()
 	{
-		return data.getByteArrayReference();
+		return data_delegate.getByteArrayReference();
 	}
 
 	@Override
 	public void setData(byte[] dat)
 	{
-		data.setContent(dat);
+		data_delegate.setContent(dat);
 	}
 	
 	@Override
 	public MIMEFileDelegate getDelegate()
 	{
-		return data;
+		return data_delegate;
 	}	
 }
