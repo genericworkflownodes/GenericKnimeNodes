@@ -107,6 +107,16 @@ public class CTDNodeConfigurationWriter
 		
 		XMLWriter writer = new XMLWriter( new FileWriter(filename) , format );
         writer.write( doc );
+        
+		writer.close();
+	}
+	
+	public void writeINI(String filename) throws IOException
+	{
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		
+		XMLWriter writer = new XMLWriter( new FileWriter(filename) , format );
+		writer.write(doc.selectSingleNode("//PARAMETERS"));
 
 		writer.close();
 	}
