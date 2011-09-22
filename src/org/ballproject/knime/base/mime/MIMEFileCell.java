@@ -50,7 +50,7 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	/**
 	 * read in the byte data contained in the supplied file.
 	 * 
-	 * @param file file to read
+	 * @param file filename to read
 	 * 
 	 * @throws IOException
 	 */
@@ -59,6 +59,18 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 		data_delegate.read(file);
 	}
 		
+	/**
+	 * write the byte data stored out into the supplied file.
+	 * 
+	 * @param file filename to write
+	 * 
+	 * @throws IOException
+	 */
+	public void write(String filename) throws IOException
+	{
+		data_delegate.write(filename);
+	}
+	
 	@Override
 	public int hashCode()
 	{

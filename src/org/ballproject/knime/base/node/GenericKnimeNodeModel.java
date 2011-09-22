@@ -213,10 +213,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				ListCell cells = (ListCell) cell;
 				for(int j=0;j<cells.size();j++)
 				{
-					MimeMarker mrk = (MimeMarker) cells.get(j);
-					MIMEFileDelegate del = mrk.getDelegate();
-					String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), mrk.getExtension(), !GenericNodesPlugin.isDebug());
-					del.write(filename);
+					MIMEFileCell     mfc = (MIMEFileCell) cells.get(j);
+					
+					String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), mfc.getExtension(), !GenericNodesPlugin.isDebug());
+					mfc.write(filename);
+					
 					GenericNodesPlugin.log("<< setting multi param "+name+"->"+filename);
 					writer.setMultiParameterValue(name, filename);
 				}
