@@ -143,7 +143,10 @@
 		<property name="pluginsources" value="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 
 		<mkdir dir="${temp.folder}/pluginpackage"/>
-
+		
+		<mkdir dir="${temp.folder}/pluginpackage/icons"/>
+		<copy file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/icons/logo.png" todir="${temp.folder}/pluginpackage/icons"/>
+		
 		<mkdir dir="${temp.folder}/pluginpackage/META-INF"/>
 		
 		<antcall target="buildpluginclasses"/>

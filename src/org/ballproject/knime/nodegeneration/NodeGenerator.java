@@ -78,6 +78,7 @@ public class NodeGenerator
 	public static String _executabledir_;
 	public static String _abspackagedir_;
 	public static String _absnodedir_;
+	public static String _iconpath_;
 	
 	public static String cur_cat;
 	public static String cur_path;
@@ -173,6 +174,8 @@ public class NodeGenerator
 				
 		_descriptordir_ = props.getProperty("descriptordir");
 		
+		_iconpath_ = props.getProperty("icon");
+		
 		// no descriptor directory supplied ...
 		if(_descriptordir_==null)
 		{
@@ -207,11 +210,25 @@ public class NodeGenerator
 		installMimeTypes();
 		
 		processDescriptors();
-				
+			
+		installIcon();
+		
 		post();		
 		
 	}
 	
+	public static void installIcon() throws IOException
+	{
+		if(_iconpath_!=null)
+		{
+			Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
+			Element elem = (Element) node;
+
+			elem.addElement("splashExtension").addAttribute("icon", "icons/logo.png").addAttribute("id", "logo");
+		}
+		new File(_destdir_ +File.separator+"icons").mkdirs();
+		Helper.copyFile(new File(_iconpath_), new File(_destdir_ +File.separator+"icons"+File.separator+"logo.png"));
+	}
 
 	public static void generateDescriptors(Properties props) throws Exception
 	{

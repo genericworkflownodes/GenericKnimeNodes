@@ -7,5 +7,7 @@
 
    <extension point="org.knime.workbench.repository.nodes">
    </extension>
-    
+   
+   <extension point="org.knime.product.splashExtension">
+   </extension> 
 </plugin>
