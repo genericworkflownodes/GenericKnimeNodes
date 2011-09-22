@@ -87,6 +87,7 @@
 		<javac srcdir="${src}" destdir="${temp.folder}/package" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
+			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
 		<touch file="${temp.folder}/package/org/ballproject/knime/baseplugin.properties"/>
@@ -120,6 +121,7 @@
 		<javac srcdir="${pluginsources}" destdir="${temp.folder}/pluginpackage" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
+			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 
 		<!-- copy factory-xmls and other stuff -->
