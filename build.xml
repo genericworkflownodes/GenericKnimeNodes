@@ -185,6 +185,7 @@
 			<test name="org.ballproject.knime.test.CTDNodeConfigurationWriterTest"/>
 			<test name="org.ballproject.knime.test.CTDNodeConfigurationReaderTest"/>
 			<test name="org.ballproject.knime.test.ParameterTest"/>
+			<test name="org.ballproject.knime.test.MIMEFileStuffTest"/>
 		</junit>
 	</target>
 </project>
