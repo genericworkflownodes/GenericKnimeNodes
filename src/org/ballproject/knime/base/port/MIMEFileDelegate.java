@@ -20,6 +20,7 @@
 package org.ballproject.knime.base.port;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -54,7 +55,19 @@ public class MIMEFileDelegate implements Serializable
 	
 	public int getHash()
 	{
-		return m_content.hashCode();
+		String s = new String(m_content);
+		return s.hashCode();
+	}
+	
+	public void read(File file) throws IOException
+	{
+		FileInputStream fin = new FileInputStream(file);		 
+		
+		int    len  = (int) file.length();
+		m_content   = new byte[len];
+		
+		fin.read(m_content);
+		fin.close();	
 	}
 	
 	public void write(String filename) throws IOException
