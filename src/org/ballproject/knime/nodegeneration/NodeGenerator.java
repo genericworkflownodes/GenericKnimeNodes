@@ -423,7 +423,7 @@ public class NodeGenerator
 		{
 			String filename = f.getName();
 			
-			if (filename.endsWith(".ttd"))
+			if (filename.endsWith(".ctd"))
 			{
 				logger.info("start processing node "+f);
 				processNode(filename, f);
@@ -895,10 +895,7 @@ public class NodeGenerator
 	}
 	
 	public static void post() throws IOException
-	{	
-		
-		//registerNode(_pluginpackage_ + ".knime.nodes.io.MimeFileExporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
-		
+	{			
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
 		XMLWriter writer = new XMLWriter( new FileWriter(_destdir_ + "/plugin.xml") , format );
