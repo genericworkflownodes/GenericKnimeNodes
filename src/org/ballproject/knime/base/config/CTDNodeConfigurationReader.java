@@ -227,6 +227,16 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		{
 			out_ports.add(port);
 			captured_ports.add(port.getName());
+			
+			if(multi)
+			{
+				String path = getPath(node);
+				FileListParameter param = new FileListParameter(name, new ArrayList<String>());
+				param.setPort(port);
+				param.setDescription(descr);
+				param.setIsOptional(false);
+				config.addParameter(path, param);
+			}
 		}
 		if(tags.contains(INPUTFILE_TAG))
 		{
@@ -234,15 +244,6 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 			captured_ports.add(port.getName());
 		}		
 		
-		if(multi)
-		{
-			String path = getPath(node);
-			FileListParameter param = new FileListParameter(name, new ArrayList<String>());
-			param.setPort(port);
-			param.setDescription(descr);
-			param.setIsOptional(false);
-			config.addParameter(path, param);
-		}
 	}
 	
 	public void processItem(Node elem) throws Exception
