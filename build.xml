@@ -24,6 +24,7 @@
 		<delete dir="${libdest}"/>
 		<delete dir="${temp.folder}"/>
 		<delete dir="build"/>
+		<delete dir="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 	</target>
 
 	<target name="prepare">
@@ -136,6 +137,10 @@
 		
 	</target>
 
+	<target name="copyicon" if="${iconfile.exists}">
+		<copy file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/icons/logo.png" todir="${temp.folder}/pluginpackage/icons"/>
+	</target>
+	
 	<target name="buildplugin" depends="prepare">
 
 		<property file="plugin.properties"/>
@@ -145,7 +150,10 @@
 		<mkdir dir="${temp.folder}/pluginpackage"/>
 		
 		<mkdir dir="${temp.folder}/pluginpackage/icons"/>
-		<copy file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/icons/logo.png" todir="${temp.folder}/pluginpackage/icons"/>
+	
+		<available property="iconfile.exists" file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/icons/logo.png"/>
+	
+		<antcall target="copyicon"/>
 		
 		<mkdir dir="${temp.folder}/pluginpackage/META-INF"/>
 		
