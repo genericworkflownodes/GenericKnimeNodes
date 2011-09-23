@@ -225,9 +225,11 @@ public class NodeGenerator
 			Element elem = (Element) node;
 
 			elem.addElement("splashExtension").addAttribute("icon", "icons/logo.png").addAttribute("id", "logo");
+			
+			new File(_destdir_ +File.separator+"icons").mkdirs();
+			Helper.copyFile(new File(_iconpath_), new File(_destdir_ +File.separator+"icons"+File.separator+"logo.png"));
 		}
-		new File(_destdir_ +File.separator+"icons").mkdirs();
-		Helper.copyFile(new File(_iconpath_), new File(_destdir_ +File.separator+"icons"+File.separator+"logo.png"));
+		
 	}
 
 	public static void generateDescriptors(Properties props) throws Exception
