@@ -74,7 +74,6 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
@@ -335,7 +334,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		GenericNodesPlugin.log("executing "+exepath);
 		
-		AsyncToolRunner     t      = new AsyncToolRunner(exepath,"-par", "params.xml");
+		String cli_switch = props.getProperty("ini_switch","-ini");
+		
+		GenericNodesPlugin.log(exepath+" "+cli_switch+" params.xml");
+		
+		AsyncToolRunner     t      = new AsyncToolRunner(exepath,cli_switch,"params.xml");
 		t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
 		
 		for(String key: env.keySet())
@@ -378,17 +381,22 @@ public abstract class GenericKnimeNodeModel extends NodeModel
         } 
         catch (ExecutionException ex)
         {
+        	ex.printStackTrace();
         }
         
         executor.shutdown();
 				
 		output = t.getToolRunner().getOutput();
 		
+		GenericNodesPlugin.log(output);
+		GenericNodesPlugin.log("retcode="+retcode);
+		
 		if(retcode!=0)
 	    {
 	    	logger.error(output);
 	    	throw new Exception("execution of external tool failed");
 	    }
+		
 	}
 
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();

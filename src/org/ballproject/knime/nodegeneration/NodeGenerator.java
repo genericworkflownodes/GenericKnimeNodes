@@ -22,6 +22,7 @@ package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,6 +86,8 @@ public class NodeGenerator
 	public static String _BINPACKNAME_;
 	public static String _payloaddir_;
 	
+	public static Properties props;
+	
 	public static void assertRestrictedAlphaNumeric(Object obj, String id)
 	{
 		if(obj==null||obj.toString().equals(""))
@@ -146,7 +149,7 @@ public class NodeGenerator
 	public static void main(String[] args) throws Exception
 	{
 		// read in properties for building the plugin
-		Properties props = new Properties();
+		props = new Properties();
 		props.load(new FileInputStream("plugin.properties"));
 				
 		// ... these are ..
@@ -213,8 +216,18 @@ public class NodeGenerator
 			
 		installIcon();
 		
+		fillProperties();
+		
 		post();		
 		
+	}
+	
+	public static void fillProperties() throws IOException
+	{
+		Properties p = new Properties();
+		p.put("use_ini", props.getProperty("use_ini","true"));
+		p.put("ini_switch", props.getProperty("ini_switch","-ini"));
+		p.store(new FileOutputStream(_abspackagedir_+File.separator+"knime"+File.separator+"plugin.properties"), null);
 	}
 	
 	public static void installIcon() throws IOException
@@ -929,7 +942,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__USEINI__", _useini_);
+		tf.replace("__NAME__", _pluginpackage_);
 		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
 		template.close();
 	}

@@ -52,12 +52,20 @@ public class PluginActivator extends AbstractUIPlugin
 	{
 		super.start(context);
 		
-		
-		//String home = KNIMEConstants.getKNIMEHomeDir();
 		String home = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES";
 		String os   = System.getProperty("os.name");
 		
 		PROPERTIES = new Properties();
+		
+		PROPERTIES.load(this.getClass().getResourceAsStream("plugin.properties"));
+		if(GenericNodesPlugin.isDebug())
+		{
+			GenericNodesPlugin.log("__NAME__ plugin properties are ... ");
+			for(Object key: PROPERTIES.keySet())
+			{
+				GenericNodesPlugin.log(key+" -> "+PROPERTIES.get(key));
+			}
+		}
 		
 		// default platform
 		String OS = "win";
@@ -130,8 +138,6 @@ public class PluginActivator extends AbstractUIPlugin
 			String v = PROPERTIES.getProperty(k);
 			ENVIRONMENT.put(k, v);
 		}
-		
-		PROPERTIES.put("use_ini","__USEINI__");
 		
 		// register mime types
 		GenericNodesPlugin.getMIMEtypeRegistry().addResolver(MimeFileCellFactory.getInstance());
