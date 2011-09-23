@@ -81,6 +81,7 @@ public class PluginActivator extends AbstractUIPlugin
 		
 		// get word size of JVM as a proxy for native word size of OS
 		String data_model = System.getProperty("sun.arch.data.model");
+		String targetdir  = home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME;
 		
 		if(data_model.equals("64"))
 		{
@@ -125,6 +126,12 @@ public class PluginActivator extends AbstractUIPlugin
 		if(!(new File(expectedBinDirPath).exists()))
 		{
 			throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
+		}
+		
+		File bindir = new File(targetdir+File.separator+"bin");
+		for(File file: bindir.listFiles())
+		{
+		  file.setExecutable(true);
 		}
 		
 		final IPreferenceStore pStore = getDefault().getPreferenceStore();
