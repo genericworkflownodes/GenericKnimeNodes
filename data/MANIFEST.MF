@@ -6,7 +6,8 @@ Bundle-Version: @@pluginversion@@
 Bundle-ClassPath: ., 
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
- lib/swingx-core-1.6.2.jar
+ lib/swingx-core-1.6.2.jar,
+ lib/bsh-2.0b4.jar
 Bundle-Vendor: roettig
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
@@ -100,7 +101,8 @@ Export-Package: org.ballproject.knime.base.config,
  org.jdesktop.swingx.tips,
  org.jdesktop.swingx.tree,
  org.jdesktop.swingx.treetable,
- org.jdesktop.swingx.util
+ org.jdesktop.swingx.util,
+ bsh.Interpreter
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.ballproject.knime.GenericNodesPlugin
 
