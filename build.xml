@@ -23,7 +23,6 @@
 	<target name="clean">
 		<delete dir="${libdest}"/>
 		<delete dir="${temp.folder}"/>
-		<delete dir="build"/>
 		<delete dir="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 	</target>
 
@@ -48,6 +47,7 @@
 				<include name="dom4j-1.6.1.jar"/>
 				<include name="jaxen-1.1-beta-6.jar"/>
 				<include name="swingx-core-1.6.2.jar"/>
+				<include name="bsh-2.0b4.jar"/>
 			</fileset>
 		</copy>
 
