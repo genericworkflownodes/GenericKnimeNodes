@@ -29,6 +29,7 @@ import java.util.List;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -36,6 +37,8 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -77,6 +80,38 @@ public class BeanShellNodeModel extends NodeModel
 		super(1,1);
 	}
 	
+	
+	private static class Row
+	{
+		private DataCell[] row;
+		
+		public Row(DataCell[] row)
+		{
+			this.row = row;
+		}
+		
+		public int getNumCols()
+		{
+			if(row!=null)
+				return row.length;
+			return 0;
+		}
+		
+		public Class<?> getColumnClass(int idx)
+		{
+			if(row!=null && idx>=0 && idx<row.length)
+				return row[idx].getClass();
+			return null;
+		}
+		
+		public DataCell getCell(int idx)
+		{
+			if(row!=null && idx>=0 && idx<row.length)
+				return row[idx];
+			return null;
+		}
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -106,7 +141,7 @@ public class BeanShellNodeModel extends NodeModel
 		{
 			ip.set("cell", iter.next().getCell(0));
 			ip.eval(script_secondPass);
-			Object out = ip.get("out");
+			Object out = ip.get("OUT");
 			if(out==null)
 				continue;
 			if(first)
@@ -120,26 +155,27 @@ public class BeanShellNodeModel extends NodeModel
 					C = 1;
 				}
 				
-				container1 = exec.createDataContainer(getDataTableSpec(C));
+				//container1 = exec.createDataContainer(getDataTableSpec(C));
+				container1 = exec.createDataContainer(getDataTableSpec2(out));
 				first = false;
 			}
 			
 			
-			String[] values = null; 
+			Object[] values = null; 
 			if(out instanceof Object[])
 			{
-				values = (String[]) ip.get("out");
+				values = (Object[]) ip.get("OUT");
 			}
 			else
 			{
-				values = new String[]{(String) ip.get("out")};
+				values = new String[]{(String) ip.get("OUT")};
 			}
 			int N = values.length;
 			int i = 0;
-			StringCell[] cells = new StringCell[N];
-			for(String value: values)
+			DataCell[] cells = new DataCell[N];
+			for(Object value: values)
 			{
-				cells[i++] = new StringCell(value);
+				cells[i++] = getCell(value); //new StringCell(value);
 			}
 			DefaultRow row = new DefaultRow("Row "+idx++, cells);
 			container1.addRowToTable(row);
@@ -151,6 +187,28 @@ public class BeanShellNodeModel extends NodeModel
 
 		
 		return new BufferedDataTable[]{ out1};
+	}
+	
+	private DataCell getCell(Object in)
+	{
+		if(in instanceof Integer)
+		{
+			return new IntCell((Integer) in);	
+		}
+		else
+		if(in instanceof Double)
+		{
+			return new DoubleCell((Double) in);
+		}
+		else
+		if(in instanceof String)
+		{
+			return new StringCell((String) in);
+		}				
+		else
+		{
+			return null;
+		}
 	}
 
 	/**
@@ -195,6 +253,56 @@ public class BeanShellNodeModel extends NodeModel
        	outspec = outputSpec;
         
         return outputSpec;
+	}
+	
+	private DataTableSpec getDataTableSpec2(Object out) throws InvalidSettingsException
+	{
+		
+		int C = 1;
+		Object[] data;
+		if(out instanceof Object[])
+		{
+			C    = ((Object[]) out).length;
+			data = ((Object[]) out);
+		}
+		else
+		{
+			data = new Object[]{out};
+		}
+		
+		
+		
+		DataColumnSpec[] allColSpecs = new DataColumnSpec[C];
+		
+		for(int i=0;i<C;i++)
+		{
+			if(data[i] instanceof Integer)
+			{
+				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  IntCell.TYPE).createSpec();	
+			}
+			else
+			if(data[i] instanceof Double)
+			{
+				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  DoubleCell.TYPE).createSpec();
+			}
+			else
+			if(data[i] instanceof Double)
+			{
+				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  StringCell.TYPE).createSpec();
+			}				
+			else
+			{
+				throw new InvalidSettingsException("invalid type was supplied at column # "+i);
+			}
+		}
+		
+        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
+
+        // save this internally
+       	outspec = outputSpec;
+        
+        return outputSpec;
+        
 	}
 	
 	/**
