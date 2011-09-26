@@ -387,7 +387,7 @@ public class NodeGenerator
 			createMimeCell(name, ext);
 			createMimeValue(name);
 		
-			ext2type.put(ext,name);
+			ext2type.put(ext.toLowerCase(),name);
 			
 			String s = tpl.replace("__EXT__", ext.toLowerCase());
 			s = s.replace("__NAME__",name); 
@@ -808,7 +808,7 @@ public class NodeGenerator
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = ext2type.get(type.getExt());
+				String ext = ext2type.get(type.getExt().toLowerCase());
 				if(ext==null)
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
@@ -835,7 +835,7 @@ public class NodeGenerator
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = ext2type.get(type.getExt());
+				String ext = ext2type.get(type.getExt().toLowerCase());
 				if(ext==null)
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
