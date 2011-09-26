@@ -44,11 +44,6 @@ public class ListMimeFileImporterNodeView extends NodeView<ListMimeFileImporterN
 	protected ListMimeFileImporterNodeView(final ListMimeFileImporterNodeModel nodeModel)
 	{
 		super(nodeModel);
-		JTextArea text = new JTextArea(new String(nodeModel.data), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		setComponent(scrollpane);
-		
 	}
 	
 	

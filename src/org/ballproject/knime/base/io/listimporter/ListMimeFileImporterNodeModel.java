@@ -21,10 +21,13 @@ package org.ballproject.knime.base.io.listimporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -44,14 +47,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
-import java.io.FileOutputStream;
 
 /**
  * This is the model implementation of ListMimeFileImporter.
@@ -75,10 +70,8 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	 */
 	protected ListMimeFileImporterNodeModel()
 	{
-		super(0, 1);
+		super(0, 2);
 	}
-	
-	public byte[] data = new byte[]{};
 	
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
 	protected MIMEFileCell cell;
@@ -100,22 +93,31 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 			cell.read(f);
 			files.add(cell);
 		}
-			
-		// FixME
-		//data = cell.getData();
 		
 		ListCell lc = CollectionCellFactory.createListCell(files);
 		
-		BufferedDataContainer container = exec.createDataContainer(outspec);
+		BufferedDataContainer container1 = exec.createDataContainer(outspec1);
+		BufferedDataContainer container2 = exec.createDataContainer(outspec2);
+		
 		
 		DataRow row = new DefaultRow("Row 0", lc);
-		container.addRowToTable(row);
+		container1.addRowToTable(row);
 		
-		container.close();
+		int idx = 1;
+		for(DataCell dc : lc)
+		{
+			DataRow row_ = new DefaultRow("Row "+idx, dc);
+			container2.addRowToTable(row_);
+			idx++;
+		}
 		
-		BufferedDataTable out = container.getTable();
+		container1.close();
+		container2.close();
 		
-		return new BufferedDataTable[]{ out };
+		BufferedDataTable out1 = container1.getTable();
+		BufferedDataTable out2 = container2.getTable();
+		
+		return new BufferedDataTable[]{ out1, out2 };
 	}
 
 
@@ -149,24 +151,25 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 				throw new InvalidSettingsException("could not resolve MIME type of file");	
 		}
 		
-		return new DataTableSpec[]{ getDataTableSpec() };
+		getDataTableSpec();
+		
+		return new DataTableSpec[]{ outspec1, outspec2 };
 	}
 
-	private DataTableSpec outspec;
+	private DataTableSpec outspec1;
+	private DataTableSpec outspec2;
 	
-	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
+	private void getDataTableSpec() throws InvalidSettingsException
 	{
-        DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
+        DataColumnSpec[] allColSpecs1 = new DataColumnSpec[1];
+        DataColumnSpec[] allColSpecs2 = new DataColumnSpec[1];
         
         DataType type = ListCell.getCollectionType(cell.getDataType());
-        
-		allColSpecs[0] =  new DataColumnSpecCreator("MIMEFILE", type ).createSpec();
-        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-
-        // save this internally
-        outspec = outputSpec;
-        
-        return outputSpec;
+        allColSpecs1[0] =  new DataColumnSpecCreator("MIMEFILE", type ).createSpec();
+		outspec1 = new DataTableSpec(allColSpecs1);
+		
+		allColSpecs2[0] =  new DataColumnSpecCreator("MIMEFILE", cell.getDataType() ).createSpec();
+		outspec2 = new DataTableSpec(allColSpecs2);
 	}
 
 	/**
@@ -212,33 +215,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
-		
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-		int    BUFFSIZE = 2048;
-		byte[] BUFFER   = new byte[BUFFSIZE];
-		
-	    while(entries.hasMoreElements()) 
-	    {
-	        ZipEntry entry = (ZipEntry)entries.nextElement();
-	        if(entry.getName().equals("rawdata.bin"))
-	        {
-	        	int  size = (int) entry.getSize(); 
-	        	data = new byte[size];
-	        	InputStream in = zip.getInputStream(entry);
-	        	int len;
-	        	int totlen=0;
-	        	while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
-	        	{
-	        		System.arraycopy(BUFFER, 0, data, totlen, len);
-	        		totlen+=len;
-	        	}
-	        }
-	    }
-	    zip.close();
-	    
 	}
 
 	/**
@@ -247,11 +223,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-	    out.putNextEntry(entry);
-	    out.write(data);
-	    out.close(); 
 	}
 
 }
