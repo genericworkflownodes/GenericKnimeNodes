@@ -21,7 +21,7 @@ package org.ballproject.knime.base.io.exporter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.NoSuchElementException;
+//import java.util.NoSuchElementException;
 
 import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.port.*;
@@ -31,8 +31,8 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.workflow.LoopEndNode;
-import org.knime.core.node.workflow.LoopStartNodeTerminator;
+//import org.knime.core.node.workflow.LoopEndNode;
+//import org.knime.core.node.workflow.LoopStartNodeTerminator;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -48,7 +48,7 @@ import org.knime.core.node.NodeSettingsWO;
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeModel extends NodeModel implements LoopEndNode
+public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNode*/
 {
 
 	// the logger instance
@@ -86,6 +86,7 @@ public class MimeFileExporterNodeModel extends NodeModel implements LoopEndNode
 				throw new Exception("invalid extension given for filename. Must be "+mrk.getExtension());
 			}
 	
+			/*
 			if(isLooping())
 			{
 				int iter = getIterationIndex();
@@ -107,16 +108,19 @@ public class MimeFileExporterNodeModel extends NodeModel implements LoopEndNode
 			{
 				del.write(m_filename.getStringValue());
 			}
+			*/
+			del.write(m_filename.getStringValue());
 		}
 		return new BufferedDataTable[]{};
 	}
 
-	public boolean isLooping()
+	/*
+	private boolean isLooping()
 	{
 		return (getLoopStartNode()!=null);
 	}
 	
-	public int getIterationIndex()
+	private int getIterationIndex()
 	{
 		int ret = -1;
 		try
@@ -129,6 +133,7 @@ public class MimeFileExporterNodeModel extends NodeModel implements LoopEndNode
 		}
 		return ret;
 	}
+	*/
 	
 	/**
 	 * {@inheritDoc}
