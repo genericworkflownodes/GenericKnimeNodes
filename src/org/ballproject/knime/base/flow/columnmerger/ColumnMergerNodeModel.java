@@ -82,6 +82,7 @@ public class ColumnMergerNodeModel extends NodeModel
 	{
 		PortType[] portTypes = new PortType[4];
 	    Arrays.fill(portTypes, BufferedDataTable.TYPE);
+	    portTypes[1] = OPTIONAL_PORT_TYPE;
 	    portTypes[2] = OPTIONAL_PORT_TYPE;
 	    portTypes[3] = OPTIONAL_PORT_TYPE;
 	    return portTypes;
@@ -124,12 +125,20 @@ public class ColumnMergerNodeModel extends NodeModel
 		
 		DataCell port_cell = null;
 		
+		// first port must be set
 		port_cell = inData[0].iterator().next().getCell(0);
 		fill(port_cell, container2, mfcells);
 		
-		port_cell = inData[1].iterator().next().getCell(0);
-		fill(port_cell, container2, mfcells);
+		//port_cell = inData[1].iterator().next().getCell(0);
+		//fill(port_cell, container2, mfcells);
 	
+		// other ports are optional
+		if(inData[1]!=null)
+		{
+			port_cell = inData[1].iterator().next().getCell(0);
+			fill(port_cell, container2, mfcells);
+		}
+		
 		if(inData[2]!=null)
 		{
 			port_cell = inData[2].iterator().next().getCell(0);
