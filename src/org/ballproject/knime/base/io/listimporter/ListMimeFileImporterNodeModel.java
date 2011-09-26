@@ -141,7 +141,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
 	{	
 		if(this.m_filename.getStringArrayValue().length==0)
-			return new DataTableSpec[]{null};
+			return new DataTableSpec[]{null,null};
 			
 		
 		for(String filename: this.m_filename.getStringArrayValue())
