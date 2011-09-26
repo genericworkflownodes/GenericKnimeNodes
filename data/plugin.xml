@@ -14,6 +14,7 @@
     <node factory-class="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
     <node factory-class="org.ballproject.knime.base.io.viewer.MimeFileViewerNodeFactory" id="org.ballproject.knime.base.io.viewer.MimeFileViewerNodeFactory" category-path="/community/GenericKnimeNodes/View"/>
     <node factory-class="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
+    <node factory-class="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
     <node factory-class="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" id="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
     <node factory-class="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" id="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
     <node factory-class="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" id="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
