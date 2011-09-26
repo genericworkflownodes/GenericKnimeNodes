@@ -95,6 +95,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 			}
 			catch (InvalidParameterValueException e)
 			{
+				e.printStackTrace();
 				throw new NotConfigurableException(e.getMessage());
 			}
 		}
@@ -111,6 +112,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 			} 
 			catch (InvalidSettingsException e)
 			{
+				e.printStackTrace();
 				throw new NotConfigurableException(e.getMessage());
 			}
 		}
