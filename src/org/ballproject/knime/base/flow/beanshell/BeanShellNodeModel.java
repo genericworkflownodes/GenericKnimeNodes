@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 
+import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
@@ -81,37 +83,6 @@ public class BeanShellNodeModel extends NodeModel
 	}
 	
 	
-	private static class Row
-	{
-		private DataCell[] row;
-		
-		public Row(DataCell[] row)
-		{
-			this.row = row;
-		}
-		
-		public int getNumCols()
-		{
-			if(row!=null)
-				return row.length;
-			return 0;
-		}
-		
-		public Class<?> getColumnClass(int idx)
-		{
-			if(row!=null && idx>=0 && idx<row.length)
-				return row[idx].getClass();
-			return null;
-		}
-		
-		public DataCell getCell(int idx)
-		{
-			if(row!=null && idx>=0 && idx<row.length)
-				return row[idx];
-			return null;
-		}
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,7 +98,7 @@ public class BeanShellNodeModel extends NodeModel
 		
 		while(iter.hasNext())
 		{
-			ip.set("cell", iter.next().getCell(0));
+			ip.set("INROW",fillInRow(iter.next()));
 			ip.eval(script_firstPass);
 		}
 		
@@ -139,43 +110,30 @@ public class BeanShellNodeModel extends NodeModel
 		
 		while(iter.hasNext())
 		{
+			ip.set("OUTROW", new OutRow());
 			ip.set("cell", iter.next().getCell(0));
+			ip.set("INROW", fillInRow(iter.next()));
 			ip.eval(script_secondPass);
-			Object out = ip.get("OUT");
-			if(out==null)
+			OutRow out = (OutRow) ip.get("OUTROW");
+			
+			if(out.isNull())
 				continue;
+			
 			if(first)
 			{
-				if(out instanceof Object[])
-				{
-					C = ((Object[]) out).length;
-				}
-				else
-				{
-					C = 1;
-				}
-				
-				//container1 = exec.createDataContainer(getDataTableSpec(C));
 				container1 = exec.createDataContainer(getDataTableSpec2(out));
 				first = false;
 			}
 			
 			
-			Object[] values = null; 
-			if(out instanceof Object[])
-			{
-				values = (Object[]) ip.get("OUT");
-			}
-			else
-			{
-				values = new String[]{(String) ip.get("OUT")};
-			}
-			int N = values.length;
+			List<Object> values = out.getValues(); 
+			
+			int N = values.size();
 			int i = 0;
 			DataCell[] cells = new DataCell[N];
 			for(Object value: values)
 			{
-				cells[i++] = getCell(value); //new StringCell(value);
+				cells[i++] = getCell(value); 
 			}
 			DefaultRow row = new DefaultRow("Row "+idx++, cells);
 			container1.addRowToTable(row);
@@ -187,6 +145,18 @@ public class BeanShellNodeModel extends NodeModel
 
 		
 		return new BufferedDataTable[]{ out1};
+	}
+	
+	private InRow fillInRow(DataRow row)
+	{
+		int N = row.getNumCells();
+		DataCell[] data = new DataCell[N];
+		for(int i=0;i<N;i++)
+		{
+			data[i] = row.getCell(i);
+		}
+		InRow ret = new InRow(data);
+		return ret;
 	}
 	
 	private DataCell getCell(Object in)
@@ -204,10 +174,15 @@ public class BeanShellNodeModel extends NodeModel
 		if(in instanceof String)
 		{
 			return new StringCell((String) in);
-		}				
+		}
+		else
+		if(in instanceof Boolean)
+		{
+				return ( ((Boolean) in) ? BooleanCell.TRUE : BooleanCell.FALSE);
+		}
 		else
 		{
-			return null;
+			return new StringCell(in.toString());
 		}
 	}
 
@@ -255,44 +230,40 @@ public class BeanShellNodeModel extends NodeModel
         return outputSpec;
 	}
 	
-	private DataTableSpec getDataTableSpec2(Object out) throws InvalidSettingsException
+	private DataTableSpec getDataTableSpec2(OutRow out) throws InvalidSettingsException
 	{
 		
-		int C = 1;
-		Object[] data;
-		if(out instanceof Object[])
-		{
-			C    = ((Object[]) out).length;
-			data = ((Object[]) out);
-		}
-		else
-		{
-			data = new Object[]{out};
-		}
-		
-		
+		List<Class<?>> types = out.getTypes();
+		int C = types.size();
 		
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[C];
 		
 		for(int i=0;i<C;i++)
 		{
-			if(data[i] instanceof Integer)
+			if(types.get(i).equals(Integer.class))
 			{
-				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  IntCell.TYPE).createSpec();	
+				allColSpecs[i]   =  new DataColumnSpecCreator(out.getNames().get(i),  IntCell.TYPE).createSpec();	
 			}
 			else
-			if(data[i] instanceof Double)
+			if(types.get(i).equals(Double.class))
 			{
-				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  DoubleCell.TYPE).createSpec();
+				allColSpecs[i]   =  new DataColumnSpecCreator(out.getNames().get(i),  DoubleCell.TYPE).createSpec();
 			}
 			else
-			if(data[i] instanceof Double)
+			if(types.get(i).equals(String.class))
 			{
-				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  StringCell.TYPE).createSpec();
+				allColSpecs[i]   =  new DataColumnSpecCreator(out.getNames().get(i),  StringCell.TYPE).createSpec();
 			}				
 			else
+			if(types.get(i).equals(Boolean.class))
 			{
-				throw new InvalidSettingsException("invalid type was supplied at column # "+i);
+				allColSpecs[i]   =  new DataColumnSpecCreator(out.getNames().get(i),  BooleanCell.TYPE).createSpec();
+			}
+			else
+			{
+				// string fallback
+				allColSpecs[i]   =  new DataColumnSpecCreator("column "+i,  StringCell.TYPE).createSpec();
+				//throw new InvalidSettingsException("invalid type was supplied at column # "+i);
 			}
 		}
 		
