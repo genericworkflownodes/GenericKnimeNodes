@@ -571,12 +571,17 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		}
 		GenericNodesPlugin.log("####");
 		*/
+		for(String key: this.config.getParameterKeys())
+		{
+			settings.addString(key, this.config.getParameter(key).getStringRep());
+		}
+		/*
 		for(Parameter<?> param: this.config.getParameters())
 		{
 			//GenericNodesPlugin.log(param.getKey()+" -> "+param.getStringRep());
 			settings.addString(param.getKey(), param.getStringRep());
 		}
-		
+		*/
 		for(int i=0;i<this.config.getNumberOfOutputPorts();i++)
 		{
 			settings.addInt("GENERIC_KNIME_NODES_outtype#"+i,this.getOutputTypeIndex(i));
@@ -594,12 +599,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// - we xfer the values into the corresponding model objects
 		
 		GenericNodesPlugin.log("## loadValidatedSettingsFrom");
-		for(Parameter<?> param: config.getParameters())
+		for(String key: this.config.getParameterKeys())
 		{
-			String value = settings.getString(param.getKey());
+			String value = settings.getString(key);
 			try
 			{
-				param.fillFromString(value);
+				this.config.getParameter(key).fillFromString(value);
 			}
 			catch (InvalidParameterValueException e)
 			{
@@ -626,35 +631,34 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 
 		
 		GenericNodesPlugin.log("## validateSettings ");
-		
-		for(Parameter<?> param: config.getParameters())
+		for(String key: this.config.getParameterKeys())
 		{
+			Parameter<?> param = config.getParameter(key);
 			if(!param.getIsOptional())
 			{
-				if(!settings.containsKey(param.getKey()))
+				if(!settings.containsKey(key))
 				{
-					GenericNodesPlugin.log("\t no key found for mand. parameter "+param.getKey());
-					throw new InvalidSettingsException("no value for mandatory parameter "+param.getKey()+" supplied");
+					GenericNodesPlugin.log("\t no key found for mand. parameter "+key);
+					throw new InvalidSettingsException("no value for mandatory parameter "+key+" supplied");
 				}
-				if(settings.getString(param.getKey())==null)
+				if(settings.getString(key)==null)
 				{
-					GenericNodesPlugin.log("\t null value found for mand. parameter "+param.getKey());
-					throw new InvalidSettingsException("no value for mandatory parameter "+param.getKey()+" supplied");
+					GenericNodesPlugin.log("\t null value found for mand. parameter "+key);
+					throw new InvalidSettingsException("no value for mandatory parameter "+key+" supplied");
 				}
 			}
 			
-			String value = settings.getString(param.getKey());
+			String value = settings.getString(key);
 			try
 			{
 				param.fillFromString(value);
 			}
 			catch (InvalidParameterValueException e)
 			{
-				GenericNodesPlugin.log("\t invalid value for parameter "+param.getKey());
-				throw new InvalidSettingsException("invalid value for parameter "+param.getKey());
+				GenericNodesPlugin.log("\t invalid value for parameter "+key);
+				throw new InvalidSettingsException("invalid value for parameter "+key);
 			}
-			
-		}
+		}		
 	}
 
 	/**
