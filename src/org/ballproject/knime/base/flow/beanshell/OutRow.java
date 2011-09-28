@@ -3,7 +3,7 @@ package org.ballproject.knime.base.flow.beanshell;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OutRow
+public final class OutRow
 {
 	private List<Object> values = new ArrayList<Object>();
 	private List<String> names  = new ArrayList<String>();
@@ -23,7 +23,40 @@ public class OutRow
 		names.add(String.format("column %d",names.size()));
 	}
 	
-	public List<Object> getValues()
+	public void addDoubleCell(String name, Object value)
+	{
+		isNull = false;
+		addCell(name, Double.parseDouble(value.toString()));
+	}
+	
+	
+	public void addIntCell(String name, Object value)
+	{
+		addCell(name, Integer.parseInt(value.toString()));
+	}
+	
+	public void addStringCell(String name, Object value)
+	{
+		isNull = false;
+		addCell(name, value.toString());
+	}
+	
+	public void addDoubleCell(Object value)
+	{
+		addDoubleCell(String.format("column %d",names.size()), value);
+	}
+	
+	public void addIntCell(Object value)
+	{
+		addIntCell(String.format("column %d",names.size()), value);
+	}
+	
+	public void addStringCell(Object value)
+	{
+		addStringCell(String.format("column %d",names.size()), value);
+	}
+	
+	public  List<Object> getValues()
 	{
 		return values;
 	}
