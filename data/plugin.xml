@@ -23,6 +23,7 @@
     <node factory-class="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" id="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
    </extension>
    
+   <!-- id seems to be package relative (so leading org.ballproject.knime was dropped) -->
    <extension-point id="base.mime.demangler.DemanglerProvider" name="DemanglerProvider" schema="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
    
    <extension point="org.knime.product.splashExtension">
