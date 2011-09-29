@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="./default.png" type="Source">
-    <name>Demangler</name>
+<knimeNode icon="./default.png" type="Manipulator">
+    <name>FileToTable</name>
     
-    <shortDescription>Demangles a MIME file</shortDescription>
+    <shortDescription>Converts a MIME file into a table</shortDescription>
     
     <fullDescription>
         <intro>The Demangler Node will demangle incoming MIMEFileCell data into corresponding classical KNIME FileCells. To register a Demangler for 

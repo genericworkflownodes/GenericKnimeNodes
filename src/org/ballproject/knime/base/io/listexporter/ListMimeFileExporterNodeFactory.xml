@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="./default.png" type="Source">
-    <name>ListMimeFileExporter</name>
+<knimeNode icon="floppy.png" type="Sink">
+    <name>Output Files</name>
     
     <shortDescription>
         
     </shortDescription>
     
     <fullDescription>
-        <intro>Export any list of MimeFiles </intro>
+        <intro>Store any list of MIME files to filesystem. You can enter a base filename with valid MIME type extension and
+        all files will be stored to disk with an inserted index.</intro>
     </fullDescription>
     
     <ports>
-     <inPort index="0" name="MimeFiles"> list of MimeFile </inPort>   
-     <inPort index="1" name="MimeFiles"> list of MimeFile (stacked)</inPort>
+     <inPort index="0" name="MimeFiles"> list of MIME files </inPort>   
+     <inPort index="1" name="MimeFiles"> list of MIME files (stacked)</inPort>
     </ports>    
     <views>
-        <view index="0" name="data view">View loaded data</view>
+        <view index="0" name=""></view>
     </views>
 </knimeNode>
