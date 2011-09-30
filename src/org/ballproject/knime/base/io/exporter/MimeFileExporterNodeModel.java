@@ -24,6 +24,7 @@ import java.io.IOException;
 //import java.util.NoSuchElementException;
 
 import org.ballproject.knime.base.mime.MIMEFileCell;
+import org.ballproject.knime.base.mime.MIMEFileDelegate;
 import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;

@@ -30,6 +30,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
+import org.ballproject.knime.base.mime.MIMEFileDelegate;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;

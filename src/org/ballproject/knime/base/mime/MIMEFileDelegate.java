@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.port;
+package org.ballproject.knime.base.mime;
 
 import java.io.File;
 import java.io.FileInputStream;
