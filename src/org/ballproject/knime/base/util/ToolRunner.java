@@ -113,7 +113,7 @@ public class ToolRunner
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 		
 		return retcode;
@@ -137,6 +137,19 @@ public class ToolRunner
 		public AsyncToolRunner(String... cmds)
 		{
 			this.cmds = cmds;
+		}
+		
+		public AsyncToolRunner(String cmd, List<String> switches)
+		{
+			int K = switches.size();
+			int N = 1+K;
+			this.cmds = new String[N];
+			this.cmds[0] = cmd;
+			for(int i=0;i<K;i+=2)
+			{
+				this.cmds[1+i] = switches.get(i);
+				this.cmds[2+i] = switches.get(i+1);
+			}
 		}
 		
 		@Override
