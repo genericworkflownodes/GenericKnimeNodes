@@ -20,6 +20,8 @@
 package org.ballproject.knime.base.mime;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +40,24 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	public MIMEFileCell getCell(String name)
 	{
 		MIMEFileCell cell = null;
+		List<MIMEFileCell> candidates = new ArrayList<MIMEFileCell>();
 		for(MIMEtypeRegistry resolver: resolvers)
 		{
 			MIMEFileCell rc = resolver.getCell(name); 
 			if(rc!=null)
-				cell = rc; 
+			{
+				candidates.add(rc);
+			}
 		}
+		Collections.sort(candidates, new Comparator<MIMEFileCell>(){
+			@Override
+			public int compare(MIMEFileCell x, MIMEFileCell y)
+			{
+				return x.getExtension().compareToIgnoreCase(y.getExtension());
+			}}
+		);
+		if(candidates.size()>0)
+			cell = candidates.get(0); 
 		return cell;
 	}
 
@@ -57,12 +71,24 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	public MIMEtype getMIMEtype(String name)
 	{
 		MIMEtype mt = null;
+		List<MIMEtype> candidates = new ArrayList<MIMEtype>();
 		for(MIMEtypeRegistry resolver: resolvers)
 		{
-			MIMEtype rmt = resolver.getMIMEtype(name); 
+			MIMEtype rmt = resolver.getMIMEtype(name);
 			if(rmt!=null)
-				mt = rmt; 
+			{
+				candidates.add(rmt);
+			}
 		}
+		Collections.sort(candidates, new Comparator<MIMEtype>(){
+			@Override
+			public int compare(MIMEtype x, MIMEtype y)
+			{
+				return x.getExt().compareToIgnoreCase(y.getExt());
+			}}
+		);
+		if(candidates.size()>0)
+			mt = candidates.get(0); 
 		return mt;
 	}
 
