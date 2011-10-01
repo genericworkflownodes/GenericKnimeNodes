@@ -44,10 +44,7 @@
 
 		<copy todir="${temp.folder}/package/lib" failonerror="true" overwrite="true">
 			<fileset dir="lib/">
-				<include name="dom4j-1.6.1.jar"/>
-				<include name="jaxen-1.1-beta-6.jar"/>
-				<include name="swingx-core-1.6.2.jar"/>
-				<include name="bsh-2.0b4.jar"/>
+				<include name="*.jar"/>
 			</fileset>
 		</copy>
 

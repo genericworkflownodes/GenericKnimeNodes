@@ -7,7 +7,10 @@ Bundle-ClassPath: .,
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
  lib/swingx-core-1.6.2.jar,
- lib/bsh-2.0b4.jar
+ lib/bsh-2.0b4.jar,
+ lib/ant-contrib.jar,
+ lib/ant-launcher.jar,
+ lib/ant.jar
 Bundle-Vendor: roettig
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
@@ -27,6 +30,7 @@ Export-Package: org.ballproject.knime.base.config,
  org.ballproject.knime.base.util,
  org.ballproject.knime.nodegeneration,
  org.ballproject.knime.nodegeneration.templates,
+ org.ballproject.knime.base.wrapper,
  org.dom4j,
  org.dom4j.bean,
  org.dom4j.datatype,
@@ -102,7 +106,9 @@ Export-Package: org.ballproject.knime.base.config,
  org.jdesktop.swingx.tree,
  org.jdesktop.swingx.treetable,
  org.jdesktop.swingx.util,
- bsh.Interpreter
+ bsh.Interpreter,
+ org.apache.tools.ant.Project,
+ org.apache.tools.ant.ProjectHelper
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.ballproject.knime.GenericNodesPlugin
 
