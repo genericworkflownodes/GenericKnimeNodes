@@ -22,7 +22,6 @@ package org.ballproject.knime.base.config;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -33,7 +32,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class CTDNodeConfigurationWriter
+public class CTDNodeConfigurationWriter implements NodeConfigurationWriter
 {
 	
 	private Document doc;
@@ -119,5 +118,24 @@ public class CTDNodeConfigurationWriter
 		writer.write(doc.selectSingleNode("//PARAMETERS"));
 
 		writer.close();
+	}
+	
+	public void init(NodeConfigurationStore store)
+	{
+		for(String key: store.getParameterKeys())
+		{
+			List<String> values = store.getMultiParameterValue(key);
+			if(values.size()==1)
+			{
+				setParameterValue(key, values.get(0));
+			}
+			else
+			{
+				for(String value: values)
+				{
+					setMultiParameterValue(key, value);	
+				}
+			}
+		}
 	}
 }

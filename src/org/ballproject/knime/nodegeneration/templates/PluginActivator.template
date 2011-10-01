@@ -99,7 +99,8 @@ public class PluginActivator extends AbstractUIPlugin
 				}
 				else
 				{
-					throw new Exception("could not install binaries due to missing payload with apropriate word size");
+					//FIXME
+					//throw new Exception("could not install binaries due to missing payload with apropriate word size");
 				}
 		    }
 		}
@@ -113,25 +114,32 @@ public class PluginActivator extends AbstractUIPlugin
 				}
 				else
 				{
-					throw new Exception("could not install binaries due to missing payload with apropriate word size");
+					//FIXME
+					//throw new Exception("could not install binaries due to missing payload with apropriate word size");
 				}
 			}
 			else
 			{
-				throw new Exception("could not install binaries due to missing payload with apropriate word size");
+				//FIXME
+				//throw new Exception("could not install binaries due to missing payload with apropriate word size");
 			}
 		
 		// verify integrity
 		String expectedBinDirPath = home + File.separator + BinaryResources.BINPACKNAME + File.separator + "bin";
 		if(!(new File(expectedBinDirPath).exists()))
 		{
-			throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
+			//FIXME
+			//throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
+			//System.err.println("could not properly install binaries, no bin directory was found inside payload archive");
 		}
 		
 		File bindir = new File(targetdir+File.separator+"bin");
-		for(File file: bindir.listFiles())
+		if(bindir.listFiles()!=null)
 		{
-		  file.setExecutable(true);
+			for(File file: bindir.listFiles())
+			{
+		  	file.setExecutable(true);
+			}
 		}
 		
 		final IPreferenceStore pStore = getDefault().getPreferenceStore();

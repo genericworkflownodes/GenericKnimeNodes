@@ -43,6 +43,7 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	protected String longdescription="";
 	protected String xml="";
 	protected String category="";
+	protected String mapping="";
 	
 	public DefaultNodeConfiguration()
 	{		
@@ -130,6 +131,13 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	{
 		return command;
 	}
+
+	@Override
+	public String getMapping()
+	{
+		return this.mapping;
+	}
+
 	
 	/// protected setters
 	
@@ -223,4 +231,10 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	{
 		this.command = command;
 	}
+	
+	public void setMapping(String mapping)
+	{
+		this.mapping = mapping;
+	}
+
 }

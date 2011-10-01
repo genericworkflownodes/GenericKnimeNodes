@@ -499,7 +499,8 @@ public class NodeGenerator
 				warn("duplicate tool detected "+nodeName);
 				return;
 			}
-			node_names.add(nodeName);
+			if(config.getStatus().equals("internal"))
+				node_names.add(nodeName);
 			
 		}
 		else
@@ -509,7 +510,8 @@ public class NodeGenerator
 				warn("duplicate tool detected "+oldNodeName);
 				return;
 			}
-			node_names.add(oldNodeName);
+			if(config.getStatus().equals("internal"))
+				node_names.add(oldNodeName);
 		}
 		
 		cur_cat  = combine("/"+_package_root_+"/"+_pluginname_,config.getCategory());

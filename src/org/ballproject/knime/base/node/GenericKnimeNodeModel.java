@@ -44,20 +44,21 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 import org.ballproject.knime.GenericNodesPlugin;
+import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
+import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEFileDelegate;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.FileListParameter;
-import org.ballproject.knime.base.port.MimeMarker;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
+import org.ballproject.knime.base.wrapper.GenericToolWrapper;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -173,12 +174,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		File   jobdir = new File( Helper.getTemporaryDirectory(nodeName,!GenericNodesPlugin.isDebug()) );
 		GenericNodesPlugin.log("jobdir="+jobdir);
 		
+		store = new DefaultNodeConfigurationStore();
 		
 		// prepare input and parameter data
 		List<List<String>> output_files = outputParameters(jobdir, inData);
 		
 		// launch executable
-		execute(jobdir, exec);
+		preExecute(jobdir, exec);
 				
 		// process result files
 		BufferedDataTable[] outtables = processOutput( output_files, exec);
@@ -189,11 +191,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return outtables;
 	}
 
+	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
+	
 	private List<List<String>> outputParameters(File jobdir, BufferedDataTable[] inData) throws IOException
-	{
-		// fill params.xml
-		CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
-		
+	{	
 		// .. input files
 		for(int i=0;i<inData.length;i++)
 		{
@@ -229,7 +230,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				File   tmpfile  = mfc.writeTemp(jobdir.getAbsolutePath());
 				String filename = tmpfile.getAbsolutePath();
 				GenericNodesPlugin.log("< setting param "+name+"->"+filename);
-				writer.setParameterValue(name, filename);
+				//writer.setParameterValue(name, filename);
+				store.setParameterValue(name, filename);
 			}
 		}
 		
@@ -259,7 +261,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				List<String> files = new ArrayList<String>();
 				String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), ext, !GenericNodesPlugin.isDebug());
 				GenericNodesPlugin.log("> setting param "+name+"->"+filename);
-				writer.setParameterValue(name, filename);
+				//writer.setParameterValue(name, filename);
+				store.setParameterValue(name, filename);
 				files.add(filename);
 				outfiles.add(files);
 			}
@@ -290,7 +293,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 					{
 						String filename = jobdir.getAbsolutePath()+File.separator+file+"."+ext;
 						outfiles.get(slot).add(filename);
-						writer.setMultiParameterValue(key, filename);
+						//writer.setMultiParameterValue(key, filename);
+						store.setMultiParameterValue(key, filename);
 					}
 				}
 				else
@@ -298,25 +302,110 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 					for(String val: lp.getStrings())
 					{
 						GenericNodesPlugin.log("@@ setting param "+key+"->"+val);
-						writer.setMultiParameterValue(key, val);	
+						//writer.setMultiParameterValue(key, val);	
+						store.setMultiParameterValue(key, val);
 					}	
 				}
 			}
 			else
 			{
 				GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
-				writer.setParameterValue(key, param.getValue().toString());
+				//writer.setParameterValue(key, param.getValue().toString());
+				store.setParameterValue(key, param.getValue().toString());
 			}
 		}
 		
-		if(this.props.getProperty("use_ini").equals("true"))
-			writer.writeINI(jobdir+FILESEP+"params.xml");
-		else
-			writer.write(jobdir+FILESEP+"params.xml");
-
 		return outfiles;
 	}
 
+	private void preExecute(final File jobdir, final ExecutionContext exec) throws Exception
+	{
+		// this switch is not nice, we should encapsulate this into
+		// a NodeExecutor in the next release
+		if(config.getStatus().equals("internal"))
+		{
+			// fill params.xml
+			CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
+			writer.init(store);
+			if(this.props.getProperty("use_ini").equals("true"))
+				writer.writeINI(jobdir+FILESEP+"params.xml");
+			else
+				writer.write(jobdir+FILESEP+"params.xml");	
+			execute(jobdir, exec);
+		}
+		else
+		{
+			executeExternal(jobdir, exec);
+		}
+	}
+	
+	private void executeExternal(final File jobdir, final ExecutionContext exec) throws Exception
+	{
+		String exepath = config.getCommand();
+		GenericNodesPlugin.log("executing "+exepath);
+		
+		GenericToolWrapper wrapper = new GenericToolWrapper(config, store);
+		
+		
+		AsyncToolRunner     t      = new AsyncToolRunner(exepath,wrapper.getSwitchesList());
+		//t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
+		/*
+		for(String key: env.keySet())
+		{
+			t.getToolRunner().addEnvironmentEntry(key, binpath+FILESEP+env.get(key));
+			GenericNodesPlugin.log(key+"->"+binpath+FILESEP+env.get(key));
+		}
+		*/
+		FutureTask<Integer> future = new FutureTask<Integer>(t);
+			
+		ExecutorService     executor = Executors.newFixedThreadPool(1);
+		executor.execute(future);
+		
+		while (!future.isDone())
+        {
+            try
+            {
+                Thread.sleep(5000);
+            } 
+            catch (InterruptedException ie)
+            {
+            }
+            
+            try
+            {
+            	exec.checkCanceled();	
+            }
+            catch(CanceledExecutionException e)
+            {
+            	t.kill();
+            	executor.shutdown();
+            	throw e;
+            }
+        }
+		
+		int retcode = -1;
+        try
+        {
+        	retcode = future.get();
+        } 
+        catch (ExecutionException ex)
+        {
+        	ex.printStackTrace();
+        }
+        
+        executor.shutdown();
+				
+		output = t.getToolRunner().getOutput();
+		
+		GenericNodesPlugin.log(output);
+		GenericNodesPlugin.log("retcode="+retcode);
+		
+		if(retcode!=0)
+	    {
+	    	logger.error(output);
+	    	throw new Exception("execution of external tool failed");
+	    }
+	}
 	
 	private void execute(final File jobdir, final ExecutionContext exec) throws Exception
 	{
