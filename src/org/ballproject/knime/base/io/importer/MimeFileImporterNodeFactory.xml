@@ -15,6 +15,6 @@
      <outPort index="0" name="loaded file "> loaded file </outPort>   
     </ports>    
     <views>
-        <view index="0" name="data view">View loaded data</view>
+        <view index="0" name=""></view>
     </views>
 </knimeNode>
