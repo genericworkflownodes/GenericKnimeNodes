@@ -40,6 +40,11 @@
 							<xs:documentation>Whats this (FIX-ME!).</xs:documentation>
 					</xs:annotation>	
 				</xs:element>
+				<xs:element name="mapping" type="xs:string" minOccurs="0">
+					<xs:annotation>
+							<xs:documentation>ANT based mapping instructions  of the tool.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="cloptions" type="clExprType" minOccurs="0">
 					<xs:annotation>
 							<xs:documentation>Command-line options with placeholders.</xs:documentation>
