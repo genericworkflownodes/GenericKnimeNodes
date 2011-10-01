@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="./default.png" type="Source">
+<knimeNode icon="bean.png" type="Source">
     <name>BeanShell</name>
     
     <shortDescription>Bean Shell</shortDescription>
     
     <fullDescription>
-        <intro></intro>The Bean Shell allows you to build a new table by iterating over the
+        <intro>The Bean Shell allows you to build a new table by iterating over the
         input table and create for each input row a correspondig output row or even no output row
         (i.e. you are filtering out the row). <br/> 
         There are two iterations over the input table possible. The first iteration can be used to
@@ -15,7 +15,7 @@
         by an object called INROW. The INROW object allows you access to the cells of the row.<br/>
         For example INROW.getCell(0) gives you the first cell of the row. You can use any operation
         defined in the Cells DataValue interface. The new row is placed in the OUTROW object by
-        calling setter-methods like OUTROW.addDoubleCell("my double", 0.02);  
+        calling setter-methods like OUTROW.addDoubleCell("my double", 0.02);</intro>  
     </fullDescription>
     
     <ports>
