@@ -51,7 +51,7 @@
 			</fileset>
 		</copy>
 
-		<copy todir="${temp.folder}/package/META-INF" failonerror="true" overwrite="false">
+		<copy todir="${temp.folder}/package/META-INF" failonerror="true" overwrite="true">
 			<fileset dir="data">
 				<include name="MANIFEST.MF"/>
 			</fileset>

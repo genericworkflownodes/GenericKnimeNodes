@@ -19,9 +19,24 @@
 
 package org.ballproject.knime.base.mime;
 
-import org.knime.core.data.DataValue;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 
-public interface MIMEFileValue extends DataValue
+/**
+ * The MIMEFileDelegate stores the byte data contained within a MIME-typed file.
+ * 
+ * @author roettig
+ *
+ */
+public interface MIMEFileDelegate extends Serializable
 {
-	byte[] getData();
+	public byte[] getByteArrayReference();
+	public boolean isEqual(MIMEFileDelegate del);
+	public int getHash();
+	public void read(File file) throws IOException;
+	public void write(String filename) throws IOException;
+	public File writeTemp(String directory) throws IOException;
 }

@@ -24,7 +24,9 @@ import java.io.IOException;
 
 import org.knime.core.data.DataType;
 import org.knime.core.data.container.BlobDataCell;
+import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.port.*;
+import org.ballproject.knime.base.util.Helper;
 
 /**
  * The abstract MIMEFileCell class is the base class for any MIME-based cells within GenericKnimeNodes.
@@ -37,6 +39,8 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	public transient DataType TYPE;
 	protected MIMEFileDelegate data_delegate;
 	
+	private long SIZELIMIT = 200000;
+	
 	public DataType getDataType()
 	{
 		return TYPE;
@@ -44,7 +48,7 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	
 	public MIMEFileCell()
 	{
-		data_delegate = new MIMEFileDelegate(); 
+		data_delegate = new DefaultMIMEFileDelegate(); 
 	}
 	
 	/**
@@ -56,6 +60,16 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	 */
 	public void read(File file) throws IOException
 	{
+		if(file.length()>SIZELIMIT)
+		{
+			System.out.println("Using ReferenceMIMEFileDelegate");
+			data_delegate = new ReferenceMIMEFileDelegate();
+		}
+		else
+		{
+			data_delegate = new DefaultMIMEFileDelegate();
+		}
+		
 		data_delegate.read(file);
 	}
 		
@@ -71,6 +85,12 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 		data_delegate.write(filename);
 	}
 	
+	public File writeTemp(String directory) throws IOException
+	{
+		String filename = Helper.getTemporaryFilename(directory, getExtension(), false);
+		return data_delegate.writeTemp(filename);
+	}
+	
 	@Override
 	public int hashCode()
 	{
@@ -83,12 +103,6 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	public byte[] getData()
 	{
 		return data_delegate.getByteArrayReference();
-	}
-
-	@Override
-	public void setData(byte[] dat)
-	{
-		data_delegate.setContent(dat);
 	}
 	
 	@Override

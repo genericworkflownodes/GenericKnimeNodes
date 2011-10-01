@@ -47,7 +47,7 @@ public class MimeFileImporterNodeFactory extends NodeFactory<MimeFileImporterNod
     @Override
     public int getNrNodeViews() 
     {
-        return 1;
+        return 0;
     }
 
     /**
@@ -56,7 +56,7 @@ public class MimeFileImporterNodeFactory extends NodeFactory<MimeFileImporterNod
     @Override
     public NodeView<MimeFileImporterNodeModel> createNodeView(final int viewIndex, final MimeFileImporterNodeModel nodeModel) 
     {
-        return new MimeFileImporterNodeView(nodeModel);
+        return null;
     }
 
     /**
