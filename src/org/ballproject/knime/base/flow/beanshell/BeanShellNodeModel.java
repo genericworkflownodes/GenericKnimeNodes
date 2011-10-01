@@ -37,6 +37,7 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 
+import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -94,24 +95,28 @@ public class BeanShellNodeModel extends NodeModel
 		Interpreter ip = new Interpreter();
 		ip.eval(script_init); 
 		
-		Iterator<DataRow> iter = inData[0].iterator();
+		CloseableRowIterator iter = null;
 		
-		while(iter.hasNext())
+		if(!script_firstPass.equals(""))
 		{
-			ip.set("INROW",fillInRow(iter.next()));
-			ip.eval(script_firstPass);
+			iter = inData[0].iterator();
+			while(iter.hasNext())
+			{
+				ip.set("INROW",fillInRow(iter.next()));
+				ip.eval(script_firstPass);
+			}
+			iter.close();
 		}
 		
 		
 		iter = inData[0].iterator();
 		int idx = 1;
 		boolean first = true;
-		int C = 0;
+		
 		
 		while(iter.hasNext())
 		{
 			ip.set("OUTROW", new OutRow());
-			ip.set("cell", iter.next().getCell(0));
 			ip.set("INROW", fillInRow(iter.next()));
 			ip.eval(script_secondPass);
 			OutRow out = (OutRow) ip.get("OUTROW");
@@ -138,6 +143,7 @@ public class BeanShellNodeModel extends NodeModel
 			DefaultRow row = new DefaultRow("Row "+idx++, cells);
 			container1.addRowToTable(row);
 		}
+		iter.close();
 		
 		container1.close();
 		
