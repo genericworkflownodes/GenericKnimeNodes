@@ -291,7 +291,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		String lstatus  = node.valueOf("@status");  
 		if(lstatus!=null && lstatus.equals(""))
 			throw new Exception("CTD has no status");
-		System.out.println("status="+lstatus);
+		
 		config.setStatus(lstatus);
 		
 		node  = doc.selectSingleNode("/tool/name");
@@ -314,7 +314,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		String spath  = "";
 		if(node!=null)
 			spath  = node.valueOf("text()");
-		System.out.println("path="+spath);
+		
 		config.setCommand(spath);
 		
 		node  = doc.selectSingleNode("/tool/manual");
