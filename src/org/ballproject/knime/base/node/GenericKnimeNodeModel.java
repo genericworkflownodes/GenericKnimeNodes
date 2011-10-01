@@ -207,31 +207,29 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			// MIMEFileCells are always stored in first column
 			DataCell cell = row.getCell(0);
 			
+			List<MIMEFileCell> mfcs = new ArrayList<MIMEFileCell>();
+			
 			if(cell.getType().isCollectionType())
 			{
 				ListCell cells = (ListCell) cell;
 				for(int j=0;j<cells.size();j++)
 				{
 					MIMEFileCell     mfc = (MIMEFileCell) cells.get(j);
-					
-					String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), mfc.getExtension(), !GenericNodesPlugin.isDebug());
-					mfc.write(filename);
-					
-					GenericNodesPlugin.log("<< setting multi param "+name+"->"+filename);
-					writer.setMultiParameterValue(name, filename);
+					mfcs.add(mfc);
 				}
 			}
 			else
 			{
-				if( cell instanceof MimeMarker)
-				{
-					MimeMarker mrk = (MimeMarker) cell;
-					MIMEFileDelegate del = mrk.getDelegate();
-					String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), mrk.getExtension(), !GenericNodesPlugin.isDebug());
-					del.write(filename);
-					GenericNodesPlugin.log("< setting param "+name+"->"+filename);
-					writer.setParameterValue(name, filename);
-				}
+				MIMEFileCell     mfc = (MIMEFileCell) cell;
+				mfcs.add(mfc);
+			}
+			
+			for(MIMEFileCell mfc : mfcs)
+			{
+				File   tmpfile  = mfc.writeTemp(jobdir.getAbsolutePath());
+				String filename = tmpfile.getAbsolutePath();
+				GenericNodesPlugin.log("< setting param "+name+"->"+filename);
+				writer.setParameterValue(name, filename);
 			}
 		}
 		
