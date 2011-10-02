@@ -39,7 +39,7 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	public transient DataType TYPE;
 	protected MIMEFileDelegate data_delegate;
 	
-	private long SIZELIMIT = 200000;
+	private long SIZELIMIT = 20000000;
 	
 	public DataType getDataType()
 	{

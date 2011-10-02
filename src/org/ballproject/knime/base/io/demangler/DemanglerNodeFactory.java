@@ -56,7 +56,7 @@ public class DemanglerNodeFactory extends NodeFactory<DemanglerNodeModel>
     @Override
     public NodeView<DemanglerNodeModel> createNodeView(final int viewIndex, final DemanglerNodeModel nodeModel) 
     {
-        return new DemanglerNodeView(nodeModel);
+        return null;
     }
 
     /**
@@ -65,7 +65,7 @@ public class DemanglerNodeFactory extends NodeFactory<DemanglerNodeModel>
     @Override
     public boolean hasDialog() 
     {
-        return false;
+        return true;
     }
 
     /**
@@ -74,7 +74,7 @@ public class DemanglerNodeFactory extends NodeFactory<DemanglerNodeModel>
     @Override
     public NodeDialogPane createNodeDialogPane() 
     {
-        return new DemanglerNodeDialog(new Object());
+        return new DemanglerNodeDialog();
     }
 
 }

@@ -19,6 +19,8 @@
 
 package org.ballproject.knime.base.mime;
 
+import java.util.List;
+
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.knime.core.data.DataType;
 
@@ -58,9 +60,9 @@ public interface MIMEtypeRegistry
 	 */
 	MIMEtype getMIMEtype(String filename);
 	
-	Demangler getDemangler(DataType type);
+	List<Demangler> getDemangler(DataType type);
 	
-	Demangler getMangler(DataType type);
+	List<Demangler> getMangler(DataType type);
 	
 	void addDemangler(Demangler demangler);
 	

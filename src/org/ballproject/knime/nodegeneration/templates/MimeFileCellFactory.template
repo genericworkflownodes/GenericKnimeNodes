@@ -2,11 +2,15 @@ package __BASE__.knime.nodes.mimetypes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+
 import org.knime.core.data.DataCell;
 import org.ballproject.knime.base.mime.*;
 import org.ballproject.knime.base.mime.demangler.*;
 import org.knime.core.data.DataType;
 import org.ballproject.knime.base.util.Helper;
+
 
 public class MimeFileCellFactory implements MIMEtypeRegistry
 {
@@ -41,9 +45,9 @@ __DATA2__
 	}
 	
 	@Override
-	public Demangler getDemangler(DataType dt)
+	public List<Demangler> getDemangler(DataType dt)
 	{
-		Demangler ret = null;
+		List<Demangler> ret = new ArrayList<Demangler>();
 __DATA3__
 		return ret;
 	}
@@ -55,7 +59,7 @@ __DATA3__
 	}
 	
 	@Override
-	public Demangler getMangler(DataType type)
+	public List<Demangler> getMangler(DataType type)
 	{
 		// NOP
 		return null;

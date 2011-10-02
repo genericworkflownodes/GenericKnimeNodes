@@ -19,6 +19,12 @@
 
 package org.ballproject.knime.base.io.mangler;
 
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
 /**
@@ -32,9 +38,9 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  * 
  * @author roettig
  */
-public class ManglerNodeDialog extends DefaultNodeSettingsPane
+public class ManglerNodeDialog extends NodeDialogPane
 {
-
+	
 	/**
 	 * New pane for configuring Mangler node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
@@ -43,5 +49,18 @@ public class ManglerNodeDialog extends DefaultNodeSettingsPane
 	{
 		super();
 	}
-	
+
+	@Override
+	protected void saveSettingsTo(NodeSettingsWO settings)
+			throws InvalidSettingsException
+	{
+
+		
+	}
+
+	@Override
+	protected void loadSettingsFrom(NodeSettingsRO settings,
+			DataTableSpec[] specs) throws NotConfigurableException
+	{
+	}
 }

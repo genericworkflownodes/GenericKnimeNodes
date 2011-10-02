@@ -19,11 +19,18 @@
 
 package org.ballproject.knime.base.io.demangler;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
@@ -46,6 +53,7 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
@@ -63,8 +71,9 @@ public class DemanglerNodeModel extends NodeModel
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(DemanglerNodeModel.class);
 	
-	protected Demangler        demangler;
+	protected List<Demangler>  demanglers = new ArrayList<Demangler>();
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
+	protected Demangler  demangler;
 	
 	/**
 	 * Constructor for the node model.
@@ -81,7 +90,6 @@ public class DemanglerNodeModel extends NodeModel
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
 		BufferedDataContainer container = null;
-		
 		DataCell inCell0 = inData[0].iterator().next().getCell(0);
 		
 		if(inCell0.getType().isCollectionType())
@@ -97,7 +105,7 @@ public class DemanglerNodeModel extends NodeModel
 					throw new Exception("ListCell does not contain MIMEFileCells");
 				}
 				MIMEFileCell mfc = (MIMEFileCell) dc;
-				iters.add( resolver.getDemangler(inType).demangle(mfc) );
+				iters.add( demangler.demangle(mfc) );
 			}
 			fillTable( iters, container);
 		}
@@ -110,7 +118,7 @@ public class DemanglerNodeModel extends NodeModel
 			}
 			List<Iterator<DataCell>> iters = new ArrayList<Iterator<DataCell>>();
 			MIMEFileCell mfc = (MIMEFileCell) inCell0;
-			iters.add( resolver.getDemangler(inType).demangle(mfc) );
+			iters.add( demangler.demangle(mfc) );
 			fillTable( iters, container);
 		}
 		container.close();
@@ -186,12 +194,14 @@ public class DemanglerNodeModel extends NodeModel
 		}
 		
 		// try to find a demangler for the data type ... 
-		demangler = resolver.getDemangler(inType);
+		demanglers = resolver.getDemangler(inType);
 		
-		if(demangler==null)
+		if(demanglers==null)
 		{
 			throw new InvalidSettingsException("no Demangler found for "+inType.toString()+". Please register one first.");
 		}
+		
+		demangler  = demanglers.get(idx);
 		
 		if(coll)
 		{
@@ -239,14 +249,28 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
+		String[] names = new String[demanglers.size()];
+		int i = 0;
+		for(Demangler demangler: demanglers)
+		{
+			names[i++] = demangler.getClass().getCanonicalName();
+
+		}
+		settings.addStringArray("demanglers", names);
+		settings.addInt("selected_index", idx);
 	}
 
+	private int idx = 0;
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
+		idx = settings.getInt("selected_index");
+		if(demanglers.size()!=0)
+			demangler = demanglers.get(idx);
 	}
 	
 	/**
@@ -262,7 +286,32 @@ public class DemanglerNodeModel extends NodeModel
 	 */
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
-	{
+	{		
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(internDir,"demanglers")));
+    	try
+		{
+			demanglers = (List<Demangler>) in.readObject();
+		}
+		catch (ClassNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		in.close();
+		
+		// create the file 
+		File f = new File(internDir, "selected_index");
+		// load the settings from the file 
+		NodeSettingsRO settings = NodeSettings.loadFromXML(new FileInputStream(f));
+		// retrieve the stored values
+		try
+		{
+			idx = settings.getInt("selected_index");
+		} 
+		catch (InvalidSettingsException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -271,6 +320,20 @@ public class DemanglerNodeModel extends NodeModel
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-	}
+		DataOutputStream out = new DataOutputStream(new FileOutputStream(new File(internDir,"demanglers")));
 
+	    ObjectOutput          oout = new ObjectOutputStream(out) ;
+	    oout.writeObject(this.demanglers);
+	    oout.close();
+
+	    // create a settings object with a config name
+	    NodeSettings settings = new NodeSettings("selected_index");
+	    // store your values under a certain key
+	    settings.addInt("selected_index", idx);
+	    // create a file in the given directory
+	    File f = new File(internDir, "selected_index");
+	    // and save it
+	    settings.saveToXML(new FileOutputStream(f));
+	}
+	
 }
