@@ -32,9 +32,9 @@ import org.knime.core.data.DataType;
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
-	protected List<MIMEtypeRegistry>   resolvers  = new ArrayList<MIMEtypeRegistry>();
-	protected Map<DataType,Demangler>  demanglers = new HashMap<DataType,Demangler>(); 
-	protected Map<DataType,Demangler>  manglers   = new HashMap<DataType,Demangler>();
+	protected List<MIMEtypeRegistry>         resolvers  = new ArrayList<MIMEtypeRegistry>();
+	protected Map<DataType,List<Demangler>>  demanglers = new HashMap<DataType,List<Demangler>>(); 
+	protected Map<DataType,List<Demangler>>  manglers   = new HashMap<DataType,List<Demangler>>();
 	
 	@Override
 	public MIMEFileCell getCell(String name)
@@ -93,7 +93,7 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	}
 
 	@Override
-	public Demangler getDemangler(DataType type)
+	public List<Demangler> getDemangler(DataType type)
 	{
 		return demanglers.get(type);
 	}
@@ -101,12 +101,16 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	@Override
 	public void addDemangler(Demangler demangler)
 	{
-		demanglers.put(demangler.getSourceType(), demangler);
-		manglers.put(demangler.getTargetType(), demangler);
+		if(!demanglers.containsKey(demangler.getSourceType()))
+			demanglers.put(demangler.getSourceType(),new ArrayList<Demangler>());
+		if(!manglers.containsKey(demangler.getTargetType()))
+			manglers.put(demangler.getTargetType(),new ArrayList<Demangler>());
+		demanglers.get(demangler.getSourceType()).add(demangler);
+		manglers.get(demangler.getTargetType()).add(demangler);
 	}
 
 	@Override
-	public Demangler getMangler(DataType type)
+	public List<Demangler> getMangler(DataType type)
 	{
 		return manglers.get(type);
 	}
