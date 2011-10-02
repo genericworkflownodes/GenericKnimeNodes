@@ -22,6 +22,7 @@ package org.ballproject.knime.base.io.mangler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 
 import org.ballproject.knime.GenericNodesPlugin;
@@ -152,12 +153,16 @@ public class ManglerNodeModel extends NodeModel
 		inType = inSpecs[0].getColumnSpec(0).getType();
 		
 		// try to find a demangler for the data type ... 
-		demangler = resolver.getMangler(inType);
+		List<Demangler> demanglers = resolver.getMangler(inType); 
 		
-		if(demangler==null)
+		
+		if(demanglers.size()==0)
 		{
 			throw new InvalidSettingsException("no Mangler found for "+inType.toString()+". Please register one first.");
 		}
+		
+		// we support only one mangler (the first one)
+		demangler = demanglers.get(0);
 		
 		return new DataTableSpec[]{ getDataTableSpec() };
 	}

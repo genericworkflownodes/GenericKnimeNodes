@@ -56,7 +56,7 @@ public class ManglerNodeFactory extends NodeFactory<ManglerNodeModel>
     @Override
     public NodeView<ManglerNodeModel> createNodeView(final int viewIndex, final ManglerNodeModel nodeModel) 
     {
-        return new ManglerNodeView(nodeModel);
+        return null;
     }
 
     /**

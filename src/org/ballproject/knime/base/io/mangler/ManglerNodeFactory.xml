@@ -3,7 +3,7 @@
 <knimeNode icon="table2file.png" type="Manipulator">
     <name>TableToFile</name>
     
-    <shortDescription>Converts a table into a MIME file.</shortDescription>
+    <shortDescription>Converts a table into a MIMEFile.</shortDescription>
     
     <fullDescription>
         <intro>The Mangler Node will mangle incoming classical KNIME columns into  corresponding MIMEFileCell data. To register a Mangler for 
@@ -11,8 +11,8 @@
     </fullDescription>
     
     <ports>
-     <inPort index="0" name="mimefile"> table </inPort>
-     <outPort index="0" name="loaded file "> MIME file </outPort>   
+     <inPort index="0" name="mimefile"> Table </inPort>
+     <outPort index="0" name="loaded file "> MIMEFile </outPort>   
     </ports>    
     <views>
         <view index="0" name=""></view>
