@@ -19,29 +19,72 @@
 
 package org.ballproject.knime.base.io.demangler;
 
+import javax.swing.DefaultComboBoxModel;
+
+import org.ballproject.knime.base.ui.choice.ChoiceDialog;
+import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
 /**
  * <code>NodeDialog</code> for the "Demangler" Node.
  * 
  * 
- * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more
- * complex dialog please derive directly from
- * {@link org.knime.core.node.NodeDialogPane}.
- * 
  * @author roettig
  */
-public class DemanglerNodeDialog extends DefaultNodeSettingsPane
+public class DemanglerNodeDialog extends NodeDialogPane implements ChoiceDialogListener
 {
 
-	/**
-	 * New pane for configuring Demangler node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
-	 */
-	protected DemanglerNodeDialog(Object obj)
+	private ChoiceDialog  choice;
+	private DefaultComboBoxModel model = new DefaultComboBoxModel(); 
+	
+	protected DemanglerNodeDialog()
 	{
 		super();
+		choice = new ChoiceDialog(model);
+		choice.registerChoiceListener(this);
+		this.addTab("Demanglers", choice);
 	}
+
+	@Override
+	protected void saveSettingsTo(NodeSettingsWO settings)
+			throws InvalidSettingsException
+	{
+		settings.addInt("selected_index",idx);
+	}
+
+
+	@Override
+	protected void loadSettingsFrom(NodeSettingsRO settings,
+			DataTableSpec[] specs) throws NotConfigurableException
+	{
+		String[] demanglers = null;		
+		try
+		{
+			demanglers = settings.getStringArray("demanglers");
+		} 
+		catch (InvalidSettingsException e)
+		{
+			e.printStackTrace();
+		}
+		
+		model.removeAllElements();
+		for(String d: demanglers)
+		{
+			model.addElement(d);
+		}
+	}
+
+	private int idx = 0;
 	
+	@Override
+	public void onChoice(int sel_idx)
+	{
+		idx = sel_idx;
+	}
 }
