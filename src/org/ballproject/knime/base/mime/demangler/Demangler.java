@@ -13,5 +13,4 @@ public interface Demangler extends Serializable
 	DataType getTargetType();
 	Iterator<DataCell> demangle(MIMEFileCell cell);
 	MIMEFileCell mangle(Iterator<DataCell> iter);
-	void close();
 }
