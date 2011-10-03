@@ -12,7 +12,8 @@
     </fullDescription>
     
     <ports>
-     <outPort index="0" name="loaded files">list of input files</outPort>   
+     <outPort index="0" name="loaded MIMEFiles">List of input MIMEFiles</outPort>   
+     <outPort index="1" name="loaded MIMEFiles (stacked)">Table with input MIMEFiles in first column</outPort>
     </ports>    
     <views>
         <view index="0" name=""></view>
