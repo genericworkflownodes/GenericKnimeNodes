@@ -98,7 +98,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel /*implements LoopEn
 		
 		if(inData[0]!=null)
 		{
-			ListCell lc = (ListCell) inData[0].iterator().next();
+			ListCell lc = (ListCell) inData[0].iterator().next().getCell(0);
 			for(DataCell dc: lc)
 			{
 				files.add((MIMEFileCell) dc);

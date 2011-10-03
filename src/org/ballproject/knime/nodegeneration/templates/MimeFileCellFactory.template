@@ -2,8 +2,7 @@ package __BASE__.knime.nodes.mimetypes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.knime.core.data.DataCell;
 import org.ballproject.knime.base.mime.*;
@@ -12,9 +11,11 @@ import org.knime.core.data.DataType;
 import org.ballproject.knime.base.util.Helper;
 
 
-public class MimeFileCellFactory implements MIMEtypeRegistry
+public class MimeFileCellFactory
 {
 	private static MimeFileCellFactory inst;
+	
+	private List<MIMEtype> mimetypes = new ArrayList<MIMEtype>(); 
 	
 	public static MimeFileCellFactory getInstance()
 	{
@@ -23,45 +24,13 @@ public class MimeFileCellFactory implements MIMEtypeRegistry
 		return inst;
 	}
 
-	@Override
-	public void addResolver(MIMEtypeRegistry res)
+	private MimeFileCellFactory()
 	{
+		__MIMETYPES__
 	}
 	
-	@Override 
-	public MIMEFileCell getCell(String name)
+	public List<MIMEtype> getMimeTypes()
 	{
-		MIMEFileCell ret = null;
-__DATA__
-		return ret;
-	}
-	
-	@Override 
-	public MIMEtype getMIMEtype(String name)
-	{
-		MIMEtype ret = null;
-__DATA2__
-		return ret;
-	}
-	
-	@Override
-	public List<Demangler> getDemangler(DataType dt)
-	{
-		List<Demangler> ret = new ArrayList<Demangler>();
-__DATA3__
-		return ret;
-	}
-	
-	@Override
-	public void addDemangler(Demangler demangler)
-	{
-		// NOP
-	}
-	
-	@Override
-	public List<Demangler> getMangler(DataType type)
-	{
-		// NOP
-		return null;
+		return mimetypes;
 	}
 }

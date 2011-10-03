@@ -17,17 +17,14 @@
 
 	<property name="temp.folder" value="${java.io.tmpdir}/temp.folder"/>
 	<property name="src" value="src"/>
-	<property name="libdest" value="${temp.folder}/lib.jar.bin"/>
-	<property name="libdest2" value="${temp.folder}/library.jar.bin"/>
 
 	<target name="clean">
-		<delete dir="${libdest}"/>
 		<delete dir="${temp.folder}"/>
 		<delete dir="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 	</target>
 
 	<target name="prepare">
-		<mkdir dir="${libdest}"/>
+		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<mkdir dir="build"/>
 	</target>
@@ -35,7 +32,7 @@
 	<target name="buildbaseplugin" depends="prepare">
 
 		<echo message="Debug is:  ${debug}"/>
-
+		
 		<mkdir dir="${temp.folder}/package"/>
 
 		<mkdir dir="${temp.folder}/package/META-INF"/>
@@ -169,6 +166,7 @@
 	</target>
 
 	<target name="nodegen" description="run node generator" depends="buildbaseplugin">
+		<delete dir ="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 		<java classname="org.ballproject.knime.nodegeneration.NodeGenerator" failonerror="true" fork="true">
 			<classpath>
 				<fileset dir="lib">

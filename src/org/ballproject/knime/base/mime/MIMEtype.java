@@ -30,9 +30,10 @@ import java.io.Serializable;
  */
 public class MIMEtype implements Serializable
 {
-	
+	protected Class   clazz;
 	protected String  file_extension;
 	protected boolean binary;
+	
 	
 	/**
 	 * constructs a new MIMEtype object associated with supplied file extension.
@@ -41,6 +42,19 @@ public class MIMEtype implements Serializable
 	 */
 	public MIMEtype(String extension)
 	{
+		this.clazz = null;
+		this.file_extension = extension;
+		this.binary = false;
+	}
+	
+	/**
+	 * constructs a new MIMEtype object associated with supplied file extension.
+	 * 
+	 * @param extension
+	 */
+	public MIMEtype(Class clazz, String extension)
+	{
+		this.clazz = clazz;
 		this.file_extension = extension;
 		this.binary = false;
 	}
@@ -50,8 +64,9 @@ public class MIMEtype implements Serializable
 	 * 
 	 * @param extension
 	 */
-	public MIMEtype(String extension, boolean binary)
+	public MIMEtype(Class clazz, String extension, boolean binary)
 	{
+		this.clazz = clazz;
 		this.file_extension = extension;
 		this.binary = binary;
 	}
@@ -85,9 +100,14 @@ public class MIMEtype implements Serializable
 	{
 		this.binary = binary;
 	}
+	
+	public Class getKNIMEClass()
+	{
+		return clazz;
+	}
 
 	public static boolean equals(MIMEtype type1, MIMEtype type2)
 	{
-		return type1.getExt().equals(type2.getExt());
+		return type1.getExt().equalsIgnoreCase(type2.getExt());
 	}
 }

@@ -614,7 +614,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				// a possible input type
 				DataType expected_type = inports[i][j];				
 				// we have found a compatible type in the list of allowed types
-				if(input_type.equals(expected_type))
+				
+				if(resolver.isCompatible(input_type, expected_type))
 					ok = true;
 			}
 			
