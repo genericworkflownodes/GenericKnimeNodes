@@ -17,46 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.port;
+package org.ballproject.knime.base.flow.columnmerger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
-
-public class MIMEFileDelegate implements Serializable
+/**
+ * <code>NodeDialog</code> for the "Demangler" Node.
+ * 
+ * 
+ * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
+ * creation of a simple dialog with standard components. If you need a more
+ * complex dialog please derive directly from
+ * {@link org.knime.core.node.NodeDialogPane}.
+ * 
+ * @author roettig
+ */
+public class ColumnMergerNodeDialog extends DefaultNodeSettingsPane
 {
-	private byte[] m_content;
-	
-	
-	public byte[] getByteArrayReference()
-	{
-		return m_content;
-	}
 
-	public void setContent(byte[] content)
+	/**
+	 * New pane for configuring Demangler node dialog. This is just a
+	 * suggestion to demonstrate possible default dialog components.
+	 */
+	protected ColumnMergerNodeDialog(Object obj)
 	{
-		int len = content.length;
-		this.m_content = new byte[len];
-		System.arraycopy(content, 0, this.m_content, 0, len);
+		super();
 	}
 	
-	public boolean isEqual(MIMEFileDelegate del)
-	{
-		return false;
-	}
-	
-	
-	public int getHash()
-	{
-		return m_content.hashCode();
-	}
-	
-	public void write(String filename) throws IOException
-	{
-		FileOutputStream out = new FileOutputStream(new File(filename)); 
-		out.write(m_content);
-		out.close();
-	}
 }

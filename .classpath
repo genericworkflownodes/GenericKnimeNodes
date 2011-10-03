@@ -9,5 +9,10 @@
 	<classpathentry kind="lib" path="lib/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
 	<classpathentry kind="var" path="KNIME_SDK"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="/home/roettig/Downloads/knime_2.3.1/plugins/org.eclipse.swt.gtk.linux.x86_64_3.6.1.v3655c.jar"/>
+	<classpathentry kind="lib" path="lib/ant-contrib.jar"/>
+	<classpathentry kind="lib" path="lib/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

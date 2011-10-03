@@ -20,15 +20,11 @@
 package org.ballproject.knime.base.io.exporter;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+//import java.util.NoSuchElementException;
 
 import org.ballproject.knime.base.mime.MIMEFileCell;
+import org.ballproject.knime.base.mime.MIMEFileDelegate;
 import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
@@ -36,6 +32,8 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+//import org.knime.core.node.workflow.LoopEndNode;
+//import org.knime.core.node.workflow.LoopStartNodeTerminator;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -51,7 +49,7 @@ import org.knime.core.node.NodeSettingsWO;
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeModel extends NodeModel
+public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNode*/
 {
 
 	// the logger instance
@@ -69,10 +67,7 @@ public class MimeFileExporterNodeModel extends NodeModel
 	{
 		super(1, 0);
 	}
-	
-	public byte[] data = new byte[]{};
-	protected MIMEFileCell cell_;
-	
+		
 	/**
 	 * {@inheritDoc}
 	 */
@@ -83,18 +78,63 @@ public class MimeFileExporterNodeModel extends NodeModel
 		DataCell cell = row.getCell(0);
 		if( cell instanceof MimeMarker)
 		{
-			cell_ = (MIMEFileCell) cell;
+			MIMEFileCell cell_ = (MIMEFileCell) cell;
 			
 			MimeMarker mrk = (MimeMarker) cell;
 			MIMEFileDelegate del = mrk.getDelegate();
-		
+			if(!m_filename.getStringValue().toLowerCase().endsWith(mrk.getExtension().toLowerCase()))
+			{
+				throw new Exception("invalid extension given for filename. Must be "+mrk.getExtension());
+			}
+	
+			/*
+			if(isLooping())
+			{
+				int iter = getIterationIndex();
+				del.write(m_filename.getStringValue()+"."+iter);
+				
+				boolean terminateLoop =
+		                ((LoopStartNodeTerminator)this.getLoopStartNode())
+		                        .terminateLoop();
+		        if (terminateLoop) 
+		        {
+		        	//NOP
+		        }
+		        else
+		        {
+		        	continueLoop();
+		        }
+			}
+			else
+			{
+				del.write(m_filename.getStringValue());
+			}
+			*/
 			del.write(m_filename.getStringValue());
-			data = del.getByteArrayReference();
 		}
 		return new BufferedDataTable[]{};
 	}
 
-
+	/*
+	private boolean isLooping()
+	{
+		return (getLoopStartNode()!=null);
+	}
+	
+	private int getIterationIndex()
+	{
+		int ret = -1;
+		try
+		{
+			ret = peekFlowVariableInt("currentIteration");
+		}
+		catch(NoSuchElementException e)
+		{
+			
+		}
+		return ret;
+	}
+	*/
 	
 	/**
 	 * {@inheritDoc}
@@ -151,33 +191,6 @@ public class MimeFileExporterNodeModel extends NodeModel
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
-		
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-		int    BUFFSIZE = 2048;
-		byte[] BUFFER   = new byte[BUFFSIZE];
-		
-	    while(entries.hasMoreElements()) 
-	    {
-	        ZipEntry entry = (ZipEntry)entries.nextElement();
-	        if(entry.getName().equals("rawdata.bin"))
-	        {
-	        	int  size = (int) entry.getSize(); 
-	        	data = new byte[size];
-	        	InputStream in = zip.getInputStream(entry);
-	        	int len;
-	        	int totlen=0;
-	        	while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
-	        	{
-	        		System.arraycopy(BUFFER, 0, data, totlen, len);
-	        		totlen+=len;
-	        	}
-	        }
-	    }
-	    zip.close();
-	
 	}
 
 	/**
@@ -185,13 +198,7 @@ public class MimeFileExporterNodeModel extends NodeModel
 	 */
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
-	{
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-	    out.putNextEntry(entry);
-	    out.write(data);
-	    out.close(); 
-	
+	{	
 	}
 	
 	

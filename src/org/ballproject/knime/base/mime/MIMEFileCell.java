@@ -20,18 +20,25 @@
 package org.ballproject.knime.base.mime;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.knime.core.data.DataType;
 import org.knime.core.data.container.BlobDataCell;
 import org.ballproject.knime.base.port.*;
+import org.ballproject.knime.base.util.Helper;
 
+/**
+ * The abstract MIMEFileCell class is the base class for any MIME-based cells within GenericKnimeNodes.
+ * 
+ * @author roettig
+ *
+ */
 public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue, MimeMarker
 {
 	public transient DataType TYPE;
-	protected MIMEFileDelegate data;
+	protected MIMEFileDelegate data_delegate;
+	
+	private long SIZELIMIT = 20000000;
 	
 	public DataType getDataType()
 	{
@@ -40,46 +47,65 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	
 	public MIMEFileCell()
 	{
-		data = new MIMEFileDelegate(); 
+		data_delegate = new DefaultMIMEFileDelegate(); 
 	}
 	
+	/**
+	 * read in the byte data contained in the supplied file.
+	 * 
+	 * @param file filename to read
+	 * 
+	 * @throws IOException
+	 */
 	public void read(File file) throws IOException
 	{
-		FileInputStream fin = new FileInputStream(file);		 
+		if(file.length()>SIZELIMIT)
+		{
+			data_delegate = new ReferenceMIMEFileDelegate();
+		}
+		else
+		{
+			data_delegate = new DefaultMIMEFileDelegate();
+		}
 		
-		int    len = (int) file.length();
-		byte[] b   = new byte[len];
-		
-		fin.read(b);
-		fin.close();
-		
-		setData(b);
+		data_delegate.read(file);
 	}
 		
+	/**
+	 * write the byte data stored out into the supplied file.
+	 * 
+	 * @param file filename to write
+	 * 
+	 * @throws IOException
+	 */
+	public void write(String filename) throws IOException
+	{
+		data_delegate.write(filename);
+	}
+	
+	public File writeTemp(String directory) throws IOException
+	{
+		String filename = Helper.getTemporaryFilename(directory, getExtension(), false);
+		return data_delegate.writeTemp(filename);
+	}
+	
 	@Override
 	public int hashCode()
 	{
-		return data.getHash();
+		// hashCode is considered to give hash code of
+		// wrapped content
+		return data_delegate.getHash();
 	}	
 	
 	@Override
 	public byte[] getData()
 	{
-		return data.getByteArrayReference();
-	}
-
-	@Override
-	public void setData(byte[] dat)
-	{
-		data.setContent(dat);
+		return data_delegate.getByteArrayReference();
 	}
 	
 	@Override
 	public MIMEFileDelegate getDelegate()
 	{
-		return data;
-	}
-	
-	//public abstract MIMEFileCell createMimeFileCell(final File file) throws IOException;
-	
+		return data_delegate;
+	}	
 }

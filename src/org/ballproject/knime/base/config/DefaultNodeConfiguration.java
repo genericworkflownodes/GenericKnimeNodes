@@ -26,16 +26,13 @@ import java.util.List;
 import java.util.Map;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
-import org.knime.core.node.defaultnodesettings.SettingsModel;
 
 public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 {
-	protected Map<String,SettingsModel> settings = new HashMap<String,SettingsModel>();
 	protected Map<String,Parameter<?>>  params   = new HashMap<String,Parameter<?>>();
-	
-	protected int nInPorts;
-	protected int nOutPorts;	
-	
+		
+	protected Port[] in_ports;
+	protected Port[] out_ports;
 	
 	protected String name;
 	protected String version;
@@ -46,11 +43,17 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	protected String longdescription="";
 	protected String xml="";
 	protected String category="";
+	protected String mapping="";
 	
 	public DefaultNodeConfiguration()
 	{		
 	}
 	
+	public DefaultNodeConfiguration(NodeConfiguration config)
+	{		
+		
+	}
+
 	@Override
 	public int getNumberOfOutputPorts()
 	{
@@ -128,15 +131,15 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	{
 		return command;
 	}
-	
-	/// protected setters
-	
-	protected void addModel(String key, SettingsModel mdl)
+
+	@Override
+	public String getMapping()
 	{
-		settings.put(key, mdl);
+		return this.mapping;
 	}
 
-
+	
+	/// protected setters
 	
 	@Override
 	public Parameter<?> getParameter(String key)
@@ -156,7 +159,7 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 		return ret;
 	}
 
-	protected String[] outputport_names;
+	
 
 	protected void addParameter(String key, Parameter<?> param)
 	{
@@ -173,9 +176,6 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 		}
 		return ret;
 	}
-
-	protected Port[] in_ports;
-	protected Port[] out_ports;
 	
 	public void setInports(Port[] ports)
 	{
@@ -231,4 +231,10 @@ public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 	{
 		this.command = command;
 	}
+	
+	public void setMapping(String mapping)
+	{
+		this.mapping = mapping;
+	}
+
 }

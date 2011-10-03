@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;
@@ -65,6 +66,8 @@ public class MimeFileImporterNodeModel extends NodeModel
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(MimeFileImporterNodeModel.class);
 
+	private static String BINARY_DATA_MESSAGE = "[MIMEFile content is binary]";
+	
 	static final String CFG_FILENAME = "FILENAME";
 
 	private SettingsModelString  m_filename = MimeFileImporterNodeDialog.createFileChooserModel();
@@ -77,8 +80,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	{
 		super(0, 1);
 	}
-	
-	public byte[] data = new byte[]{};
 	
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
 	protected MIMEFileCell cell;
@@ -95,8 +96,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 			
 		cell = resolver.getCell(f.getName());
 		cell.read(f);
-		
-		data = cell.getData();
 		
 		BufferedDataContainer container = exec.createDataContainer(outspec);
 		
@@ -140,7 +139,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		}
 		
 		if(cell==null)
-			throw new InvalidSettingsException("no file chosen");
+			return new DataTableSpec[]{null};
 		
 		// TODO: check if user settings are available, fit to the incoming
 		// table structure, and the incoming types are feasible for the node
@@ -186,7 +185,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// method below.
 		m_filename.loadSettingsFrom(settings);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -200,7 +199,11 @@ public class MimeFileImporterNodeModel extends NodeModel
 		// Do not actually set any values of any member variables.
 
 		m_filename.validateSettings(settings);
-
+		String filename = settings.getString(CFG_FILENAME);
+		if(resolver.getMIMEtype(filename)==null)
+		{
+			throw new InvalidSettingsException("file of unknown MIMEtype selected "+filename);
+		}
 	}
 
 	/**
@@ -209,33 +212,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
-		
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-		int    BUFFSIZE = 2048;
-		byte[] BUFFER   = new byte[BUFFSIZE];
-		
-	    while(entries.hasMoreElements()) 
-	    {
-	        ZipEntry entry = (ZipEntry)entries.nextElement();
-	        if(entry.getName().equals("rawdata.bin"))
-	        {
-	        	int  size = (int) entry.getSize(); 
-	        	data = new byte[size];
-	        	InputStream in = zip.getInputStream(entry);
-	        	int len;
-	        	int totlen=0;
-	        	while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
-	        	{
-	        		System.arraycopy(BUFFER, 0, data, totlen, len);
-	        		totlen+=len;
-	        	}
-	        }
-	    }
-	    zip.close();
-	    
 	}
 
 	/**
@@ -244,11 +220,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-	    out.putNextEntry(entry);
-	    out.write(data);
-	    out.close(); 
 	}
 
 }

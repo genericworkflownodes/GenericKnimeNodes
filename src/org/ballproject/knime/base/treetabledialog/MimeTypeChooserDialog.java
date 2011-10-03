@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
-import org.ballproject.knime.base.port.MIMEtype;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.jdesktop.swingx.VerticalLayout;
 

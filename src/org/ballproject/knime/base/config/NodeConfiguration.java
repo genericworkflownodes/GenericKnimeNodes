@@ -35,6 +35,7 @@ public interface NodeConfiguration
 	public String getVersion();
 	public String getXML();
 	public String getCategory();
+	public String getMapping();
 	
 	public int getNumberOfOutputPorts();
 	public int getNumberOfInputPorts();

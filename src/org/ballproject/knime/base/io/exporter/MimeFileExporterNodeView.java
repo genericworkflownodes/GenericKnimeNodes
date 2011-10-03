@@ -39,17 +39,11 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 	 * Creates a new view.
 	 * 
 	 * @param nodeModel
-	 *            The model (class: {@link MimeFileImporterNodeModel})
+	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
 	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel)
 	{
-		super(nodeModel);
-		
-		JTextArea text = new JTextArea(new String(nodeModel.data), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		setComponent(scrollpane);
-		
+		super(nodeModel);		
 	}
 
 	/**

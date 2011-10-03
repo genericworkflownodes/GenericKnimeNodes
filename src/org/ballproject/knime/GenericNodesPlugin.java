@@ -19,13 +19,14 @@
 
 package org.ballproject.knime;
 
-
 import java.util.Properties;
-
 import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.ballproject.knime.base.mime.demangler.Demangler;
+import org.ballproject.knime.base.mime.demangler.DemanglerProvider;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -42,6 +43,9 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	// The shared instance.
 	private static GenericNodesPlugin plugin;
 
+	public  static boolean DEBUG = false;
+	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
+	
 	public static void log(String message)
 	{
 		if(GenericNodesPlugin.DEBUG)
@@ -53,7 +57,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 		return GenericNodesPlugin.DEBUG;
 	}
 	
-	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry(); 
+	 
 	
 	public static MIMEtypeRegistry getMIMEtypeRegistry()
 	{
@@ -85,9 +89,31 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 		props.load(GenericNodesPlugin.class.getResourceAsStream("baseplugin.properties"));
 		DEBUG = (props.getProperty("debug","false").toLowerCase().equals("true") ? true : false);
 		log("starting plugin: GenericNodesPlugin");
+        
+		IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.ballproject.knime.base.mime.demangler.DemanglerProvider");
+		try 
+		{
+			for (IConfigurationElement e : config) 
+			{
+				final Object o = e.createExecutableExtension("class");
+				if (o instanceof DemanglerProvider) 
+				{
+					DemanglerProvider dp = (DemanglerProvider) o;
+					for(Demangler dm : dp.getDemanglers())
+					{
+						log("registering Demangler for data type "+dm.getSourceType().toString());
+						registry.addDemangler(dm);
+					}
+				}
+			}
+		} 
+		catch (CoreException e) 
+		{
+			e.printStackTrace();
+			throw new Exception(e);
+		}
+		
 	}
-	
-	public static boolean DEBUG = false;
 
 	/**
 	 * This method is called when the plug-in is stopped.

@@ -19,7 +19,14 @@
 
 package org.ballproject.knime.base.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.FileChannel;
+import java.util.Random;
 
 public class Helper
 {
@@ -83,5 +90,111 @@ public class Helper
 			}
 		}
 		return (path.delete());
+	}
+	
+	public static void copyStream(InputStream in, File dest) throws IOException
+	{
+		FileOutputStream    out = new FileOutputStream(dest);
+		BufferedInputStream bin = new BufferedInputStream(in);
+		byte[] buffer = new byte[2048];
+		int len;
+ 		while((len=bin.read(buffer, 0, 2048))!=-1)
+ 		{
+ 			out.write(buffer,0,len);
+ 		}
+ 		out.close();
+ 		bin.close();
+	}
+	
+	public static void copyFile(File in, File out) throws IOException
+	{
+		FileChannel inChannel = new FileInputStream(in).getChannel();
+		FileChannel outChannel = new FileOutputStream(out).getChannel();
+		try
+		{
+			inChannel.transferTo(0, inChannel.size(), outChannel);
+		}
+		catch (IOException e)
+		{
+			throw e;
+		}
+		finally
+		{
+			if (inChannel != null)
+				inChannel.close();
+			if (outChannel != null)
+				outChannel.close();
+		}
+	}
+	
+	static private Random rng = new Random();
+	
+	static synchronized public String getTemporaryFilename(String directory, String suffix, boolean autodelete) throws IOException
+	{
+		
+		int num = Math.abs(rng.nextInt());
+		File f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		while(f.exists())
+		{
+			num = Math.abs(rng.nextInt());
+			f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		}
+		f.createNewFile();
+		
+		if(autodelete)
+			f.deleteOnExit();
+		
+		return f.getAbsolutePath();
+	}
+	
+	static synchronized public String getTemporaryFilename(String suffix, boolean autodelete) throws IOException
+	{
+		return getTemporaryFilename(System.getProperty("java.io.tmpdir"),suffix,autodelete);
+	}
+	
+	static synchronized public String getTemporaryDirectory(String directory, String prefix, boolean autodelete) throws IOException
+	{
+		
+		int num = Math.abs(rng.nextInt());
+		File f = new File(directory+File.separator+String.format("%s%06d",prefix,num));
+		while(f.exists())
+		{
+			num = Math.abs(rng.nextInt());
+			f = new File(directory+File.separator+String.format("%s%06d",prefix,num));
+		}
+		f.mkdirs();
+		
+		if(autodelete)
+			f.deleteOnExit();
+		
+		return f.getAbsolutePath();
+	}
+	
+	static synchronized public String getTemporaryDirectory(String prefix, boolean autodelete) throws IOException
+	{
+		return getTemporaryDirectory(System.getProperty("java.io.tmpdir"),prefix,autodelete);
+	}
+	
+	public static Object createObject(String className) 
+	{
+	      Object object = null;
+	      try 
+	      {
+	          Class classDefinition = Class.forName(className);
+	          object = classDefinition.newInstance();
+	      } 
+	      catch (InstantiationException e) 
+	      {
+	          e.printStackTrace();
+	      } 
+	      catch (IllegalAccessException e) 
+	      {
+	    	  e.printStackTrace();
+	      } 
+	      catch (ClassNotFoundException e) 
+	      {
+	    	  e.printStackTrace();
+	      }
+	      return object;
 	}
 }

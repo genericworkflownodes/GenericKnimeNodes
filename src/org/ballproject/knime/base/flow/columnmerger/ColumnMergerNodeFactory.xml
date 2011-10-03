@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./default.png" type="Source">
+    <name>ColumnMerger</name>
+    
+    <shortDescription>Merges MIME file cells into a table column</shortDescription>
+    
+    <fullDescription>
+        <intro>ColumnMerger.</intro>
+    </fullDescription>
+    
+    <ports>
+     <inPort index="0" name="mimefile"> MIMEFile </inPort>
+     <inPort index="1" name="mimefile"> MIMEFile </inPort>
+     <inPort index="2" name="mimefile"> MIMEFile (optional) </inPort>
+     <inPort index="3" name="mimefile"> DataTable </inPort>
+     <outPort index="0" name="table"> list of MIMEFileCells </outPort>
+     <outPort index="1" name="table"> DataTable </outPort>   
+    </ports>    
+    <views>
+        <view index="0" name="data view">View loaded data</view>
+    </views>
+</knimeNode>

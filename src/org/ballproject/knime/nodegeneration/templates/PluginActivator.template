@@ -5,10 +5,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.KNIMEConstants;
 import org.osgi.framework.BundleContext;
-import java.util.Properties;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.io.File;
+
 import __BASE__.knime.nodes.binres.BinaryResources;
 import __BASE__.knime.nodes.mimetypes.*;
 import org.ballproject.knime.*;
@@ -52,12 +51,20 @@ public class PluginActivator extends AbstractUIPlugin
 	{
 		super.start(context);
 		
-		
-		//String home = KNIMEConstants.getKNIMEHomeDir();
 		String home = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES";
 		String os   = System.getProperty("os.name");
 		
 		PROPERTIES = new Properties();
+		
+		PROPERTIES.load(this.getClass().getResourceAsStream("plugin.properties"));
+		if(GenericNodesPlugin.isDebug())
+		{
+			GenericNodesPlugin.log("__NAME__ plugin properties are ... ");
+			for(Object key: PROPERTIES.keySet())
+			{
+				GenericNodesPlugin.log(key+" -> "+PROPERTIES.get(key));
+			}
+		}
 		
 		// default platform
 		String OS = "win";
@@ -73,6 +80,7 @@ public class PluginActivator extends AbstractUIPlugin
 		
 		// get word size of JVM as a proxy for native word size of OS
 		String data_model = System.getProperty("sun.arch.data.model");
+		String targetdir  = home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME;
 		
 		if(data_model.equals("64"))
 		{
@@ -90,7 +98,8 @@ public class PluginActivator extends AbstractUIPlugin
 				}
 				else
 				{
-					throw new Exception("could not install binaries due to missing payload with apropriate word size");
+					//FIXME
+					//throw new Exception("could not install binaries due to missing payload with apropriate word size");
 				}
 		    }
 		}
@@ -104,19 +113,32 @@ public class PluginActivator extends AbstractUIPlugin
 				}
 				else
 				{
-					throw new Exception("could not install binaries due to missing payload with apropriate word size");
+					//FIXME
+					//throw new Exception("could not install binaries due to missing payload with apropriate word size");
 				}
 			}
 			else
 			{
-				throw new Exception("could not install binaries due to missing payload with apropriate word size");
+				//FIXME
+				//throw new Exception("could not install binaries due to missing payload with apropriate word size");
 			}
 		
 		// verify integrity
 		String expectedBinDirPath = home + File.separator + BinaryResources.BINPACKNAME + File.separator + "bin";
 		if(!(new File(expectedBinDirPath).exists()))
 		{
-			throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
+			//FIXME
+			//throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
+			//System.err.println("could not properly install binaries, no bin directory was found inside payload archive");
+		}
+		
+		File bindir = new File(targetdir+File.separator+"bin");
+		if(bindir.listFiles()!=null)
+		{
+			for(File file: bindir.listFiles())
+			{
+		  	file.setExecutable(true);
+			}
 		}
 		
 		final IPreferenceStore pStore = getDefault().getPreferenceStore();
@@ -132,8 +154,14 @@ public class PluginActivator extends AbstractUIPlugin
 		}
 		
 		// register mime types
-		//MIMEtypeRegistry reg = GenericNodesPlugin.getMIMEtypeRegistry();
-		GenericNodesPlugin.getMIMEtypeRegistry().addResolver(MimeFileCellFactory.getInstance());
+		MIMEtypeRegistry    registry = GenericNodesPlugin.getMIMEtypeRegistry();
+		MimeFileCellFactory fact     = MimeFileCellFactory.getInstance();
+				
+		List<MIMEtype> mts =  fact.getMimeTypes();
+		for(MIMEtype mt: mts)
+		{
+			registry.registerMIMEtype(mt);
+		}
 	}
 
 	/**

@@ -21,17 +21,22 @@ package org.ballproject.knime.test;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
+import org.ballproject.knime.base.parameter.DoubleListParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
+import org.ballproject.knime.base.parameter.IntegerListParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
+import org.ballproject.knime.base.parameter.StringListParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
-import org.ballproject.knime.base.port.MIMEtype;
+import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
@@ -156,4 +161,95 @@ public class CTDNodeConfigurationReaderTest
 		assertNotNull(config.getParameter("c"));
 	}
 
+	@Test
+	public void testReader3() throws Exception
+	{
+		NodeConfiguration config = null;
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		config = reader.read(TestDataSource.class.getResourceAsStream("test3.ctd"));
+		
+		boolean found = false;
+		for(Port port : config.getInputPorts())
+		{
+			if(port.getName().equals("MascotAdapter.1.in2"))
+			{
+				found = true;
+				assertTrue(port.isMultiFile());
+			}
+		}
+		assertTrue(found);
+		
+		Parameter<?> p1 = config.getParameter("MascotAdapter.1.charges");
+		assertNotNull(p1);
+		
+		assertTrue(p1 instanceof StringListParameter);
+		StringListParameter slp = (StringListParameter) p1;
+		assertEquals("the different charge states",slp.getDescription());
+		assertEquals(3,slp.getValue().size());
+		assertEquals("1+",slp.getValue().get(0));
+		assertEquals("2+",slp.getValue().get(1));
+		assertEquals("3+",slp.getValue().get(2));
+		
+		Parameter<?> p2 = config.getParameter("MascotAdapter.1.charge");
+		assertNotNull(p2);
+		
+		assertTrue(p2 instanceof IntegerListParameter);
+		IntegerListParameter ilp = (IntegerListParameter) p2;
+		assertEquals("List of charge states; required if 'in_seq' is given",ilp.getDescription());
+		assertEquals(3,ilp.getValue().size());
+		assertEquals(new Integer(0),ilp.getValue().get(0));
+		assertEquals(new Integer(1),ilp.getValue().get(1));
+		assertEquals(new Integer(2),ilp.getValue().get(2));
+		
+		Parameter<?> p3 = config.getParameter("MascotAdapter.1.somefloats");
+		assertNotNull(p3);
+		
+		assertTrue(p3 instanceof DoubleListParameter);
+		DoubleListParameter dlp = (DoubleListParameter) p3;
+		assertEquals("List of charge states; required if 'in_seq' is given",dlp.getDescription());
+		assertEquals(3,dlp.getValue().size());
+		assertEquals(new Double(0.22),dlp.getValue().get(0));
+		assertEquals(new Double(1.4),dlp.getValue().get(1));
+		assertEquals(new Double(-2.2),dlp.getValue().get(2));
+		assertEquals(new Double(-3),dlp.getLowerBound());
+		assertEquals(new Double(5),dlp.getUpperBound());
+	}
+	
+	@Test
+	public void testReader4() throws Exception
+	{
+		NodeConfiguration config = null;
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		config = reader.read(TestDataSource.class.getResourceAsStream("test4.ctd"));
+		
+		assertEquals(1,config.getNumberOfInputPorts());
+		assertEquals(1,config.getNumberOfOutputPorts());
+		
+		List<MIMEtype> mimetypes = config.getOutputPorts()[0].getMimeTypes();
+		
+		assertEquals("1.out",config.getOutputPorts()[0].getName());
+		assertEquals("output file",config.getOutputPorts()[0].getDescription());
+		
+		String [] test = {"mzML", "featureXML"};
+		int idx = 0;
+		for(MIMEtype mt: mimetypes)
+		{
+			assertEquals(test[idx],mt.getExt());
+			idx++;
+		}
+		
+		mimetypes = config.getInputPorts()[0].getMimeTypes();
+		
+		assertEquals("1.in",config.getInputPorts()[0].getName());
+		assertEquals("Input files separated by blank",config.getInputPorts()[0].getDescription());
+		
+		test = new String[]{"mzData","mzXML","mzML","DTA","DTA2D","mgf","featureXML","fid"};
+		idx = 0;
+		for(MIMEtype mt: mimetypes)
+		{
+			assertEquals(test[idx],mt.getExt());
+			idx++;
+		}
+		
+	}
 }

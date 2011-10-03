@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.port;
+package org.ballproject.knime.base.mime;
 
 import java.io.Serializable;
 
@@ -30,8 +30,10 @@ import java.io.Serializable;
  */
 public class MIMEtype implements Serializable
 {
+	protected Class   clazz;
+	protected String  file_extension;
+	protected boolean binary;
 	
-	protected String file_extension;
 	
 	/**
 	 * constructs a new MIMEtype object associated with supplied file extension.
@@ -40,7 +42,33 @@ public class MIMEtype implements Serializable
 	 */
 	public MIMEtype(String extension)
 	{
+		this.clazz = null;
 		this.file_extension = extension;
+		this.binary = false;
+	}
+	
+	/**
+	 * constructs a new MIMEtype object associated with supplied file extension.
+	 * 
+	 * @param extension
+	 */
+	public MIMEtype(Class clazz, String extension)
+	{
+		this.clazz = clazz;
+		this.file_extension = extension;
+		this.binary = false;
+	}
+	
+	/**
+	 * constructs a new MIMEtype object associated with supplied file extension and binary flag.
+	 * 
+	 * @param extension
+	 */
+	public MIMEtype(Class clazz, String extension, boolean binary)
+	{
+		this.clazz = clazz;
+		this.file_extension = extension;
+		this.binary = binary;
 	}
 	
 	/**
@@ -53,9 +81,33 @@ public class MIMEtype implements Serializable
 		return file_extension;
 	}
 	
-	public static MIMEtype resolveMIMEtype(String filename)
+	/**
+	 * returns whether the file stores data in binary format.
+	 * 
+	 * @return isBinary
+	 */
+	public boolean isBinary()
 	{
-		String toks[] = filename.split("\\.");			
-		return new MIMEtype(toks[toks.length-1].toLowerCase());
+		return binary;
+	}
+
+	/**
+	 * sets whether the file stores data in binary format.
+	 * 
+	 * @param binary
+	 */
+	public void setBinary(boolean binary)
+	{
+		this.binary = binary;
+	}
+	
+	public Class getKNIMEClass()
+	{
+		return clazz;
+	}
+
+	public static boolean equals(MIMEtype type1, MIMEtype type2)
+	{
+		return type1.getExt().equalsIgnoreCase(type2.getExt());
 	}
 }

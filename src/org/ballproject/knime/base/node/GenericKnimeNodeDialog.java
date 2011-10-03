@@ -61,11 +61,13 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 		
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) throws InvalidSettingsException
-	{
-		for(Parameter<?> param: config.getParameters())
+	{	
+		for(String key: this.config.getParameterKeys())
 		{
-			settings.addString(param.getKey(), param.toString());
-		}		
+			Parameter<?> param = config.getParameter(key);
+			settings.addString(key, param.getStringRep());
+		}
+		
 		
 		int[] sel_ports = mtc.getSelectedTypes();
 		
@@ -78,12 +80,13 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 	@Override
 	protected void loadSettingsFrom(NodeSettingsRO settings, DataTableSpec[] specs) throws NotConfigurableException
 	{
-		for(Parameter<?> param: config.getParameters())
+		for(String key: this.config.getParameterKeys())
 		{
+			Parameter<?> param = config.getParameter(key);
 			String value = null;
 			try
 			{
-				 value = settings.getString(param.getKey());
+				 value = settings.getString(key);
 			}
 			catch (InvalidSettingsException e)
 			{
@@ -95,6 +98,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 			}
 			catch (InvalidParameterValueException e)
 			{
+				e.printStackTrace();
 				throw new NotConfigurableException(e.getMessage());
 			}
 		}
@@ -111,6 +115,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 			} 
 			catch (InvalidSettingsException e)
 			{
+				e.printStackTrace();
 				throw new NotConfigurableException(e.getMessage());
 			}
 		}

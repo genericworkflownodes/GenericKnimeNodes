@@ -44,10 +44,6 @@ public class BinaryResources
 					fout.flush();
 					fout.close();
 				}
-				if(ze.getName().endsWith(".sh")||ze.getName().endsWith(".bin"))
-				{
-					new File(filename).setExecutable(true);
-				}
 			}
 			zin.close();
 		}

@@ -19,14 +19,13 @@
 
 package org.ballproject.knime.nodegeneration;
 
-import java.io.BufferedInputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,8 +40,8 @@ import java.util.zip.ZipInputStream;
 
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.port.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SchemaValidator;
@@ -78,12 +77,16 @@ public class NodeGenerator
 	public static String _executabledir_;
 	public static String _abspackagedir_;
 	public static String _absnodedir_;
+	public static String _iconpath_;
+	public static String _useini_ = "true";
 	
 	public static String cur_cat;
 	public static String cur_path;
 	public static String _package_root_;
 	public static String _BINPACKNAME_;
 	public static String _payloaddir_;
+	
+	public static Properties props;
 	
 	public static void assertRestrictedAlphaNumeric(Object obj, String id)
 	{
@@ -146,7 +149,7 @@ public class NodeGenerator
 	public static void main(String[] args) throws Exception
 	{
 		// read in properties for building the plugin
-		Properties props = new Properties();
+		props = new Properties();
 		props.load(new FileInputStream("plugin.properties"));
 				
 		// ... these are ..
@@ -172,6 +175,9 @@ public class NodeGenerator
 				panic("invalid package root given :"+_package_root_);
 				
 		_descriptordir_ = props.getProperty("descriptordir");
+		
+		_iconpath_ = props.getProperty("icon");
+		_useini_   = props.getProperty("useini","true");
 		
 		// no descriptor directory supplied ...
 		if(_descriptordir_==null)
@@ -207,11 +213,37 @@ public class NodeGenerator
 		installMimeTypes();
 		
 		processDescriptors();
-				
+			
+		installIcon();
+		
+		fillProperties();
+		
 		post();		
 		
 	}
 	
+	public static void fillProperties() throws IOException
+	{
+		Properties p = new Properties();
+		p.put("use_ini", props.getProperty("use_ini","true"));
+		p.put("ini_switch", props.getProperty("ini_switch","-ini"));
+		p.store(new FileOutputStream(_abspackagedir_+File.separator+"knime"+File.separator+"plugin.properties"), null);
+	}
+	
+	public static void installIcon() throws IOException
+	{
+		if(_iconpath_!=null)
+		{
+			Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
+			Element elem = (Element) node;
+
+			elem.addElement("splashExtension").addAttribute("icon", "icons/logo.png").addAttribute("id", "logo");
+			
+			new File(_destdir_ +File.separator+"icons").mkdirs();
+			Helper.copyFile(new File(_iconpath_), new File(_destdir_ +File.separator+"icons"+File.separator+"logo.png"));
+		}
+		
+	}
 
 	public static void generateDescriptors(Properties props) throws Exception
 	{
@@ -258,7 +290,7 @@ public class NodeGenerator
 			
 			if(tr.getReturnCode()==0)
 			{
-				copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
+				Helper.copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
 			}
 			else
 			{
@@ -278,7 +310,7 @@ public class NodeGenerator
 	
 	public static void pre() throws DocumentException, IOException
 	{				
-		copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
+		Helper.copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
 		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
@@ -287,6 +319,8 @@ public class NodeGenerator
 		plugindoc = reader.read(new FileInputStream(new File(_destdir_ + "/plugin.xml")));
 		
 	}
+	
+	private static Map<String,String> ext2clazz = new HashMap<String,String>();
 	
 	private static void installMimeTypes() throws DocumentException, IOException, JaxenException
 	{
@@ -311,9 +345,9 @@ public class NodeGenerator
 		
 		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
-		
-		String tpl = "\t\tif(name.endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
-		String data = "";
+				
+		String mimetypes_template = "\t\tmimetypes.add(new MIMEtype(__CLAZZ__.class,\"__EXT__\",__BINARY__));\n";
+		String mimetypes_code     = "";
 		
 		Set<String> mimetypes = new HashSet<String>();
 		
@@ -330,9 +364,12 @@ public class NodeGenerator
 		{
 			Element elem    = (Element) node;
 			
-			String  name    = elem.valueOf("@name");
-			String  ext     = elem.valueOf("@ext");
-			String  descr   = elem.valueOf("@description");
+			String  name      = elem.valueOf("@name");
+			String  ext       = elem.valueOf("@ext");
+			String  descr     = elem.valueOf("@description");
+			String  demangler = elem.valueOf("@demangler");
+			String  binary    = elem.valueOf("@binary");
+			binary = (binary.equals("") ? "false" : binary);
 			
 			logger.info("read mime type "+name);
 			
@@ -343,17 +380,19 @@ public class NodeGenerator
 			
 			//createMimeTypeLoader(name, ext);
 			
-			createMimeCell(name, ext);
+			String clazz = createMimeCell(name, ext);
 			createMimeValue(name);
 		
-			ext2type.put(ext,name);
+			ext2type.put(ext.toLowerCase(),name);
+			ext2clazz.put(ext.toLowerCase(),clazz);
 			
-			String s = tpl.replace("__EXT__", ext.toLowerCase());
-			s = s.replace("__NAME__",name); 
-			data += s;
+			String s4 = mimetypes_template.replace("__CLAZZ__", clazz);
+			s4 = s4.replace("__EXT__", ext.toLowerCase());
+			s4 = s4.replace("__BINARY__",binary);
+			mimetypes_code += s4;
 		}
 		
-		tf.replace("__DATA__", data);
+		tf.replace("__MIMETYPES__", mimetypes_code);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();
@@ -368,7 +407,7 @@ public class NodeGenerator
 		{
 			String filename = f.getName();
 			
-			if (filename.endsWith(".ttd"))
+			if (filename.endsWith(".ctd"))
 			{
 				logger.info("start processing node "+f);
 				processNode(filename, f);
@@ -444,7 +483,8 @@ public class NodeGenerator
 				warn("duplicate tool detected "+nodeName);
 				return;
 			}
-			node_names.add(nodeName);
+			if(config.getStatus().equals("internal"))
+				node_names.add(nodeName);
 			
 		}
 		else
@@ -454,7 +494,8 @@ public class NodeGenerator
 				warn("duplicate tool detected "+oldNodeName);
 				return;
 			}
-			node_names.add(oldNodeName);
+			if(config.getStatus().equals("internal"))
+				node_names.add(oldNodeName);
 		}
 		
 		cur_cat  = combine("/"+_package_root_+"/"+_pluginname_,config.getCategory());
@@ -465,7 +506,7 @@ public class NodeGenerator
 		File nodeConfigDir = new File(_absnodedir_ + "/" + nodeName + "/config");
 		nodeConfigDir.mkdirs();
 
-		copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
+		Helper.copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
 		
 		registerPath(cur_cat);
 		
@@ -536,7 +577,7 @@ public class NodeGenerator
 		return pth.getName();
 	}
 	
-	private static void createMimeCell(String name, String ext) throws IOException
+	private static String createMimeCell(String name, String ext) throws IOException
 	{
 		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileCell.template");
 		TemplateFiller tf = new TemplateFiller();
@@ -545,6 +586,7 @@ public class NodeGenerator
 		tf.replace("__EXT__", ext);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/" + name + "FileCell.java");
+		return name+"FileCell";
 	}
 
 	private static void createMimeValue(String ext) throws IOException
@@ -630,7 +672,7 @@ public class NodeGenerator
 	public static void createXMLDescriptor(String nodeName) throws IOException
 	{
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
+		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inports = "";
 		int idx = 0;
 		for (Port port : config.getInputPorts())
@@ -653,7 +695,7 @@ public class NodeGenerator
 			inports += ipp + "\n";
 		}
 
-		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\">__PORTDESCR__ [__MIMETYPE__]</outPort>";
+		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outports = "";
 		idx = 0;
 		for (Port port : config.getOutputPorts())
@@ -672,7 +714,7 @@ public class NodeGenerator
 		StringBuffer buf = new StringBuffer();
 		for (Parameter<?> p : config.getParameters())
 		{
-			buf.append("\t\t<option name=\"" + p.getKey() + "\">" + p.getDescription() + "</option>\n");
+			buf.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA[" + p.getDescription() + "]]></option>\n");
 		}
 		String opts = buf.toString();
 
@@ -746,19 +788,22 @@ public class NodeGenerator
 	public static Map<String,String> ext2type = new HashMap<String,String>();
 	
 	private static void fillMimeTypes() throws IOException
-	{
+	{		
 		String clazzez = "";
 		for (Port port : config.getInputPorts())
 		{
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = ext2type.get(type.getExt());
+				String ext = ext2type.get(type.getExt().toLowerCase());
 				if(ext==null)
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
-				tmp += "DataType.getType(" + ext + "FileCell.class),";
+				if(port.isMultiFile())
+					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
+				else
+					tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
@@ -777,18 +822,21 @@ public class NodeGenerator
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = ext2type.get(type.getExt());
+				String ext = ext2type.get(type.getExt().toLowerCase());
 				if(ext==null)
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
-				tmp += "DataType.getType(" + ext + "FileCell.class),";
+				if(port.isMultiFile())
+					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
+				else
+					tmp += "DataType.getType(" + ext + "FileCell.class),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
 			clazzez += tmp;
-		}
-	
+		}		
+		
 		if(!clazzez.equals(""))
 			clazzez = clazzez.substring(0,clazzez.length()-1);
 		
@@ -834,10 +882,7 @@ public class NodeGenerator
 	}
 	
 	public static void post() throws IOException
-	{	
-		
-		//registerNode(_pluginpackage_ + ".knime.nodes.io.MimeFileExporterNodeFactory",combine("/"+_package_root_,"/"+_pluginname_+"/IO"));
-		
+	{			
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
 		XMLWriter writer = new XMLWriter( new FileWriter(_destdir_ + "/plugin.xml") , format );
@@ -868,12 +913,12 @@ public class NodeGenerator
 			// only copy zip and ini files
 			if(filename.toLowerCase().endsWith("zip"))
 			{
-				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+				Helper.copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
 				verifyZip(_absnodedir_ +pathsep+"binres"+pathsep+filename);
 			}
 			if(filename.toLowerCase().endsWith("ini"))
 			{
-				copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+				Helper.copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
 			}
 		}
 		
@@ -881,6 +926,7 @@ public class NodeGenerator
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__BASE__", _pluginpackage_);
+		tf.replace("__NAME__", _pluginpackage_);
 		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
 		template.close();
 	}
@@ -938,42 +984,6 @@ public class NodeGenerator
 			{
 				panic("binary archive has no executable in bin directory for node : "+nodename);
 			}
-		}
-	}
-	
-
-	public static void copyStream(InputStream in, File dest) throws IOException
-	{
-		FileOutputStream    out = new FileOutputStream(dest);
-		BufferedInputStream bin = new BufferedInputStream(in);
-		byte[] buffer = new byte[2048];
-		int len;
- 		while((len=bin.read(buffer, 0, 2048))!=-1)
- 		{
- 			out.write(buffer,0,len);
- 		}
- 		out.close();
- 		bin.close();
-	}
-	
-	public static void copyFile(File in, File out) throws IOException
-	{
-		FileChannel inChannel = new FileInputStream(in).getChannel();
-		FileChannel outChannel = new FileOutputStream(out).getChannel();
-		try
-		{
-			inChannel.transferTo(0, inChannel.size(), outChannel);
-		}
-		catch (IOException e)
-		{
-			throw e;
-		}
-		finally
-		{
-			if (inChannel != null)
-				inChannel.close();
-			if (outChannel != null)
-				outChannel.close();
 		}
 	}
 	

@@ -69,16 +69,15 @@ public class ConfigWrapper
 		
 		for(String key: config.getParameterKeys())
 		{
-			//System.out.println("key="+key);
 			List<String> prefixes = getPrefixes(key);
 			Node<Parameter<?>> last = root;
 			for(int i=0;i<prefixes.size()-1;i++)
 			{
 				String prefix = prefixes.get(i);
-				//System.out.println("\tprefix="+prefix);
+				
 				if(!key2node.containsKey(prefix))
 				{
-					//System.out.println("\t\tcreating internal node "+prefix);
+					
 					Node<Parameter<?>> nn = new Node<Parameter<?>>(last, null, getSuffix(prefix));
 					last.addChild(nn);
 					last = nn;
@@ -89,7 +88,7 @@ public class ConfigWrapper
 					last = key2node.get(prefix);
 				}
 			}
-			//System.out.println("adding param node to last="+last.getName());
+			
 			Parameter<?>       p = config.getParameter(key);
 			Node<Parameter<?>> n = new Node<Parameter<?>>(last, p, p.getKey());
 			last.addChild(n);

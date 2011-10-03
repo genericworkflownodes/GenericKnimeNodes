@@ -22,7 +22,6 @@ package org.ballproject.knime.base.config;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -33,7 +32,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class CTDNodeConfigurationWriter
+public class CTDNodeConfigurationWriter implements NodeConfigurationWriter
 {
 	
 	private Document doc;
@@ -49,8 +48,23 @@ public class CTDNodeConfigurationWriter
 		{
 			e.printStackTrace();
 		}
+		cleanItemLists();
 	}
-		
+	
+	@SuppressWarnings("unchecked")
+	private void cleanItemLists()
+	{
+		List<Node> itemlists = doc.selectNodes("//ITEMLIST");
+		for(Node itemlist: itemlists)
+		{
+			List<Node> listitems = itemlist.selectNodes("LISTITEM");
+			for(Node item: listitems)
+			{
+				item.detach();
+			}
+		}
+	}
+	
 	public void setParameterValue(String name, String value)
 	{
 		String[] toks = name.split("\\.");
@@ -68,13 +82,60 @@ public class CTDNodeConfigurationWriter
 		elem.addAttribute("value", value);
 	}
 	
+	public void setMultiParameterValue(String name, String value)
+	{
+		String[] toks = name.split("\\.");
+		String query = "/tool/PARAMETERS/";
+		for(int i=0;i<toks.length-1;i++)
+		{
+			query+="NODE[@name='"+toks[i]+"']/";
+		}
+		query+="ITEMLIST[@name='"+toks[toks.length-1]+"']";
+		
+		Node    node  = doc.selectSingleNode(query);
+		if(node==null)
+			return;
+		Element elem  = (Element) node;
+		Element item  = elem.addElement("LISTITEM");
+		item.addAttribute("value", value);
+	}
+	
 	public void write(String filename) throws IOException
 	{
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
 		XMLWriter writer = new XMLWriter( new FileWriter(filename) , format );
         writer.write( doc );
+        
+		writer.close();
+	}
+	
+	public void writeINI(String filename) throws IOException
+	{
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		
+		XMLWriter writer = new XMLWriter( new FileWriter(filename) , format );
+		writer.write(doc.selectSingleNode("//PARAMETERS"));
 
 		writer.close();
+	}
+	
+	public void init(NodeConfigurationStore store)
+	{
+		for(String key: store.getParameterKeys())
+		{
+			List<String> values = store.getMultiParameterValue(key);
+			if(values.size()==1)
+			{
+				setParameterValue(key, values.get(0));
+			}
+			else
+			{
+				for(String value: values)
+				{
+					setMultiParameterValue(key, value);	
+				}
+			}
+		}
 	}
 }
