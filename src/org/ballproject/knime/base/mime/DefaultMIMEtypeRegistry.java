@@ -64,6 +64,7 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	@Override
 	public void registerMIMEtype(MIMEtype mt)
 	{
+		@SuppressWarnings("unchecked")
 		DataType dt = DataType.getType(mt.getKNIMEClass());
 		String extension = mt.getExt();
 		ext2mt.put(extension, mt);
