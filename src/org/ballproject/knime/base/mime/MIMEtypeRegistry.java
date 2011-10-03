@@ -34,15 +34,6 @@ import org.knime.core.data.DataType;
 public interface MIMEtypeRegistry
 {
 	/**
-	 * recursively add an additional MIMEtype registry to an existing one.
-	 *  
-	 * This allows each new plugin the addition of new MIMEtypes into an existing global registry.  
-	 *  
-	 * @param resolver another registry
-	 */
-	void addResolver(MIMEtypeRegistry resolver);
-	
-	/**
 	 * returns the MIMEFileCell corresponding to a given filename.
 	 * 
 	 * @param filename name of the file
@@ -60,10 +51,13 @@ public interface MIMEtypeRegistry
 	 */
 	MIMEtype getMIMEtype(String filename);
 	
+	void registerMIMEtype(MIMEtype mt);
+	
 	List<Demangler> getDemangler(DataType type);
 	
 	List<Demangler> getMangler(DataType type);
 	
 	void addDemangler(Demangler demangler);
 	
+	boolean isCompatible(DataType dt1, DataType dt2);
 }

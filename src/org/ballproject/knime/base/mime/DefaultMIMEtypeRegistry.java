@@ -32,66 +32,12 @@ import org.knime.core.data.DataType;
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
-	protected List<MIMEtypeRegistry>         resolvers  = new ArrayList<MIMEtypeRegistry>();
+	protected Map<String,MIMEtype>  ext2mt    = new HashMap<String,MIMEtype>();
+	protected Map<String,DataType>  ext2type  = new HashMap<String,DataType>();
+	protected Map<DataType,String>  type2ext  = new HashMap<DataType,String>();
 	protected Map<DataType,List<Demangler>>  demanglers = new HashMap<DataType,List<Demangler>>(); 
 	protected Map<DataType,List<Demangler>>  manglers   = new HashMap<DataType,List<Demangler>>();
 	
-	@Override
-	public MIMEFileCell getCell(String name)
-	{
-		MIMEFileCell cell = null;
-		List<MIMEFileCell> candidates = new ArrayList<MIMEFileCell>();
-		for(MIMEtypeRegistry resolver: resolvers)
-		{
-			MIMEFileCell rc = resolver.getCell(name); 
-			if(rc!=null)
-			{
-				candidates.add(rc);
-			}
-		}
-		Collections.sort(candidates, new Comparator<MIMEFileCell>(){
-			@Override
-			public int compare(MIMEFileCell x, MIMEFileCell y)
-			{
-				return x.getExtension().compareToIgnoreCase(y.getExtension());
-			}}
-		);
-		if(candidates.size()>0)
-			cell = candidates.get(0); 
-		return cell;
-	}
-
-	@Override
-	public void addResolver(MIMEtypeRegistry resolver)
-	{
-		resolvers.add(resolver);
-	}
-
-	@Override
-	public MIMEtype getMIMEtype(String name)
-	{
-		MIMEtype mt = null;
-		List<MIMEtype> candidates = new ArrayList<MIMEtype>();
-		for(MIMEtypeRegistry resolver: resolvers)
-		{
-			MIMEtype rmt = resolver.getMIMEtype(name);
-			if(rmt!=null)
-			{
-				candidates.add(rmt);
-			}
-		}
-		Collections.sort(candidates, new Comparator<MIMEtype>(){
-			@Override
-			public int compare(MIMEtype x, MIMEtype y)
-			{
-				return x.getExt().compareToIgnoreCase(y.getExt());
-			}}
-		);
-		if(candidates.size()>0)
-			mt = candidates.get(0); 
-		return mt;
-	}
-
 	@Override
 	public List<Demangler> getDemangler(DataType type)
 	{
@@ -114,5 +60,90 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	{
 		return manglers.get(type);
 	}
+	
+	@Override
+	public void registerMIMEtype(MIMEtype mt)
+	{
+		DataType dt = DataType.getType(mt.getKNIMEClass());
+		String extension = mt.getExt();
+		System.out.println("registering type with extension "+extension);
+		ext2mt.put(extension, mt);
+		ext2type.put(extension.toLowerCase(),dt);
+		type2ext.put(dt,extension.toLowerCase());
+	}
 
+	@Override
+	public boolean isCompatible(DataType dt1, DataType dt2)
+	{
+		String ext1 = type2ext.get(dt1);
+		String ext2 = type2ext.get(dt2);
+		
+		if(ext1==null || ext2==null)
+			return false;
+		
+		return ext1.equals(ext2);
+	}
+	
+	@Override
+	public MIMEFileCell getCell(String name)
+	{
+		MIMEFileCell cell = null;
+		List<MIMEFileCell> candidates = new ArrayList<MIMEFileCell>();
+		for(String ext: ext2mt.keySet())
+		{
+			if(name.toLowerCase().endsWith(ext))
+			{
+				try
+				{
+					candidates.add( (MIMEFileCell) ext2mt.get(ext).getKNIMEClass().newInstance() );
+				} 
+				catch (InstantiationException e)
+				{
+					e.printStackTrace();
+				} 
+				catch (IllegalAccessException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		Collections.sort(candidates, new Comparator<MIMEFileCell>(){
+			@Override
+			public int compare(MIMEFileCell x, MIMEFileCell y)
+			{
+				return x.getExtension().compareToIgnoreCase(y.getExtension());
+			}}
+		);
+		
+		if(candidates.size()>0)
+			cell = candidates.get(0);
+		
+		return cell;
+	}
+	
+	@Override
+	public MIMEtype getMIMEtype(String name)
+	{
+		MIMEtype mt = null;
+		List<MIMEtype> candidates = new ArrayList<MIMEtype>();
+		for(String ext: ext2mt.keySet())
+		{
+			if(name.toLowerCase().endsWith(ext))
+			{
+				candidates.add(ext2mt.get(ext));
+			}
+		}
+		
+		Collections.sort(candidates, new Comparator<MIMEtype>(){
+			@Override
+			public int compare(MIMEtype x, MIMEtype y)
+			{
+				return x.getExt().compareToIgnoreCase(y.getExt());
+			}}
+		);
+		
+		if(candidates.size()>0)
+			mt = candidates.get(0); 
+		return mt;
+	}
 }
