@@ -320,6 +320,8 @@ public class NodeGenerator
 		
 	}
 	
+	private static Map<String,String> ext2clazz = new HashMap<String,String>();
+	
 	private static void installMimeTypes() throws DocumentException, IOException, JaxenException
 	{
 		assertFileExistence(_descriptordir_ + "/mimetypes.xml","mimetypes.xml");
@@ -343,15 +345,9 @@ public class NodeGenerator
 		
 		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
-		
-		String tpl = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new __NAME__FileCell();\n\t\t}\n";
-		String data = "";
-		
-		String tpl2  = "\t\tif(name.toLowerCase().endsWith(\"__EXT__\"))\n\t\t{\n\t\tret = new MIMEtype(\"__EXT__\",__BINARY__);\n\t\t}\n";
-		String data2 = "";
-		
-		String tpl3  = "\t\tif(dt==DataType.getType(__NAME__FileCell.class))\n\t\t{\n\t\tret = (Demangler) Helper.createObject(\"__CLAZZNAME__\");\n\t\t}\n";
-		String data3 = "";
+				
+		String mimetypes_template = "\t\tmimetypes.add(new MIMEtype(__CLAZZ__.class,\"__EXT__\",__BINARY__));\n";
+		String mimetypes_code     = "";
 		
 		Set<String> mimetypes = new HashSet<String>();
 		
@@ -384,31 +380,19 @@ public class NodeGenerator
 			
 			//createMimeTypeLoader(name, ext);
 			
-			createMimeCell(name, ext);
+			String clazz = createMimeCell(name, ext);
 			createMimeValue(name);
 		
 			ext2type.put(ext.toLowerCase(),name);
+			ext2clazz.put(ext.toLowerCase(),clazz);
 			
-			String s = tpl.replace("__EXT__", ext.toLowerCase());
-			s = s.replace("__NAME__",name); 
-			data += s;
-			
-			String s2 = tpl2.replace("__EXT__", ext.toLowerCase());
-			s2 = s2.replace("__NAME__",name); 
-			s2 = s2.replace("__BINARY__",binary);
-			data2 += s2;
-			
-			if(!demangler.equals(""))
-			{
-				String s3 = tpl3.replace("__CLAZZNAME__", demangler);
-				s3 = s3.replace("__NAME__",name); 
-				data3 += s3;
-			}
+			String s4 = mimetypes_template.replace("__CLAZZ__", clazz);
+			s4 = s4.replace("__EXT__", ext.toLowerCase());
+			s4 = s4.replace("__BINARY__",binary);
+			mimetypes_code += s4;
 		}
 		
-		tf.replace("__DATA__", data);
-		tf.replace("__DATA2__", data2);
-		tf.replace("__DATA3__", data3);
+		tf.replace("__MIMETYPES__", mimetypes_code);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
 		template.close();
@@ -593,7 +577,7 @@ public class NodeGenerator
 		return pth.getName();
 	}
 	
-	private static void createMimeCell(String name, String ext) throws IOException
+	private static String createMimeCell(String name, String ext) throws IOException
 	{
 		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileCell.template");
 		TemplateFiller tf = new TemplateFiller();
@@ -602,6 +586,7 @@ public class NodeGenerator
 		tf.replace("__EXT__", ext);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.write(_absnodedir_ + "/mimetypes/" + name + "FileCell.java");
+		return name+"FileCell";
 	}
 
 	private static void createMimeValue(String ext) throws IOException
