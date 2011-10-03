@@ -56,7 +56,7 @@ public class ListMimeFileExporterNodeFactory extends NodeFactory<ListMimeFileExp
     @Override
     public NodeView<ListMimeFileExporterNodeModel> createNodeView(final int viewIndex, final ListMimeFileExporterNodeModel nodeModel) 
     {
-        return new ListMimeFileExporterNodeView(nodeModel);
+        return null;
     }
 
     /**
