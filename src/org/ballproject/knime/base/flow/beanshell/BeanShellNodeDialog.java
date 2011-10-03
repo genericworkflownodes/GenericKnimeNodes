@@ -59,7 +59,6 @@ public class BeanShellNodeDialog extends DefaultNodeSettingsPane
 	@Override
 	protected void loadSettingsFrom(NodeSettingsRO settings, DataTableSpec[] specs) throws NotConfigurableException
 	{
-		System.out.println("Dialog::loadSettingsFrom");
 		try
 		{
 			editor.setInitScript(settings.getString("script_init"));
@@ -76,7 +75,6 @@ public class BeanShellNodeDialog extends DefaultNodeSettingsPane
 	@Override
 	public void saveAdditionalSettingsTo(NodeSettingsWO settings) throws InvalidSettingsException
 	{
-		System.out.println("Dialog::saveAdditionalSettingsTo");
 		settings.addString("script_init", editor.getInitScript());
 		settings.addString("script_firstPass", editor.getFirstPassScript());
 		settings.addString("script_secondPass", editor.getSecondPassScript());
@@ -85,7 +83,6 @@ public class BeanShellNodeDialog extends DefaultNodeSettingsPane
 	@Override
 	public void loadAdditionalSettingsFrom(NodeSettingsRO settings, DataTableSpec[] specs) throws NotConfigurableException
 	{
-		System.out.println("Dialog::loadAdditionalSettingsFrom");
 		try
 		{
 			editor.setInitScript(settings.getString("script_init"));

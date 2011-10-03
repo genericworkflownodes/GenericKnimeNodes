@@ -185,15 +185,15 @@ public class Helper
 	      } 
 	      catch (InstantiationException e) 
 	      {
-	          System.out.println(e);
+	          e.printStackTrace();
 	      } 
 	      catch (IllegalAccessException e) 
 	      {
-	          System.out.println(e);
+	    	  e.printStackTrace();
 	      } 
 	      catch (ClassNotFoundException e) 
 	      {
-	          System.out.println(e);
+	    	  e.printStackTrace();
 	      }
 	      return object;
 	}

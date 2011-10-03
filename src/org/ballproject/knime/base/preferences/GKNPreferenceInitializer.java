@@ -13,7 +13,7 @@ public class GKNPreferenceInitializer extends AbstractPreferenceInitializer
 	{
 		 // get the preference store for the UI plugin
         IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
-        System.out.println("store="+store);
+
         // set default values
         store.setDefault(PREF_FILE_SIZE_LIMIT, 200000);
 	}

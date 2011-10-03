@@ -57,7 +57,6 @@ public class GenericToolWrapper extends Project
 		
 		for(String key: store.getParameterKeys())
 		{
-			System.out.println("setting property "+key);
 			String value = store.getParameterValue(key);
 			setProperty(key,value);
 		}
@@ -108,25 +107,5 @@ public class GenericToolWrapper extends Project
 			ret.add(switches.get(key));
 		}
 		return ret;
-	}
-	
-	public static void main(String[] args) throws Exception
-	{
-		String cmds = "<if>\n<matches string=\"${1.p}\" pattern=\"^$\"/>\n<then>\n<SetParam name=\"baz\" value=\"fuzz\"/>\n</then>\n</if>\n";
-		
-		NodeConfiguration config = null;
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
-		config = reader.read(TestDataSource.class.getResourceAsStream("test5.ctd"));
-		
-		NodeConfigurationStore store = new DefaultNodeConfigurationStore();
-		store.setParameterValue("bl2seq.i", "in1.FASTA");
-		store.setParameterValue("bl2seq.j", "in2.FASTA");
-		
-		GenericToolWrapper at = new GenericToolWrapper(config,store);
-		
-		for(String key: at.getSwitches().keySet())
-		{
-			System.out.println(key+" -> "+at.getSwitches().get(key));
-		}
 	}
 }

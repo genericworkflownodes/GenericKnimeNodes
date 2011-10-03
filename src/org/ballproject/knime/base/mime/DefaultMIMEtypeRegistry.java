@@ -66,7 +66,6 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	{
 		DataType dt = DataType.getType(mt.getKNIMEClass());
 		String extension = mt.getExt();
-		System.out.println("registering type with extension "+extension);
 		ext2mt.put(extension, mt);
 		ext2type.put(extension.toLowerCase(),dt);
 		type2ext.put(dt,extension.toLowerCase());

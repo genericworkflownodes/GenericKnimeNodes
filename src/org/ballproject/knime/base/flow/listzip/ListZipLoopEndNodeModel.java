@@ -85,14 +85,12 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode
 	            // first time we are getting to this: open container
 	            m_startTime = System.currentTimeMillis();    
 	            m_count = 0;
-	            System.out.println("creating output container");
 	            m_resultContainer = exec.createDataContainer(inspec);
 	    }
 		
 		BufferedDataTable in = inData[0];
 		for (DataRow row : in) 
 		{
-			//System.out.println("@@@@@@@@@@ adding row "+m_count);
 			//m_resultContainer.addRowToTable(new DefaultRow("Row "+m_count, row));
 			cells.add(row.getCell(0));
         }
@@ -101,20 +99,9 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode
 		
         if (terminateLoop) 
         {
-        	
-        	System.out.println("before closing resultContainer");
             // this was the last iteration - close container and continue
-        	try
-        	{
-        		m_resultContainer.close();	
-        	}
-        	catch(Exception e)
-        	{
-        		e.printStackTrace();
-        	}
-            
-            System.out.println("after closing resultContainer");
-            
+       		m_resultContainer.close();	
+                        
             BufferedDataTable outTable = m_resultContainer.getTable();
             
             
@@ -124,8 +111,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode
             while(iter.hasNext())
             {
             	DataCell dc = iter.next().getCell(0);
-            	System.out.println("data cell="+dc);
-            	//cells.add(dc);
+            	cells.add(dc);
             }
             iter.close();
             
@@ -133,9 +119,8 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode
             //ListCell lc = CollectionCellFactory.createListCell(cells);
             cont.addRowToTable(new DefaultRow("Row 1", cells.get(0)));
             
-            System.out.println("before closing cont");
+            
             cont.close();
-            System.out.println("after closing cont");
             
             m_resultContainer = null;
             m_count = 0;
@@ -182,7 +167,6 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode
 	@Override
 	protected void reset()
 	{
-		System.out.println("@@@@@@@ reset called");
 		m_count = 0;
 		m_resultContainer = null;
 	}

@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import org.knime.core.data.DataType;
 import org.knime.core.data.container.BlobDataCell;
-import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.port.*;
 import org.ballproject.knime.base.util.Helper;
 
@@ -62,7 +61,6 @@ public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue
 	{
 		if(file.length()>SIZELIMIT)
 		{
-			System.out.println("Using ReferenceMIMEFileDelegate");
 			data_delegate = new ReferenceMIMEFileDelegate();
 		}
 		else
