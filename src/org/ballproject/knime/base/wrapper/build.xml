@@ -1,6 +1,6 @@
 <project default="todo">
-  <taskdef name="SetParam" classname="org.ballproject.knime.base.wrapper.SetParam"/>
-  <taskdef name="MapParam" classname="org.ballproject.knime.base.wrapper.MapParam"/>
+  <taskdef name="setparam" classname="org.ballproject.knime.base.wrapper.SetParam"/>
+  <taskdef name="mapparam" classname="org.ballproject.knime.base.wrapper.MapParam"/>
   <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
   <target name="todo">
    <!-- __TASKS__ -->
