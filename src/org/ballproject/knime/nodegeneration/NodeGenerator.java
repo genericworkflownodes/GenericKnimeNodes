@@ -196,14 +196,14 @@ public class NodeGenerator
 			generateDescriptors(props);
 		}
 		
-		_destdir_       = System.getProperty("java.io.tmpdir")+File.separator+"/GENERIC_KNIME_NODES_PLUGINSRC";
+		_destdir_       = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES_PLUGINSRC";
 
 		// the name of the binary package is simply copied from the plugin name
 		_BINPACKNAME_   = _pluginpackage_;
-		_destsrcdir_    = _destdir_+"/src";
+		_destsrcdir_    = _destdir_+File.separator+"src";
 		_packagedir_    = _pluginpackage_.replace(".","/");
-		_abspackagedir_ = _destsrcdir_+"/"+_packagedir_;
-		_absnodedir_    = _abspackagedir_+"/knime/nodes"; 
+		_abspackagedir_ = _destsrcdir_+File.separator+_packagedir_;
+		_absnodedir_    = _abspackagedir_+String.format("%sknime%snodes",File.separator,File.separator); 
 		
 		
 		createPackageDirectory();
@@ -303,20 +303,20 @@ public class NodeGenerator
 	
 	private static void createPackageDirectory()
 	{
-		File packagedir = new File(_destsrcdir_+"/"+_packagedir_);
+		File packagedir = new File(_destsrcdir_+File.separator+_packagedir_);
 		Helper.deleteDirectory(packagedir);
 		packagedir.mkdirs();
 	}
 	
 	public static void pre() throws DocumentException, IOException
 	{				
-		Helper.copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + "/plugin.xml"));
+		Helper.copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + File.separator+"plugin.xml"));
 		
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
 		reader.setDocumentFactory(factory);
 
-		plugindoc = reader.read(new FileInputStream(new File(_destdir_ + "/plugin.xml")));
+		plugindoc = reader.read(new FileInputStream(new File(_destdir_ + File.separator+"plugin.xml")));
 		
 	}
 	
@@ -324,12 +324,12 @@ public class NodeGenerator
 	
 	private static void installMimeTypes() throws DocumentException, IOException, JaxenException
 	{
-		assertFileExistence(_descriptordir_ + "/mimetypes.xml","mimetypes.xml");
+		assertFileExistence(_descriptordir_ + File.separator+"mimetypes.xml","mimetypes.xml");
 		
 		
 		SchemaValidator val = new SchemaValidator();
 		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
-		if(!val.validates(_descriptordir_ + "/mimetypes.xml"))
+		if(!val.validates(_descriptordir_ + File.separator+"mimetypes.xml"))
 		{
 			panic("supplied mimetypes.xml does not conform to schema "+val.getErrorReport());
 		}
@@ -339,7 +339,7 @@ public class NodeGenerator
 		SAXReader reader = new SAXReader();
 		reader.setDocumentFactory(factory);
 		
-		Document doc = reader.read(new FileInputStream(new File(_descriptordir_ + "/mimetypes.xml")));
+		Document doc = reader.read(new FileInputStream(new File(_descriptordir_ + File.separator+"mimetypes.xml")));
 		
 		InputStream    template = TemplateResources.class.getResourceAsStream("MimeFileCellFactory.template");
 		
@@ -394,7 +394,7 @@ public class NodeGenerator
 		
 		tf.replace("__MIMETYPES__", mimetypes_code);
 		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/mimetypes/MimeFileCellFactory.java");
+		tf.write(_absnodedir_ + String.format("%smimetypes%sMimeFileCellFactory.java",File.separator,File.separator));
 		template.close();
 		
 	}
@@ -503,10 +503,10 @@ public class NodeGenerator
 		cur_path = getPathPrefix(cur_cat); 
 		
 		
-		File nodeConfigDir = new File(_absnodedir_ + "/" + nodeName + "/config");
+		File nodeConfigDir = new File(_absnodedir_ + File.separator + nodeName + File.separator+"config");
 		nodeConfigDir.mkdirs();
 
-		Helper.copyFile(descriptor, new File(_absnodedir_ + "/" + nodeName + "/config/config.xml"));
+		Helper.copyFile(descriptor, new File(_absnodedir_ + File.separator + nodeName + File.separator + "config"+File.separator+"config.xml"));
 		
 		registerPath(cur_cat);
 		
@@ -885,7 +885,7 @@ public class NodeGenerator
 	{			
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
-		XMLWriter writer = new XMLWriter( new FileWriter(_destdir_ + "/plugin.xml") , format );
+		XMLWriter writer = new XMLWriter( new FileWriter(_destdir_ + File.separator+"plugin.xml") , format );
         writer.write( plugindoc );
 
 		writer.close();
@@ -927,7 +927,7 @@ public class NodeGenerator
 		tf.read(template);
 		tf.replace("__BASE__", _pluginpackage_);
 		tf.replace("__NAME__", _pluginpackage_);
-		tf.write(_abspackagedir_ + "/knime/PluginActivator.java");
+		tf.write(_abspackagedir_ + File.separator+"knime"+File.separator+"PluginActivator.java");
 		template.close();
 	}
 	
