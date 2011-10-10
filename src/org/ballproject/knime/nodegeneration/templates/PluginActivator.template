@@ -12,6 +12,8 @@ import __BASE__.knime.nodes.binres.BinaryResources;
 import __BASE__.knime.nodes.mimetypes.*;
 import org.ballproject.knime.*;
 import org.ballproject.knime.base.mime.*;
+import org.knime.core.data.url.MIMEType;
+
 
 /**
  * This is the eclipse bundle activator. Note: KNIME node developers probably
@@ -157,8 +159,8 @@ public class PluginActivator extends AbstractUIPlugin
 		MIMEtypeRegistry    registry = GenericNodesPlugin.getMIMEtypeRegistry();
 		MimeFileCellFactory fact     = MimeFileCellFactory.getInstance();
 				
-		List<MIMEtype> mts =  fact.getMimeTypes();
-		for(MIMEtype mt: mts)
+		List<MIMEType> mts =  fact.getMimeTypes();
+		for(MIMEType mt: mts)
 		{
 			registry.registerMIMEtype(mt);
 		}

@@ -147,6 +147,24 @@ public class Helper
 		return f.getAbsolutePath();
 	}
 	
+	static synchronized public String getRelativeTemporaryFilename(String directory, String suffix, boolean autodelete) throws IOException
+	{
+		
+		int num = Math.abs(rng.nextInt());
+		File f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		while(f.exists())
+		{
+			num = Math.abs(rng.nextInt());
+			f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		}
+		f.createNewFile();
+		
+		if(autodelete)
+			f.deleteOnExit();
+		
+		return f.getName();
+	}
+	
 	static synchronized public String getTemporaryFilename(String suffix, boolean autodelete) throws IOException
 	{
 		return getTemporaryFilename(System.getProperty("java.io.tmpdir"),suffix,autodelete);

@@ -36,6 +36,7 @@ import org.ballproject.knime.base.port.*;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -87,13 +88,15 @@ public class MimeFileViewerNodeModel extends NodeModel
 			
 			MimeMarker mrk = (MimeMarker) cell;
 			MIMEFileDelegate del = mrk.getDelegate();
-			MIMEtype mt = GenericNodesPlugin.getMIMEtypeRegistry().getMIMEtype(mrk.getExtension());
+			MIMEType mt = GenericNodesPlugin.getMIMEtypeRegistry().getMIMEtype(mrk.getExtension());
+			/*
 			if(mt.isBinary())
 			{
 				data = BINARY_DATA_MESSAGE.getBytes();
 			}
 			else
 				data = del.getByteArrayReference();
+			*/
 		}
 		return new BufferedDataTable[]{};
 	}

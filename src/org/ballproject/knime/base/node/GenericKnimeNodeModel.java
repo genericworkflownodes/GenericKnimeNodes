@@ -42,13 +42,14 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.mime.MIMEFileCell;
+
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
@@ -56,21 +57,16 @@ import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.FileListParameter;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.ballproject.knime.base.wrapper.GenericToolWrapper;
 
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.collection.CollectionCellFactory;
-import org.knime.core.data.collection.ListCell;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.node.BufferedDataContainer;
-import org.knime.core.node.BufferedDataTable;
+import org.knime.core.data.url.MIMEType;
+import org.knime.core.data.url.URLContent;
+
+import org.knime.core.data.url.port.MIMEURLPortObject;
+import org.knime.core.data.url.port.MIMEURLPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -79,6 +75,8 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 /**
@@ -95,9 +93,7 @@ import org.knime.core.node.port.PortType;
 public abstract class GenericKnimeNodeModel extends NodeModel
 {
 	private static final NodeLogger logger = NodeLogger.getLogger(GenericKnimeNodeModel.class);
-
-	protected DataType[][] inports;
-	protected DataType[][] outports;
+	
 	protected int[]        selected_output_type;
 	protected String       binpath;
 	
@@ -144,12 +140,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return selected_output_type[idx];
 	}
 	
-	public static final PortType OPTIONAL_PORT_TYPE = new PortType(BufferedDataTable.class, true);
+	public static final PortType OPTIONAL_PORT_TYPE = new PortType(MIMEURLPortObject.class, true);
 
 	private static PortType[] createOPOs(Port[] ports)
 	{
 		PortType[] portTypes = new PortType[ports.length];
-	    Arrays.fill(portTypes, BufferedDataTable.TYPE);
+	    Arrays.fill(portTypes, MIMEURLPortObject.TYPE);
 	    for(int i=0;i<ports.length;i++)
 	    {
 	    	if(ports[i].isOptional())
@@ -161,163 +157,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	}
 	
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
-	{
-		// fetch node descriptors		
-		String nodeName = config.getName();
-			
-		// create job directory
-		File   jobdir = new File( Helper.getTemporaryDirectory(nodeName,!GenericNodesPlugin.isDebug()) );
-		GenericNodesPlugin.log("jobdir="+jobdir);
-		
-		store = new DefaultNodeConfigurationStore();
-		
-		// prepare input and parameter data
-		List<List<String>> output_files = outputParameters(jobdir, inData);
-		
-		// launch executable
-		preExecute(jobdir, exec);
-				
-		// process result files
-		BufferedDataTable[] outtables = processOutput( output_files, exec);
-		
-        if(!GenericNodesPlugin.isDebug())
-        	Helper.deleteDirectory(jobdir);
-        
-		return outtables;
-	}
-
 	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
 	
-	private List<List<String>> outputParameters(File jobdir, BufferedDataTable[] inData) throws IOException
-	{	
-		// .. input files
-		for(int i=0;i<inData.length;i++)
-		{
-			// skip optional and unconnected inport ports
-			if(inData[i]==null)
-				continue;
-			
-			String   name = config.getInputPorts()[i].getName();
-			DataRow  row  = inData[i].iterator().next();
-			
-			// MIMEFileCells are always stored in first column
-			DataCell cell = row.getCell(0);
-			
-			List<MIMEFileCell> mfcs = new ArrayList<MIMEFileCell>();
-			
-			if(cell.getType().isCollectionType())
-			{
-				ListCell cells = (ListCell) cell;
-				for(int j=0;j<cells.size();j++)
-				{
-					MIMEFileCell     mfc = (MIMEFileCell) cells.get(j);
-					mfcs.add(mfc);
-				}
-			}
-			else
-			{
-				MIMEFileCell     mfc = (MIMEFileCell) cell;
-				mfcs.add(mfc);
-			}
-			
-			for(MIMEFileCell mfc : mfcs)
-			{
-				File   tmpfile  = mfc.writeTemp(jobdir.getAbsolutePath());
-				String filename = tmpfile.getAbsolutePath();
-				GenericNodesPlugin.log("< setting param "+name+"->"+filename);
-				//writer.setParameterValue(name, filename);
-				store.setParameterValue(name, filename);
-			}
-		}
-		
-		List<List<String>> outfiles = new ArrayList<List<String>>();
-		
-		Map<Port,Integer>  port2slot   = new HashMap<Port,Integer>();
-		
-		// .. output files		
-		int nOut = config.getOutputPorts().length; 
-		for(int i=0;i<nOut;i++)
-		{
-			Port   port = config.getOutputPorts()[i];
-			String name = port.getName();
-			
-			String ext  = this.getOutputType(i).getExt();
-			
-			if(port.isMultiFile())
-			{
-				// keep this list empty for now ...
-				List<String> files = new ArrayList<String>();
-				outfiles.add(files);
-				// but store the slot index for later filling
-				port2slot.put( port, i);
-			}
-			else
-			{
-				List<String> files = new ArrayList<String>();
-				String filename = Helper.getTemporaryFilename(jobdir.getAbsolutePath(), ext, !GenericNodesPlugin.isDebug());
-				GenericNodesPlugin.log("> setting param "+name+"->"+filename);
-				//writer.setParameterValue(name, filename);
-				store.setParameterValue(name, filename);
-				files.add(filename);
-				outfiles.add(files);
-			}
-		}
-		
-		// .. node parameters
-		for(String key: config.getParameterKeys())
-		{
-			Parameter<?> param = config.getParameter(key);
-			if(param.isNull())
-			{
-				if(param.getIsOptional())
-					continue;					
-			}
-			if(param instanceof ListParameter)
-			{
-				ListParameter lp = (ListParameter) param;
-				if(param instanceof FileListParameter)
-				{
-					FileListParameter flp = (FileListParameter) param;
-					List<String> files = lp.getStrings();
-					
-					int slot = port2slot.get(flp.getPort()); 
-					
-					String ext  = this.getOutputType(slot).getExt();
-					
-					for(String file: files)
-					{
-						String filename = jobdir.getAbsolutePath()+File.separator+file+"."+ext;
-						outfiles.get(slot).add(filename);
-						//writer.setMultiParameterValue(key, filename);
-						store.setMultiParameterValue(key, filename);
-					}
-				}
-				else
-				{
-					for(String val: lp.getStrings())
-					{
-						GenericNodesPlugin.log("@@ setting param "+key+"->"+val);
-						//writer.setMultiParameterValue(key, val);	
-						store.setMultiParameterValue(key, val);
-					}	
-				}
-			}
-			else
-			{
-				GenericNodesPlugin.log("@ setting param "+key+"->"+param.getValue().toString());
-				//writer.setParameterValue(key, param.getValue().toString());
-				store.setParameterValue(key, param.getValue().toString());
-			}
-		}
-		
-		return outfiles;
-	}
-
 	private void preExecute(final File jobdir, final ExecutionContext exec) throws Exception
 	{
 		// this switch is not nice, we should encapsulate this into
@@ -487,64 +328,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	}
 
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
-	
-	private BufferedDataTable[] processOutput(List<List<String>> my_outnames, ExecutionContext exec) throws Exception
-	{
-		int nOut = config.getOutputPorts().length;
-        // create output tables
-        BufferedDataTable[] outtables = new BufferedDataTable[nOut];
-        for(int i=0;i<nOut;i++)
-        {
-        	Port port = config.getOutputPorts()[i];
-        	BufferedDataContainer container = exec.createDataContainer(outspec[i]);
-        	
-        	DataCell outcell = null;
-        	
-        	// multi output file
-        	if(my_outnames.get(i).size()>1)
-        	{
-        		List<MIMEFileCell> files = new ArrayList<MIMEFileCell>();
-        		
-        		for(String filename: my_outnames.get(i))
-        		{
-        			File f = new File(filename);
-        			MIMEFileCell cell = resolver.getCell(filename);
-        			cell.read(f);
-        			files.add(cell);
-        		}
-        			      		
-        		outcell = CollectionCellFactory.createListCell(files);
-        		
-        	}
-        	else
-        	{
-        		String filename = my_outnames.get(i).get(0);
-        		File f = new File(filename);
-
-        		outcell = this.makeDataCell(f);
-        		
-           	}
-        	
-        	DataRow row = new DefaultRow("Row 0", outcell);
-    		container.addRowToTable(row);
-
-    		container.close();
-
-    		BufferedDataTable table = container.getTable();
-    		outtables[i] = table;
-        }
-        
-        return outtables;
-	}
-
 	private static String FILESEP = File.separator;
-	
-	
-	/**
-	 * template method to be overriden by children models; gives
-	 * the DataCell from a given file handle (MIMEtype based)
-	 */
-	public abstract DataCell makeDataCell(File f) throws Exception;
 	
 	/**
 	 * {@inheritDoc}
@@ -562,88 +346,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		}
 		*/
 	}
-
-	protected DataTableSpec[] outspec;
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{
-		// TODO: check if user settings are available, fit to the incoming
-		// table structure, and the incoming types are feasible for the node
-		// to execute. If the node can execute in its current state return
-		// the spec of its output data table(s) (if you can, otherwise an array
-		// with null elements), or throw an exception with a useful user message
-				
-		checkInput(inSpecs);
-
-		outspec = createOutSpec();
-		
-		return outspec;
-	}
-	
-	
-	protected void checkInput(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{
-		// check compatability of the input types at each port
-		// with the list of allowed data types 
-		for(int i=0;i<config.getNumberOfInputPorts();i++)
-		{
-			// no connected input ports have nulls in inSpec
-			if(inSpecs[i]==null)
-			{
-				// .. if port is optional everything is fine
-				if(config.getInputPorts()[i].isOptional())
-				{
-					continue;
-				}
-				else
-					throw new InvalidSettingsException("non-optional input port not connected");
-			}
-			
-			// check compatibility of input types
-			boolean ok = false;
-			List<MIMEtype> types = config.getInputPorts()[i].getMimeTypes();
-			
-			for(int j=0;j<types.size();j++)
-			{
-				// the current type at input port
-				DataType input_type    = inSpecs[i].getColumnSpec(0).getType();
-				// a possible input type
-				DataType expected_type = inports[i][j];				
-				// we have found a compatible type in the list of allowed types
-				
-				if(resolver.isCompatible(input_type, expected_type))
-					ok = true;
-			}
-			
-			// we could not find a compatible type in the list of allowed types
-			if(!ok)
-				throw new InvalidSettingsException("invalid MIMEtype at port number "+i);			
-		}
-	}
-	
-	protected DataTableSpec[] createOutSpec()
-	{
-		Port[]           out_ports  = config.getOutputPorts();
-		int              nOutPorts  = out_ports.length;
-		DataTableSpec[]  out_spec   = new DataTableSpec[nOutPorts];
-	        
-		for(int i=0;i<nOutPorts;i++)
-		{
-			DataColumnSpec[] out_colspec = new DataColumnSpec[1];
-			
-			out_colspec[0] =  new DataColumnSpecCreator(out_ports[i].getName(), this.outports[i][getOutputTypeIndex(i)]).createSpec();
-			
-			DataTableSpec outputSpec = new DataTableSpec(out_colspec);
-			out_spec[i] = outputSpec;
-		}
-		return out_spec;
-	}
-	
-	
 
 	/**
 	 * {@inheritDoc}
@@ -828,4 +530,232 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	    out.close(); 
 	}
 
+	protected MIMEType[][] mimetypes_in;
+	protected MIMEType[][] mimetypes_out;
+	protected PortObjectSpec[] outspec_;
+	
+	@Override
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException
+	{
+		int     nIn = mimetypes_in.length;
+		
+		for(int i=0;i<nIn;i++)
+		{
+			// no connected input ports have nulls in inSpec
+			if (inSpecs[i] == null)
+			{
+				// .. if port is optional everything is fine
+				if (config.getInputPorts()[i].isOptional())
+				{
+					continue;
+				} 
+				else
+					throw new InvalidSettingsException("non-optional input port not connected");
+			}
+			
+			MIMEURLPortObjectSpec spec = (MIMEURLPortObjectSpec) inSpecs[i];
+			
+			MIMEType mt = spec.getMIMEType(); 
+			
+			boolean ok = false;
+			for(int j=0;j<mimetypes_in[i].length;j++)
+			{
+				if(mt.equals(mimetypes_in[i][j]))
+				{
+					ok = true;
+				}
+			}
+			if(!ok)
+				throw new InvalidSettingsException("invalid MIMEtype at port number "+i);
+		}
+		
+		outspec_ = createOutSpec();
+		
+		return outspec_;
+	}
+	
+	protected PortObjectSpec[] createOutSpec()
+	{
+		int nOut = mimetypes_out.length;
+		PortObjectSpec[]  out_spec   = new PortObjectSpec[nOut];
+	        
+		for(int i=0;i<nOut;i++)
+		{
+			out_spec[i] = new MIMEURLPortObjectSpec(mimetypes_out[i][getOutputTypeIndex(i)]);
+		}
+		
+		return out_spec;
+	}
+
+	@Override
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
+			throws Exception
+	{
+		// fetch node descriptors
+		String nodeName = config.getName();
+
+		// create job directory
+		File jobdir = new File(Helper.getTemporaryDirectory(nodeName,
+				!GenericNodesPlugin.isDebug()));
+		GenericNodesPlugin.log("jobdir=" + jobdir);
+
+		store = new DefaultNodeConfigurationStore();
+
+		// prepare input and parameter data
+		List<List<URL>> output_files = outputParameters(jobdir, inObjects);
+
+		// launch executable
+		preExecute(jobdir, exec);
+
+		// process result files
+		PortObject[] outports = processOutput(output_files, exec);
+
+		if (!GenericNodesPlugin.isDebug())
+			Helper.deleteDirectory(jobdir);
+
+		return outports;
+	}
+	
+	private List<List<URL>> outputParameters(File jobdir, PortObject[] inData) throws IOException
+	{	
+		// .. input files
+		for(int i=0;i<inData.length;i++)
+		{
+			// skip optional and unconnected inport ports
+			if(inData[i]==null)
+				continue;
+			
+			MIMEURLPortObject po = (MIMEURLPortObject) inData[i];
+			List<URL> urls = po.getURLContent().getUrls();
+			
+			String   name = config.getInputPorts()[i].getName();
+			
+						
+			for(URL url : urls)
+			{
+				//String filename = FileStash.getInstance().getAbsoluteURL(url.getPath()).getPath();
+				String filename = url.getPath();
+				GenericNodesPlugin.log("< setting param "+name+"->"+filename);
+				store.setParameterValue(name, filename);
+			}
+		}
+		
+		List<List<URL>> outfiles = new ArrayList<List<URL>>();
+
+		Map<Port, Integer> port2slot = new HashMap<Port, Integer>();
+
+		// .. output files
+		int nOut = config.getOutputPorts().length;
+		for (int i = 0; i < nOut; i++)
+		{
+			Port   port = config.getOutputPorts()[i];
+			String name = port.getName();
+
+			String ext = this.getOutputType(i).getExt();
+
+			if (port.isMultiFile())
+			{
+				// keep this list empty for now ...
+				List<URL> files = new ArrayList<URL>();
+				outfiles.add(files);
+				// but store the slot index for later filling
+				port2slot.put(port, i);
+			} 
+			else
+			{
+				List<URL> files = new ArrayList<URL>();
+				//URL fileurl = FileStash.getInstance().allocatePortableFile(ext);
+				String filename = FileStash.getInstance().allocateFile(ext);
+				//String filename = fileurl.openConnection().getURL().getFile();
+				//String filename = FileStash.getInstance().getAbsoluteURL(fileurl.getPath()).getPath();
+				GenericNodesPlugin.log("> setting param " + name + "->" + filename);
+				store.setParameterValue(name, filename);
+				files.add(new File(filename).toURI().toURL());
+				outfiles.add(files);
+			}
+		}
+
+		// .. node parameters
+		for (String key : config.getParameterKeys())
+		{
+			Parameter<?> param = config.getParameter(key);
+			if (param.isNull())
+			{
+				if (param.getIsOptional())
+					continue;
+			}
+			if (param instanceof ListParameter)
+			{
+				ListParameter lp = (ListParameter) param;
+				if (param instanceof FileListParameter)
+				{
+					// FIXME
+					
+					FileListParameter flp = (FileListParameter) param;
+					List<String> files = lp.getStrings();
+
+					int slot = port2slot.get(flp.getPort());
+
+					String ext = this.getOutputType(slot).getExt();
+
+					for (String file : files)
+					{
+						URL fileurl = FileStash.getInstance().allocatePortableFile(ext);
+						String filename = fileurl.openConnection().getURL().getFile();
+						//String filename = jobdir.getAbsolutePath() + File.separator + file + "." + ext;
+						outfiles.get(slot).add(fileurl);
+						store.setMultiParameterValue(key, filename);
+					}
+					
+				} 
+				else
+				{
+					for (String val : lp.getStrings())
+					{
+						GenericNodesPlugin.log("@@ setting param " + key + "->"+ val);
+						store.setMultiParameterValue(key, val);
+					}
+				}
+			} else
+			{
+				GenericNodesPlugin.log("@ setting param " + key + "->"+ param.getValue().toString());
+				store.setParameterValue(key, param.getValue().toString());
+			}
+		}
+
+		return outfiles;
+	}
+
+	private PortObject[] processOutput(List<List<URL>> my_outnames, ExecutionContext exec) throws Exception
+	{
+		int nOut = config.getOutputPorts().length;
+        // create output tables
+		MIMEURLPortObject[] outports = new MIMEURLPortObject[nOut];
+        for(int i=0;i<nOut;i++)
+        {
+        	
+        	List<URL> urls = new ArrayList<URL>();
+        	
+        	String some_filename="";
+        	// multi output file
+        	for(URL filename: my_outnames.get(i))
+        	{
+        		some_filename = filename.getFile();
+        		urls.add( filename );
+        	}
+        	
+        	URLContent urlcont = new URLContent(urls);
+    		outports[i] = new MIMEURLPortObject(urlcont, resolveMIMEType(some_filename));
+        }
+        
+        return outports;
+	}
+	
+	private MIMEType resolveMIMEType(String filename)
+	{
+		return resolver.getMIMEtype(filename);
+	}
+	
+	
 }

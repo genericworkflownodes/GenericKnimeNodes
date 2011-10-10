@@ -28,11 +28,11 @@ import java.util.Map;
 
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.knime.core.data.DataType;
-
+import org.knime.core.data.url.MIMEType;
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
-	protected Map<String,MIMEtype>  ext2mt    = new HashMap<String,MIMEtype>();
+	protected Map<String,MIMEType>  ext2mt    = new HashMap<String,MIMEType>();
 	protected Map<String,DataType>  ext2type  = new HashMap<String,DataType>();
 	protected Map<DataType,String>  type2ext  = new HashMap<DataType,String>();
 	protected Map<DataType,List<Demangler>>  demanglers = new HashMap<DataType,List<Demangler>>(); 
@@ -62,14 +62,13 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	}
 	
 	@Override
-	public void registerMIMEtype(MIMEtype mt)
+	public void registerMIMEtype(MIMEType mt)
 	{
-		@SuppressWarnings("unchecked")
-		DataType dt = DataType.getType(mt.getKNIMEClass());
-		String extension = mt.getExt();
+		String extension = mt.getExtension();
 		ext2mt.put(extension, mt);
-		ext2type.put(extension.toLowerCase(),dt);
-		type2ext.put(dt,extension.toLowerCase());
+		System.out.println("registering MIMEType "+mt.getExtension());
+		//ext2type.put(extension.toLowerCase(),dt);
+		//type2ext.put(dt,extension.toLowerCase());
 	}
 
 	@Override
@@ -87,6 +86,8 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	@Override
 	public MIMEFileCell getCell(String name)
 	{
+		return null;
+		/*
 		MIMEFileCell cell = null;
 		List<MIMEFileCell> candidates = new ArrayList<MIMEFileCell>();
 		for(String ext: ext2mt.keySet())
@@ -119,13 +120,14 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 			cell = candidates.get(0);
 		
 		return cell;
+		*/
 	}
 	
 	@Override
-	public MIMEtype getMIMEtype(String name)
+	public MIMEType getMIMEtype(String name)
 	{
-		MIMEtype mt = null;
-		List<MIMEtype> candidates = new ArrayList<MIMEtype>();
+		MIMEType mt = null;
+		List<MIMEType> candidates = new ArrayList<MIMEType>();
 		for(String ext: ext2mt.keySet())
 		{
 			if(name.toLowerCase().endsWith(ext))
@@ -134,11 +136,11 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 			}
 		}
 		
-		Collections.sort(candidates, new Comparator<MIMEtype>(){
+		Collections.sort(candidates, new Comparator<MIMEType>(){
 			@Override
-			public int compare(MIMEtype x, MIMEtype y)
+			public int compare(MIMEType x, MIMEType y)
 			{
-				return x.getExt().compareToIgnoreCase(y.getExt());
+				return x.getExtension().compareToIgnoreCase(y.getExtension());
 			}}
 		);
 		

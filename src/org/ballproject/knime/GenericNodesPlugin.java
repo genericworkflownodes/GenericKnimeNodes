@@ -85,6 +85,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
+		System.setProperty("java.protocol.handler.pkgs", "org.ballproject.knime.base.protocols");
 		Properties props = new Properties();
 		props.load(GenericNodesPlugin.class.getResourceAsStream("baseplugin.properties"));
 		DEBUG = (props.getProperty("debug","false").toLowerCase().equals("true") ? true : false);

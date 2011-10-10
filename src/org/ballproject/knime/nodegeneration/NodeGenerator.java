@@ -319,9 +319,7 @@ public class NodeGenerator
 		plugindoc = reader.read(new FileInputStream(new File(_destdir_ + File.separator+"plugin.xml")));
 		
 	}
-	
-	private static Map<String,String> ext2clazz = new HashMap<String,String>();
-	
+		
 	private static void installMimeTypes() throws DocumentException, IOException, JaxenException
 	{
 		assertFileExistence(_descriptordir_ + File.separator+"mimetypes.xml","mimetypes.xml");
@@ -346,7 +344,7 @@ public class NodeGenerator
 		TemplateFiller tf       = new TemplateFiller();
 		tf.read(template);
 				
-		String mimetypes_template = "\t\tmimetypes.add(new MIMEtype(__CLAZZ__.class,\"__EXT__\",__BINARY__));\n";
+		String mimetypes_template = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
 		String mimetypes_code     = "";
 		
 		Set<String> mimetypes = new HashSet<String>();
@@ -366,8 +364,8 @@ public class NodeGenerator
 			
 			String  name      = elem.valueOf("@name");
 			String  ext       = elem.valueOf("@ext");
-			String  descr     = elem.valueOf("@description");
-			String  demangler = elem.valueOf("@demangler");
+			//String  descr     = elem.valueOf("@description");
+			//String  demangler = elem.valueOf("@demangler");
 			String  binary    = elem.valueOf("@binary");
 			binary = (binary.equals("") ? "false" : binary);
 			
@@ -380,15 +378,13 @@ public class NodeGenerator
 			
 			//createMimeTypeLoader(name, ext);
 			
-			String clazz = createMimeCell(name, ext);
-			createMimeValue(name);
+			//String clazz = createMimeCell(name, ext);
+			//createMimeValue(name);
 		
 			ext2type.put(ext.toLowerCase(),name);
-			ext2clazz.put(ext.toLowerCase(),clazz);
+			//ext2clazz.put(ext.toLowerCase(),clazz);
 			
-			String s4 = mimetypes_template.replace("__CLAZZ__", clazz);
-			s4 = s4.replace("__EXT__", ext.toLowerCase());
-			s4 = s4.replace("__BINARY__",binary);
+			String s4 = mimetypes_template.replace("__EXT__", ext.toLowerCase());
 			mimetypes_code += s4;
 		}
 		
@@ -800,10 +796,13 @@ public class NodeGenerator
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
+				/*
 				if(port.isMultiFile())
 					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
 				else
 					tmp += "DataType.getType(" + ext + "FileCell.class),";
+				*/
+				tmp += "new MIMEType(\""+ext+"\"),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
@@ -827,10 +826,13 @@ public class NodeGenerator
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
 				}
+				/*
 				if(port.isMultiFile())
 					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
 				else
 					tmp += "DataType.getType(" + ext + "FileCell.class),";
+				*/
+				tmp += "new MIMEType(\""+ext+"\"),";
 			}
 			tmp = tmp.substring(0,tmp.length()-1);
 			tmp+="},";
