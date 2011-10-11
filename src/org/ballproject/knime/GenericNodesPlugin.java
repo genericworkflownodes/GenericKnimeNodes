@@ -24,9 +24,12 @@ import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.ballproject.knime.base.mime.demangler.DemanglerProvider;
+import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
+import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -85,9 +88,11 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
-		System.setProperty("java.protocol.handler.pkgs", "org.ballproject.knime.base.protocols");
+		
+		
 		Properties props = new Properties();
 		props.load(GenericNodesPlugin.class.getResourceAsStream("baseplugin.properties"));
+		
 		DEBUG = (props.getProperty("debug","false").toLowerCase().equals("true") ? true : false);
 		log("starting plugin: GenericNodesPlugin");
         
@@ -114,6 +119,8 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 			throw new Exception(e);
 		}
 		
+		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
+		FileStash.getInstance().setStashDirectory(store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
 	}
 
 	/**

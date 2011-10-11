@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.net.URL;
 
 import org.ballproject.knime.GenericNodesPlugin;
@@ -49,7 +50,6 @@ import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
@@ -63,10 +63,9 @@ import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.ballproject.knime.base.wrapper.GenericToolWrapper;
 
 import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URLContent;
-
-import org.knime.core.data.url.port.MIMEURLPortObject;
-import org.knime.core.data.url.port.MIMEURLPortObjectSpec;
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -140,12 +139,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return selected_output_type[idx];
 	}
 	
-	public static final PortType OPTIONAL_PORT_TYPE = new PortType(MIMEURLPortObject.class, true);
+	public static final PortType OPTIONAL_PORT_TYPE = new PortType(MIMEURIPortObject.class, true);
 
 	private static PortType[] createOPOs(Port[] ports)
 	{
 		PortType[] portTypes = new PortType[ports.length];
-	    Arrays.fill(portTypes, MIMEURLPortObject.TYPE);
+	    Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
 	    for(int i=0;i<ports.length;i++)
 	    {
 	    	if(ports[i].isOptional())
@@ -554,7 +553,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 					throw new InvalidSettingsException("non-optional input port not connected");
 			}
 			
-			MIMEURLPortObjectSpec spec = (MIMEURLPortObjectSpec) inSpecs[i];
+			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
 			
 			MIMEType mt = spec.getMIMEType(); 
 			
@@ -582,7 +581,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	        
 		for(int i=0;i<nOut;i++)
 		{
-			out_spec[i] = new MIMEURLPortObjectSpec(mimetypes_out[i][getOutputTypeIndex(i)]);
+			out_spec[i] = new MIMEURIPortObjectSpec(mimetypes_out[i][getOutputTypeIndex(i)]);
 		}
 		
 		return out_spec;
@@ -603,7 +602,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		store = new DefaultNodeConfigurationStore();
 
 		// prepare input and parameter data
-		List<List<URL>> output_files = outputParameters(jobdir, inObjects);
+		List<List<URI>> output_files = outputParameters(jobdir, inObjects);
 
 		// launch executable
 		preExecute(jobdir, exec);
@@ -617,7 +616,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return outports;
 	}
 	
-	private List<List<URL>> outputParameters(File jobdir, PortObject[] inData) throws IOException
+	private List<List<URI>> outputParameters(File jobdir, PortObject[] inData) throws IOException
 	{	
 		// .. input files
 		for(int i=0;i<inData.length;i++)
@@ -626,22 +625,22 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			if(inData[i]==null)
 				continue;
 			
-			MIMEURLPortObject po = (MIMEURLPortObject) inData[i];
-			List<URL> urls = po.getURLContent().getUrls();
+			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
+			List<URIContent> uris = po.getURIContents();
 			
 			String   name = config.getInputPorts()[i].getName();
 			
 						
-			for(URL url : urls)
+			for(URIContent uric : uris)
 			{
-				//String filename = FileStash.getInstance().getAbsoluteURL(url.getPath()).getPath();
-				String filename = url.getPath();
+				URI uri = uric.getURI();
+				String filename = uri.getPath();
 				GenericNodesPlugin.log("< setting param "+name+"->"+filename);
 				store.setParameterValue(name, filename);
 			}
 		}
 		
-		List<List<URL>> outfiles = new ArrayList<List<URL>>();
+		List<List<URI>> outfiles = new ArrayList<List<URI>>();
 
 		Map<Port, Integer> port2slot = new HashMap<Port, Integer>();
 
@@ -657,21 +656,18 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			if (port.isMultiFile())
 			{
 				// keep this list empty for now ...
-				List<URL> files = new ArrayList<URL>();
+				List<URI> files = new ArrayList<URI>();
 				outfiles.add(files);
 				// but store the slot index for later filling
 				port2slot.put(port, i);
 			} 
 			else
 			{
-				List<URL> files = new ArrayList<URL>();
-				//URL fileurl = FileStash.getInstance().allocatePortableFile(ext);
+				List<URI> files = new ArrayList<URI>();
 				String filename = FileStash.getInstance().allocateFile(ext);
-				//String filename = fileurl.openConnection().getURL().getFile();
-				//String filename = FileStash.getInstance().getAbsoluteURL(fileurl.getPath()).getPath();
 				GenericNodesPlugin.log("> setting param " + name + "->" + filename);
 				store.setParameterValue(name, filename);
-				files.add(new File(filename).toURI().toURL());
+				files.add(new File(filename).toURI());
 				outfiles.add(files);
 			}
 		}
@@ -701,10 +697,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 
 					for (String file : files)
 					{
-						URL fileurl = FileStash.getInstance().allocatePortableFile(ext);
-						String filename = fileurl.openConnection().getURL().getFile();
+						String filename = FileStash.getInstance().allocateFile(ext);
+						//URL fileurl = FileStash.getInstance().allocatePortableFile(ext);
+						//String filename = fileurl.openConnection().getURL().getFile();
 						//String filename = jobdir.getAbsolutePath() + File.separator + file + "." + ext;
-						outfiles.get(slot).add(fileurl);
+						outfiles.get(slot).add(new File(filename).toURI());
 						store.setMultiParameterValue(key, filename);
 					}
 					
@@ -727,26 +724,25 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return outfiles;
 	}
 
-	private PortObject[] processOutput(List<List<URL>> my_outnames, ExecutionContext exec) throws Exception
+	private PortObject[] processOutput(List<List<URI>> my_outnames, ExecutionContext exec) throws Exception
 	{
 		int nOut = config.getOutputPorts().length;
         // create output tables
-		MIMEURLPortObject[] outports = new MIMEURLPortObject[nOut];
+		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];
         for(int i=0;i<nOut;i++)
         {
         	
-        	List<URL> urls = new ArrayList<URL>();
+        	List<URIContent> uris = new ArrayList<URIContent>();
         	
         	String some_filename="";
         	// multi output file
-        	for(URL filename: my_outnames.get(i))
+        	for(URI filename: my_outnames.get(i))
         	{
-        		some_filename = filename.getFile();
-        		urls.add( filename );
+        		some_filename = filename.getPath();
+        		uris.add( new URIContent(filename) );
         	}
         	
-        	URLContent urlcont = new URLContent(urls);
-    		outports[i] = new MIMEURLPortObject(urlcont, resolveMIMEType(some_filename));
+    		outports[i] = new MIMEURIPortObject(uris, resolveMIMEType(some_filename));
         }
         
         return outports;

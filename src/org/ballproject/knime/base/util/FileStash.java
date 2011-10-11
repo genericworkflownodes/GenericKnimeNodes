@@ -3,12 +3,11 @@ package org.ballproject.knime.base.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FileStash
 {
@@ -16,105 +15,72 @@ public class FileStash
 	
 	private static String STASH_DIR_ROOT = System.getProperty("java.io.tmpdir");
 	private static String STASH_DIR;
-	private static URLStreamHandler handler;
+	private static DateFormat fmt = new SimpleDateFormat("MM-dd-yyyy");
 	
 	public static FileStash getInstance()
 	{
 		if(instance==null)
 		{
 			instance = new FileStash();
-			handler  = new URLFileStashHandler(STASH_DIR);
-			//FileStashFactory filestashFactory = new FileStashFactory(STASH_DIR);
-			//URL.setURLStreamHandlerFactory(filestashFactory);
 		}
 		return instance;
 	}
 	
 	private FileStash()
 	{	
+		System.out.println("constructing FileStash");
 		STASH_DIR = STASH_DIR_ROOT+File.separator+"GKN_STASH";
-		try
-		{
-			baseURL = new URL("file://"+STASH_DIR);
-		} catch (MalformedURLException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*
-		try
-		{
-			STASH_DIR = Helper.getTemporaryDirectory(STASH_DIR_ROOT, "STASH", true);
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new RuntimeException("FileStash object could not allocate directory");
-		}
-		*/
 	}
 	
 	public String allocateFile(String extension) throws IOException
 	{
-		return Helper.getTemporaryFilename(STASH_DIR, extension, true);
+		String slot     = fmt.format(new Date());
+		String slotpath = STASH_DIR+File.separator+slot;
+		File   slotfile = new File(slotpath);
+		slotfile.mkdirs();
+		return Helper.getTemporaryFilename(STASH_DIR+File.separator+slot, extension, false);
 	}
 	
-	private URL baseURL;
-	
-	public URL getAbsoluteURL(String relURL)
+	public String getAbsolutePath(String relURI)
 	{
-		URL ret = null;
+		return new File(STASH_DIR,relURI).getAbsolutePath();
+	}
+	
+	public String getStashDirectory()
+	{
+		return STASH_DIR;
+	}
+	
+	public void setStashDirectory(String dir)
+	{
+		System.out.println("setting STASH_DIR to "+dir);
+		File sdir = new File(dir);
+		if(!sdir.exists())
+		{
+			sdir.mkdirs();
+		}
+		if(!sdir.isDirectory())
+		{
+			throw new IllegalArgumentException("no valid directory path was supplied");
+		}
+		else
+			STASH_DIR = dir;
+	}
+
+	public URI allocatePortableFile(String extension) throws IOException
+	{
+		String file =  Helper.getRelativeTemporaryFilename(STASH_DIR, extension, true);
+		URI ret = null;
 		try
 		{
-			ret = new URL(baseURL,relURL);
+			ret = new URI(file);
 		} 
-		catch (MalformedURLException e)
+		catch (URISyntaxException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ret;
 	}
-	/*
-	public URL allocatePortableFile2(String extension) throws IOException
-	{
-		String file =  Helper.getRelativeTemporaryFilename(STASH_DIR, extension, true);
-		return new URL(new File(file);
-	}
-	*/
-	public URL allocatePortableFile(String extension) throws IOException
-	{
-		String file =  Helper.getRelativeTemporaryFilename(STASH_DIR, extension, true);
-		//return  new URL("filestash://"+file, handler);
-		return  new URL("filestash://localhost/"+file);
-	}
-	
-	public static void main(String[] args) throws IOException
-	{
-		URL url = FileStash.getInstance().allocatePortableFile("pdb");
-		System.out.println(url.openConnection().getURL());
-		System.out.println(url);
-	}
-	
-	public static class URLFileStashHandler extends URLStreamHandler 
-	{
-		private String stashbasedir;
 		
-		public URLFileStashHandler(String basedir)
-		{
-			stashbasedir = basedir;
-		}
-		
-		public URLConnection openConnection(URL url) throws IOException 
-		{
-			 URL newURL = new URL("file://"+stashbasedir+"/"+url.getPath());
-			 return newURL.openConnection();
-		}
-
-		@Override
-		protected String toExternalForm(URL u)
-		{
-			return String.format("%s://%s/%s",u.getProtocol(),u.getHost(),u.getPath());
-		}
-	}
+	
 }
