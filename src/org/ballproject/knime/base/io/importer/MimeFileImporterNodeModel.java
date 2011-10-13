@@ -25,9 +25,9 @@ import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URLContent;
-import org.knime.core.data.url.port.MIMEURLPortObject;
-import org.knime.core.data.url.port.MIMEURLPortObjectSpec;
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
@@ -42,7 +42,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import java.util.ArrayList;
 import java.util.List;
-import java.net.URL;
+
 
 /**
  * This is the model implementation of MimeFileImporter.
@@ -66,7 +66,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 	 */
 	protected MimeFileImporterNodeModel()
 	{
-		super(new PortType[]{}, new PortType[]{new PortType(MIMEURLPortObject.class)});
+		super(new PortType[]{}, new PortType[]{new PortType(MIMEURIPortObject.class)});
 	}
 		
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
@@ -97,9 +97,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-		// TODO load (valid) settings from the config object.
-		// It can be safely assumed that the settings are valided by the
-		// method below.
 		m_filename.loadSettingsFrom(settings);
 	}
 	
@@ -109,12 +106,6 @@ public class MimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-
-		// TODO check if the settings could be applied to our model
-		// e.g. if the count is in a certain range (which is ensured by the
-		// SettingsModel).
-		// Do not actually set any values of any member variables.
-
 		m_filename.validateSettings(settings);
 		String filename = settings.getString(CFG_FILENAME);
 		if(resolver.getMIMEtype(filename)==null)
@@ -157,7 +148,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 		if(mt==null)
 			return new DataTableSpec[]{null};		
 		
-		return new PortObjectSpec[]{ new MIMEURLPortObjectSpec(mt) };
+		return new PortObjectSpec[]{ new MIMEURIPortObjectSpec(mt) };
 	}
 
 
@@ -165,10 +156,9 @@ public class MimeFileImporterNodeModel extends NodeModel
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception
 	{
-		List<URL> urls = new ArrayList<URL>();
-		urls.add(new File(m_filename.getStringValue()).toURI().toURL());
-		URLContent content = new URLContent(urls); 
-		return new PortObject[]{new MIMEURLPortObject(content,mt)};
+		List<URIContent> uris = new ArrayList<URIContent>();
+		uris.add(new URIContent(new File(m_filename.getStringValue()).toURI()));
+		return new PortObject[]{new MIMEURIPortObject(uris,mt)};
 	}
 
 	
