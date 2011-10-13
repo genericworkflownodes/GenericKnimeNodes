@@ -124,32 +124,19 @@ public class ToolRunner
 		p.destroy();
 	}
 	
+	
 	public static class AsyncToolRunner implements Callable<Integer>
 	{
-		private ToolRunner tr = new ToolRunner();
-		private String[]   cmds = new String[]{};
+		private ToolRunner tr;
 		
 		public ToolRunner getToolRunner()
 		{
 			return tr;
 		}
 		
-		public AsyncToolRunner(String... cmds)
+		public AsyncToolRunner(ToolRunner tr)
 		{
-			this.cmds = cmds;
-		}
-		
-		public AsyncToolRunner(String cmd, List<String> switches)
-		{
-			int K = switches.size();
-			int N = 1+K;
-			this.cmds = new String[N];
-			this.cmds[0] = cmd;
-			for(int i=0;i<K;i+=2)
-			{
-				this.cmds[1+i] = switches.get(i);
-				this.cmds[2+i] = switches.get(i+1);
-			}
+			this.tr = tr;
 		}
 		
 		@Override
@@ -157,7 +144,7 @@ public class ToolRunner
 		{
 			try
 			{
-				tr.run(cmds);
+				tr.run();
 			} 
 			catch (Exception e)
 			{
@@ -171,5 +158,5 @@ public class ToolRunner
 			tr.kill();
 		}
 	}
-
 }
+
