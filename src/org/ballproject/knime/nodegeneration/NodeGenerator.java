@@ -63,30 +63,32 @@ import org.jaxen.dom4j.Dom4jXPath;
 
 public class NodeGenerator
 {	
-	public static Logger logger = Logger.getLogger(NodeGenerator.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(NodeGenerator.class.getCanonicalName());
 	
-	public static Document          plugindoc;
-	public static NodeConfiguration config;
+	private static Document          plugindoc;
+	private static NodeConfiguration config;
 	
-	public static String _pluginname_;
-	public static String _destdir_;
-	public static String _destsrcdir_;
-	public static String _pluginpackage_;
-	public static String _packagedir_;
-	public static String _descriptordir_;
-	public static String _executabledir_;
-	public static String _abspackagedir_;
-	public static String _absnodedir_;
-	public static String _iconpath_;
-	public static String _useini_ = "true";
+	private static String _pluginname_;
+	private static String _destdir_;
+	private static String _destsrcdir_;
+	private static String _pluginpackage_;
+	private static String _packagedir_;
+	private static String _descriptordir_;
+	private static String _executabledir_;
+	private static String _abspackagedir_;
+	private static String _absnodedir_;
+	private static String _iconpath_;
+	private static String _useini_ = "true";
 	
-	public static String cur_cat;
-	public static String cur_path;
-	public static String _package_root_;
-	public static String _BINPACKNAME_;
-	public static String _payloaddir_;
+	private static String cur_cat;
+	private static String cur_path;
+	private static String _package_root_;
+	private static String _BINPACKNAME_;
+	private static String _payloaddir_;
 	
-	public static Properties props;
+	private static Set<String> ext_tools = new HashSet<String>();
+	
+	private static Properties props;
 	
 	public static void assertRestrictedAlphaNumeric(Object obj, String id)
 	{
@@ -479,8 +481,11 @@ public class NodeGenerator
 				warn("duplicate tool detected "+nodeName);
 				return;
 			}
+			
 			if(config.getStatus().equals("internal"))
 				node_names.add(nodeName);
+			else
+				ext_tools.add(nodeName);
 			
 		}
 		else
@@ -490,8 +495,11 @@ public class NodeGenerator
 				warn("duplicate tool detected "+oldNodeName);
 				return;
 			}
+			
 			if(config.getStatus().equals("internal"))
 				node_names.add(oldNodeName);
+			else
+				ext_tools.add(nodeName);
 		}
 		
 		cur_cat  = combine("/"+_package_root_+"/"+_pluginname_,config.getCategory());
@@ -931,6 +939,11 @@ public class NodeGenerator
 		tf.replace("__NAME__", _pluginpackage_);
 		tf.write(_abspackagedir_ + File.separator+"knime"+File.separator+"PluginActivator.java");
 		template.close();
+		
+		FileWriter ini_writer = new FileWriter(_abspackagedir_ + File.separator+"knime"+File.separator+"PluginActivator.ini");
+		for(String ext_tool: ext_tools)
+			ini_writer.write(ext_tool+"\n");
+		ini_writer.close();
 	}
 	
 	public static void verifyZip(String filename)

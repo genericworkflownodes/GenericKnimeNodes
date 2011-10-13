@@ -5,14 +5,21 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.KNIMEConstants;
 import org.osgi.framework.BundleContext;
-import java.util.*;
-import java.io.File;
 
-import __BASE__.knime.nodes.binres.BinaryResources;
-import __BASE__.knime.nodes.mimetypes.*;
+import java.util.*;
+import java.io.*;
+
+import org.ballproject.knime.base.external.ExtToolDB;
+import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
+
 import org.ballproject.knime.*;
 import org.ballproject.knime.base.mime.*;
 import org.knime.core.data.url.MIMEType;
+
+
+import __BASE__.knime.nodes.binres.BinaryResources;
+import __BASE__.knime.nodes.mimetypes.*;
+
 
 
 /**
@@ -164,6 +171,17 @@ public class PluginActivator extends AbstractUIPlugin
 		{
 			registry.registerMIMEtype(mt);
 		}
+		
+		//
+		BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("PluginActivator.ini")));
+		String line = "";
+		ExtToolDB toolDB = ExtToolDB.getInstance(); 
+		while( (line=reader.readLine())!=null)
+		{
+			String tool = line.trim();
+			toolDB.registerTool(new ExternalTool("__BASE__",tool));
+		}
+		reader.close();
 	}
 
 	/**
