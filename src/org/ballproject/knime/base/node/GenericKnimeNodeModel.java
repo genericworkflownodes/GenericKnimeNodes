@@ -31,6 +31,7 @@ import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
+import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
 import org.ballproject.knime.base.external.ExtToolDB;
 import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
 import org.ballproject.knime.base.mime.MIMEtype;
@@ -148,7 +149,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	
 	protected ToolRunner tr;
 	
-	private void preExecute(final File jobdir, final ExecutionContext exec) throws Exception
+	private void prepareExecute(final File jobdir, final ExecutionContext exec) throws Exception
 	{
 		String nodeName = config.getName();
 		
@@ -189,6 +190,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		else
 		{
 			ExternalToolRunner tr_ = new ExternalToolRunner();
+			
+			PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
+			store.setParameterValue("jobdir", jobdir.getAbsolutePath());
+			writer.init(store);
+			writer.write(jobdir+File.separator+"params.ini");
 			
 			GenericToolWrapper wrapper = new GenericToolWrapper(config, store);
 			List<String> switches = wrapper.getSwitchesList();
@@ -470,7 +476,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		List<List<URI>> output_files = outputParameters(jobdir, inObjects);
 
 		// launch executable
-		preExecute(jobdir, exec);
+		prepareExecute(jobdir, exec);
 
 		// process result files
 		PortObject[] outports = processOutput(output_files, exec);
