@@ -15,7 +15,7 @@ import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
 import org.ballproject.knime.*;
 import org.ballproject.knime.base.mime.*;
 import org.knime.core.data.url.MIMEType;
-
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import __BASE__.knime.nodes.binres.BinaryResources;
 import __BASE__.knime.nodes.mimetypes.*;
@@ -182,6 +182,9 @@ public class PluginActivator extends AbstractUIPlugin
 			toolDB.registerTool(new ExternalTool("__BASE__",tool));
 		}
 		reader.close();
+		
+		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
+		ExtToolDB.getInstance().init(store);
 	}
 
 	/**

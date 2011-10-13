@@ -121,6 +121,9 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 		
 		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
 		FileStash.getInstance().setStashDirectory(store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
+		
+		//ExtToolDB.getInstance().init(store);
+		//System.out.println("path="+store.getString("org.ballproject.blast_BLAST"));
 	}
 
 	/**
