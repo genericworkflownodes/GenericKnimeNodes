@@ -133,8 +133,7 @@ public class MimeFileImporterNodeModel extends NodeModel
 	protected MIMEType mt = null;
 
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
 	{
 		try
 		{
