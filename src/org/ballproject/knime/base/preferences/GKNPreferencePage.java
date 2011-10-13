@@ -31,6 +31,7 @@ public class GKNPreferencePage extends FieldEditorPreferencePage implements IWor
 	{
 		Composite parent = getFieldEditorParent();
 		addField(new DirectoryFieldEditor(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION, "File stash directory:", parent));
+		
 	}
 
 	@Override
