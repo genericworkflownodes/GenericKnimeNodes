@@ -20,36 +20,19 @@
 package org.ballproject.knime.base.node;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import java.util.*;
+import java.util.concurrent.*;
+import java.io.*;
+
 import java.net.URI;
-import java.net.URL;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
+import org.ballproject.knime.base.external.ExtToolDB;
+import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
@@ -57,8 +40,12 @@ import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.FileListParameter;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.util.ExternalToolRunner;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
+import org.ballproject.knime.base.util.InternalToolRunner;
+import org.ballproject.knime.base.util.ToolRunner;
+import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.ballproject.knime.base.wrapper.GenericToolWrapper;
 
@@ -95,6 +82,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	
 	protected int[]        selected_output_type;
 	protected String       binpath;
+	protected String       pluginname;
 	
 	public String output="";
 	
@@ -158,114 +146,73 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	
 	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
 	
+	protected ToolRunner tr;
+	
 	private void preExecute(final File jobdir, final ExecutionContext exec) throws Exception
 	{
+		String nodeName = config.getName();
+		
 		// this switch is not nice, we should encapsulate this into
 		// a NodeExecutor in the next release
 		if(config.getStatus().equals("internal"))
 		{
+			InternalToolRunner tr_ = new InternalToolRunner();
+			
 			// fill params.xml
 			CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
 			writer.init(store);
+			
 			if(this.props.getProperty("use_ini").equals("true"))
+			{
+				tr_.setParamSwitch("-ini");
 				writer.writeINI(jobdir+FILESEP+"params.xml");
+			}
 			else
-				writer.write(jobdir+FILESEP+"params.xml");	
-			execute(jobdir, exec);
+			{
+				tr_.setParamSwitch("-par");
+				writer.write(jobdir+FILESEP+"params.xml");
+			}
+			
+			
+			// get executable name
+			String exepath = Helper.getExecutableName(nodeName, binpath+FILESEP+"bin");
+			
+			if(exepath==null)
+			{
+				throw new Exception("execution of internal tool failed: due to missing executable file");
+			}
+			
+			tr_.setExecutablePath(exepath);
+			
+			tr = tr_;
 		}
 		else
 		{
-			executeExternal(jobdir, exec);
-		}
-	}
-	
-	private void executeExternal(final File jobdir, final ExecutionContext exec) throws Exception
-	{
-		String exepath = config.getCommand();
-		GenericNodesPlugin.log("executing "+exepath);
-		
-		GenericToolWrapper wrapper = new GenericToolWrapper(config, store);
-		
-		
-		AsyncToolRunner     t      = new AsyncToolRunner(exepath,wrapper.getSwitchesList());
-		//t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
-		/*
-		for(String key: env.keySet())
-		{
-			t.getToolRunner().addEnvironmentEntry(key, binpath+FILESEP+env.get(key));
-			GenericNodesPlugin.log(key+"->"+binpath+FILESEP+env.get(key));
-		}
-		*/
-		FutureTask<Integer> future = new FutureTask<Integer>(t);
+			ExternalToolRunner tr_ = new ExternalToolRunner();
 			
-		ExecutorService     executor = Executors.newFixedThreadPool(1);
-		executor.execute(future);
-		
-		while (!future.isDone())
-        {
-            try
-            {
-                Thread.sleep(5000);
-            } 
-            catch (InterruptedException ie)
-            {
-            }
-            
-            try
-            {
-            	exec.checkCanceled();	
-            }
-            catch(CanceledExecutionException e)
-            {
-            	t.kill();
-            	executor.shutdown();
-            	throw e;
-            }
-        }
-		
-		int retcode = -1;
-        try
-        {
-        	retcode = future.get();
-        } 
-        catch (ExecutionException ex)
-        {
-        	ex.printStackTrace();
-        }
-        
-        executor.shutdown();
-				
-		output = t.getToolRunner().getOutput();
-		
-		GenericNodesPlugin.log(output);
-		GenericNodesPlugin.log("retcode="+retcode);
-		
-		if(retcode!=0)
-	    {
-	    	logger.error(output);
-	    	throw new Exception("execution of external tool failed");
-	    }
-	}
-	
-	private void execute(final File jobdir, final ExecutionContext exec) throws Exception
-	{
-		String nodeName = config.getName();
-		
-		// get executable name
-		String exepath = Helper.getExecutableName(nodeName, binpath+FILESEP+"bin");
-		
-		if(exepath==null)
-		{
-			throw new Exception("execution of external tool failed: due to missing executable file");
+			GenericToolWrapper wrapper = new GenericToolWrapper(config, store);
+			List<String> switches = wrapper.getSwitchesList();
+			tr_.setSwitches(switches);
+			
+			String exepath = ExtToolDB.getInstance().getToolPath(new ExternalTool(pluginname, nodeName));
+			
+			if(exepath==null)
+			{
+				throw new Exception("execution of external tool failed: due to missing executable file");
+			}
+			
+			tr_.setExecutablePath(exepath);
+			
+			tr = tr_;
 		}
 		
-		GenericNodesPlugin.log("executing "+exepath);
+		executeTool(jobdir, exec);
+	}
 		
-		String cli_switch = props.getProperty("ini_switch","-ini");
+	private void executeTool(final File jobdir, final ExecutionContext exec) throws Exception
+	{
 		
-		GenericNodesPlugin.log(exepath+" "+cli_switch+" params.xml");
-		
-		AsyncToolRunner     t      = new AsyncToolRunner(exepath,cli_switch,"params.xml");
+		AsyncToolRunner     t      = new AsyncToolRunner(tr);
 		t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
 		
 		for(String key: env.keySet())
@@ -325,7 +272,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	    }
 		
 	}
-
+	
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
 	private static String FILESEP = File.separator;
 	
@@ -352,25 +299,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
-		GenericNodesPlugin.log("## saveSettingsTo");
-		/*
-		for(String key: this.config.getParameterKeys())
-		{
-			GenericNodesPlugin.log(key+" -> "+this.config.getParameter(key).getStringRep());
-		}
-		GenericNodesPlugin.log("####");
-		*/
 		for(String key: this.config.getParameterKeys())
 		{
 			settings.addString(key, this.config.getParameter(key).getStringRep());
 		}
-		/*
-		for(Parameter<?> param: this.config.getParameters())
-		{
-			//GenericNodesPlugin.log(param.getKey()+" -> "+param.getStringRep());
-			settings.addString(param.getKey(), param.getStringRep());
-		}
-		*/
 		for(int i=0;i<this.config.getNumberOfOutputPorts();i++)
 		{
 			settings.addInt("GENERIC_KNIME_NODES_outtype#"+i,this.getOutputTypeIndex(i));
@@ -386,8 +318,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
-		
-		GenericNodesPlugin.log("## loadValidatedSettingsFrom");
 		for(String key: this.config.getParameterKeys())
 		{
 			String value = settings.getString(key);
@@ -418,8 +348,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// - we do not xfer values to member variables
 		// - we throw an exception if something is invalid
 
-		
-		GenericNodesPlugin.log("## validateSettings ");
 		for(String key: this.config.getParameterKeys())
 		{
 			Parameter<?> param = config.getParameter(key);
