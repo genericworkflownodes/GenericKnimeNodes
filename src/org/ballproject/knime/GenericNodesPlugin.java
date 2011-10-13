@@ -107,7 +107,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 					DemanglerProvider dp = (DemanglerProvider) o;
 					for(Demangler dm : dp.getDemanglers())
 					{
-						log("registering Demangler for data type "+dm.getSourceType().toString());
+						log("registering Demangler for data type "+dm.getMIMEType().toString());
 						registry.addDemangler(dm);
 					}
 				}
@@ -122,8 +122,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
 		FileStash.getInstance().setStashDirectory(store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
 		
-		//ExtToolDB.getInstance().init(store);
-		//System.out.println("path="+store.getString("org.ballproject.blast_BLAST"));
 	}
 
 	/**
