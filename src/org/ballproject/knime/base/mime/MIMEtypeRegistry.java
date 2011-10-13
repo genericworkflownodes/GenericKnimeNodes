@@ -35,15 +35,6 @@ import org.knime.core.data.url.MIMEType;
 public interface MIMEtypeRegistry
 {
 	/**
-	 * returns the MIMEFileCell corresponding to a given filename.
-	 * 
-	 * @param filename name of the file
-	 * 
-	 * @return MIMEFileCell
-	 */
-	MIMEFileCell getCell(String filename);
-	
-	/**
 	 * returns MIMEtype of a given filename.
 	 * 
 	 * @param filename name of the file
@@ -54,8 +45,7 @@ public interface MIMEtypeRegistry
 	
 	void registerMIMEtype(MIMEType mt);
 	
-	List<Demangler> getDemangler(DataType type);
-	
+	List<Demangler> getDemangler(MIMEType type);
 	List<Demangler> getMangler(DataType type);
 	
 	void addDemangler(Demangler demangler);
