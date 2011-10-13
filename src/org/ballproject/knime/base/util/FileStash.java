@@ -28,7 +28,6 @@ public class FileStash
 	
 	private FileStash()
 	{	
-		System.out.println("constructing FileStash");
 		STASH_DIR = STASH_DIR_ROOT+File.separator+"GKN_STASH";
 	}
 	
@@ -46,6 +45,20 @@ public class FileStash
 		return new File(STASH_DIR,relURI).getAbsolutePath();
 	}
 	
+	public URI getAbsoluteURI(URI relURI)
+	{
+		URI ret = null;
+		try
+		{
+			ret = new URI(STASH_DIR+File.separator+relURI.getPath());
+		} 
+		catch (URISyntaxException e)
+		{
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 	public String getStashDirectory()
 	{
 		return STASH_DIR;
@@ -53,7 +66,6 @@ public class FileStash
 	
 	public void setStashDirectory(String dir)
 	{
-		System.out.println("setting STASH_DIR to "+dir);
 		File sdir = new File(dir);
 		if(!sdir.exists())
 		{
