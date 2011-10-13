@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
+import org.ballproject.knime.base.util.FileStash;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -45,6 +47,10 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.url.MIMEType;
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.BufferedDataContainer;
@@ -56,6 +62,9 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 
 
 
@@ -80,12 +89,13 @@ public class DemanglerNodeModel extends NodeModel
 	 */
 	protected DemanglerNodeModel()
 	{
-		super(1, 1);
+		super(new PortType[]{new PortType(MIMEURIPortObject.class)}, new PortType[]{new PortType(BufferedDataTable.class)});
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
+	/*
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
 	{
@@ -161,7 +171,8 @@ public class DemanglerNodeModel extends NodeModel
 			idx++;
 		}
 	}
-
+	*/
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -174,74 +185,7 @@ public class DemanglerNodeModel extends NodeModel
 	}
 	
 	
-	protected DataType inType;
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{	
-		// get data type of first column (where the MIMEFileCell is stored by convention)
-		inType = inSpecs[0].getColumnSpec(0).getType();
-		
-		boolean coll = false;
-		
-		if(inType.isCollectionType())
-		{
-			coll = true;
-			inType = inType.getCollectionElementType();
-		}
-		
-		// try to find a demangler for the data type ... 
-		demanglers = resolver.getDemangler(inType);
-		
-		if(demanglers==null)
-		{
-			throw new InvalidSettingsException("no Demangler found for "+inType.toString()+". Please register one first.");
-		}
-		
-		demangler  = demanglers.get(idx);
-		
-		if(coll)
-		{
-			return new DataTableSpec[]{null};
-		}
-		
-		return new DataTableSpec[]{ getDataTableSpec() };
-	}
-
-	private DataTableSpec outspec;
-	
-	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
-	{
-		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-        
-        DataType      dt =  demangler.getTargetType();
-		allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  dt).createSpec();
-        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-
-        // save this internally
-        outspec = outputSpec;
-        
-        return outputSpec;
-	}
-	
-	private DataTableSpec adjustOutSpec(int N) throws InvalidSettingsException
-	{
-		DataColumnSpec[] allColSpecs = new DataColumnSpec[N];
-        for(int i=0;i<N;i++)
-        {
-        	allColSpecs[i] = new DataColumnSpecCreator("column "+i, demangler.getTargetType()).createSpec();	
-        }
-        
-        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-
-        // save this internally
-        outspec = outputSpec;
-        
-        return outputSpec;
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -336,5 +280,100 @@ public class DemanglerNodeModel extends NodeModel
 	    // and save it
 	    settings.saveToXML(new FileOutputStream(f));
 	}
+
+	protected MIMEType mt;
+	
+	@Override
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
+	{
+		if(! (inSpecs[0] instanceof MIMEURIPortObjectSpec) )
+		{
+			throw new InvalidSettingsException("no MIMEURIPortObject compatible port object at port 0");
+		}
+	
+		MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[0];
+		mt = spec.getMIMEType();
+		
+		// try to find a demangler for the data type ... 
+		demanglers = resolver.getDemangler(mt);
+
+		if(demanglers==null)
+		{
+			throw new InvalidSettingsException("no Demangler found for "+mt.toString()+". Please register one first.");
+		}
+
+		demangler  = demanglers.get(idx);
+
+		return new DataTableSpec[]{ getDataTableSpec() };
+	}
+
+	private DataTableSpec outspec;
+	
+	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
+	{
+		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
+        
+        DataType      dt =  demangler.getTargetType();
+		allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  dt).createSpec();
+        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
+
+        // save this internally
+        outspec = outputSpec;
+        
+        return outputSpec;
+	}
+	
+	private DataTableSpec adjustOutSpec(int N) throws InvalidSettingsException
+	{
+		DataColumnSpec[] allColSpecs = new DataColumnSpec[N];
+        for(int i=0;i<N;i++)
+        {
+        	allColSpecs[i] = new DataColumnSpecCreator("column "+i, demangler.getTargetType()).createSpec();	
+        }
+        
+        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
+
+        // save this internally
+        outspec = outputSpec;
+        
+        return outputSpec;
+	}
+	
+	@Override
+	protected BufferedDataTable[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
+	{
+		BufferedDataContainer container = exec.createDataContainer(outspec);
+		
+		MIMEURIPortObject obj = (MIMEURIPortObject) inObjects[0];
+		List<URIContent> uris = obj.getURIContents();
+		if(uris.size()==0)
+		{
+			throw new Exception("no URIs were supplied in MIMEURIPortObject at input port 0");
+		}
+		
+		// FIXME
+		URI relURI = uris.get(0).getURI();
+		
+		Iterator<DataCell> iter = demangler.demangle(relURI);
+		
+		int ridx = 0;
+		
+		while(iter.hasNext())
+		{
+			DataCell[] rowcells = new DataCell[1];
+			rowcells[0] = iter.next();
+			DataRow row = new DefaultRow("Row "+ridx, rowcells);
+			container.addRowToTable(row);	
+			ridx++;
+		}
+
+		container.close();	
+		
+		BufferedDataTable out = container.getTable();
+		
+		return new BufferedDataTable[]{ out };
+	}
+	
+	
 	
 }
