@@ -36,8 +36,10 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 		this.mimetypes_out = new MIMEType[][]{__OUTCLAZZEZ__};
 		
 		final IPreferenceStore pStore = PluginActivator.getDefault().getPreferenceStore();
-		binpath = pStore.getString("binaries_path");
-		props   = PluginActivator.PROPERTIES;
-		env     = PluginActivator.ENVIRONMENT;
+		
+		binpath    = pStore.getString("binaries_path");
+		props      = PluginActivator.PROPERTIES;
+		env        = PluginActivator.ENVIRONMENT;
+		pluginname = "__BASE__";
 	}
 }
