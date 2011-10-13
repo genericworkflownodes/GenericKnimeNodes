@@ -456,51 +456,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
-		
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-		int    BUFFSIZE = 2048;
-		byte[] BUFFER   = new byte[BUFFSIZE];
-		
-	    while(entries.hasMoreElements()) 
-	    {
-	        ZipEntry entry = (ZipEntry)entries.nextElement();
-	        
-	        if(entry.getName().equals("rawdata.bin"))
-	        {
-	        	int  size   = (int) entry.getSize(); 
-	        	byte[] data = new byte[size];
-	        	InputStream in = zip.getInputStream(entry);
-	        	int len;
-	        	int totlen=0;
-	        	while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
-	        	{
-	        		System.arraycopy(BUFFER, 0, data, totlen, len);
-	        		totlen+=len;
-	        	}
-	        	output = new String(data);
-	        }
-	        
-	        // store internal Node Configuration
-	        if(entry.getName().equals("config.bin"))
-	        {
-	        	InputStream       in  = zip.getInputStream(entry);
-	        	ObjectInputStream in2 = new ObjectInputStream(in);
-	        	try
-				{
-					config = (NodeConfiguration) in2.readObject();
-				}
-				catch (ClassNotFoundException e)
-				{
-					e.printStackTrace();
-				}
-				in2.close();
-	        }
-	    }
-	    zip.close();
-	    
 	}
 
 	/**
@@ -509,24 +464,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
-		
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-	    out.putNextEntry(entry);
-	    out.write(output.getBytes());
-
-	    ByteArrayOutputStream bos  = new ByteArrayOutputStream() ;
-	    ObjectOutput          oout = new ObjectOutputStream(bos) ;
-	    oout.writeObject(config);
-	    oout.close();
-
-	    // Get the bytes of the serialized object
-	    byte[] buf = bos.toByteArray();
-	    entry = new ZipEntry("config.bin");
-	    out.putNextEntry(entry);
-	    out.write(buf);
-	    
-	    out.close(); 
 	}
 
 	protected MIMEType[][] mimetypes_in;
