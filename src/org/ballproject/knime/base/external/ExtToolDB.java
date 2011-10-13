@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 public class ExtToolDB
 {
 	private Map<ExternalTool,String> tool2path = new HashMap<ExternalTool,String>();
@@ -21,6 +23,14 @@ public class ExtToolDB
 	
 	private ExtToolDB()
 	{
+	}
+	
+	public void init(IPreferenceStore store)
+	{
+		for(ExternalTool tool: tool2path.keySet())
+		{
+			setToolPath(tool, store.getString(tool.getKey()));
+		}
 	}
 	
 	public void registerTool(ExternalTool tool)
