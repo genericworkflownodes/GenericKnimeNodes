@@ -38,6 +38,12 @@ public class ExtToolDB
 		tool2path.put(tool, path);
 	}
 	
+	public String getToolPath(ExternalTool tool)
+	{
+		String path = tool2path.get(tool);
+		return path;
+	}
+	
 	public Map<String,List<ExternalTool>> getToolsByPlugin()
 	{
 		Map<String,List<ExternalTool>> plugin2tools = new HashMap<String,List<ExternalTool>>();
@@ -93,6 +99,11 @@ public class ExtToolDB
 		public int hashCode()
 		{
 			return pluginname.hashCode() ^ toolname.hashCode();
+		}
+		
+		public String toString()
+		{
+			return String.format("%s_%s", pluginname, toolname);
 		}
 	}
 }
