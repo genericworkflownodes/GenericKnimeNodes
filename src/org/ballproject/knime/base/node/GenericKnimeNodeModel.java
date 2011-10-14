@@ -505,7 +505,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			for(URIContent uric : uris)
 			{
 				URI uri = uric.getURI();
-				String filename = uri.getPath();
+				String filename = new File(uri).getAbsolutePath();
 				GenericNodesPlugin.log("< setting param "+name+"->"+filename);
 				store.setParameterValue(name, filename);
 			}
