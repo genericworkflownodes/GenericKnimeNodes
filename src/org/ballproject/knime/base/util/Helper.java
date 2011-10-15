@@ -20,12 +20,16 @@
 package org.ballproject.knime.base.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Helper
@@ -55,6 +59,22 @@ public class Helper
 		return OS.WIN;
 	}
 
+	public static List<String> readStringsFromStream(InputStream in) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		
+		List<String> ret = new ArrayList<String>();
+		String line = "";
+		 
+		while( (line=reader.readLine())!=null)
+		{
+			ret.add(line.trim());
+		}
+		reader.close();
+		
+		return ret;
+	}
+	
 	public static String getExecutableName(String nodename, String path)
 	{
 		String test = path+File.separator+nodename; 

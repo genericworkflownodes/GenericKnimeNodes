@@ -581,31 +581,7 @@ public class NodeGenerator
 		return pth.getName();
 	}
 	
-	private static String createMimeCell(String name, String ext) throws IOException
-	{
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileCell.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__NAME__", name);
-		tf.replace("__EXT__", ext);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/mimetypes/" + name + "FileCell.java");
-		return name+"FileCell";
-	}
-
-	private static void createMimeValue(String ext) throws IOException
-	{
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/MIMEFileValue.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__NAME__", ext);
-		tf.replace("__EXT__", ext);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/mimetypes/" + ext + "FileValue.java");
-	}
-
 	public static Set<String> categories = new HashSet<String>();
-	
 	
 	public static void registerPath(String path)
 	{
@@ -940,9 +916,14 @@ public class NodeGenerator
 		tf.write(_abspackagedir_ + File.separator+"knime"+File.separator+"PluginActivator.java");
 		template.close();
 		
-		FileWriter ini_writer = new FileWriter(_abspackagedir_ + File.separator+"knime"+File.separator+"PluginActivator.ini");
+		FileWriter ini_writer = new FileWriter(_abspackagedir_ + File.separator+"knime"+File.separator+"ExternalTools.dat");
 		for(String ext_tool: ext_tools)
 			ini_writer.write(ext_tool+"\n");
+		ini_writer.close();
+				
+		ini_writer = new FileWriter(_abspackagedir_ + File.separator+"knime"+File.separator+"InternalTools.dat");
+		for(String int_tool: node_names)
+			ini_writer.write(int_tool+"\n");
 		ini_writer.close();
 	}
 	

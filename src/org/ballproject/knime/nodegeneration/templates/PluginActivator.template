@@ -12,6 +12,7 @@ import java.io.*;
 import org.ballproject.knime.base.external.ExtToolDB;
 import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
 
+import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.*;
 import org.ballproject.knime.base.mime.*;
 import org.knime.core.data.url.MIMEType;
@@ -87,69 +88,73 @@ public class PluginActivator extends AbstractUIPlugin
 			OS = "mac";
 		}
 		
-		// get word size of JVM as a proxy for native word size of OS
-		String data_model = System.getProperty("sun.arch.data.model");
-		String targetdir  = home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME;
-		
-		if(data_model.equals("64"))
-		{
-		    if(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_64.zip")!=null)
-		    {
-		    	BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream("binaries_"+OS+"_64.zip"));
-				PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_64.ini"));
-		    }
-		    else
-		    {
-		    	if(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip")!=null)
-		    	{
-		    		BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip"));
-					PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.ini"));
-				}
-				else
-				{
-					//FIXME
-					//throw new Exception("could not install binaries due to missing payload with apropriate word size");
-				}
-		    }
-		}
-		else
-			if(data_model.equals("32"))
+		List<String> internalTools = Helper.readStringsFromStream(this.getClass().getResourceAsStream("InternalTools.dat"));
+
+		if(internalTools.size()>0)
+		{		
+			// get word size of JVM as a proxy for native word size of OS
+			String data_model = System.getProperty("sun.arch.data.model");
+			String targetdir  = home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME;
+			
+			if(data_model.equals("64"))
 			{
-				if(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip")!=null)
+			    if(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_64.zip")!=null)
 			    {
-			    	BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip"));
-					PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.ini"));
-				}
-				else
-				{
-					//FIXME
-					//throw new Exception("could not install binaries due to missing payload with apropriate word size");
-				}
+			    	BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream("binaries_"+OS+"_64.zip"));
+					PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_64.ini"));
+			    }
+			    else
+			    {
+			    	if(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip")!=null)
+			    	{
+			    		BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip"));
+						PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.ini"));
+					}
+					else
+					{
+						throw new Exception("could not install binaries due to missing payload with apropriate word size");
+					}
+			    }
 			}
 			else
+				if(data_model.equals("32"))
+				{
+					if(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip")!=null)
+				    {
+				    	BinaryResources.decompressTo(home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME, BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.zip"));
+						PROPERTIES.load(BinaryResources.class.getResourceAsStream("binaries_"+OS+"_32.ini"));
+					}
+					else
+					{
+						throw new Exception("could not install binaries due to missing payload with apropriate word size");
+					}
+				}
+				else
+				{
+					throw new Exception("could not install binaries due to missing payload with apropriate word size");
+				}
+			
+			// verify integrity
+			String expectedBinDirPath = home + File.separator + BinaryResources.BINPACKNAME + File.separator + "bin";
+			if(!(new File(expectedBinDirPath).exists()))
 			{
-				//FIXME
-				//throw new Exception("could not install binaries due to missing payload with apropriate word size");
+				throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
 			}
-		
-		// verify integrity
-		String expectedBinDirPath = home + File.separator + BinaryResources.BINPACKNAME + File.separator + "bin";
-		if(!(new File(expectedBinDirPath).exists()))
-		{
-			//FIXME
-			//throw new Exception("could not properly install binaries, no bin directory was found inside payload archive");
-			//System.err.println("could not properly install binaries, no bin directory was found inside payload archive");
-		}
-		
-		File bindir = new File(targetdir+File.separator+"bin");
-		if(bindir.listFiles()!=null)
-		{
-			for(File file: bindir.listFiles())
+			
+			File bindir = new File(targetdir+File.separator+"bin");
+			if(bindir.listFiles()!=null)
 			{
-		  	file.setExecutable(true);
+				for(File file: bindir.listFiles())
+				{
+				  	file.setExecutable(true);
+				}
 			}
 		}
-		
+		else
+		{
+			GenericNodesPlugin.log("binaries need not to be installed");
+		}
+				
 		final IPreferenceStore pStore = getDefault().getPreferenceStore();
 		pStore.setValue("binaries_path", home+System.getProperty("file.separator")+BinaryResources.BINPACKNAME);
 		
@@ -173,15 +178,14 @@ public class PluginActivator extends AbstractUIPlugin
 		}
 		
 		//
-		BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("PluginActivator.ini")));
-		String line = "";
+		List<String> externalTools = Helper.readStringsFromStream(this.getClass().getResourceAsStream("ExternalTools.dat"));
+		
 		ExtToolDB toolDB = ExtToolDB.getInstance(); 
-		while( (line=reader.readLine())!=null)
+		
+		for(String tool: externalTools)
 		{
-			String tool = line.trim();
 			toolDB.registerTool(new ExternalTool("__BASE__",tool));
 		}
-		reader.close();
 		
 		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
 		ExtToolDB.getInstance().init(store);
