@@ -47,7 +47,6 @@ import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.InternalToolRunner;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
-import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.ballproject.knime.base.wrapper.GenericToolWrapper;
 
 import org.knime.core.data.url.MIMEType;
@@ -152,9 +151,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	private void prepareExecute(final File jobdir, final ExecutionContext exec) throws Exception
 	{
 		String nodeName = config.getName();
-		
-		// this switch is not nice, we should encapsulate this into
-		// a NodeExecutor in the next release
+
 		if(config.getStatus().equals("internal"))
 		{
 			InternalToolRunner tr_ = new InternalToolRunner();
@@ -405,14 +402,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	protected PortObjectSpec[] outspec_;
 	
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
 	{
-		int     nIn = mimetypes_in.length;
+		int  nIn = mimetypes_in.length;
 		
 		for(int i=0;i<nIn;i++)
 		{
-			// no connected input ports have nulls in inSpec
+			// not connected input ports have nulls in inSpec
 			if (inSpecs[i] == null)
 			{
 				// .. if port is optional everything is fine
@@ -424,10 +420,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 					throw new InvalidSettingsException("non-optional input port not connected");
 			}
 			
+
 			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
 			
+			// get input MIMEType
 			MIMEType mt = spec.getMIMEType(); 
-			
+
+			// check whether input MIMEType is in list of allowed MIMETypes
 			boolean ok = false;
 			for(int j=0;j<mimetypes_in[i].length;j++)
 			{
@@ -440,6 +439,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 				throw new InvalidSettingsException("invalid MIMEtype at port number "+i);
 		}
 		
+		// create output spec
 		outspec_ = createOutSpec();
 		
 		return outspec_;
@@ -449,30 +449,31 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	{
 		int nOut = mimetypes_out.length;
 		PortObjectSpec[]  out_spec   = new PortObjectSpec[nOut];
-	        
+
+		// set selected MIMEURIPortObjectSpecs at output ports
 		for(int i=0;i<nOut;i++)
 		{
-			out_spec[i] = new MIMEURIPortObjectSpec(mimetypes_out[i][getOutputTypeIndex(i)]);
+			// selected output MIMEType 
+			int selectedMIMETypeIndex = getOutputTypeIndex(i);
+			out_spec[i] = new MIMEURIPortObjectSpec(mimetypes_out[i][selectedMIMETypeIndex]);
 		}
 		
 		return out_spec;
 	}
 
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
 	{
 		// fetch node descriptors
 		String nodeName = config.getName();
 
 		// create job directory
-		File jobdir = new File(Helper.getTemporaryDirectory(nodeName,
-				!GenericNodesPlugin.isDebug()));
+		File jobdir = new File(Helper.getTemporaryDirectory(nodeName,!GenericNodesPlugin.isDebug()));
 		GenericNodesPlugin.log("jobdir=" + jobdir);
 
 		store = new DefaultNodeConfigurationStore();
 
-		// prepare input and parameter data
+		// prepare input data and parameter values
 		List<List<URI>> output_files = outputParameters(jobdir, inObjects);
 
 		// launch executable
@@ -487,7 +488,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		return outports;
 	}
 	
-	private List<List<URI>> outputParameters(File jobdir, PortObject[] inData) throws IOException
+	private List<List<URI>> outputParameters(File jobdir, PortObject[] inData) throws Exception
 	{	
 		// .. input files
 		for(int i=0;i<inData.length;i++)
@@ -496,12 +497,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			if(inData[i]==null)
 				continue;
 			
+			Port port = config.getInputPorts()[i];
+			
 			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
 			List<URIContent> uris = po.getURIContents();
 			
-			String   name = config.getInputPorts()[i].getName();
-			
+			String   name        = port.getName();
+			boolean  isMultiFile = port.isMultiFile();
 						
+			if(uris.size()>1 && !isMultiFile)
+			{
+				throw new Exception("MIMEURIPortObject with multiple URIs supplied at single URI port #"+i);
+			}
+			
 			for(URIContent uric : uris)
 			{
 				URI uri = uric.getURI();
@@ -598,11 +606,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	private PortObject[] processOutput(List<List<URI>> my_outnames, ExecutionContext exec) throws Exception
 	{
 		int nOut = config.getOutputPorts().length;
+		
         // create output tables
 		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];
+		
         for(int i=0;i<nOut;i++)
-        {
-        	
+        {        	
         	List<URIContent> uris = new ArrayList<URIContent>();
         	
         	String some_filename="";
