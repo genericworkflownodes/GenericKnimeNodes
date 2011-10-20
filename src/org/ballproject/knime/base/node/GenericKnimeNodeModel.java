@@ -199,9 +199,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 			
 			String exepath = ExtToolDB.getInstance().getToolPath(new ExternalTool(pluginname, nodeName));
 			
-			if(exepath==null)
+			if(exepath==null||!(new File(exepath).exists()))
 			{
-				throw new Exception("execution of external tool failed: due to missing executable file");
+				throw new Exception("execution of external tool failed: due to missing executable file '"+exepath+"'");
 			}
 			
 			tr_.setExecutablePath(exepath);
