@@ -93,7 +93,9 @@ public class GKNExternalToolsPage extends PreferencePage implements IWorkbenchPr
 	    for(FileFieldEditor fe : toolpathes)
 	    {
 	    	ExtToolDB.getInstance().setToolPath(extTools.get(idx), fe.getStringValue());
+	    	GenericNodesPlugin.log("[OK] setting toolpath to "+fe.getStringValue()+" for tool "+extTools.get(idx));
 	    	preferenceStore.setValue(fe.getPreferenceName(),fe.getStringValue());
+	    	idx++;
 	    }
 
 	    // Return true to allow dialog to close
@@ -110,7 +112,9 @@ public class GKNExternalToolsPage extends PreferencePage implements IWorkbenchPr
 	    for(FileFieldEditor fe : toolpathes)
 	    {
 	    	ExtToolDB.getInstance().setToolPath(extTools.get(idx), fe.getStringValue());
+	    	GenericNodesPlugin.log("[Apply] setting toolpath to "+fe.getStringValue()+" for tool "+extTools.get(idx));
 	    	preferenceStore.setValue(fe.getPreferenceName(),fe.getStringValue());
+	    	idx++;
 	    }
 	}
 	
