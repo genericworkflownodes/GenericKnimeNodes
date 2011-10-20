@@ -45,7 +45,7 @@ public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
 	{
 		super(nodeModel);
 		
-		JTextArea text = new JTextArea(new String(nodeModel.data), 40, 80);
+		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
 		JScrollPane scrollpane = new JScrollPane(text);
 		text.setFont(new Font("Monospaced", Font.BOLD, 12));
 		setComponent(scrollpane);

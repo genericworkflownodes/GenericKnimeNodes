@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.collection.ListCell;
+import org.knime.core.data.url.MIMEType;
 
 public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 {	
@@ -31,20 +32,14 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 		{
 			e.printStackTrace();
 		}
-		this.inports  = new DataType[][]{__INCLAZZEZ__};
-		this.outports = new DataType[][]{__OUTCLAZZEZ__};
+		this.mimetypes_in  = new MIMEType[][]{__INCLAZZEZ__};
+		this.mimetypes_out = new MIMEType[][]{__OUTCLAZZEZ__};
 		
 		final IPreferenceStore pStore = PluginActivator.getDefault().getPreferenceStore();
-		binpath = pStore.getString("binaries_path");
-		props   = PluginActivator.PROPERTIES;
-		env     = PluginActivator.ENVIRONMENT;
-	}
-	
-	@Override
-	public DataCell makeDataCell(File f) throws Exception
-	{
-		MIMEFileCell cell = GenericNodesPlugin.getMIMEtypeRegistry().getCell(f.getName());
-		cell.read(f);
-		return cell;
+		
+		binpath    = pStore.getString("binaries_path");
+		props      = PluginActivator.PROPERTIES;
+		env        = PluginActivator.ENVIRONMENT;
+		pluginname = "__BASE__";
 	}
 }

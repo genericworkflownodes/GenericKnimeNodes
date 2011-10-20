@@ -26,32 +26,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.knime.core.data.DataType;
-
+import org.knime.core.data.url.MIMEType;
 
 public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 {
-	protected Map<String,MIMEtype>  ext2mt    = new HashMap<String,MIMEtype>();
+	protected Map<String,MIMEType>  ext2mt    = new HashMap<String,MIMEType>();
 	protected Map<String,DataType>  ext2type  = new HashMap<String,DataType>();
 	protected Map<DataType,String>  type2ext  = new HashMap<DataType,String>();
-	protected Map<DataType,List<Demangler>>  demanglers = new HashMap<DataType,List<Demangler>>(); 
-	protected Map<DataType,List<Demangler>>  manglers   = new HashMap<DataType,List<Demangler>>();
 	
-	@Override
-	public List<Demangler> getDemangler(DataType type)
-	{
-		return demanglers.get(type);
-	}
-
+	protected Map<DataType,List<Demangler>>  manglers   = new HashMap<DataType,List<Demangler>>();
+	protected Map<MIMEType,List<Demangler>>  demanglers = new HashMap<MIMEType,List<Demangler>>();
+	
 	@Override
 	public void addDemangler(Demangler demangler)
 	{
-		if(!demanglers.containsKey(demangler.getSourceType()))
-			demanglers.put(demangler.getSourceType(),new ArrayList<Demangler>());
+		if(!demanglers.containsKey(demangler.getMIMEType()))
+			demanglers.put(demangler.getMIMEType(),new ArrayList<Demangler>());
 		if(!manglers.containsKey(demangler.getTargetType()))
 			manglers.put(demangler.getTargetType(),new ArrayList<Demangler>());
-		demanglers.get(demangler.getSourceType()).add(demangler);
+		demanglers.get(demangler.getMIMEType()).add(demangler);
 		manglers.get(demangler.getTargetType()).add(demangler);
 	}
 
@@ -62,14 +58,11 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	}
 	
 	@Override
-	public void registerMIMEtype(MIMEtype mt)
+	public void registerMIMEtype(MIMEType mt)
 	{
-		@SuppressWarnings("unchecked")
-		DataType dt = DataType.getType(mt.getKNIMEClass());
-		String extension = mt.getExt();
+		String extension = mt.getExtension();
 		ext2mt.put(extension, mt);
-		ext2type.put(extension.toLowerCase(),dt);
-		type2ext.put(dt,extension.toLowerCase());
+		GenericNodesPlugin.log("registering MIMEType "+mt.getExtension());
 	}
 
 	@Override
@@ -85,47 +78,10 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 	}
 	
 	@Override
-	public MIMEFileCell getCell(String name)
+	public MIMEType getMIMEtype(String name)
 	{
-		MIMEFileCell cell = null;
-		List<MIMEFileCell> candidates = new ArrayList<MIMEFileCell>();
-		for(String ext: ext2mt.keySet())
-		{
-			if(name.toLowerCase().endsWith(ext))
-			{
-				try
-				{
-					candidates.add( (MIMEFileCell) ext2mt.get(ext).getKNIMEClass().newInstance() );
-				} 
-				catch (InstantiationException e)
-				{
-					e.printStackTrace();
-				} 
-				catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		Collections.sort(candidates, new Comparator<MIMEFileCell>(){
-			@Override
-			public int compare(MIMEFileCell x, MIMEFileCell y)
-			{
-				return x.getExtension().compareToIgnoreCase(y.getExtension());
-			}}
-		);
-		
-		if(candidates.size()>0)
-			cell = candidates.get(0);
-		
-		return cell;
-	}
-	
-	@Override
-	public MIMEtype getMIMEtype(String name)
-	{
-		MIMEtype mt = null;
-		List<MIMEtype> candidates = new ArrayList<MIMEtype>();
+		MIMEType mt = null;
+		List<MIMEType> candidates = new ArrayList<MIMEType>();
 		for(String ext: ext2mt.keySet())
 		{
 			if(name.toLowerCase().endsWith(ext))
@@ -134,16 +90,22 @@ public class DefaultMIMEtypeRegistry implements MIMEtypeRegistry
 			}
 		}
 		
-		Collections.sort(candidates, new Comparator<MIMEtype>(){
+		Collections.sort(candidates, new Comparator<MIMEType>(){
 			@Override
-			public int compare(MIMEtype x, MIMEtype y)
+			public int compare(MIMEType x, MIMEType y)
 			{
-				return x.getExt().compareToIgnoreCase(y.getExt());
+				return x.getExtension().compareToIgnoreCase(y.getExtension());
 			}}
 		);
 		
 		if(candidates.size()>0)
 			mt = candidates.get(0); 
 		return mt;
+	}
+
+	@Override
+	public List<Demangler> getDemangler(MIMEType type)
+	{
+		return demanglers.get(type);
 	}
 }

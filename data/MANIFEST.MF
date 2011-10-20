@@ -15,8 +15,7 @@ Bundle-Vendor: roettig
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
- org.knime.base,
- org.knime.chem.types
+ org.knime.base
 Export-Package: org.ballproject.knime.base.config,
  org.ballproject.knime.base.node,
  org.ballproject.knime,
@@ -31,6 +30,7 @@ Export-Package: org.ballproject.knime.base.config,
  org.ballproject.knime.nodegeneration,
  org.ballproject.knime.nodegeneration.templates,
  org.ballproject.knime.base.wrapper,
+ org.ballproject.knime.base.external,
  org.dom4j,
  org.dom4j.bean,
  org.dom4j.datatype,
@@ -111,4 +111,4 @@ Export-Package: org.ballproject.knime.base.config,
  org.apache.tools.ant.ProjectHelper
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.ballproject.knime.GenericNodesPlugin
-
+Eclipse-RegisterBuddy: org.knime.core

@@ -20,12 +20,16 @@
 package org.ballproject.knime.base.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Helper
@@ -55,6 +59,22 @@ public class Helper
 		return OS.WIN;
 	}
 
+	public static List<String> readStringsFromStream(InputStream in) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		
+		List<String> ret = new ArrayList<String>();
+		String line = "";
+		 
+		while( (line=reader.readLine())!=null)
+		{
+			ret.add(line.trim());
+		}
+		reader.close();
+		
+		return ret;
+	}
+	
 	public static String getExecutableName(String nodename, String path)
 	{
 		String test = path+File.separator+nodename; 
@@ -145,6 +165,24 @@ public class Helper
 			f.deleteOnExit();
 		
 		return f.getAbsolutePath();
+	}
+	
+	static synchronized public String getRelativeTemporaryFilename(String directory, String suffix, boolean autodelete) throws IOException
+	{
+		
+		int num = Math.abs(rng.nextInt());
+		File f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		while(f.exists())
+		{
+			num = Math.abs(rng.nextInt());
+			f = new File(directory+File.separator+String.format("%06d.%s",num,suffix));
+		}
+		f.createNewFile();
+		
+		if(autodelete)
+			f.deleteOnExit();
+		
+		return f.getName();
 	}
 	
 	static synchronized public String getTemporaryFilename(String suffix, boolean autodelete) throws IOException

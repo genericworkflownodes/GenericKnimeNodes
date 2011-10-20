@@ -19,9 +19,12 @@
 
 package org.ballproject.knime.base.io.viewer;
 
+
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
+
+
 
 /**
  * <code>NodeDialog</code> for the "MimeViewerExporter" Node.
@@ -44,5 +47,11 @@ public class MimeFileViewerNodeDialog extends DefaultNodeSettingsPane
 	protected MimeFileViewerNodeDialog()
 	{
 		super();
+		addDialogComponent(new DialogComponentNumber(MimeFileViewerNodeDialog.createIntModel(), "max. number of lines",10));
+	}
+	
+	static SettingsModelInteger createIntModel()
+	{
+		return new SettingsModelInteger(MimeFileViewerNodeModel.NUM_LINES,500);
 	}
 }

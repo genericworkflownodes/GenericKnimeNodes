@@ -65,7 +65,7 @@ public class MimeFileViewerNodeFactory extends NodeFactory<MimeFileViewerNodeMod
     @Override
     public boolean hasDialog() 
     {
-        return false;
+        return true;
     }
 
     /**

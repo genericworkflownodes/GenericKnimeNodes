@@ -35,7 +35,8 @@
    </extension>
    
    <extension point="org.eclipse.ui.preferencePages">
-      <page category="org.knime.workbench.ui.preferences" class="org.ballproject.knime.base.preferences.GKNPreferencePage" id="org.ballproject.knime.base.preferences" name="GKN"/>
+      <page category="org.knime.workbench.ui.preferences" class="org.ballproject.knime.base.preferences.GKNPreferencePage" id="org.ballproject.knime.base.preferences.GKNPreferences" name="GKN Preferences"/>
+      <page class="org.ballproject.knime.base.preferences.GKNExternalToolsPage" id="org.ballproject.knime.base.preferences.GKNExternalTools" name="GKN Tools DB" category="org.ballproject.knime.base.preferences.GKNPreferences"/>
    </extension>
    
 </plugin>
