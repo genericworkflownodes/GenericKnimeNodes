@@ -25,16 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.collection.ListCell;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
-import org.knime.core.node.BufferedDataTable;
+import org.knime.core.data.url.MIMEType;
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -42,6 +36,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.LoopStartNodeTerminator;
 
@@ -60,12 +56,12 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 		super(createIPOs(), createOPOs());
 	}
 
-	public static final PortType OPTIONAL_PORT_TYPE = new PortType(BufferedDataTable.class, true);
+	public static final PortType OPTIONAL_PORT_TYPE = new PortType(MIMEURIPortObject.class, true);
 	
 	private static PortType[] createIPOs()
 	{
 		PortType[] portTypes = new PortType[NinPorts];
-	    Arrays.fill(portTypes, BufferedDataTable.TYPE);
+	    Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
 	    portTypes[1] = OPTIONAL_PORT_TYPE;
 	    portTypes[2] = OPTIONAL_PORT_TYPE;
 	    portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -75,71 +71,54 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	private static PortType[] createOPOs()
 	{
 		PortType[] portTypes = new PortType[NinPorts];
-	    Arrays.fill(portTypes, BufferedDataTable.TYPE);
+	    Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
 	    portTypes[1] = OPTIONAL_PORT_TYPE;
 	    portTypes[2] = OPTIONAL_PORT_TYPE;
 	    portTypes[3] = OPTIONAL_PORT_TYPE;
 	    return portTypes;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
-			throws InvalidSettingsException
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
 	{
 		assert m_iteration == 0;
 		pushFlowVariableInt("currentIteration", m_iteration);
 		pushFlowVariableInt("maxIterations", 0);
 		
-		List<DataType> dts = new ArrayList<DataType>();
+		List<MIMEURIPortObjectSpec> specs = new ArrayList<MIMEURIPortObjectSpec>();
 		
 		for(int i=0;i<NinPorts;i++)
 		{
 			if(inSpecs[i]==null)
 				break;
-			
-			DataType type = inSpecs[i].iterator().next().getType();
-			if(!type.isCollectionType())
-			{
-				throw new InvalidSettingsException("no collection type at port "+i); 
-			}
-			dts.add(type.getCollectionElementType());
+			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
+			specs.add(spec);
 		}
 		
-		outspec = getOutSpec(dts);
+		outspec = getOutSpec(specs);
 		
 		return outspec;
 	}
 
-	
-	
-	private DataTableSpec[] outspec;
+	private PortObjectSpec[] outspec;
 	
 	private int K;
 	
-	private DataTableSpec[] getOutSpec(List<DataType> types)
+	private PortObjectSpec[] getOutSpec(List<MIMEURIPortObjectSpec> specs)
 	{
-		K = types.size();
-		DataTableSpec[] ret = new DataTableSpec[NinPorts];
+		K = specs.size();
 		
+		PortObjectSpec[] ret = new PortObjectSpec[NinPorts];
 		
 		for(int i=0;i<NinPorts;i++)
 		{
 			if(i<K)
 			{
-				DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-				allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  types.get(i)).createSpec();
-				DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-				ret[i] = outputSpec;
+				ret[i] = specs.get(i);
 			}
 			else
 			{
-				DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-				allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  StringCell.TYPE).createSpec();
-				DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-				ret[i] = outputSpec;				
+				ret[i] = null;				
 			}
 		}
 		
@@ -148,17 +127,9 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	
 	private int rowCount=0;
 	
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
 	{
-		
-		ListCell lc = (ListCell) inData[0].iterator().next().getCell(0);
-		rowCount = lc.size();
-
 		if (m_iteration == 0)
 		{
 			assert getLoopEndNode() == null : "1st iteration but end node set";
@@ -168,28 +139,25 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 			assert getLoopEndNode() != null : "No end node set";
 		}
 
-		DataRow row;
 		
-		BufferedDataContainer[] conts = new BufferedDataContainer[NinPorts];
-		BufferedDataTable[]     ret   = new BufferedDataTable[NinPorts];
+		MIMEURIPortObject[] out = new MIMEURIPortObject[NinPorts];
 		
+		rowCount = ((MIMEURIPortObject) inObjects[0]).getURIContents().size();
+				
 		for(int i=0;i<NinPorts;i++)
 		{
+			MIMEURIPortObject in = (MIMEURIPortObject) inObjects[i];
 			if(i<K)
 			{
-				conts[i] = exec.createDataContainer(outspec[i]);
-				lc = (ListCell) inData[i].iterator().next().getCell(0);
-				row = new DefaultRow("Row 1", lc.get(m_iteration));
-				conts[i].addRowToTable(row);
-				conts[i].close();
-				ret[i] = conts[i].getTable();
+				URIContent  uri = in.getURIContents().get(m_iteration);
+				List<URIContent> uriC = new ArrayList<URIContent>();
+				uriC.add(uri);
+				out[i] = new MIMEURIPortObject(uriC, in.getSpec().getMIMEType());
 			}
 			else
 			{
-				// create empty table
-				conts[i] = exec.createDataContainer(outspec[i]);
-				conts[i].close();
-				ret[i] = conts[i].getTable();
+				List<URIContent> uriC = new ArrayList<URIContent>();
+				out[i] = new MIMEURIPortObject(uriC, MIMEType.getType(""));
 			}
 		}
 		
@@ -197,8 +165,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 		pushFlowVariableInt("maxIterations", rowCount);
 		m_iteration++;
 		
-		return ret;
-		//return new BufferedDataTable[] { conts[0], cont2.getTable() };
+		return out;
 	}
 
 	/**

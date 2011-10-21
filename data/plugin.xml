@@ -20,6 +20,7 @@
     <node factory-class="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" id="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
     <node factory-class="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>    
     <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
+    <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
     <node factory-class="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" id="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
    </extension>
    
