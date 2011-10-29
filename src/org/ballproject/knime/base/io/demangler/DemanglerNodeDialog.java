@@ -29,7 +29,8 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.port.PortObjectSpec;
+
 
 /**
  * <code>NodeDialog</code> for the "Demangler" Node.
@@ -60,8 +61,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements ChoiceDialogL
 
 
 	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings,
-			DataTableSpec[] specs) throws NotConfigurableException
+	protected void loadSettingsFrom(NodeSettingsRO settings, PortObjectSpec[] specs) throws NotConfigurableException
 	{
 		String[] demanglers = null;		
 		try
