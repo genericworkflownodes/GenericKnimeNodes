@@ -34,10 +34,9 @@ import java.util.List;
 
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
-import org.ballproject.knime.base.util.FileStash;
+
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -45,7 +44,6 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.data.collection.ListCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
