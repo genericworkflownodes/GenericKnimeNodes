@@ -428,15 +428,21 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 
 			// check whether input MIMEType is in list of allowed MIMETypes
 			boolean ok = false;
+			String mismatch="";
+			
 			for(int j=0;j<mimetypes_in[i].length;j++)
 			{
 				if(mt.equals(mimetypes_in[i][j]))
 				{
 					ok = true;
 				}
+				else
+				{
+					mismatch = String.format("in: [%s] expected:[%s]",mt,Arrays.toString(mimetypes_in[i]));
+				}
 			}
 			if(!ok)
-				throw new InvalidSettingsException("invalid MIMEtype at port number "+i);
+				throw new InvalidSettingsException("invalid MIMEtype at port number "+i+" : "+mismatch);
 		}
 		
 		// create output spec
