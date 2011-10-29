@@ -190,7 +190,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 				}
 				else
-					throw new Exception("i/o item with missing attribute supported_formats detected");
+					throw new Exception("i/o item '"+elem.attributeValue("name")+"' with missing attribute supported_formats detected");
 			}
 			else
 			{
