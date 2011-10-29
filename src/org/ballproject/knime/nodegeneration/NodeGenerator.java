@@ -775,7 +775,7 @@ public class NodeGenerator
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = ext2type.get(type.getExt().toLowerCase());
+				String ext = type.getExt().toLowerCase();
 				if(ext==null)
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
@@ -805,7 +805,7 @@ public class NodeGenerator
 			String tmp = "{";
 			for(MIMEtype type: port.getMimeTypes())
 			{
-				String ext = ext2type.get(type.getExt().toLowerCase());
+				String ext = type.getExt().toLowerCase();
 				if(ext==null)
 				{
 					panic("unknown mime type : |"+type.getExt()+"|");
