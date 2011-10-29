@@ -17,11 +17,11 @@
     <node factory-class="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
     <node factory-class="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" id="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
     <node factory-class="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" id="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
-    <node factory-class="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" id="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
+    <!--<node factory-class="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" id="org.ballproject.knime.base.flow.columnmerger.ColumnMergerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>-->
     <node factory-class="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>    
     <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
     <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
-    <node factory-class="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" id="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
+    <!--<node factory-class="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" id="org.ballproject.knime.base.flow.column2list.ColumnToListNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>-->
    </extension>
    
    <!-- id seems to be package relative (so leading org.ballproject.knime was dropped) -->
