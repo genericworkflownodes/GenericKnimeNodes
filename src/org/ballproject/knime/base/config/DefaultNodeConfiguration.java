@@ -21,7 +21,7 @@ package org.ballproject.knime.base.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.ballproject.knime.base.parameter.Parameter;
@@ -29,7 +29,7 @@ import org.ballproject.knime.base.port.Port;
 
 public class DefaultNodeConfiguration implements NodeConfiguration, Serializable
 {
-	protected Map<String,Parameter<?>>  params   = new HashMap<String,Parameter<?>>();
+	protected Map<String,Parameter<?>>  params   = new LinkedHashMap<String,Parameter<?>>();
 		
 	protected Port[] in_ports;
 	protected Port[] out_ports;

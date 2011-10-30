@@ -20,14 +20,14 @@
 package org.ballproject.knime.base.config;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class DefaultNodeConfigurationStore implements NodeConfigurationStore
 {
-	protected Map<String,List<String>> data = new HashMap<String,List<String>>();
+	protected Map<String,List<String>> data = new LinkedHashMap<String,List<String>>();
 	
 	@Override
 	public void setParameterValue(String name, String value)
