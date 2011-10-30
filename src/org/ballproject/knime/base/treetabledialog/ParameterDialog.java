@@ -26,7 +26,11 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -52,6 +56,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 {
 	private JXTreeTable table;
 	private JTextPane   help;
+	//private JButton     toggle;
 	private ParameterDialogModel model;
 	
 	public ParameterDialog(NodeConfiguration config) throws FileNotFoundException, Exception
@@ -87,23 +92,33 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 			public Component highlight(Component comp, ComponentAdapter adapter)
 			{
 				boolean optional = true;
-				
+				boolean advanced = false;
 				TreePath path = table.getPathForRow(adapter.row);
 
 				if(path!=null&&path.getLastPathComponent()!=null)
 				{
-					@SuppressWarnings("unchecked")
-					Node<Parameter<?>> node = (Node<Parameter<?>>) path.getLastPathComponent();
+					//@SuppressWarnings("unchecked")
+					//Node<Parameter<?>> node = (Node<Parameter<?>>) path.getLastPathComponent();
+					ParameterNode node = (ParameterNode) path.getLastPathComponent();
 					if(node.getPayload()!=null)
+					{
 						optional = node.getPayload().getIsOptional();
+						advanced = node.getPayload().isAdvanced();
+					}
 				}
 				if(!optional)
 				{
-					comp.setForeground(Color.red);
+					comp.setForeground(Color.blue);
 					return comp;
 				}
 				else
-					return comp;
+				{
+					if(advanced)
+					{
+						comp.setForeground(Color.GRAY);
+					}
+				}
+				return comp;
 			}
 
 			@Override
@@ -119,7 +134,17 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 		UIHelper.addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,2.0f);
 		help = new JTextPane();
 		UIHelper.addComponent(this, new JScrollPane(help), 0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
-
+		/*
+		toggle = new JButton("Toggle adv. Parameters");
+		toggle.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				model.toggleAdvanced();
+			}}
+		);
+		UIHelper.addComponent(this, toggle, 0, 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
+		*/
 	}
 	
 	public ParameterDialogModel getModel()

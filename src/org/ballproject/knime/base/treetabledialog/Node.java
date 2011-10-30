@@ -31,12 +31,12 @@ import java.util.List;
  */
 public class Node<T>
 {
-	private Node<T> parent;
-	private T       payload;
+	protected Node<T> parent;
+	protected T       payload;
 	
-	private List<Node<T>> children = new ArrayList<Node<T>>();
+	protected List<Node<T>> children = new ArrayList<Node<T>>();
 	
-	private String name;
+	protected String name;
 	
 	public Node()
 	{

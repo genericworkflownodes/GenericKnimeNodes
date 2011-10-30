@@ -377,6 +377,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		if(tagset.contains("mandatory")||tagset.contains("required"))
 			ret.setIsOptional(false);
 		
+		if(tagset.contains("advanced"))
+			ret.setAdvanced(true);
+		
 		return ret;
 	}
 	
@@ -426,6 +429,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		
 		if(tagset.contains("mandatory")||tagset.contains("required"))
 			param.setIsOptional(false);
+
+		if(tagset.contains("advanced"))
+			param.setAdvanced(true);
 		
 		return param;
 	}
