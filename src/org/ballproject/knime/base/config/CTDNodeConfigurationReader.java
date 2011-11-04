@@ -651,7 +651,12 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		Parameter<?> rets = null;
 
 		String[] toks = restrs.split(",");
-
+		
+		for(int i=0;i<toks.length;i++)
+		{
+			toks[i] = toks[i].trim();
+		}
+		
 		if(restrs.length()>0)
 		{
 			if( (toks[0].equals("true")&&toks[1].equals("false")) || (toks[0].equals("false")&&toks[1].equals("true")) )
