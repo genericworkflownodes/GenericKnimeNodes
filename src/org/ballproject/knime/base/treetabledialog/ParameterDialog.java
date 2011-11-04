@@ -21,16 +21,10 @@ package org.ballproject.knime.base.treetabledialog;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -58,6 +52,9 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 	private JTextPane   help;
 	//private JButton     toggle;
 	private ParameterDialogModel model;
+	
+	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
+	private static Font OPT_FONT  = new Font("Dialog", Font.ITALIC, 12);
 	
 	public ParameterDialog(NodeConfiguration config) throws FileNotFoundException, Exception
 	{
@@ -109,10 +106,12 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 				if(!optional)
 				{
 					comp.setForeground(Color.blue);
+					comp.setFont(MAND_FONT);
 					return comp;
 				}
 				else
 				{
+					comp.setFont(OPT_FONT);
 					if(advanced)
 					{
 						comp.setForeground(Color.GRAY);
