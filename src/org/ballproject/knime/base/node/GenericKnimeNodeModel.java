@@ -82,8 +82,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	
 	protected int[]        selected_output_type;
 	protected String       binpath;
-	protected String       pluginname;
-	
+	protected String       pluginname; 
 	public String output="";
 	
 	/*
@@ -318,7 +317,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-		
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
 		for(String key: this.config.getParameterKeys())
@@ -350,7 +348,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		// - we validate incoming settings values here
 		// - we do not xfer values to member variables
 		// - we throw an exception if something is invalid
-
+		
 		for(String key: this.config.getParameterKeys())
 		{
 			Parameter<?> param = config.getParameter(key);
@@ -404,6 +402,17 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
 	{
+		for(Parameter<?> param: this.config.getParameters())
+		{
+			//System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
+			if(!param.getIsOptional()&&param.getStringRep().equals(""))
+			{
+				//throw new InvalidSettingsException("not all mandatory parameters are set");
+				this.setWarningMessage("some mandatory parameters might not be set");
+			}
+			
+		}
+		
 		int  nIn = mimetypes_in.length;
 		
 		for(int i=0;i<nIn;i++)
