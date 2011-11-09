@@ -24,6 +24,7 @@ import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.ballproject.knime.base.mime.demangler.DemanglerProvider;
+import org.ballproject.knime.base.node.GenericKnimeNodeModel;
 import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.core.runtime.CoreException;
@@ -31,6 +32,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -46,13 +48,18 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	// The shared instance.
 	private static GenericNodesPlugin plugin;
 
+	private static final NodeLogger logger = NodeLogger.getLogger(GenericNodesPlugin.class);
+	
 	public  static boolean DEBUG = false;
 	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
 	
 	public static void log(String message)
 	{
 		if(GenericNodesPlugin.DEBUG)
+		{
 			System.out.println(message);
+			logger.info(message);
+		}
 	}
 	
 	public static boolean isDebug()
@@ -60,6 +67,17 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 		return GenericNodesPlugin.DEBUG;
 	}
 	
+	public static void toggleDebug()
+	{
+		GenericNodesPlugin.DEBUG = !GenericNodesPlugin.DEBUG;
+		System.out.println("toggling Debug Mode");
+	}
+	
+	public static void setDebug(boolean flag)
+	{
+		GenericNodesPlugin.DEBUG = flag;
+		System.out.println("setting Debug Mode :"+flag);
+	}
 	 
 	
 	public static MIMEtypeRegistry getMIMEtypeRegistry()
