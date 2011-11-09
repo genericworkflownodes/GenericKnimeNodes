@@ -108,9 +108,12 @@ public class MimeFileImporterNodeModel extends NodeModel
 	{
 		m_filename.validateSettings(settings);
 		String filename = settings.getString(CFG_FILENAME);
+		File in = new File(filename);
+		if(!in.canRead())
+			throw new InvalidSettingsException("input file cannot be read: "+filename);
 		if(resolver.getMIMEtype(filename)==null)
 		{
-			throw new InvalidSettingsException("file of unknown MIMEtype selected "+filename);
+			throw new InvalidSettingsException("file of unknown MIMEtype selected: "+filename);
 		}
 	}
 

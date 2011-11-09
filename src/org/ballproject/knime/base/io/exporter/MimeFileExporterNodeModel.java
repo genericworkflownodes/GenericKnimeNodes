@@ -93,8 +93,13 @@ public class MimeFileExporterNodeModel extends NodeModel
 			throw new Exception("there were no URIs in the supplied MIMEURIPortObject at port 0");
 		}
 		
+		String filename = m_filename.getStringValue();
 		File in  = new File(uris.get(0).getURI());
-		File out = new File(m_filename.getStringValue());
+		File out = new File(filename);
+		
+		if(!out.canWrite())
+			throw new Exception("choosen output file is not writable :"+filename);
+		
 		Helper.copyFile(in, out);
 		
 		return new PortObject[]{};
