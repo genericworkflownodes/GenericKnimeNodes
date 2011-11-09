@@ -94,11 +94,12 @@ public class MimeFileExporterNodeModel extends NodeModel
 		}
 		
 		String filename = m_filename.getStringValue();
+		
 		File in  = new File(uris.get(0).getURI());
 		File out = new File(filename);
 		
-		if(!out.canWrite())
-			throw new Exception("choosen output file is not writable :"+filename);
+		//if(!out.createNewFile()||!out.canWrite())
+		//	throw new Exception("choosen output file is not writable :"+filename);
 		
 		Helper.copyFile(in, out);
 		
