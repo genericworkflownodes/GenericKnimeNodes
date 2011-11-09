@@ -41,6 +41,7 @@ import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.FileListParameter;
 import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.ballproject.knime.base.util.ExternalToolRunner;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
@@ -48,6 +49,7 @@ import org.ballproject.knime.base.util.InternalToolRunner;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
 import org.ballproject.knime.base.wrapper.GenericToolWrapper;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
@@ -217,10 +219,20 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		AsyncToolRunner     t      = new AsyncToolRunner(tr);
 		t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
 		
+		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
 		for(String key: env.keySet())
 		{
-			t.getToolRunner().addEnvironmentEntry(key, binpath+FILESEP+env.get(key));
-			GenericNodesPlugin.log(key+"->"+binpath+FILESEP+env.get(key));
+			String value = "";
+			String addPathes = store.getString(GKNPreferenceInitializer.PREF_PATHES);
+			value = env.get(key).replace("$ROOT", binpath+FILESEP);
+			if(key.equals("PATH"))
+			{
+				if(!addPathes.equals(""))
+					value += ":"+addPathes;
+			}
+				
+			t.getToolRunner().addEnvironmentEntry(key, value);
+			GenericNodesPlugin.log(key+"->"+value);
 		}
 		
 		FutureTask<Integer> future = new FutureTask<Integer>(t);
@@ -259,7 +271,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
         {
         	ex.printStackTrace();
         }
-        
+
         executor.shutdown();
 				
 		output = t.getToolRunner().getOutput();
