@@ -182,12 +182,18 @@ public class MimeFileViewerNodeModel extends NodeModel
 		MIMEURIPortObject po = (MIMEURIPortObject) inObjects[0];
 		File file = new File(po.getURIContents().get(0).getURI());
 		
+		int maxLines = max_num_lines.getIntValue();
+		data = readFileSummary(file, maxLines);
+		
+		return new PortObject[]{};
+	}
+	
+	public static String readFileSummary(File file, int maxLines) throws IOException
+	{
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		StringBuffer sb = new StringBuffer(); 
 		
-		String line="";
-		
-		int maxLines = max_num_lines.getIntValue();
+		String line="";		
 		
 		int cnt = 0;
 		
@@ -213,11 +219,7 @@ public class MimeFileViewerNodeModel extends NodeModel
 			}
 		}
 		
-		data = sb.toString();
-		
-		return new PortObject[]{};
+		return sb.toString();
 	}
-	
-	
 	
 }
