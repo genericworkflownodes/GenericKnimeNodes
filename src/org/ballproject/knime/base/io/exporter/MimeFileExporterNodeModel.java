@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.ballproject.knime.base.io.viewer.MimeFileViewerNodeModel;
 import org.ballproject.knime.base.util.Helper;
 
 import org.knime.core.data.url.URIContent;
@@ -45,7 +46,7 @@ import org.knime.core.node.NodeSettingsWO;
 
 
 /**
- * This is the model implementation of MimeFileImporter.
+ * This is the model implementation of MimeFileExporter.
  * 
  * 
  * @author roettig
@@ -60,6 +61,12 @@ public class MimeFileExporterNodeModel extends NodeModel
 
 	private SettingsModelString  m_filename = MimeFileExporterNodeDialog.createFileChooserModel();
 	
+	private String data;
+	
+	public String getContent()
+	{
+		return data;
+	}
 
 	/**
 	 * Constructor for the node model.
@@ -102,6 +109,8 @@ public class MimeFileExporterNodeModel extends NodeModel
 		//	throw new Exception("choosen output file is not writable :"+filename);
 		
 		Helper.copyFile(in, out);
+		
+		data = MimeFileViewerNodeModel.readFileSummary(in, 50);
 		
 		return new PortObject[]{};
 	}

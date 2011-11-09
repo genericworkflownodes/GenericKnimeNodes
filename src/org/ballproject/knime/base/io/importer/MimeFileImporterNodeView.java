@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.io.exporter;
+package org.ballproject.knime.base.io.importer;
 
 import java.awt.Font;
 
@@ -27,12 +27,12 @@ import javax.swing.JTextArea;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeView</code> for the "MimeFileExporter" Node.
+ * <code>NodeView</code> for the "MimeFileImporter" Node.
  * 
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel>
+public class MimeFileImporterNodeView extends NodeView<MimeFileImporterNodeModel>
 {
 
 	/**
@@ -41,13 +41,15 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel)
+	protected MimeFileImporterNodeView(final MimeFileImporterNodeModel nodeModel)
 	{
 		super(nodeModel);
+		
 		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
 		JScrollPane scrollpane = new JScrollPane(text);
 		text.setFont(new Font("Monospaced", Font.BOLD, 12));
 		setComponent(scrollpane);
+		
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
-		MimeFileExporterNodeModel nodeModel = (MimeFileExporterNodeModel) getNodeModel();
+		MimeFileImporterNodeModel nodeModel = (MimeFileImporterNodeModel) getNodeModel();
 		assert nodeModel != null;
 
 		// be aware of a possibly not executed nodeModel! The data you retrieve
