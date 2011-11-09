@@ -149,8 +149,14 @@ public class ListMimeFileExporterNodeModel extends NodeModel
 		for(URIContent uri: uris)
 		{
 			File in  = new File(uri.getURI());
+			if(!in.canWrite())
+				throw new Exception("cannot read file to export: "+in.getAbsolutePath());
+			
 			String outfilename = insertIndex(m_filename.getStringValue(),obj.getSpec().getMIMEType().getExtension(),idx++);
 			File out = new File(outfilename);
+			if(!out.canWrite())
+				throw new Exception("cannot write to file: "+out.getAbsolutePath());
+			
 			Helper.copyFile(in, out);	
 		}
 		

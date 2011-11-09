@@ -165,6 +165,11 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 		List<URIContent> uris = new ArrayList<URIContent>();
 		for(String filename: filenames)
 		{
+			File in = new File(filename);
+			
+			if(!in.canRead())
+				throw new Exception("cannot read from input file: "+in.getAbsolutePath());
+			
 			uris.add(new URIContent(new File(filename).toURI()));	
 		}
 		
