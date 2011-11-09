@@ -23,6 +23,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.knime.core.data.url.port.MIMEURIPortObject;
 import org.knime.core.node.CanceledExecutionException;
@@ -145,6 +148,17 @@ public class MimeFileViewerNodeModel extends NodeModel
 		int maxLines = max_num_lines.getIntValue();
 		
 		int cnt = 0;
+		
+		sb.append("File path: "+file.getAbsolutePath()+System.getProperty("line.separator"));
+		sb.append("File size: "+file.length()+" bytes"+System.getProperty("line.separator"));
+		
+		Date date = new Date(file.lastModified());
+		Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+		String s = formatter.format(date);
+		
+		sb.append("File time: "+s+System.getProperty("line.separator"));
+		
+		sb.append(String.format("File content (first %d lines):"+System.getProperty("line.separator"),maxLines));
 		
 		while((line=br.readLine())!=null)
 		{
