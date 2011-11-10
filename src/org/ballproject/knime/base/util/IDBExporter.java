@@ -33,13 +33,13 @@ public class IDBExporter
 		
 		
 		Namespace idbns  = new Namespace("idb","http://www.fz-juelich.de/unicore/xnjs/idb");
-		Namespace jsdlns = new Namespace("jsdl","http://schemas.ggf.org/jsdl/2005/11/jsdl-posix");
+		
 
 		document = DocumentHelper.createDocument();
 		root     = document.addElement( "root" );
-
+		
 		document.getRootElement().add(idbns);
-		document.getRootElement().add(jsdlns);
+		
 
 		File in = new File(args[0]);
 		
@@ -53,7 +53,7 @@ public class IDBExporter
 			{
 				if(!file.getAbsolutePath().endsWith(".ctd"))
 					continue;
-				// CTD files a process those
+				// CTD files and process those
 				processCTD(file.getAbsolutePath());
 			}
 		}
@@ -76,10 +76,13 @@ public class IDBExporter
 		config = reader.read(new FileInputStream(filename));
 		
 		Element root_ = root.addElement( "idb:IDBApplication" );
+		root_.addComment(config.getName());
 		root_.addElement("idb:ApplicationName" ).addText(config.getName());
 		root_.addElement("idb:ApplicationVersion").addText(config.getVersion());
-
-		Element appl = root_.addElement("jsdl:POSIXApplication");
+		
+		Element appl = root_.addElement("POSIXApplication");
+		appl.addNamespace("jsdl","http://schemas.ggf.org/jsdl/2005/11/jsdl-posix");
+		appl.setName("jsdl:POSIXApplication");
 		appl.addElement("jsdl:Executable").addText("$SUITEROOT/"+config.getName());
 
 		for(Parameter<?> param : config.getParameters())
