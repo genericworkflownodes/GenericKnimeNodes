@@ -20,8 +20,14 @@
 package org.ballproject.knime.base.io.exporter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.ballproject.knime.base.io.viewer.MimeFileViewerNodeModel;
 import org.ballproject.knime.base.util.Helper;
@@ -159,6 +165,34 @@ public class MimeFileExporterNodeModel extends NodeModel
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
+		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
+
+		@SuppressWarnings("unchecked")
+		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
+
+		int BUFFSIZE = 2048;
+		byte[] BUFFER = new byte[BUFFSIZE];
+
+		while(entries.hasMoreElements())
+		{
+			ZipEntry entry = (ZipEntry)entries.nextElement();
+
+			if(entry.getName().equals("rawdata.bin"))
+			{
+				int size = (int) entry.getSize();
+				byte[] data = new byte[size];
+				InputStream in = zip.getInputStream(entry);
+				int len;
+				int totlen=0;
+				while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
+				{
+					System.arraycopy(BUFFER, 0, data, totlen, len);
+					totlen+=len;
+				}
+				this.data = new String(data);
+			}
+		}
+		zip.close();
 	}
 
 	/**
@@ -166,8 +200,12 @@ public class MimeFileExporterNodeModel extends NodeModel
 	 */
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
-	{	
+	{
+		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
+		ZipEntry entry = new ZipEntry("rawdata.bin");
+		out.putNextEntry(entry);
+		out.write(data.getBytes());
+		out.close(); 
 	}
-	
 	
 }
