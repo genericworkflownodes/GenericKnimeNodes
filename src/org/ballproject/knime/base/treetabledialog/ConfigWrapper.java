@@ -70,6 +70,11 @@ public class ConfigWrapper
 		for(String key: config.getParameterKeys())
 		{
 			List<String> prefixes = getPrefixes(key);
+			
+			// OpenMS/CADDSuite workaround for leading '1' NODE
+			if(prefixes.get(0).equals("1"))
+				prefixes.remove(0);
+			
 			ParameterNode last = root;
 			for(int i=0;i<prefixes.size()-1;i++)
 			{
