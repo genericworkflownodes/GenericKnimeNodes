@@ -213,6 +213,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		executeTool(jobdir, exec);
 	}
 		
+	private static String PATHSEP = System.getProperty("path.separator");
+	
 	private void executeTool(final File jobdir, final ExecutionContext exec) throws Exception
 	{
 		
@@ -223,14 +225,16 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 		for(String key: env.keySet())
 		{
 			String value = "";
+			
 			String addPathes = store.getString(GKNPreferenceInitializer.PREF_PATHES);
 			value = env.get(key).replace("$ROOT", binpath+FILESEP);
 			if(key.equals("PATH"))
 			{
 				if(!addPathes.equals(""))
-					value += ":"+addPathes;
+					value += PATHSEP+addPathes;
+				value += PATHSEP+System.getenv("PATH");
 			}
-				
+			
 			t.getToolRunner().addEnvironmentEntry(key, value);
 			GenericNodesPlugin.log(key+"->"+value);
 		}
