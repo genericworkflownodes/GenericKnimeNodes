@@ -56,11 +56,14 @@ public class GKNPreferencePage extends FieldEditorPreferencePage implements IWor
 	{
 		//
 		String dir = PREF_FILE_STASH_LOCATION.getStringValue();
-		System.out.println(dir);
 		FileStash.getInstance().setStashDirectory(dir);
 		//
 		boolean flag = PREF_DEBUG_MODE.getBooleanValue();
 		GenericNodesPlugin.setDebug(flag);
+		
+		String pathes = PREF_PATHES.getStringValue();
+		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
+		store.setValue(GKNPreferenceInitializer.PREF_PATHES, pathes);
 		
 		return true;
 	}
