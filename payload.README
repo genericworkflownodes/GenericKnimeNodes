@@ -17,12 +17,9 @@ binaries_lnx_64.ini
 
 might look like :
 
-env_LD_LIBRARY_PATH=lib/
-env_DATA_PATH=data/
-
-
-where anything prefixed with "env_" will be put in the environment of the binary to
-be executed by each node. 
+LD_LIBRARY_PATH=lib/
+DATA_PATH=data/
+ 
 
 The corresponding binaries_lnx_64.zip content would look like this :
 
