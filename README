@@ -5,7 +5,12 @@ This package provides the source code for the KNIME plugin
 providing basic functionality for further plugins depending 
 on the GenericKnimeNodes mechanism.
 
-The base plugin can be built by issuing
+Please adjust the file build.properties and make the property
+knimeSDKpath point to the path of the KNIME SDK root. You can
+download the KNIME SDK at http://knime.org/downloads/overview.  
+
+
+The base plugin can then be built by issuing
 
 ant buildbaseplugin
 
@@ -17,8 +22,8 @@ in the build directory that has to be  copied into the plugins
 folder of the KNIME installation.
 
 The NodeGenerator, that creates the source code of further
-plugins from the tool description files, can be built by
-issuing
+plugins from the tool description files (ctd), can be built
+by issuing
 
 ant nodegen
 
@@ -26,14 +31,28 @@ which will create the relevant jar file in the build directory
 based on the properties set in the file plugin.properties.
 
 Along with the tool descriptor files a mimetypes.xml is needed
-that defines all used mimetypes.
+that defines all used mimetypes. This file has to reside in the
+directory defined via the property 'descriptordir' in the 
+plugin.properties file. See demo/blast/descriptors for a simple
+mimetypes.xml.
 
-The wrapped binaries have to be supplied in a payload directory
+If you use GKN 'internal' programs you have to supply the 
+corresponding executables for each program. These wrapped 
+binaries have to be supplied in a payload directory
 specified by the respective property in the plugin.properties
-file. Pleaser refer to payload.README for further details.
+file (payloaddir). Pleaser refer to payload.README for further
+details. If you create a plugin containing only external programs
+(i.e. programs already located on your system) you do not need
+to supply any payload data. The user can use the GKN preference
+tab to set the pathes to the tools located on the target system.
 
-Finally, you should copy the resulting two jar file into the 
-plugins folder of KNIME.
+Finally, you should copy the resulting two jar files
+
+- org.ballproject.knime_x.y.z.jar
+- orf.mydomain.myplugin_a.b.c.jar
+
+into the plugins folder of KNIME.
+
 
  
 
