@@ -20,7 +20,7 @@ public class GKNPreferenceInitializer extends AbstractPreferenceInitializer
         // set default values
         store.setDefault(PREF_FILE_STASH_LOCATION, FileStash.getInstance().getStashDirectory());
         store.setDefault(PREF_PATHES,"");
-        store.setDefault(PREF_DEBUG_MODE,false);
+        store.setDefault(PREF_DEBUG_MODE,GenericNodesPlugin.isDebug());
 	}
 
 }
