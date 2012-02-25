@@ -19,6 +19,7 @@
 
 package org.ballproject.knime.base.io.importer;
 
+import org.ballproject.knime.base.io.viewer.MimeFileViewerNodeView;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
@@ -47,7 +48,7 @@ public class MimeFileImporterNodeFactory extends NodeFactory<MimeFileImporterNod
     @Override
     public int getNrNodeViews() 
     {
-        return 0;
+        return 1;
     }
 
     /**
@@ -56,7 +57,7 @@ public class MimeFileImporterNodeFactory extends NodeFactory<MimeFileImporterNod
     @Override
     public NodeView<MimeFileImporterNodeModel> createNodeView(final int viewIndex, final MimeFileImporterNodeModel nodeModel) 
     {
-        return null;
+        return new MimeFileImporterNodeView(nodeModel);
     }
 
     /**

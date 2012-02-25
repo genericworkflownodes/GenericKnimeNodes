@@ -35,6 +35,7 @@ public abstract class Parameter<T> implements Serializable
 	protected String  description = "";
 	protected String  section     = "default";
 	protected boolean isOptional = true;
+	protected boolean advanced   = false;
 	
 	/**
 	 * ctor with unique key of parameter and generic value to store.
@@ -184,6 +185,16 @@ public abstract class Parameter<T> implements Serializable
 		return toString();
 	}
 	
+	public boolean isAdvanced()
+	{
+		return advanced;
+	}
+
+	public void setAdvanced(boolean advanced)
+	{
+		this.advanced = advanced;
+	}
+
 	/**
 	 * checks whether the supplied generic value is compatible with the data type of the parameter.
 	 * 
@@ -192,6 +203,8 @@ public abstract class Parameter<T> implements Serializable
 	 * @return is the supplied value valid 
 	 */
 	public abstract boolean validate(T val);
+	
+	
 	
 	protected static String SEPERATORTOKEN = "@@@__@@@";
 	

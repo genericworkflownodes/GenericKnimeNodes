@@ -25,21 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEFileCell;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.collection.CollectionCellFactory;
-import org.knime.core.data.collection.ListCell;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.node.BufferedDataTable;
+
+import org.knime.core.data.url.MIMEType;
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
-import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -63,6 +59,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	static final String CFG_FILENAME = "FILENAME";
 
 	private SettingsModelStringArray  m_filename = ListMimeFileImporterNodeDialog.createFileChooserModel();
+	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
 	
 
 	/**
@@ -70,57 +67,9 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	 */
 	protected ListMimeFileImporterNodeModel()
 	{
-		super(0, 2);
+		super(new PortType[]{}, new PortType[]{new PortType(MIMEURIPortObject.class)});
 	}
 	
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin.getMIMEtypeRegistry();
-	protected MIMEFileCell cell;
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
-	{
-		
-		List<MIMEFileCell> files = new ArrayList<MIMEFileCell>();
-		
-		String[] filenames = m_filename.getStringArrayValue();
-		for(String filename: filenames)
-		{
-			File f = new File(filename);
-			cell = resolver.getCell(filename);
-			cell.read(f);
-			files.add(cell);
-		}
-		
-		ListCell lc = CollectionCellFactory.createListCell(files);
-		
-		BufferedDataContainer container1 = exec.createDataContainer(outspec1);
-		BufferedDataContainer container2 = exec.createDataContainer(outspec2);
-		
-		
-		DataRow row = new DefaultRow("Row 0", lc);
-		container1.addRowToTable(row);
-		
-		int idx = 1;
-		for(DataCell dc : lc)
-		{
-			DataRow row_ = new DefaultRow("Row "+idx, dc);
-			container2.addRowToTable(row_);
-			idx++;
-		}
-		
-		container1.close();
-		container2.close();
-		
-		BufferedDataTable out1 = container1.getTable();
-		BufferedDataTable out2 = container2.getTable();
-		
-		return new BufferedDataTable[]{ out1, out2 };
-	}
-
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -132,46 +81,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 		// Also data handled in load/saveInternals will be erased here.
 	}
 	
-	
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{	
-		if(this.m_filename.getStringArrayValue().length==0)
-			return new DataTableSpec[]{null,null};
-			
-		
-		for(String filename: this.m_filename.getStringArrayValue())
-		{
-			cell = resolver.getCell(filename);
-			if(cell==null)
-				throw new InvalidSettingsException("could not resolve MIME type of file");	
-		}
-		
-		getDataTableSpec();
-		
-		return new DataTableSpec[]{ outspec1, outspec2 };
-	}
-
-	private DataTableSpec outspec1;
-	private DataTableSpec outspec2;
-	
-	private void getDataTableSpec() throws InvalidSettingsException
-	{
-        DataColumnSpec[] allColSpecs1 = new DataColumnSpec[1];
-        DataColumnSpec[] allColSpecs2 = new DataColumnSpec[1];
-        
-        DataType type = ListCell.getCollectionType(cell.getDataType());
-        allColSpecs1[0] =  new DataColumnSpecCreator("MIMEFILE", type ).createSpec();
-		outspec1 = new DataTableSpec(allColSpecs1);
-		
-		allColSpecs2[0] =  new DataColumnSpecCreator("MIMEFILE", cell.getDataType() ).createSpec();
-		outspec2 = new DataTableSpec(allColSpecs2);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -187,9 +96,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-		// TODO load (valid) settings from the config object.
-		// It can be safely assumed that the settings are valided by the
-		// method below.
 		m_filename.loadSettingsFrom(settings);
 	}
 
@@ -199,14 +105,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
-
-		// TODO check if the settings could be applied to our model
-		// e.g. if the count is in a certain range (which is ensured by the
-		// SettingsModel).
-		// Do not actually set any values of any member variables.
-
 		m_filename.validateSettings(settings);
-
 	}
 
 	/**
@@ -225,4 +124,55 @@ public class ListMimeFileImporterNodeModel extends NodeModel
 	{
 	}
 
+	protected MIMEType mt = null;
+
+	@Override
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
+	{		
+		String[] filenames = this.m_filename.getStringArrayValue();
+		
+		if(filenames==null||filenames.length==0)
+		{
+			return new PortObjectSpec[]{null};
+		}
+		
+		List<MIMEType> mts = new ArrayList<MIMEType>();
+		
+		for(String filename: filenames)
+		{
+			mt = resolver.getMIMEtype(filename);
+			if(mt==null)
+				throw new InvalidSettingsException("could not resolve MIMEType of file "+filename);
+			mts.add(mt);
+		}
+		
+		for(MIMEType mt_ : mts)
+		{
+			if(!mt_.equals(mt))
+			{
+				throw new InvalidSettingsException("files with mixed MIMEType loaded");
+			}
+		}
+					
+		return new PortObjectSpec[]{ new MIMEURIPortObjectSpec(mt) };
+	}
+
+	@Override
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
+	{
+		String[] filenames = this.m_filename.getStringArrayValue();
+		
+		List<URIContent> uris = new ArrayList<URIContent>();
+		for(String filename: filenames)
+		{
+			File in = new File(filename);
+			
+			if(!in.canRead())
+				throw new Exception("cannot read from input file: "+in.getAbsolutePath());
+			
+			uris.add(new URIContent(new File(filename).toURI()));	
+		}
+		
+		return new PortObject[]{new MIMEURIPortObject(uris,mt)};
+	}	
 }

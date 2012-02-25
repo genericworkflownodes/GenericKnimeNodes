@@ -20,20 +20,15 @@
 package org.ballproject.knime.base.treetabledialog;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.AbstractCellEditor;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.event.ListDataListener;
 import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
@@ -48,7 +43,6 @@ import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
 import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialog;
-import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialogModel;
 import org.ballproject.knime.base.treetabledialog.itemlist.ListParameterModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
@@ -57,7 +51,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 {
 	private NodeConfiguration config;
 	private ConfigWrapper     wrapper;
-	
+	private boolean           showAdvanced = true;
 	private Object root;
 	
 	public ParameterDialogModel(NodeConfiguration config) throws FileNotFoundException, Exception
@@ -76,30 +70,36 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	public void addTreeModelListener(TreeModelListener arg0)
 	{		
 	}
+	
+	public void showAdvanced(boolean flag)
+	{
+		showAdvanced = flag;
+	}
+	
+	public void toggleAdvanced()
+	{
+		showAdvanced = !showAdvanced;
+	}
 
 	@Override
 	public Object getChild(Object parent, int idx)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> par = (Node<Parameter<?>>) parent;
+		ParameterNode par = (ParameterNode) parent;
 		return par.getChild(idx);
 	}
 
 	@Override
 	public int getChildCount(Object parent)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> par = (Node<Parameter<?>>) parent;
+		ParameterNode par = (ParameterNode) parent;
 		return par.getNumChildren();
 	}
 
 	@Override
 	public int getIndexOfChild(Object parent, Object child_)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> par   = (Node<Parameter<?>>) parent;
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> child = (Node<Parameter<?>>) child_;
+		ParameterNode par   = (ParameterNode) parent;
+		ParameterNode child = (ParameterNode) child_;
 		return par.getChildIndex(child);
 	}
 
@@ -112,8 +112,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public boolean isLeaf(Object parent)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> par   = (Node<Parameter<?>>) parent;
+		ParameterNode par = (ParameterNode) parent;
 		return par.isLeaf();
 	}
 
@@ -161,8 +160,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public Object getValueAt(Object node, int column)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> n = (Node<Parameter<?>>) node;
+		ParameterNode n = (ParameterNode) node;
 
 		if(column==-1)
 			return n.getName();
@@ -195,8 +193,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public boolean isCellEditable(Object value, int column)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> n = (Node<Parameter<?>>) value;
+		ParameterNode n = (ParameterNode) value;
 		if(column==1)
 		{
 			if(n.isLeaf())
@@ -211,8 +208,7 @@ public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeT
 	@Override
 	public void setValueAt(Object value, Object node, int column)
 	{
-		@SuppressWarnings("unchecked")
-		Node<Parameter<?>> n = (Node<Parameter<?>>) node;
+		ParameterNode n = (ParameterNode) node;
 		n.setPayload((Parameter<?>) value);
 	}
 	

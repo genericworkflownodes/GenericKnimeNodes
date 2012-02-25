@@ -18,6 +18,6 @@
      <inPort index="0" name="MimeFile "> MimeFile </inPort>   
     </ports>    
     <views>
-        <view index="0" name=""></view>
+        <view index="0" name="View file summary">View file summary</view>
     </views>
 </knimeNode>

@@ -19,24 +19,24 @@
 
 package org.ballproject.knime.base.io.viewer;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEFileDelegate;
-import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.port.*;
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.BufferedDataTable;
+import org.knime.core.data.url.port.MIMEURIPortObject;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -45,6 +45,10 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 
 
 /**
@@ -59,47 +63,25 @@ public class MimeFileViewerNodeModel extends NodeModel
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(MimeFileViewerNodeModel.class);
 	
-	private static String BINARY_DATA_MESSAGE = "[MIMEFile content is binary]";
+	public static String NUM_LINES = "MAX_NUMBER_LINES";
+	
+	private SettingsModelInteger max_num_lines =  MimeFileViewerNodeDialog.createIntModel();
+	
+	private String data;
+	
+	public String getContent()
+	{
+		return data;
+	}
 	
 	/**
 	 * Constructor for the node model.
 	 */
 	protected MimeFileViewerNodeModel()
 	{
-		super(1, 0);
+		super(new PortType[]{new PortType(MIMEURIPortObject.class)}, new PortType[]{});
 	}
-	
-	public byte[] data = new byte[]{};
-	protected MIMEFileCell cell_;
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
-	{			
-		DataRow  row  = inData[0].iterator().next();
-		DataCell cell = row.getCell(0);
 		
-		if( cell instanceof MimeMarker)
-		{
-			cell_ = (MIMEFileCell) cell;
-			
-			MimeMarker mrk = (MimeMarker) cell;
-			MIMEFileDelegate del = mrk.getDelegate();
-			MIMEtype mt = GenericNodesPlugin.getMIMEtypeRegistry().getMIMEtype(mrk.getExtension());
-			if(mt.isBinary())
-			{
-				data = BINARY_DATA_MESSAGE.getBytes();
-			}
-			else
-				data = del.getByteArrayReference();
-		}
-		return new BufferedDataTable[]{};
-	}
-
-
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -111,23 +93,13 @@ public class MimeFileViewerNodeModel extends NodeModel
 		// Also data handled in load/saveInternals will be erased here.
 	}
 	
-	
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{		
-		return new DataTableSpec[]{};
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings)
 	{
+		max_num_lines.saveSettingsTo(settings);
 	}
 
 	/**
@@ -136,6 +108,7 @@ public class MimeFileViewerNodeModel extends NodeModel
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException
 	{
+		max_num_lines.loadSettingsFrom(settings);
 	}
 
 	/**
@@ -153,32 +126,33 @@ public class MimeFileViewerNodeModel extends NodeModel
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
 		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
-		
+
 		@SuppressWarnings("unchecked")
 		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
 
-		int    BUFFSIZE = 2048;
-		byte[] BUFFER   = new byte[BUFFSIZE];
-		
-	    while(entries.hasMoreElements()) 
-	    {
-	        ZipEntry entry = (ZipEntry)entries.nextElement();
-	        if(entry.getName().equals("rawdata.bin"))
-	        {
-	        	int  size = (int) entry.getSize(); 
-	        	data = new byte[size];
-	        	InputStream in = zip.getInputStream(entry);
-	        	int len;
-	        	int totlen=0;
-	        	while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
-	        	{
-	        		System.arraycopy(BUFFER, 0, data, totlen, len);
-	        		totlen+=len;
-	        	}
-	        }
-	    }
-	    zip.close();
-	
+		int BUFFSIZE = 2048;
+		byte[] BUFFER = new byte[BUFFSIZE];
+
+		while(entries.hasMoreElements())
+		{
+			ZipEntry entry = (ZipEntry)entries.nextElement();
+
+			if(entry.getName().equals("rawdata.bin"))
+			{
+				int size = (int) entry.getSize();
+				byte[] data = new byte[size];
+				InputStream in = zip.getInputStream(entry);
+				int len;
+				int totlen=0;
+				while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
+				{
+					System.arraycopy(BUFFER, 0, data, totlen, len);
+					totlen+=len;
+				}
+				this.data = new String(data);
+			}
+		}
+		zip.close();
 	}
 
 	/**
@@ -189,11 +163,63 @@ public class MimeFileViewerNodeModel extends NodeModel
 	{
 		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
 		ZipEntry entry = new ZipEntry("rawdata.bin");
-	    out.putNextEntry(entry);
-	    out.write(data);
-	    out.close(); 
-	
+		out.putNextEntry(entry);
+		out.write(data.getBytes());
+		out.close(); 
+	}
+
+
+
+	@Override
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
+	{
+		return new PortObjectSpec[]{};
+	}
+
+	@Override
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
+	{
+		MIMEURIPortObject po = (MIMEURIPortObject) inObjects[0];
+		File file = new File(po.getURIContents().get(0).getURI());
+		
+		int maxLines = max_num_lines.getIntValue();
+		data = readFileSummary(file, maxLines);
+		
+		return new PortObject[]{};
 	}
 	
+	public static String readFileSummary(File file, int maxLines) throws IOException
+	{
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		StringBuffer sb = new StringBuffer(); 
+		
+		String line="";		
+		
+		int cnt = 0;
+		
+		sb.append("File path: "+file.getAbsolutePath()+System.getProperty("line.separator"));
+		sb.append("File size: "+file.length()+" bytes"+System.getProperty("line.separator"));
+		
+		Date date = new Date(file.lastModified());
+		Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+		String s = formatter.format(date);
+		
+		sb.append("File time: "+s+System.getProperty("line.separator"));
+		
+		sb.append(String.format("File content (first %d lines):"+System.getProperty("line.separator"),maxLines));
+		
+		while((line=br.readLine())!=null)
+		{
+			sb.append(line+System.getProperty("line.separator"));
+			cnt++;
+			if(cnt>maxLines)
+			{
+				sb.append("######### OUTPUT TRUNCATED #########"+System.getProperty("line.separator"));
+				break;
+			}
+		}
+		
+		return sb.toString();
+	}
 	
 }

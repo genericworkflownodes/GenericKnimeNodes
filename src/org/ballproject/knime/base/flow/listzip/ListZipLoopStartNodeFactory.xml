@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="./default.png" type="LoopStart">
-    <name>ListZipLoopStart</name>
+<knimeNode icon="./loop_start_zip.png" type="LoopStart">
+    <name>ZipLoopStart</name>
     
-    <shortDescription>Merges MIME file cells into a table column</shortDescription>
+    <shortDescription>ZipLoopStart</shortDescription>
     
     <fullDescription>
-        <intro>ColumnMerger.</intro>
+        <intro>Gives in the i-th iteration step the i-th element of the MIMEFile list from k-th inpot port at the k-th output port.</intro>
     </fullDescription>
     
     <ports>
-     <inPort index="0" name="mimefile"> MIMEFile </inPort>
-     <inPort index="1" name="mimefile"> MIMEFile </inPort>
-     <inPort index="2" name="mimefile"> MIMEFile (optional) </inPort>
-     <inPort index="3" name="mimefile"> DataTable </inPort>
-     <outPort index="0" name="table"> list of MIMEFileCells </outPort>
-     <outPort index="1" name="table"> DataTable </outPort>   
-     <outPort index="2" name="table"> list of MIMEFileCells </outPort>
-     <outPort index="3" name="table"> DataTable </outPort>
+     <inPort index="0" name="mimefile"> MIMEFiles </inPort>
+     <inPort index="1" name="mimefile"> MIMEFiles (optional) </inPort>
+     <inPort index="2" name="mimefile"> MIMEFiles (optional) </inPort>
+     <inPort index="3" name="mimefile"> MIMEFiles (optional) </inPort>
+     <outPort index="0" name="table"> i-th MIMEFile from port 0 in i-th iteration </outPort>
+     <outPort index="1" name="table"> i-th MIMEFile from port 1 in i-th iteration  (optional)</outPort>   
+     <outPort index="2" name="table"> i-th MIMEFile from port 2 in i-th iteration  (optional)</outPort>
+     <outPort index="3" name="table"> i-th MIMEFile from port 3 in i-th iteration  (optional)</outPort>
     </ports>    
     <views>
-        <view index="0" name="data view">View loaded data</view>
+        <view index="0" name=""></view>
     </views>
 </knimeNode>

@@ -26,12 +26,12 @@ import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.treetabledialog.MimeTypeChooserDialog;
 import org.ballproject.knime.base.treetabledialog.ParameterDialog;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.port.PortObjectSpec;
 
 public class GenericKnimeNodeDialog extends NodeDialogPane
 {
@@ -78,7 +78,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane
 	}
 
 	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings, DataTableSpec[] specs) throws NotConfigurableException
+	protected void loadSettingsFrom(NodeSettingsRO settings, PortObjectSpec[] specs) throws NotConfigurableException
 	{
 		for(String key: this.config.getParameterKeys())
 		{

@@ -37,9 +37,9 @@ public class ConfigWrapper
 		init();
 	}
 	
-	private Node<Parameter<?>> root = new Node<Parameter<?>>(null,null,"root");
+	private ParameterNode root = new ParameterNode(null,null,"root");
 	
-	public Node<Parameter<?>> getRoot()
+	public ParameterNode getRoot()
 	{
 		return root;
 	}
@@ -65,12 +65,17 @@ public class ConfigWrapper
 	
 	private void init()
 	{
-		Map<String,Node<Parameter<?>>> key2node = new HashMap<String,Node<Parameter<?>>>();
+		Map<String,ParameterNode> key2node = new HashMap<String,ParameterNode>();
 		
 		for(String key: config.getParameterKeys())
 		{
 			List<String> prefixes = getPrefixes(key);
-			Node<Parameter<?>> last = root;
+			
+			// OpenMS/CADDSuite workaround for leading '1' NODE
+			if(prefixes.get(0).equals("1"))
+				prefixes.remove(0);
+			
+			ParameterNode last = root;
 			for(int i=0;i<prefixes.size()-1;i++)
 			{
 				String prefix = prefixes.get(i);
@@ -78,7 +83,7 @@ public class ConfigWrapper
 				if(!key2node.containsKey(prefix))
 				{
 					
-					Node<Parameter<?>> nn = new Node<Parameter<?>>(last, null, getSuffix(prefix));
+					ParameterNode nn = new ParameterNode(last, null, getSuffix(prefix));
 					last.addChild(nn);
 					last = nn;
 					key2node.put(prefix, last);
@@ -89,8 +94,8 @@ public class ConfigWrapper
 				}
 			}
 			
-			Parameter<?>       p = config.getParameter(key);
-			Node<Parameter<?>> n = new Node<Parameter<?>>(last, p, p.getKey());
+			Parameter<?>  p = config.getParameter(key);
+			ParameterNode n = new ParameterNode(last, p, p.getKey());
 			last.addChild(n);
 		}
 	}

@@ -19,10 +19,8 @@
 
 package org.ballproject.knime.base.io.exporter;
 
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NotConfigurableException;
+import javax.swing.JFileChooser;
+
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -48,7 +46,7 @@ public class MimeFileExporterNodeDialog extends DefaultNodeSettingsPane
 	protected MimeFileExporterNodeDialog()
 	{
 		super();
-		DialogComponentFileChooser dfc = new DialogComponentFileChooser(MimeFileExporterNodeDialog.createFileChooserModel(), "MimeFileExporterNodeDialog");
+		DialogComponentFileChooser dfc = new DialogComponentFileChooser(MimeFileExporterNodeDialog.createFileChooserModel(), "MimeFileExporterNodeDialog", JFileChooser.SAVE_DIALOG);
 		dfc.setBorderTitle("");
 		addDialogComponent(dfc);
 	}

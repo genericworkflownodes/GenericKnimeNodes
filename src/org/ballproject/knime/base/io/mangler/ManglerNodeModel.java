@@ -172,8 +172,8 @@ public class ManglerNodeModel extends NodeModel
 	private DataTableSpec getDataTableSpec() throws InvalidSettingsException
 	{
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-        
-        DataType      dt =  demangler.getSourceType();
+        // FIXME
+        DataType      dt =  null; //demangler.getSourceType();
 		allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  dt).createSpec();
         DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
 

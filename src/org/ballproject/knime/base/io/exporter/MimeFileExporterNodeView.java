@@ -27,7 +27,7 @@ import javax.swing.JTextArea;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeView</code> for the "MimeFileImporter" Node.
+ * <code>NodeView</code> for the "MimeFileExporter" Node.
  * 
  * 
  * @author roettig
@@ -43,7 +43,11 @@ public class MimeFileExporterNodeView extends NodeView<MimeFileExporterNodeModel
 	 */
 	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel)
 	{
-		super(nodeModel);		
+		super(nodeModel);
+		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
+		JScrollPane scrollpane = new JScrollPane(text);
+		text.setFont(new Font("Monospaced", Font.BOLD, 12));
+		setComponent(scrollpane);
 	}
 
 	/**

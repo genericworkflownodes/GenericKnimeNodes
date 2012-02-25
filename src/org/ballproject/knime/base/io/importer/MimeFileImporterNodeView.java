@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.io.viewer;
+package org.ballproject.knime.base.io.importer;
 
 import java.awt.Font;
 
@@ -32,7 +32,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
+public class MimeFileImporterNodeView extends NodeView<MimeFileImporterNodeModel>
 {
 
 	/**
@@ -41,7 +41,7 @@ public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected MimeFileViewerNodeView(final MimeFileViewerNodeModel nodeModel)
+	protected MimeFileImporterNodeView(final MimeFileImporterNodeModel nodeModel)
 	{
 		super(nodeModel);
 		
@@ -61,7 +61,7 @@ public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
-		MimeFileViewerNodeModel nodeModel = (MimeFileViewerNodeModel) getNodeModel();
+		MimeFileImporterNodeModel nodeModel = (MimeFileImporterNodeModel) getNodeModel();
 		assert nodeModel != null;
 
 		// be aware of a possibly not executed nodeModel! The data you retrieve

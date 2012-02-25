@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.knime.core.data.DataType;
+import org.knime.core.data.url.MIMEType;
 
 /**
  * The interface MIMEtypeRegistry defines methods needed to build a (recursive) database or registry of MIME types known
@@ -34,27 +35,17 @@ import org.knime.core.data.DataType;
 public interface MIMEtypeRegistry
 {
 	/**
-	 * returns the MIMEFileCell corresponding to a given filename.
-	 * 
-	 * @param filename name of the file
-	 * 
-	 * @return MIMEFileCell
-	 */
-	MIMEFileCell getCell(String filename);
-	
-	/**
 	 * returns MIMEtype of a given filename.
 	 * 
 	 * @param filename name of the file
 	 * 
 	 * @return MIMEtype
 	 */
-	MIMEtype getMIMEtype(String filename);
+	MIMEType getMIMEtype(String filename);
 	
-	void registerMIMEtype(MIMEtype mt);
+	void registerMIMEtype(MIMEType mt);
 	
-	List<Demangler> getDemangler(DataType type);
-	
+	List<Demangler> getDemangler(MIMEType type);
 	List<Demangler> getMangler(DataType type);
 	
 	void addDemangler(Demangler demangler);

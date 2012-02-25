@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
+import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
@@ -108,7 +109,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent
         }
         */
     	String[]  filenames = new String[files.length];
-    	MIMEtype[] mts      = new MIMEtype[files.length];
+    	MIMEType[] mts      = new MIMEType[files.length];
     	
     	int idx = 0;
     	
@@ -122,10 +123,10 @@ public class DialogComponentMultiFileChooser extends DialogComponent
     		idx++;
     	}
     	
-    	MIMEtype first = mts[0];
+    	MIMEType first = mts[0];
     	for(int i=1;i<mts.length;i++)
     	{
-    		if(!MIMEtype.equals(first, mts[i]))
+    		if(!first.equals(mts[i]))
     			throw new InvalidSettingsException("mixed set of MIMEtype files selected");
     	}
     	

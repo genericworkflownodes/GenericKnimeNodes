@@ -8,6 +8,7 @@ import org.knime.core.data.DataCell;
 import org.ballproject.knime.base.mime.*;
 import org.ballproject.knime.base.mime.demangler.*;
 import org.knime.core.data.DataType;
+import org.knime.core.data.url.MIMEType;
 import org.ballproject.knime.base.util.Helper;
 
 
@@ -15,7 +16,7 @@ public class MimeFileCellFactory
 {
 	private static MimeFileCellFactory inst;
 	
-	private List<MIMEtype> mimetypes = new ArrayList<MIMEtype>(); 
+	private List<MIMEType> mimetypes = new ArrayList<MIMEType>(); 
 	
 	public static MimeFileCellFactory getInstance()
 	{
@@ -29,7 +30,7 @@ public class MimeFileCellFactory
 		__MIMETYPES__
 	}
 	
-	public List<MIMEtype> getMimeTypes()
+	public List<MIMEType> getMimeTypes()
 	{
 		return mimetypes;
 	}

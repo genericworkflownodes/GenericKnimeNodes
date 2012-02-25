@@ -20,20 +20,28 @@
 package org.ballproject.knime.base.io.exporter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-//import java.util.NoSuchElementException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
-import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEFileDelegate;
-import org.ballproject.knime.base.port.*;
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.BufferedDataTable;
+import org.ballproject.knime.base.io.viewer.MimeFileViewerNodeModel;
+import org.ballproject.knime.base.util.Helper;
+
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-//import org.knime.core.node.workflow.LoopEndNode;
-//import org.knime.core.node.workflow.LoopStartNodeTerminator;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -44,12 +52,12 @@ import org.knime.core.node.NodeSettingsWO;
 
 
 /**
- * This is the model implementation of MimeFileImporter.
+ * This is the model implementation of MimeFileExporter.
  * 
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNode*/
+public class MimeFileExporterNodeModel extends NodeModel 
 {
 
 	// the logger instance
@@ -59,83 +67,60 @@ public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNod
 
 	private SettingsModelString  m_filename = MimeFileExporterNodeDialog.createFileChooserModel();
 	
+	private String data;
+	
+	public String getContent()
+	{
+		return data;
+	}
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected MimeFileExporterNodeModel()
 	{
-		super(1, 0);
+		super(new PortType[]{new PortType(MIMEURIPortObject.class)}, new PortType[]{});
 	}
-		
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec) throws Exception
-	{			
-		DataRow  row  = inData[0].iterator().next();
-		DataCell cell = row.getCell(0);
-		if( cell instanceof MimeMarker)
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
+	{
+		if(!(inSpecs[0] instanceof MIMEURIPortObjectSpec))
 		{
-			MIMEFileCell cell_ = (MIMEFileCell) cell;
-			
-			MimeMarker mrk = (MimeMarker) cell;
-			MIMEFileDelegate del = mrk.getDelegate();
-			if(!m_filename.getStringValue().toLowerCase().endsWith(mrk.getExtension().toLowerCase()))
-			{
-				throw new Exception("invalid extension given for filename. Must be "+mrk.getExtension());
-			}
-	
-			/*
-			if(isLooping())
-			{
-				int iter = getIterationIndex();
-				del.write(m_filename.getStringValue()+"."+iter);
-				
-				boolean terminateLoop =
-		                ((LoopStartNodeTerminator)this.getLoopStartNode())
-		                        .terminateLoop();
-		        if (terminateLoop) 
-		        {
-		        	//NOP
-		        }
-		        else
-		        {
-		        	continueLoop();
-		        }
-			}
-			else
-			{
-				del.write(m_filename.getStringValue());
-			}
-			*/
-			del.write(m_filename.getStringValue());
+			throw new InvalidSettingsException("no MIMEURIPortObject compatible port object at port 0");
 		}
-		return new BufferedDataTable[]{};
+		return new PortObjectSpec[]{};
 	}
 
-	/*
-	private boolean isLooping()
+	@Override
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
 	{
-		return (getLoopStartNode()!=null);
-	}
-	
-	private int getIterationIndex()
-	{
-		int ret = -1;
-		try
+		MIMEURIPortObject obj  = (MIMEURIPortObject) inObjects[0];
+		List<URIContent>  uris = obj.getURIContents();
+		
+		if(uris.size()==0)
 		{
-			ret = peekFlowVariableInt("currentIteration");
+			throw new Exception("there were no URIs in the supplied MIMEURIPortObject at port 0");
 		}
-		catch(NoSuchElementException e)
-		{
-			
-		}
-		return ret;
+		
+		String filename = m_filename.getStringValue();
+		
+		File in  = new File(uris.get(0).getURI());
+		File out = new File(filename);
+		
+		//if(!out.createNewFile()||!out.canWrite())
+		//	throw new Exception("choosen output file is not writable :"+filename);
+		
+		Helper.copyFile(in, out);
+		
+		data = MimeFileViewerNodeModel.readFileSummary(in, 50);
+		
+		return new PortObject[]{};
 	}
-	*/
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -145,17 +130,6 @@ public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNod
 		// TODO Code executed on reset.
 		// Models build during execute are cleared here.
 		// Also data handled in load/saveInternals will be erased here.
-	}
-	
-	
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException
-	{		
-		return new DataTableSpec[]{};
 	}
 
 	/**
@@ -191,6 +165,34 @@ public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNod
 	@Override
 	protected void loadInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
 	{
+		ZipFile zip = new ZipFile(new File(internDir,"loadeddata"));
+
+		@SuppressWarnings("unchecked")
+		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
+
+		int BUFFSIZE = 2048;
+		byte[] BUFFER = new byte[BUFFSIZE];
+
+		while(entries.hasMoreElements())
+		{
+			ZipEntry entry = (ZipEntry)entries.nextElement();
+
+			if(entry.getName().equals("rawdata.bin"))
+			{
+				int size = (int) entry.getSize();
+				byte[] data = new byte[size];
+				InputStream in = zip.getInputStream(entry);
+				int len;
+				int totlen=0;
+				while( (len=in.read(BUFFER, 0, BUFFSIZE))>=0 )
+				{
+					System.arraycopy(BUFFER, 0, data, totlen, len);
+					totlen+=len;
+				}
+				this.data = new String(data);
+			}
+		}
+		zip.close();
 	}
 
 	/**
@@ -198,8 +200,12 @@ public class MimeFileExporterNodeModel extends NodeModel /*implements LoopEndNod
 	 */
 	@Override
 	protected void saveInternals(final File internDir, final ExecutionMonitor exec) throws IOException, CanceledExecutionException
-	{	
+	{
+		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(new File(internDir,"loadeddata")));
+		ZipEntry entry = new ZipEntry("rawdata.bin");
+		out.putNextEntry(entry);
+		out.write(data.getBytes());
+		out.close(); 
 	}
-	
 	
 }

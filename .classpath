@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/ant-contrib.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
+	<classpathentry kind="lib" path="lib/org.knime.core.data.urltype.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

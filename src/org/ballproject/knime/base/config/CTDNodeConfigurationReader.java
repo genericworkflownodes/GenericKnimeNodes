@@ -190,7 +190,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 					}
 				}
 				else
-					throw new Exception("i/o item with missing attribute supported_formats detected");
+					throw new Exception("i/o item '"+elem.attributeValue("name")+"' with missing attribute supported_formats detected");
 			}
 			else
 			{
@@ -377,6 +377,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		if(tagset.contains("mandatory")||tagset.contains("required"))
 			ret.setIsOptional(false);
 		
+		if(tagset.contains("advanced"))
+			ret.setAdvanced(true);
+		
 		return ret;
 	}
 	
@@ -426,6 +429,9 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		
 		if(tagset.contains("mandatory")||tagset.contains("required"))
 			param.setIsOptional(false);
+
+		if(tagset.contains("advanced"))
+			param.setAdvanced(true);
 		
 		return param;
 	}
@@ -645,7 +651,12 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		Parameter<?> rets = null;
 
 		String[] toks = restrs.split(",");
-
+		
+		for(int i=0;i<toks.length;i++)
+		{
+			toks[i] = toks[i].trim();
+		}
+		
 		if(restrs.length()>0)
 		{
 			if( (toks[0].equals("true")&&toks[1].equals("false")) || (toks[0].equals("false")&&toks[1].equals("true")) )
@@ -672,7 +683,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		SAXParserFactory factory       = SAXParserFactory.newInstance();
 		SchemaFactory    schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		
-		factory.setSchema(schemaFactory.newSchema(new Source[] {new StreamSource(SchemaProvider.class.getResourceAsStream("TTD.xsd")), new StreamSource(SchemaProvider.class.getResourceAsStream("Param_1_3.xsd"))}));
+		factory.setSchema(schemaFactory.newSchema(new Source[] {new StreamSource(SchemaProvider.class.getResourceAsStream("CTD.xsd")), new StreamSource(SchemaProvider.class.getResourceAsStream("Param_1_3.xsd"))}));
 		
 		SAXParser parser = factory.newSAXParser();
 
@@ -688,7 +699,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		if(!errorHandler.isValid())
 		{
 			System.err.println(errorHandler.getErrorReport());
-			throw new Exception("TTD file is not valid !");
+			throw new Exception("CTD file is not valid !");
 		}
 		
 		readPorts();

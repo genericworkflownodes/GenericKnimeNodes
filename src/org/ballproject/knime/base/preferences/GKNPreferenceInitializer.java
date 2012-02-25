@@ -1,12 +1,15 @@
 package org.ballproject.knime.base.preferences;
 
 import org.ballproject.knime.GenericNodesPlugin;
+import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class GKNPreferenceInitializer extends AbstractPreferenceInitializer
 {
-	public static final String PREF_FILE_SIZE_LIMIT = "knime.gkn.filesizelimit";
+	public static final String PREF_FILE_STASH_LOCATION = "knime.gkn.filestashlocation";
+	public static final String PREF_PATHES = "knime.gkn.pathes";
+	public static final String PREF_DEBUG_MODE = "knime.gkn.debug";
 	
 	@Override
 	public void initializeDefaultPreferences()
@@ -15,7 +18,9 @@ public class GKNPreferenceInitializer extends AbstractPreferenceInitializer
         IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
 
         // set default values
-        store.setDefault(PREF_FILE_SIZE_LIMIT, 200000);
+        store.setDefault(PREF_FILE_STASH_LOCATION, FileStash.getInstance().getStashDirectory());
+        store.setDefault(PREF_PATHES,"");
+        store.setDefault(PREF_DEBUG_MODE,GenericNodesPlugin.isDebug());
 	}
 
 }
