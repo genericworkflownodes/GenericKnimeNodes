@@ -683,7 +683,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		SAXParserFactory factory       = SAXParserFactory.newInstance();
 		SchemaFactory    schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		
-		factory.setSchema(schemaFactory.newSchema(new Source[] {new StreamSource(SchemaProvider.class.getResourceAsStream("TTD.xsd")), new StreamSource(SchemaProvider.class.getResourceAsStream("Param_1_3.xsd"))}));
+		factory.setSchema(schemaFactory.newSchema(new Source[] {new StreamSource(SchemaProvider.class.getResourceAsStream("CTD.xsd")), new StreamSource(SchemaProvider.class.getResourceAsStream("Param_1_3.xsd"))}));
 		
 		SAXParser parser = factory.newSAXParser();
 
@@ -699,7 +699,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader
 		if(!errorHandler.isValid())
 		{
 			System.err.println(errorHandler.getErrorReport());
-			throw new Exception("TTD file is not valid !");
+			throw new Exception("CTD file is not valid !");
 		}
 		
 		readPorts();
