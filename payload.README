@@ -19,10 +19,9 @@ binaries_lnx_64.ini
 
 might look like :
 
-LD_LIBRARY_PATH=lib/
-DATA_PATH=data/
+LD_LIBRARY_PATH=${BASE}/lib/
+DATA_PATH=${BASE}/data/
  
-
 The corresponding binaries_lnx_64.zip content would look like this :
 
  bin/
