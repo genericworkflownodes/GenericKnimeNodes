@@ -34,7 +34,6 @@
 		<echo message="Debug is:  ${debug}"/>
 		
 		<mkdir dir="${temp.folder}/package"/>
-
 		<mkdir dir="${temp.folder}/package/META-INF"/>
 
 		<antcall target="buildbaseclasses"/>
@@ -55,9 +54,7 @@
 		<mkdir dir="${temp.folder}/package/icons"/>
 		
 		<copy file="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${temp.folder}/package/data"/>
-		
-		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>
-		
+		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>		
 		<copy file="data/GKN.png" todir="${temp.folder}/package/icons"/>
 		
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />
@@ -79,6 +76,7 @@
 				<include name="*.jar" />
 			</fileset>
 		</path>
+		
 		<javac srcdir="${src}" destdir="${temp.folder}/package" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
@@ -89,7 +87,6 @@
 		<propertyfile file="${temp.folder}/package/org/ballproject/knime/baseplugin.properties">
 			<entry  key="debug" value="${debug}"/>
 		</propertyfile>
-
 
 		<!-- copy factory-xmls and other stuff -->
 		<copy todir="${temp.folder}/package" failonerror="true" overwrite="true">
@@ -138,11 +135,9 @@
 	<target name="buildplugin" depends="prepare">
 
 		<property file="plugin.properties"/>
-
 		<property name="pluginsources" value="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 
-		<mkdir dir="${temp.folder}/pluginpackage"/>
-		
+		<mkdir dir="${temp.folder}/pluginpackage"/>		
 		<mkdir dir="${temp.folder}/pluginpackage/icons"/>
 	
 		<available property="iconfile.exists" file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/icons/logo.png"/>
@@ -154,7 +149,6 @@
 		<antcall target="buildpluginclasses"/>
 
 		<copy file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/plugin.xml" todir="${temp.folder}/pluginpackage"/>
-		
 		<copy file="data/PluginMANIFEST.MF" tofile="${temp.folder}/pluginpackage/META-INF/MANIFEST.MF"/>
 
 		<replace file="${temp.folder}/pluginpackage/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginpackage}" />
