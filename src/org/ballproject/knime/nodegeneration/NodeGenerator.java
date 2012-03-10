@@ -71,18 +71,6 @@ public class NodeGenerator {
 	private static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
-	private String packageName;
-	private String pluginname;
-
-	private File payloadDirectory;
-	private File descriptorDirectory;
-
-	private String nodeRepositoryRoot;
-
-	private Set<String> ext_tools = new HashSet<String>();
-
-	private Properties props;
-
 	public NodeGenerator(File pluginDir) throws IOException,
 			ExecutionException, DocumentException, DuplicateNodeNameException,
 			InvalidNodeNameException, CTDNodeConfigurationReaderException,
@@ -91,12 +79,12 @@ public class NodeGenerator {
 			throw new FileNotFoundException("Path " + pluginDir.getPath()
 					+ " is no valid directory.");
 
-		this.payloadDirectory = getPluginDirectory(pluginDir);
-		if (!this.payloadDirectory.isDirectory())
+		File payloadDirectory = getPluginDirectory(pluginDir);
+		if (!payloadDirectory.isDirectory())
 			throw new FileNotFoundException("Could not find payload directory "
-					+ this.payloadDirectory.getPath());
+					+ payloadDirectory.getPath());
 
-		this.descriptorDirectory = getDescriptorsDirectory(pluginDir);
+		File descriptorDirectory = getDescriptorsDirectory(pluginDir);
 		File executablesDirectory = getExecutablesDirectory(pluginDir);
 
 		File propertyFile = new File(pluginDir, PLUGIN_PROPERTIES);
@@ -111,35 +99,34 @@ public class NodeGenerator {
 			throw new IOException("Could not load property file", e);
 		}
 
-		this.packageName = getPackageName(props);
-		if (this.packageName == null || this.packageName.isEmpty())
+		String packageName = getPackageName(props);
+		if (packageName == null || packageName.isEmpty())
 			throw new InvalidParameterException("No package name was specified");
-		if (!isValidPackageName(this.packageName))
+		if (!isValidPackageName(packageName))
 			throw new InvalidParameterException("The given package name \""
-					+ this.packageName + "\" is invalid");
+					+ packageName + "\" is invalid");
 
-		this.pluginname = getPluginName(props, this.packageName);
-		if (this.packageName == null || this.packageName.isEmpty())
+		String pluginname = getPluginName(props, packageName);
+		if (packageName == null || packageName.isEmpty())
 			throw new InvalidParameterException("No plugin name was specified");
-		if (!isPluginNameValid(this.pluginname))
+		if (!isPluginNameValid(pluginname))
 			throw new InvalidParameterException("The package name \""
-					+ this.pluginname
+					+ pluginname
 					+ "\" must only contain alpha numeric characters");
 
 		// the root node where to attach the generated nodes
-		this.nodeRepositoryRoot = getNodeRepositoryRoot(props);
-		if (this.nodeRepositoryRoot == null
-				|| this.nodeRepositoryRoot.isEmpty())
+		String nodeRepositoryRoot = getNodeRepositoryRoot(props);
+		if (nodeRepositoryRoot == null || nodeRepositoryRoot.isEmpty())
 			throw new InvalidParameterException(
 					"No node repository root defined");
 		// TODO: validation
 
-		if (this.descriptorDirectory.isDirectory()) {
+		if (descriptorDirectory.isDirectory()) {
 			if (executablesDirectory.isDirectory()) {
 				logger.log(
 						Level.WARNING,
 						"Both directories \""
-								+ this.descriptorDirectory.getPath()
+								+ descriptorDirectory.getPath()
 								+ "\" and \""
 								+ executablesDirectory
 								+ "\" exists. The latter will be ignored and the provided *.ctd files will be used.");
@@ -149,11 +136,11 @@ public class NodeGenerator {
 		} else {
 			if (!executablesDirectory.isDirectory())
 				throw new FileNotFoundException("Neither the directory \""
-						+ this.descriptorDirectory.getPath() + "\" nor \""
+						+ descriptorDirectory.getPath() + "\" nor \""
 						+ executablesDirectory + "\" exists.");
 
-			this.descriptorDirectory = generateDescriptors(
-					executablesDirectory, getCtdWriteSwitch(props));
+			descriptorDirectory = generateDescriptors(executablesDirectory,
+					getCtdWriteSwitch(props));
 		}
 
 		// e.g. /tmp/327
@@ -164,7 +151,7 @@ public class NodeGenerator {
 
 		// e.g. /tmp/327/foo.bar
 		File destinationFQNDirectory = createPackageDirectory(
-				destinationSourceDirectory, this.packageName);
+				destinationSourceDirectory, packageName);
 
 		// e.g. /tmp/327/foo.bar/knime/nodes
 		File destinationFQNNodeDirectory = new File(destinationFQNDirectory,
@@ -176,7 +163,7 @@ public class NodeGenerator {
 
 		try {
 			installMimeTypes(pluginXML, destinationFQNNodeDirectory, new File(
-					this.descriptorDirectory, "mimetypes.xml"), this.pluginname);
+					descriptorDirectory, "mimetypes.xml"), pluginname);
 		} catch (JaxenException e) {
 			throw new DocumentException(e);
 		}
@@ -184,17 +171,17 @@ public class NodeGenerator {
 		Set<String> node_names = new HashSet<String>();
 		Set<String> ext_tools = new HashSet<String>();
 		processDescriptors(node_names, ext_tools, pluginXML,
-				this.descriptorDirectory, this.nodeRepositoryRoot,
-				this.pluginname, destinationFQNNodeDirectory, this.packageName);
+				descriptorDirectory, nodeRepositoryRoot, pluginname,
+				destinationFQNNodeDirectory, packageName);
 
 		// TODO
 		// this.installIcon();
 
 		fillProperties(props, destinationFQNDirectory);
 
-		post(pluginXML, destinationPluginXML, this.packageName,
+		post(pluginXML, destinationPluginXML, packageName,
 				destinationFQNDirectory, destinationFQNNodeDirectory,
-				this.payloadDirectory, node_names, ext_tools);
+				payloadDirectory, node_names, ext_tools);
 
 	}
 
