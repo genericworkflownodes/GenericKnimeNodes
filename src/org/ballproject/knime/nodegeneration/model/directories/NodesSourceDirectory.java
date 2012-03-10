@@ -4,14 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.nodegeneration.model.Directory;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.source.MimeTypesFile;
 import org.ballproject.knime.nodegeneration.model.directories.source.PayloadDirectory;
+import org.ballproject.knime.nodegeneration.model.mime.MimeType;
+import org.dom4j.DocumentException;
+import org.jaxen.JaxenException;
 
 public class NodesSourceDirectory extends Directory {
 
@@ -23,9 +27,10 @@ public class NodesSourceDirectory extends Directory {
 	private ExecutablesDirectory executablesDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
 	private Properties properties = null;
+	private MimeTypesFile mimeTypesFile;
 
-	public NodesSourceDirectory(File nodeSourceDirectory)
-			throws FileNotFoundException {
+	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
+			DocumentException {
 		super(nodeSourceDirectory);
 
 		try {
@@ -59,7 +64,15 @@ public class NodesSourceDirectory extends Directory {
 			throw new FileNotFoundException("Could not find property file "
 					+ propertyFile.getPath());
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Could not load property file", e);
+			throw new IOException("Could not load property file", e);
+		}
+
+		File mimeTypeFile = new File(descriptorsDirectory, "mimetypes.xml");
+		try {
+			this.mimeTypesFile = new MimeTypesFile(mimeTypeFile);
+		} catch (JaxenException e) {
+			throw new IOException("Error reading MIME types from "
+					+ mimeTypeFile.getPath());
 		}
 	}
 
@@ -77,5 +90,9 @@ public class NodesSourceDirectory extends Directory {
 
 	public Properties getProperties() {
 		return properties;
+	}
+
+	public List<MimeType> getMimeTypes() {
+		return this.mimeTypesFile.getMimeTypes();
 	}
 }

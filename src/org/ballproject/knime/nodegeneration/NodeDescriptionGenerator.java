@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
-import org.ballproject.knime.nodegeneration.model.directories.build.NodeDescriptorsBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import org.eclipse.core.commands.ExecutionException;
 
@@ -70,15 +69,12 @@ public class NodeDescriptionGenerator {
 	 * 
 	 * @param executablesDirectory
 	 * @param ctdWriteSwitch
-	 * @return the temporary directory in which the ctd files were created
 	 * @throws IOException
 	 * @throws ExecutionException
 	 */
-	public static File generateDescriptors(
+	public static void generateDescriptors(
 			ExecutablesDirectory executablesDirectory, String ctdWriteSwitch)
 			throws IOException, ExecutionException {
-
-		NodeDescriptorsBuildDirectory buildDir = new NodeDescriptorsBuildDirectory();
 
 		String[] exes = executablesDirectory.getBin().list();
 
@@ -113,6 +109,5 @@ public class NodeDescriptionGenerator {
 						e);
 			}
 		}
-		return buildDir;
 	}
 }

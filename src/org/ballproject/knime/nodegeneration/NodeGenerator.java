@@ -27,10 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -44,8 +42,6 @@ import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
-import org.ballproject.knime.base.schemas.SchemaProvider;
-import org.ballproject.knime.base.schemas.SchemaValidator;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
@@ -54,17 +50,14 @@ import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
 import org.ballproject.knime.nodegeneration.model.directories.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
+import org.ballproject.knime.nodegeneration.model.mime.MimeType;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.dom4j.dom.DOMDocumentFactory;
-import org.dom4j.io.SAXReader;
 import org.eclipse.core.commands.ExecutionException;
 import org.jaxen.JaxenException;
-import org.jaxen.SimpleNamespaceContext;
-import org.jaxen.dom4j.Dom4jXPath;
 
 public class NodeGenerator {
 	private static final String PLUGIN_PROPERTIES = "plugin.properties";
@@ -93,11 +86,8 @@ public class NodeGenerator {
 		Document pluginXML = PluginXmlTemplate.getFromTemplate();
 
 		try {
-			installMimeTypes(
-					pluginXML,
-					this.buildDir.getKnimeNodesDirectory(),
-					new File(srcDir.getDescriptorsDirectory(), "mimetypes.xml"),
-					meta.getName());
+			installMimeTypes(pluginXML, this.buildDir.getKnimeNodesDirectory(),
+					srcDir.getMimeTypes(), meta.getName());
 		} catch (JaxenException e) {
 			throw new DocumentException(e);
 		}
@@ -196,24 +186,9 @@ public class NodeGenerator {
 	 * @throws JaxenException
 	 */
 	private static void installMimeTypes(Document pluginXML,
-			File destinationFQNNodeDirectory, File mimetypesXML,
+			File destinationFQNNodeDirectory, List<MimeType> mimeTypes,
 			String packageName) throws DocumentException, IOException,
 			JaxenException {
-		if (!mimetypesXML.isFile() || !mimetypesXML.canRead())
-			throw new IOException("Invalid MIME types file: "
-					+ mimetypesXML.getPath());
-
-		SchemaValidator val = new SchemaValidator();
-		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
-		if (!val.validates(mimetypesXML.getPath()))
-			throw new DocumentException("Supplied \"" + mimetypesXML.getPath()
-					+ "\" does not conform to schema " + val.getErrorReport());
-
-		DOMDocumentFactory factory = new DOMDocumentFactory();
-		SAXReader reader = new SAXReader();
-		reader.setDocumentFactory(factory);
-
-		Document doc = reader.read(new FileInputStream(mimetypesXML));
 
 		InputStream template = TemplateResources.class
 				.getResourceAsStream("MimeFileCellFactory.template");
@@ -221,46 +196,21 @@ public class NodeGenerator {
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 
-		String mimetypes_template = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
+		String mimeTypeAddTemplate = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
 		String mimetypes_code = "";
 
 		Set<String> mimetypes = new HashSet<String>();
 
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("bp", "http://www.ball-project.org/mimetypes"); // TODO
+		for (MimeType mimeType : mimeTypes) {
+			logger.info("MIME Type read: " + mimeType.getName());
 
-		Dom4jXPath xpath = new Dom4jXPath("//bp:mimetype");
-		xpath.setNamespaceContext(new SimpleNamespaceContext(map));
-
-		@SuppressWarnings("unchecked")
-		List<Node> nodes = xpath.selectNodes(doc);
-
-		for (Node node : nodes) {
-			Element elem = (Element) node;
-
-			String name = elem.valueOf("@name");
-			String ext = elem.valueOf("@ext");
-			// String descr = elem.valueOf("@description");
-			// String demangler = elem.valueOf("@demangler");
-			String binary = elem.valueOf("@binary");
-			binary = (binary.equals("") ? "false" : binary);
-
-			logger.info("read mime type " + name);
-
-			if (mimetypes.contains(name)) {
+			if (mimetypes.contains(mimeType.getName())) {
 				logger.log(Level.WARNING, "skipping duplicate mime type "
-						+ name);
+						+ mimeType.getName());
 			}
 
-			// createMimeTypeLoader(name, ext);
-
-			// String clazz = createMimeCell(name, ext);
-			// createMimeValue(name);
-
-			// ext2clazz.put(ext.toLowerCase(),clazz);
-
-			String s4 = mimetypes_template
-					.replace("__EXT__", ext.toLowerCase());
+			String s4 = mimeTypeAddTemplate.replace("__EXT__", mimeType.getExt()
+					.toLowerCase());
 			mimetypes_code += s4;
 		}
 
