@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,6 +52,9 @@ import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
+import org.ballproject.knime.nodegeneration.model.nodes.KNIMEPluginMeta;
+import org.ballproject.knime.nodegeneration.model.nodes.NodesBuildDirectory;
+import org.ballproject.knime.nodegeneration.model.nodes.NodesSourceDirectory;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -73,115 +75,59 @@ public class NodeGenerator {
 	private static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
-	private File pluginDirectory;
-	private Properties props;
-
-	private File destinationDirectory;
+	private NodesSourceDirectory srcDir;
+	private KNIMEPluginMeta meta;
+	private NodesBuildDirectory buildDir;
 
 	public NodeGenerator(File pluginDir) throws IOException,
 			ExecutionException, DocumentException, DuplicateNodeNameException,
 			InvalidNodeNameException, CTDNodeConfigurationReaderException,
 			UnknownMimeTypeException {
-		if (!pluginDir.isDirectory())
-			throw new FileNotFoundException("Path " + pluginDir.getPath()
-					+ " is no valid directory.");
-		this.pluginDirectory = pluginDir;
 
-		File payloadDirectory = getPluginDirectory(pluginDir);
-		if (!payloadDirectory.isDirectory())
-			throw new FileNotFoundException("Could not find payload directory "
-					+ payloadDirectory.getPath());
+		srcDir = new NodesSourceDirectory(pluginDir);
+		meta = new KNIMEPluginMeta(srcDir.getProperties());
 
-		File descriptorDirectory = getDescriptorsDirectory(pluginDir);
-		File executablesDirectory = getExecutablesDirectory(pluginDir);
-
-		File propertyFile = new File(pluginDir, PLUGIN_PROPERTIES);
-
-		this.props = new Properties();
-		try {
-			props.load(new FileInputStream(propertyFile));
-		} catch (FileNotFoundException e) {
-			throw new FileNotFoundException("Could not find property file "
-					+ propertyFile.getPath());
-		} catch (IOException e) {
-			throw new IOException("Could not load property file", e);
-		}
-
-		String packageName = getPackageName(props);
-		if (packageName == null || packageName.isEmpty())
-			throw new InvalidParameterException("No package name was specified");
-		if (!isValidPackageName(packageName))
-			throw new InvalidParameterException("The given package name \""
-					+ packageName + "\" is invalid");
-
-		String pluginname = getPluginName(props, packageName);
-		if (packageName == null || packageName.isEmpty())
-			throw new InvalidParameterException("No plugin name was specified");
-		if (!isPluginNameValid(pluginname))
-			throw new InvalidParameterException("The package name \""
-					+ pluginname
-					+ "\" must only contain alpha numeric characters");
-
-		String pluginversion = getPluginVersion(props);
-		if (pluginversion == null || pluginversion.isEmpty())
-			throw new InvalidParameterException(
-					"No plugin version was specified");
-		// TODO validy check
-
-		// the root node where to attach the generated nodes
-		String nodeRepositoryRoot = getNodeRepositoryRoot(props);
-		if (nodeRepositoryRoot == null || nodeRepositoryRoot.isEmpty())
-			throw new InvalidParameterException(
-					"No node repository root defined");
-		// TODO: validation
-
-		if (descriptorDirectory.isDirectory()) {
-			if (executablesDirectory.isDirectory()) {
+		boolean dynamicCTDs = false;
+		if (srcDir.getDescriptorsDirectory() != null) {
+			if (srcDir.getExecutablesDirectory() != null) {
 				logger.log(
 						Level.WARNING,
 						"Both directories \""
-								+ descriptorDirectory.getPath()
+								+ srcDir
+										.getDescriptorsDirectory().getPath()
 								+ "\" and \""
-								+ executablesDirectory
+								+ srcDir
+										.getExecutablesDirectory()
 								+ "\" exists. The latter will be ignored and the provided *.ctd files will be used.");
 			} else {
-
+				dynamicCTDs = false;
 			}
 		} else {
-			if (!executablesDirectory.isDirectory())
+			if (srcDir.getExecutablesDirectory() == null)
 				throw new FileNotFoundException("Neither the directory \""
-						+ descriptorDirectory.getPath() + "\" nor \""
-						+ executablesDirectory + "\" exists.");
+						+ srcDir.getDescriptorsDirectory()
+								.getPath()
+						+ "\" nor \""
+						+ srcDir.getExecutablesDirectory()
+								.getPath() + "\" exists.");
 
-			descriptorDirectory = generateDescriptors(executablesDirectory,
-					getCtdWriteSwitch(props));
+			generateDescriptors(srcDir.getExecutablesDirectory(),
+					getCtdWriteSwitch(srcDir.getProperties()));
+			dynamicCTDs = true;
 		}
 
-		// e.g. /tmp/327
-		this.destinationDirectory = this.getDestinationDirectory();
-
-		// e.g. /tmp/327/src
-		File destinationSourceDirectory = new File(destinationDirectory, "src");
-
-		// e.g. /tmp/327/foo.bar
-		File destinationFQNDirectory = createPackageDirectory(
-				destinationSourceDirectory, packageName);
-
-		// e.g. /tmp/327/foo.bar/knime/nodes
-		File destinationFQNNodeDirectory = new File(destinationFQNDirectory,
-				"knime" + File.separator + "nodes");
+		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 
 		// GO
-		logger.info("Creating KNIME plugin sources in: "
-				+ destinationDirectory.getPath());
+		logger.info("Creating KNIME plugin sources in: " + buildDir.getPath());
 
-		File destinationPluginXML = new File(destinationDirectory, "plugin.xml");
-		Document pluginXML = preparePluginXML(destinationDirectory,
-				destinationPluginXML);
+		File destinationPluginXML = new File(buildDir, "plugin.xml");
+		Document pluginXML = preparePluginXML(buildDir, destinationPluginXML);
 
 		try {
-			installMimeTypes(pluginXML, destinationFQNNodeDirectory, new File(
-					descriptorDirectory, "mimetypes.xml"), pluginname);
+			installMimeTypes(pluginXML, this.buildDir.getKnimeNodesDirectory(),
+					new File(srcDir.getDescriptorsDirectory(),
+							"mimetypes.xml"), meta.getName());
 		} catch (JaxenException e) {
 			throw new DocumentException(e);
 		}
@@ -189,153 +135,41 @@ public class NodeGenerator {
 		Set<String> node_names = new HashSet<String>();
 		Set<String> ext_tools = new HashSet<String>();
 		processDescriptors(node_names, ext_tools, pluginXML,
-				descriptorDirectory, nodeRepositoryRoot, pluginname,
-				destinationFQNNodeDirectory, packageName);
+				(dynamicCTDs) ? srcDir.getExecutablesDirectory()
+						: srcDir.getDescriptorsDirectory(),
+				meta.getPackageRoot(), meta.getName(),
+				this.buildDir.getKnimeNodesDirectory(), meta.getPackageRoot());
 
 		// TODO
 		// this.installIcon();
 
-		fillProperties(props, destinationFQNDirectory);
+		fillProperties(srcDir.getProperties(),
+				this.buildDir.getPackageRootDirectory());
 
-		post(pluginXML, destinationPluginXML, packageName,
-				destinationFQNDirectory, destinationFQNNodeDirectory,
-				payloadDirectory, node_names, ext_tools);
+		post(pluginXML, destinationPluginXML, meta.getPackageRoot(),
+				this.buildDir.getPackageRootDirectory(),
+				this.buildDir.getKnimeNodesDirectory(),
+				srcDir.getPayloadDirectory(), node_names,
+				ext_tools);
 
-		createManifest(new File(destinationDirectory, "META-INF"
-				+ File.separator + "MANIFEST.MF"), pluginname, pluginversion);
-
-		File jar = new File(pluginDir.getParent(), pluginname + "_"
-				+ pluginversion + ".jar");
-		logger.info("Zipping KNIME plugin to: " + jar);
-		Utils.zipDirectory(destinationDirectory, jar);
+		createManifest(new File(buildDir, "META-INF" + File.separator
+				+ "MANIFEST.MF"), meta.getName(), meta.getVersion());
 	}
 
 	public File getPluginDirectory() {
-		return this.pluginDirectory;
+		return this.srcDir;
 	}
 
 	public File getPreparedPluginDirectory() {
-		return this.destinationDirectory;
+		return this.buildDir;
 	}
 
 	public String getPluginName() {
-		return getPluginName(props, getPackageName(this.props));
+		return meta.getName();
 	}
 
 	public String getPluginVersion() {
-		return getPluginVersion(this.props);
-	}
-
-	/**
-	 * Returns the directory containing the payload which consists of binaries
-	 * for each platform and an optional ini-file.
-	 * 
-	 * @param rootDirectory
-	 * @return
-	 */
-	private static File getPluginDirectory(File rootDirectory) {
-		File payloadDirectory = new File(rootDirectory, "payload");
-		return payloadDirectory;
-	}
-
-	/**
-	 * Returns the package name the generated plugin uses. (e.g.
-	 * org.roettig.foo).
-	 * 
-	 * @param props
-	 * @return
-	 */
-	private static String getPackageName(Properties props) {
-		return props.getProperty("pluginpackage");
-	}
-
-	/**
-	 * Checks whether a given package name is valid.
-	 * 
-	 * @param packageName
-	 * @param id
-	 * @return true if package name is valid; false otherwise
-	 */
-	public static boolean isValidPackageName(String packageName) {
-		return packageName != null
-				&& packageName
-						.matches("^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$");
-	}
-
-	/**
-	 * Returns the plugin name.
-	 * <p>
-	 * If no configuration could be found, the name is created based on the
-	 * given package name. e.g. org.roettig.foo will result in foo
-	 * 
-	 * @param packageName
-	 * @return
-	 */
-	public static String getPluginName(Properties props, String packageName) {
-		String pluginname = props.getProperty("pluginname");
-		if (pluginname != null && !pluginname.isEmpty())
-			return pluginname;
-
-		int idx = packageName.lastIndexOf(".");
-		if (idx == -1)
-			return packageName;
-		return packageName.substring(idx + 1);
-	}
-
-	/**
-	 * Returns the plugin version.
-	 * 
-	 * @param packageName
-	 * @return
-	 */
-	public static String getPluginVersion(Properties props) {
-		return props.getProperty("pluginversion");
-	}
-
-	/**
-	 * Checks if the plugin name is valid.
-	 * 
-	 * @param obj
-	 * @param id
-	 */
-	public static boolean isPluginNameValid(String pluginName) {
-		return pluginName != null && pluginName.matches("^\\w+$");
-	}
-
-	/**
-	 * Returns the path where the generated KNIME nodes will reside. e.g.
-	 * <code>community/my_nodes</code>
-	 * 
-	 * @param props
-	 * @return
-	 */
-	private static String getNodeRepositoryRoot(Properties props) {
-		return props.getProperty("package_root");
-	}
-
-	/**
-	 * Returns the directory where the Common Tool Descriptors (*.ctd) reside.
-	 * 
-	 * @param props
-	 * @return
-	 */
-	private static File getDescriptorsDirectory(File rootDirectory) {
-		File descriptorsDirectory = new File(rootDirectory, "descriptors");
-		return descriptorsDirectory;
-	}
-
-	/**
-	 * Returns the directory where the tools to generate KNIME nodes from
-	 * reside.
-	 * <p>
-	 * Notice: The tools must support the creation of ctd-files.
-	 * 
-	 * @param props
-	 * @return
-	 */
-	private static File getExecutablesDirectory(File rootDirectory) {
-		File exectuablesDirectory = new File(rootDirectory, "executables");
-		return exectuablesDirectory;
+		return meta.getVersion();
 	}
 
 	/**
@@ -406,36 +240,6 @@ public class NodeGenerator {
 	 */
 	private static String getCtdWriteSwitch(Properties props) {
 		return props.getProperty("parswitch", "-write_par");
-	}
-
-	/**
-	 * Returns the {@link File directory} where to put the plugin source in.
-	 * 
-	 * @return
-	 */
-	private File getDestinationDirectory() {
-		return new File(System.getProperty("java.io.tmpdir"),
-				"GKN-pluginsource-" + Long.toString(System.nanoTime()));
-	}
-
-	/**
-	 * Creates a directory structure representing a package name.
-	 * <p>
-	 * e.g. <code>foo.bar</code> would result in the directory
-	 * <code>foo/bar</code>.
-	 * 
-	 * @param directory
-	 *            where to create the directory structure in
-	 * @param packageName
-	 * @return
-	 */
-	private static File createPackageDirectory(File directory,
-			String packageName) {
-		File packageDirectory = new File(directory, packageName.replace(".",
-				"/"));
-		Helper.deleteDirectory(packageDirectory);
-		packageDirectory.mkdirs();
-		return packageDirectory;
 	}
 
 	public static void fillProperties(Properties props,
