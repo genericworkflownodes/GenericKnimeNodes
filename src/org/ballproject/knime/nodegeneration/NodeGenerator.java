@@ -145,6 +145,7 @@ public class NodeGenerator {
 
 		// e.g. /tmp/327
 		File destinationDirectory = this.getDestinationDirectory();
+		System.out.println(destinationDirectory.getPath());
 
 		// e.g. /tmp/327/src
 		File destinationSourceDirectory = new File(destinationDirectory, "src");
