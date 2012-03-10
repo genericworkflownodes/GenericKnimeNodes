@@ -21,7 +21,6 @@ package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,10 +47,10 @@ import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SchemaValidator;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
+import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
 import org.ballproject.knime.nodegeneration.model.directories.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
@@ -61,9 +60,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 import org.eclipse.core.commands.ExecutionException;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
@@ -72,7 +69,7 @@ import org.jaxen.dom4j.Dom4jXPath;
 public class NodeGenerator {
 	private static final String PLUGIN_PROPERTIES = "plugin.properties";
 
-	private static Logger logger = Logger.getLogger(NodeGenerator.class
+	static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
 	private NodesSourceDirectory srcDir;
@@ -86,59 +83,35 @@ public class NodeGenerator {
 
 		srcDir = new NodesSourceDirectory(pluginDir);
 		meta = new KNIMEPluginMeta(srcDir.getProperties());
-
-		boolean dynamicCTDs = false;
-		if (srcDir.getDescriptorsDirectory() != null) {
-			if (srcDir.getExecutablesDirectory() != null) {
-				logger.log(
-						Level.WARNING,
-						"Both directories \""
-								+ srcDir
-										.getDescriptorsDirectory().getPath()
-								+ "\" and \""
-								+ srcDir
-										.getExecutablesDirectory()
-								+ "\" exists. The latter will be ignored and the provided *.ctd files will be used.");
-			} else {
-				dynamicCTDs = false;
-			}
-		} else {
-			if (srcDir.getExecutablesDirectory() == null)
-				throw new FileNotFoundException("Neither the directory \""
-						+ srcDir.getDescriptorsDirectory()
-								.getPath()
-						+ "\" nor \""
-						+ srcDir.getExecutablesDirectory()
-								.getPath() + "\" exists.");
-
-			generateDescriptors(srcDir.getExecutablesDirectory(),
-					getCtdWriteSwitch(srcDir.getProperties()));
-			dynamicCTDs = true;
-		}
-
+		boolean dynamicCTDs = NodeDescriptionGenerator
+				.createCTDsIfNecessary(srcDir);
 		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 
 		// GO
 		logger.info("Creating KNIME plugin sources in: " + buildDir.getPath());
 
-		File destinationPluginXML = new File(buildDir, "plugin.xml");
-		Document pluginXML = preparePluginXML(buildDir, destinationPluginXML);
+		Document pluginXML = PluginXmlTemplate.getFromTemplate();
 
 		try {
-			installMimeTypes(pluginXML, this.buildDir.getKnimeNodesDirectory(),
-					new File(srcDir.getDescriptorsDirectory(),
-							"mimetypes.xml"), meta.getName());
+			installMimeTypes(
+					pluginXML,
+					this.buildDir.getKnimeNodesDirectory(),
+					new File(srcDir.getDescriptorsDirectory(), "mimetypes.xml"),
+					meta.getName());
 		} catch (JaxenException e) {
 			throw new DocumentException(e);
 		}
 
 		Set<String> node_names = new HashSet<String>();
 		Set<String> ext_tools = new HashSet<String>();
-		processDescriptors(node_names, ext_tools, pluginXML,
-				(dynamicCTDs) ? srcDir.getExecutablesDirectory()
-						: srcDir.getDescriptorsDirectory(),
-				meta.getPackageRoot(), meta.getName(),
-				this.buildDir.getKnimeNodesDirectory(), meta.getPackageRoot());
+		processDescriptors(
+				node_names,
+				ext_tools,
+				pluginXML,
+				(dynamicCTDs) ? srcDir.getExecutablesDirectory() : srcDir
+						.getDescriptorsDirectory(), meta.getPackageRoot(),
+				meta.getName(), this.buildDir.getKnimeNodesDirectory(),
+				meta.getPackageRoot());
 
 		// TODO
 		// this.installIcon();
@@ -146,11 +119,11 @@ public class NodeGenerator {
 		fillProperties(srcDir.getProperties(),
 				this.buildDir.getPackageRootDirectory());
 
-		post(pluginXML, destinationPluginXML, meta.getPackageRoot(),
-				this.buildDir.getPackageRootDirectory(),
+		post(meta.getPackageRoot(), this.buildDir.getPackageRootDirectory(),
 				this.buildDir.getKnimeNodesDirectory(),
-				srcDir.getPayloadDirectory(), node_names,
-				ext_tools);
+				srcDir.getPayloadDirectory(), node_names, ext_tools);
+
+		PluginXmlTemplate.saveTo(pluginXML, buildDir.getPluginXml());
 
 		createManifest(new File(buildDir, "META-INF" + File.separator
 				+ "MANIFEST.MF"), meta.getName(), meta.getVersion());
@@ -170,76 +143,6 @@ public class NodeGenerator {
 
 	public String getPluginVersion() {
 		return meta.getVersion();
-	}
-
-	/**
-	 * Creates a ctd file for each binary found in the given {@link File
-	 * Directory} in a temporary directory by calling each binary with the given
-	 * switch (e.g. <code>-ctd-write</code>).
-	 * 
-	 * @param executablesDirectory
-	 * @param ctdWriteSwitch
-	 * @return the temporary directory in which the ctd files were created
-	 * @throws IOException
-	 * @throws ExecutionException
-	 */
-	public static File generateDescriptors(File executablesDirectory,
-			String ctdWriteSwitch) throws IOException, ExecutionException {
-
-		File tempDirectory = new File(System.getProperty("java.io.tmpdir"),
-				"GKN-descriptors-" + Long.toString(System.nanoTime()));
-		tempDirectory.mkdirs();
-		tempDirectory.deleteOnExit();
-
-		File binDirectory = new File(executablesDirectory, "bin");
-		if (!binDirectory.isDirectory())
-			throw new FileNotFoundException("The bin directory "
-					+ binDirectory.getPath() + " is not valid.");
-
-		String[] exes = new File(executablesDirectory, "bin").list();
-
-		if (exes.length == 0)
-			throw new FileNotFoundException(
-					"Could not find any executables in " + executablesDirectory);
-
-		for (String exe : exes) {
-			ToolRunner tr = new ToolRunner();
-			File outfile = File.createTempFile("CTD", "");
-			outfile.deleteOnExit();
-
-			// FIXME: this is so *nix style, wont hurt on windows
-			// but probably wont help either
-			tr.addEnvironmentEntry("LD_LIBRARY_PATH", new File(
-					executablesDirectory, "lib").getAbsolutePath());
-
-			String cmd = binDirectory.getAbsolutePath() + File.separator + exe
-					+ " " + ctdWriteSwitch + " " + outfile.getAbsolutePath();
-			try {
-				tr.run(cmd);
-
-				if (tr.getReturnCode() != 0) {
-					Helper.copyFile(outfile,
-							new File(tempDirectory, outfile.getName()));
-				} else
-					throw new ExecutionException("Tool \"" + cmd
-							+ "\" returned with " + tr.getReturnCode());
-			} catch (Exception e) {
-				throw new ExecutionException("Could not execute tool: " + cmd,
-						e);
-			}
-		}
-
-		return tempDirectory;
-	}
-
-	/**
-	 * Returns the switch needed to make an executable output a ctd-file.
-	 * 
-	 * @param props
-	 * @return
-	 */
-	private static String getCtdWriteSwitch(Properties props) {
-		return props.getProperty("parswitch", "-write_par");
 	}
 
 	public static void fillProperties(Properties props,
@@ -268,27 +171,6 @@ public class NodeGenerator {
 	// }
 	//
 	// }
-
-	/**
-	 * Prepares a new copy of a template plugin.xml in the given {@link File
-	 * directory} and returns its {@link Document} representation.
-	 * 
-	 * @param destinationDirectory
-	 * @return
-	 * @throws DocumentException
-	 * @throws IOException
-	 */
-	public static Document preparePluginXML(File destinationDirectory,
-			File destinationPluginXML) throws DocumentException, IOException {
-		Helper.copyStream(TemplateResources.class
-				.getResourceAsStream("plugin.xml.template"),
-				destinationPluginXML);
-
-		SAXReader reader = new SAXReader();
-		reader.setDocumentFactory(new DOMDocumentFactory());
-
-		return reader.read(new FileInputStream(destinationPluginXML));
-	}
 
 	public static void createManifest(File destinationManifest,
 			String pluginname, String pluginversion) throws IOException {
@@ -770,16 +652,9 @@ public class NodeGenerator {
 				.addAttribute("id", clazz).addAttribute("category-path", path);
 	}
 
-	public static void post(Document pluginXML, File destinationPluginXML,
-			String packageName, File destinationFQNDirectory,
+	public static void post(String packageName, File destinationFQNDirectory,
 			File destinationFQNNodeDirectory, File payloadDirectory,
 			Set<String> node_names, Set<String> ext_tools) throws IOException {
-		OutputFormat format = OutputFormat.createPrettyPrint();
-
-		XMLWriter writer = new XMLWriter(new FileWriter(destinationPluginXML),
-				format);
-		writer.write(pluginXML);
-		writer.close();
 
 		// prepare binary resources
 		InputStream template = TemplateResources.class
