@@ -19,13 +19,14 @@
 
 package org.ballproject.knime.nodegeneration;
 
-
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,12 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
+import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
+import org.ballproject.knime.base.config.NodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
@@ -47,8 +48,10 @@ import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SchemaValidator;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.base.util.ToolRunner;
+import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
+import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
+import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -57,648 +60,704 @@ import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.eclipse.core.commands.ExecutionException;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.dom4j.Dom4jXPath;
 
-public class NodeGenerator
-{	
-	private static Logger logger = Logger.getLogger(NodeGenerator.class.getCanonicalName());
-	
-	private static Document          plugindoc;
-	private static NodeConfiguration config;
-	
-	private static String _pluginname_;
-	private static String _destdir_;
-	private static String _destsrcdir_;
-	private static String _pluginpackage_;
-	private static String _packagedir_;
-	private static String _descriptordir_;
-	private static String _executabledir_;
-	private static String _abspackagedir_;
-	private static String _absnodedir_;
-	private static String _iconpath_;
-	private static String _useini_ = "true";
-	
-	private static String cur_cat;
-	private static String cur_path;
-	private static String _package_root_;
-	private static String _BINPACKNAME_;
-	private static String _payloaddir_;
-	
-	private static Set<String> ext_tools = new HashSet<String>();
-	
-	private static Properties props;
-	
-	public static void assertRestrictedAlphaNumeric(Object obj, String id)
-	{
-		if(obj==null||obj.toString().equals(""))
-		{
-			panic(id+" was not properly defined");
-		}
-		String re = "^\\w+$";
-		if(!obj.toString().matches(re))
-		{
-			panic(id+" is not a proper alpha numeric value "+obj.toString());
-		}
-	}
-	
-	public static void assertDefinition(Object obj, String id)
-	{
-		if(obj==null||obj.toString().equals(""))
-		{
-			panic(id+" was not properly defined");
-		}
-	}
-	
-	public static void assertValidPackageName(String pname, String id)
-	{
-		if(pname==null||pname.equals(""))
-		{
-			panic(id+" is no proper Java package name");
-		}
-		String re = "^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$";
-		if(!pname.matches(re))
-			panic(id+" is no proper Java package name");
-	}
-	
-	public static void assertDirectoryExistence(String dirname, String id)
-	{
-		File dir = new File(dirname);
-		if ( !(dir.exists() && dir.isDirectory()) )
-		{
-			panic(dirname+" supplied as "+id+" is no valid directory");
-		}
-	}
-	
-	public static void assertFileExistence(String filename, String id)
-	{
-		File f = new File(filename);
-		if ( !f.exists() )
-		{
-			panic(filename+" supplied as "+id+" is no valid file");
-		}
-	}
-	
-	public static String makePluginName(String s)
-	{
-		int idx = s.lastIndexOf(".");
-		if(idx==-1)
-			return s;
-		return s.substring(idx+1);
-	}
-	
-	public static void main(String[] args) throws Exception
-	{
-		// read in properties for building the plugin
-		props = new Properties();
-		props.load(new FileInputStream("plugin.properties"));
-				
-		// ... these are ..
-		
-		// the directory containing the payload (= ini-file,zip with binaries for each platform)
-		_payloaddir_    = props.getProperty("payloaddir");
-		assertDefinition(_payloaddir_,"payloaddir");
-		assertDirectoryExistence(_payloaddir_,"payloaddir");
-		
-		// the name of the package (i.e. org.roettig.foo)
-		_pluginpackage_   = props.getProperty("pluginpackage");
-		assertDefinition(_pluginpackage_,"pluginpackage");
-		assertValidPackageName(_pluginpackage_,"pluginpackage");
-		
-		_pluginname_      = props.getProperty("pluginname", makePluginName(_pluginpackage_));
-		assertRestrictedAlphaNumeric(_pluginname_,"pluginname");
-		
-		// the root node where to attach the generated nodes 
-		_package_root_    = props.getProperty("package_root");
-		assertDefinition(_package_root_,"package_root");
-		
-		if( ! (_package_root_.equals("community")||_package_root_.equals("chemistry")) )
-				panic("invalid package root given :"+_package_root_);
-				
-		_descriptordir_ = props.getProperty("descriptordir");
-		
-		_iconpath_ = props.getProperty("icon");
-		_useini_   = props.getProperty("useini","true");
-		
-		// no descriptor directory supplied ...
-		if(_descriptordir_==null)
-		{
-			// .. extract tool descriptor information from executable
-			_executabledir_ = props.getProperty("executabledir");
-			
-			if(_executabledir_==null)
-				panic("neither tool descriptors nor executables were supplied");
-			
-			File exedir = new File(_executabledir_); 
-			
-			if(!exedir.exists()||!exedir.isDirectory())
-				panic("supplied executables directory does not exist");
-			
-			generateDescriptors(props);
-		}
-		
-		_destdir_       = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES_PLUGINSRC";
+public class NodeGenerator {
+	private static final String PLUGIN_PROPERTIES = "plugin.properties";
 
-		// the name of the binary package is simply copied from the plugin name
-		_BINPACKNAME_   = _pluginpackage_;
-		_destsrcdir_    = _destdir_+File.separator+"src";
-		_packagedir_    = _pluginpackage_.replace(".","/");
-		_abspackagedir_ = _destsrcdir_+File.separator+_packagedir_;
-		_absnodedir_    = _abspackagedir_+String.format("%sknime%snodes",File.separator,File.separator); 
-		
-		
-		createPackageDirectory();
-		
-		pre();
-		
-		installMimeTypes();
-		
-		processDescriptors();
-			
-		installIcon();
-		
-		fillProperties();
-		
-		post();		
-		
-	}
-	
-	public static void fillProperties() throws IOException
-	{
-		Properties p = new Properties();
-		p.put("use_ini", props.getProperty("use_ini","true"));
-		p.put("ini_switch", props.getProperty("ini_switch","-ini"));
-		p.store(new FileOutputStream(_abspackagedir_+File.separator+"knime"+File.separator+"plugin.properties"), null);
-	}
-	
-	public static void installIcon() throws IOException
-	{
-		if(_iconpath_!=null)
-		{
-			Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
-			Element elem = (Element) node;
+	private static Logger logger = Logger.getLogger(NodeGenerator.class
+			.getCanonicalName());
 
-			elem.addElement("splashExtension").addAttribute("icon", "icons/logo.png").addAttribute("id", "logo");
-			
-			new File(_destdir_ +File.separator+"icons").mkdirs();
-			Helper.copyFile(new File(_iconpath_), new File(_destdir_ +File.separator+"icons"+File.separator+"logo.png"));
+	private String packageName;
+	private String pluginname;
+
+	private File payloadDirectory;
+	private File descriptorDirectory;
+
+	private String nodeRepositoryRoot;
+
+	private Set<String> ext_tools = new HashSet<String>();
+
+	private Properties props;
+
+	public NodeGenerator(File pluginDir) throws IOException,
+			ExecutionException, DocumentException, DuplicateNodeNameException,
+			InvalidNodeNameException, CTDNodeConfigurationReaderException,
+			UnknownMimeTypeException {
+		if (!pluginDir.isDirectory())
+			throw new FileNotFoundException("Path " + pluginDir.getPath()
+					+ " is no valid directory.");
+
+		this.payloadDirectory = getPluginDirectory(pluginDir);
+		if (!this.payloadDirectory.isDirectory())
+			throw new FileNotFoundException("Could not find payload directory "
+					+ this.payloadDirectory.getPath());
+
+		this.descriptorDirectory = getDescriptorsDirectory(pluginDir);
+		File executablesDirectory = getExecutablesDirectory(pluginDir);
+
+		File propertyFile = new File(pluginDir, PLUGIN_PROPERTIES);
+
+		Properties props = new Properties();
+		try {
+			props.load(new FileInputStream(propertyFile));
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException("Could not find property file "
+					+ propertyFile.getPath());
+		} catch (IOException e) {
+			throw new IOException("Could not load property file", e);
 		}
-		
+
+		this.packageName = getPackageName(props);
+		if (this.packageName == null || this.packageName.isEmpty())
+			throw new InvalidParameterException("No package name was specified");
+		if (!isValidPackageName(this.packageName))
+			throw new InvalidParameterException("The given package name \""
+					+ this.packageName + "\" is invalid");
+
+		this.pluginname = getPluginName(props, this.packageName);
+		if (this.packageName == null || this.packageName.isEmpty())
+			throw new InvalidParameterException("No plugin name was specified");
+		if (!isPluginNameValid(this.pluginname))
+			throw new InvalidParameterException("The package name \""
+					+ this.pluginname
+					+ "\" must only contain alpha numeric characters");
+
+		// the root node where to attach the generated nodes
+		this.nodeRepositoryRoot = getNodeRepositoryRoot(props);
+		if (this.nodeRepositoryRoot == null
+				|| this.nodeRepositoryRoot.isEmpty())
+			throw new InvalidParameterException(
+					"No node repository root defined");
+		// TODO: validation
+
+		if (this.descriptorDirectory.isDirectory()) {
+			if (executablesDirectory.isDirectory()) {
+				logger.log(
+						Level.WARNING,
+						"Both directories \""
+								+ this.descriptorDirectory.getPath()
+								+ "\" and \""
+								+ executablesDirectory
+								+ "\" exists. The latter will be ignored and the provided *.ctd files will be used.");
+			} else {
+
+			}
+		} else {
+			if (!executablesDirectory.isDirectory())
+				throw new FileNotFoundException("Neither the directory \""
+						+ this.descriptorDirectory.getPath() + "\" nor \""
+						+ executablesDirectory + "\" exists.");
+
+			this.descriptorDirectory = generateDescriptors(
+					executablesDirectory, getCtdWriteSwitch(props));
+		}
+
+		// e.g. /tmp/327
+		File destinationDirectory = this.getDestinationDirectory();
+
+		// e.g. /tmp/327/src
+		File destinationSourceDirectory = new File(destinationDirectory, "src");
+
+		// e.g. /tmp/327/foo.bar
+		File destinationFQNDirectory = createPackageDirectory(
+				destinationSourceDirectory, this.packageName);
+
+		// e.g. /tmp/327/foo.bar/knime/nodes
+		File destinationFQNNodeDirectory = new File(destinationFQNDirectory,
+				"knime" + File.separator + "nodes");
+
+		File destinationPluginXML = new File(destinationDirectory, "plugin.xml");
+		Document pluginXML = preparePluginXML(destinationDirectory,
+				destinationPluginXML);
+
+		try {
+			installMimeTypes(pluginXML, destinationFQNNodeDirectory, new File(
+					this.descriptorDirectory, "mimetypes.xml"), this.pluginname);
+		} catch (JaxenException e) {
+			throw new DocumentException(e);
+		}
+
+		Set<String> node_names = new HashSet<String>();
+		Set<String> ext_tools = new HashSet<String>();
+		processDescriptors(node_names, ext_tools, pluginXML,
+				this.descriptorDirectory, this.nodeRepositoryRoot,
+				this.pluginname, destinationFQNNodeDirectory, this.packageName);
+
+		// TODO
+		// this.installIcon();
+
+		fillProperties(props, destinationFQNDirectory);
+
+		post(pluginXML, destinationPluginXML, this.packageName,
+				destinationFQNDirectory, destinationFQNNodeDirectory,
+				this.payloadDirectory, node_names, ext_tools);
+
 	}
 
-	public static void generateDescriptors(Properties props) throws Exception
-	{
-		String   par_switch = props.getProperty("parswitch","-write_par");
-		File     bindir     = new File(_executabledir_+File.separator+"bin");
-		
-		if(!bindir.exists()||!bindir.isDirectory())
-		{
-			panic("could not find bin directory with executables at executabledir: "+_executabledir_);
-		}
-			
-		String ttd_dir  = System.getProperty("java.io.tmpdir")+File.separator+"GENERIC_KNIME_NODES_TTD";
-		
-		try
-		{			 
-			File outdir   = new File(ttd_dir);
-			outdir.mkdirs();
-			outdir.deleteOnExit();
-		}
-		catch(Exception e)
-		{
-			panic("could not create temporary directory "+ttd_dir);
-		}
-		
-		String[] exes = bindir.list();
-		
-		if(exes.length==0)
-		{
-			panic("found no executables at "+bindir);
-		}
-		
-		for(String exe: exes)
-		{
+	/**
+	 * Returns the directory containing the payload which consists of binaries
+	 * for each platform and an optional ini-file.
+	 * 
+	 * @param rootDirectory
+	 * @return
+	 */
+	private static File getPluginDirectory(File rootDirectory) {
+		File payloadDirectory = new File(rootDirectory, "payload");
+		return payloadDirectory;
+	}
+
+	/**
+	 * Returns the package name the generated plugin uses. (e.g.
+	 * org.roettig.foo).
+	 * 
+	 * @param props
+	 * @return
+	 */
+	private static String getPackageName(Properties props) {
+		return props.getProperty("pluginpackage");
+	}
+
+	/**
+	 * Checks whether a given package name is valid.
+	 * 
+	 * @param packageName
+	 * @param id
+	 * @return true if package name is valid; false otherwise
+	 */
+	public static boolean isValidPackageName(String packageName) {
+		return packageName != null
+				&& packageName
+						.matches("^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$");
+	}
+
+	/**
+	 * Returns the plugin name.
+	 * <p>
+	 * If no configuration could be found, the name is created based on the
+	 * given package name. e.g. org.roettig.foo will result in foo
+	 * 
+	 * @param packageName
+	 * @return
+	 */
+	public static String getPluginName(Properties props, String packageName) {
+		String pluginname = props.getProperty("pluginname");
+		if (pluginname != null && !pluginname.isEmpty())
+			return pluginname;
+
+		int idx = packageName.lastIndexOf(".");
+		if (idx == -1)
+			return packageName;
+		return packageName.substring(idx + 1);
+	}
+
+	/**
+	 * Checks if the plugin name is valid.
+	 * 
+	 * @param obj
+	 * @param id
+	 */
+	public static boolean isPluginNameValid(String pluginName) {
+		return pluginName != null && pluginName.matches("^\\w+$");
+	}
+
+	/**
+	 * Returns the path where the generated KNIME nodes will reside. e.g.
+	 * <code>community/my_nodes</code>
+	 * 
+	 * @param props
+	 * @return
+	 */
+	private static String getNodeRepositoryRoot(Properties props) {
+		return props.getProperty("package_root");
+	}
+
+	/**
+	 * Returns the directory where the Common Tool Descriptors (*.ctd) reside.
+	 * 
+	 * @param props
+	 * @return
+	 */
+	private static File getDescriptorsDirectory(File rootDirectory) {
+		File descriptorsDirectory = new File(rootDirectory, "descriptors");
+		return descriptorsDirectory;
+	}
+
+	/**
+	 * Returns the directory where the tools to generate KNIME nodes from
+	 * reside.
+	 * <p>
+	 * Notice: The tools must support the creation of ctd-files.
+	 * 
+	 * @param props
+	 * @return
+	 */
+	private static File getExecutablesDirectory(File rootDirectory) {
+		File exectuablesDirectory = new File(rootDirectory, "executables");
+		return exectuablesDirectory;
+	}
+
+	/**
+	 * Creates a ctd file for each binary found in the given {@link File
+	 * Directory} in a temporary directory by calling each binary with the given
+	 * switch (e.g. <code>-ctd-write</code>).
+	 * 
+	 * @param executablesDirectory
+	 * @param ctdWriteSwitch
+	 * @return the temporary directory in which the ctd files were created
+	 * @throws IOException
+	 * @throws ExecutionException
+	 */
+	public static File generateDescriptors(File executablesDirectory,
+			String ctdWriteSwitch) throws IOException, ExecutionException {
+
+		File tempDirectory = new File(System.getProperty("java.io.tmpdir"),
+				"GKN-descriptors-" + Long.toString(System.nanoTime()));
+		tempDirectory.mkdirs();
+		tempDirectory.deleteOnExit();
+
+		File binDirectory = new File(executablesDirectory, "bin");
+		if (!binDirectory.isDirectory())
+			throw new FileNotFoundException("The bin directory "
+					+ binDirectory.getPath() + " is not valid.");
+
+		String[] exes = new File(executablesDirectory, "bin").list();
+
+		if (exes.length == 0)
+			throw new FileNotFoundException(
+					"Could not find any executables in " + executablesDirectory);
+
+		for (String exe : exes) {
 			ToolRunner tr = new ToolRunner();
-			File outfile = File.createTempFile("TTD","");
+			File outfile = File.createTempFile("CTD", "");
 			outfile.deleteOnExit();
-			
-			// FixMe: this is so *nix style, wont hurt on windows
+
+			// FIXME: this is so *nix style, wont hurt on windows
 			// but probably wont help either
-			tr.addEnvironmentEntry("LD_LIBRARY_PATH", _executabledir_+File.separator+"lib");
-			
-			String cmd = _executabledir_+File.separator+"bin"+File.separator+exe+" "+par_switch+" "+outfile.getAbsolutePath();
-			tr.run(cmd);
-			
-			if(tr.getReturnCode()==0)
-			{
-				Helper.copyFile(outfile,new File(ttd_dir+File.separator+outfile.getName()));
-			}
-			else
-			{
-				panic("could not execute tool : "+cmd);
+			tr.addEnvironmentEntry("LD_LIBRARY_PATH", new File(
+					executablesDirectory, "lib").getAbsolutePath());
+
+			String cmd = binDirectory.getAbsolutePath() + File.separator + exe
+					+ " " + ctdWriteSwitch + " " + outfile.getAbsolutePath();
+			try {
+				tr.run(cmd);
+
+				if (tr.getReturnCode() != 0) {
+					Helper.copyFile(outfile,
+							new File(tempDirectory, outfile.getName()));
+				} else
+					throw new ExecutionException("Tool \"" + cmd
+							+ "\" returned with " + tr.getReturnCode());
+			} catch (Exception e) {
+				throw new ExecutionException("Could not execute tool: " + cmd,
+						e);
 			}
 		}
-		
-		_descriptordir_ = ttd_dir;
-	}
-	
-	private static void createPackageDirectory()
-	{
-		File packagedir = new File(_destsrcdir_+File.separator+_packagedir_);
-		Helper.deleteDirectory(packagedir);
-		packagedir.mkdirs();
-	}
-	
-	public static void pre() throws DocumentException, IOException
-	{				
-		Helper.copyStream(TemplateResources.class.getResourceAsStream("plugin.xml.template"),new File(_destdir_ + File.separator+"plugin.xml"));
-		
-		DOMDocumentFactory factory = new DOMDocumentFactory();
-		SAXReader reader = new SAXReader();
-		reader.setDocumentFactory(factory);
 
-		plugindoc = reader.read(new FileInputStream(new File(_destdir_ + File.separator+"plugin.xml")));
-		
+		return tempDirectory;
 	}
-		
-	private static void installMimeTypes() throws DocumentException, IOException, JaxenException
-	{
-		assertFileExistence(_descriptordir_ + File.separator+"mimetypes.xml","mimetypes.xml");
-		
-		
+
+	/**
+	 * Returns the switch needed to make an executable output a ctd-file.
+	 * 
+	 * @param props
+	 * @return
+	 */
+	private static String getCtdWriteSwitch(Properties props) {
+		return props.getProperty("parswitch", "-write_par");
+	}
+
+	/**
+	 * Returns the {@link File directory} where to put the plugin source in.
+	 * 
+	 * @return
+	 */
+	private File getDestinationDirectory() {
+		return new File(System.getProperty("java.io.tmpdir"),
+				"GKN-pluginsource-" + Long.toString(System.nanoTime()));
+	}
+
+	/**
+	 * Creates a directory structure representing a package name.
+	 * <p>
+	 * e.g. <code>foo.bar</code> would result in the directory
+	 * <code>foo/bar</code>.
+	 * 
+	 * @param directory
+	 *            where to create the directory structure in
+	 * @param packageName
+	 * @return
+	 */
+	private static File createPackageDirectory(File directory,
+			String packageName) {
+		File packageDirectory = new File(directory, packageName.replace(".",
+				"/"));
+		Helper.deleteDirectory(packageDirectory);
+		packageDirectory.mkdirs();
+		return packageDirectory;
+	}
+
+	public static void fillProperties(Properties props,
+			File destinationFQNDirectory) throws IOException {
+		Properties p = new Properties();
+		p.put("use_ini", props.getProperty("use_ini", "true"));
+		p.put("ini_switch", props.getProperty("ini_switch", "-ini"));
+		p.store(new FileOutputStream(destinationFQNDirectory + File.separator
+				+ "knime" + File.separator + PLUGIN_PROPERTIES), null);
+	}
+
+	// TODO
+	// public void installIcon() throws IOException {
+	// if (this._iconpath_ != null) {
+	// Node node = this.plugindoc
+	// .selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
+	// Element elem = (Element) node;
+	//
+	// elem.addElement("splashExtension")
+	// .addAttribute("icon", "icons/logo.png")
+	// .addAttribute("id", "logo");
+	//
+	// new File(this._destdir_ + File.separator + "icons").mkdirs();
+	// Helper.copyFile(new File(this._iconpath_), new File(this._destdir_
+	// + File.separator + "icons" + File.separator + "logo.png"));
+	// }
+	//
+	// }
+
+	/**
+	 * Prepares a new copy of a template plugin.xml in the given {@link File
+	 * directory} and returns its {@link Document} representation.
+	 * 
+	 * @param destinationDirectory
+	 * @return
+	 * @throws DocumentException
+	 * @throws IOException
+	 */
+	public static Document preparePluginXML(File destinationDirectory,
+			File destinationPluginXML) throws DocumentException, IOException {
+		Helper.copyStream(TemplateResources.class
+				.getResourceAsStream("plugin.xml.template"),
+				destinationPluginXML);
+
+		SAXReader reader = new SAXReader();
+		reader.setDocumentFactory(new DOMDocumentFactory());
+
+		return reader.read(new FileInputStream(destinationPluginXML));
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @param pluginXML
+	 * @param destinationFQNNodeDirectory
+	 * @param mimetypesXML
+	 * @param packageName
+	 * @throws DocumentException
+	 * @throws IOException
+	 * @throws JaxenException
+	 */
+	private static void installMimeTypes(Document pluginXML,
+			File destinationFQNNodeDirectory, File mimetypesXML,
+			String packageName) throws DocumentException, IOException,
+			JaxenException {
+		if (!mimetypesXML.isFile() || !mimetypesXML.canRead())
+			throw new IOException("Invalid MIME types file: "
+					+ mimetypesXML.getPath());
+
 		SchemaValidator val = new SchemaValidator();
 		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
-		if(!val.validates(_descriptordir_ + File.separator+"mimetypes.xml"))
-		{
-			panic("supplied mimetypes.xml does not conform to schema "+val.getErrorReport());
-		}
-		
-		
+		if (!val.validates(mimetypesXML.getPath()))
+			throw new DocumentException("Supplied \"" + mimetypesXML.getPath()
+					+ "\" does not conform to schema " + val.getErrorReport());
+
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
 		reader.setDocumentFactory(factory);
-		
-		Document doc = reader.read(new FileInputStream(new File(_descriptordir_ + File.separator+"mimetypes.xml")));
-		
-		InputStream    template = TemplateResources.class.getResourceAsStream("MimeFileCellFactory.template");
-		
-		TemplateFiller tf       = new TemplateFiller();
+
+		Document doc = reader.read(new FileInputStream(mimetypesXML));
+
+		InputStream template = TemplateResources.class
+				.getResourceAsStream("MimeFileCellFactory.template");
+
+		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-				
+
 		String mimetypes_template = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
-		String mimetypes_code     = "";
-		
+		String mimetypes_code = "";
+
 		Set<String> mimetypes = new HashSet<String>();
-		
-		Map<String,String> map = new HashMap<String,String>();
-		map.put( "bp", "http://www.ball-project.org/mimetypes");
-		  
-		Dom4jXPath xpath = new Dom4jXPath( "//bp:mimetype");
-		xpath.setNamespaceContext( new SimpleNamespaceContext(map));
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("bp", "http://www.ball-project.org/mimetypes"); // TODO
+
+		Dom4jXPath xpath = new Dom4jXPath("//bp:mimetype");
+		xpath.setNamespaceContext(new SimpleNamespaceContext(map));
 
 		@SuppressWarnings("unchecked")
 		List<Node> nodes = xpath.selectNodes(doc);
-		
-		for(Node node: nodes)
-		{
-			Element elem    = (Element) node;
-			
-			String  name      = elem.valueOf("@name");
-			String  ext       = elem.valueOf("@ext");
-			//String  descr     = elem.valueOf("@description");
-			//String  demangler = elem.valueOf("@demangler");
-			String  binary    = elem.valueOf("@binary");
+
+		for (Node node : nodes) {
+			Element elem = (Element) node;
+
+			String name = elem.valueOf("@name");
+			String ext = elem.valueOf("@ext");
+			// String descr = elem.valueOf("@description");
+			// String demangler = elem.valueOf("@demangler");
+			String binary = elem.valueOf("@binary");
 			binary = (binary.equals("") ? "false" : binary);
-			
-			logger.info("read mime type "+name);
-			
-			if(mimetypes.contains(name))
-			{
-				warn("skipping duplicate mime type "+name);
+
+			logger.info("read mime type " + name);
+
+			if (mimetypes.contains(name)) {
+				logger.log(Level.WARNING, "skipping duplicate mime type "
+						+ name);
 			}
-			
-			//createMimeTypeLoader(name, ext);
-			
-			//String clazz = createMimeCell(name, ext);
-			//createMimeValue(name);
-		
-			ext2type.put(ext.toLowerCase(),name);
-			//ext2clazz.put(ext.toLowerCase(),clazz);
-			
-			String s4 = mimetypes_template.replace("__EXT__", ext.toLowerCase());
+
+			// createMimeTypeLoader(name, ext);
+
+			// String clazz = createMimeCell(name, ext);
+			// createMimeValue(name);
+
+			// ext2clazz.put(ext.toLowerCase(),clazz);
+
+			String s4 = mimetypes_template
+					.replace("__EXT__", ext.toLowerCase());
 			mimetypes_code += s4;
 		}
-		
+
 		tf.replace("__MIMETYPES__", mimetypes_code);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + String.format("%smimetypes%sMimeFileCellFactory.java",File.separator,File.separator));
+		tf.replace("__BASE__", packageName);
+		tf.write(new File(destinationFQNNodeDirectory, "mimetypes"
+				+ File.separator + "MimeFileCellFactory.java"));
 		template.close();
-		
-	}
-	
-	private static void processDescriptors() throws Exception
-	{
-		File files[] = (new File(_descriptordir_)).listFiles();
-		
-		for (File f : files)
-		{
-			String filename = f.getName();
-			
-			if (filename.endsWith(".ctd"))
-			{
-				logger.info("start processing node "+f);
-				processNode(filename, f);
-			}
-		}
-	}
-	
-	private static Set<String> node_names = new HashSet<String>();
-	
-	public static boolean checkNodeName(String name)
-	{
-		if(!name.matches("[[A-Z]|[a-z]][[0-9]|[A-Z]|[a-z]]+"))
-			return false;
-		return true;
-	}
-	
-	public static String fixNodeName(String name)
-	{
-		logger.info("trying to fix node class name "+name);
-		name = name.replace(".", "");
-		name = name.replace("-", "");
-		name = name.replace("_", "");
-		name = name.replace("#", "");
-		name = name.replace("+", "");
-		name = name.replace("$", "");
-		name = name.replace(":", "");
-		logger.info("fixed node name "+name);
-		return name;
 	}
 
-	public static String combine (String path1, String path2)
-	{
-	    File file1 = new File(path1);
-	    File file2 = new File(file1, path2);
-	    return file2.getPath();
+	private static void processDescriptors(Set<String> node_names,
+			Set<String> ext_tools, Document pluginXML,
+			File descriptorDirectory, String nodeRepositoryRoot,
+			String pluginName, File destinationFQNNodeDirectory,
+			String packageName) throws IOException, DuplicateNodeNameException,
+			InvalidNodeNameException, CTDNodeConfigurationReaderException,
+			UnknownMimeTypeException {
+		Set<String> categories = new HashSet<String>();
+		for (File file : descriptorDirectory.listFiles()) {
+			if (file.getName().endsWith(".ctd")) {
+				logger.info("start processing node " + file);
+				processNode(pluginXML, file, node_names, ext_tools,
+						nodeRepositoryRoot, pluginName,
+						destinationFQNNodeDirectory, categories, packageName);
+			}
+		}
 	}
-	
-	public static void processNode(String name, File descriptor) throws Exception
-	{
-		
-		logger.info("## processing Node "+name);
-		
+
+	public static void processNode(Document pluginXML, File ctdFile,
+			Set<String> node_names, Set<String> ext_tools,
+			String nodeRepositoryRoot, String pluginName,
+			File destinationFQNNodeDirectory, Set<String> categories,
+			String packageName) throws IOException, DuplicateNodeNameException,
+			InvalidNodeNameException, CTDNodeConfigurationReaderException,
+			UnknownMimeTypeException {
+
+		logger.info("## processing Node " + ctdFile.getName());
+
 		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
-		try
-		{
-			config = reader.read(new FileInputStream(descriptor));
-		}
-		catch(Exception e)
-		{
-			panic(e.getMessage());
-		}
-		
+		NodeConfiguration config = reader.read(new FileInputStream(ctdFile));
+
 		String nodeName = config.getName();
-		
+
 		String oldNodeName = null;
-		
-		if(!checkNodeName(nodeName))
-		{
+
+		if (!KNIMENode.checkNodeName(nodeName)) {
 			oldNodeName = nodeName;
-			
+
 			// we try to fix the nodename
-			nodeName = fixNodeName(nodeName);
-			
-			if(!checkNodeName(nodeName))
-				panic("NodeName with invalid name detected "+nodeName);
-			
+			nodeName = KNIMENode.fixNodeName(nodeName);
+
+			if (!KNIMENode.checkNodeName(nodeName))
+				throw new InvalidNodeNameException("The node name \""
+						+ nodeName + "\" is invalid.");
 		}
-		
-		if(oldNodeName==null)
-		{
-			if(node_names.contains(nodeName))
-			{
-				warn("duplicate tool detected "+nodeName);
-				return;
-			}
-			
-			if(config.getStatus().equals("internal"))
+
+		if (oldNodeName == null) {
+			if (node_names.contains(nodeName))
+				throw new DuplicateNodeNameException(nodeName);
+
+			if (config.getStatus().equals("internal")) {
 				node_names.add(nodeName);
-			else
+			} else {
 				ext_tools.add(nodeName);
-			
-		}
-		else
-		{
-			if(node_names.contains(oldNodeName))
-			{
-				warn("duplicate tool detected "+oldNodeName);
-				return;
 			}
-			
-			if(config.getStatus().equals("internal"))
+		} else {
+			if (node_names.contains(oldNodeName))
+				throw new DuplicateNodeNameException(nodeName);
+
+			if (config.getStatus().equals("internal")) {
 				node_names.add(oldNodeName);
-			else
+			} else {
 				ext_tools.add(nodeName);
+			}
 		}
-		
-		cur_cat  = combine("/"+_package_root_+"/"+_pluginname_,config.getCategory());
-		
-		cur_path = getPathPrefix(cur_cat); 
-		
-		
-		File nodeConfigDir = new File(_absnodedir_ + File.separator + nodeName + File.separator+"config");
+
+		String cur_cat = new File("/" + nodeRepositoryRoot + "/" + pluginName,
+				config.getCategory()).getPath();
+
+		File nodeConfigDir = new File(destinationFQNNodeDirectory
+				+ File.separator + nodeName + File.separator + "config");
 		nodeConfigDir.mkdirs();
 
-		Helper.copyFile(descriptor, new File(_absnodedir_ + File.separator + nodeName + File.separator + "config"+File.separator+"config.xml"));
-		
-		registerPath(cur_cat);
-		
-		createFactory(nodeName);
-		
-		createDialog(nodeName);
-		
-		createView(nodeName);
-		
-		createModel(nodeName);
-		
-		fillMimeTypes();
-		
-		createXMLDescriptor(nodeName);
-		
-		writeModel(nodeName);
-		
-		registerNode( _pluginpackage_ + ".knime.nodes." + nodeName + "." + nodeName + "NodeFactory", cur_cat);
-		
-	}	
-	
-	/**
-	 * returns the prefix path of the given path.
-	 * 
-	 * /foo/bar/baz   ---> /foo/bar/
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public static String getPathPrefix(String path)
-	{
-		File pth = new File(path);
-		return pth.getParent();
+		Helper.copyFile(ctdFile, new File(destinationFQNNodeDirectory
+				+ File.separator + nodeName + File.separator + "config"
+				+ File.separator + "config.xml"));
+
+		registerPath(cur_cat, pluginXML, categories);
+
+		createFactory(nodeName, destinationFQNNodeDirectory, packageName);
+
+		createDialog(nodeName, destinationFQNNodeDirectory, packageName);
+
+		createView(nodeName, destinationFQNNodeDirectory, packageName);
+
+		TemplateFiller curmodel_tf = createModel(nodeName,
+				destinationFQNNodeDirectory, packageName);
+
+		fillMimeTypes(config, curmodel_tf);
+
+		TemplateFiller nodeFactoryXML = createXMLDescriptor(nodeName, config);
+		nodeFactoryXML.write(destinationFQNNodeDirectory + "/" + nodeName + "/"
+				+ nodeName + "NodeFactory.xml");
+
+		writeModel(nodeName, destinationFQNNodeDirectory, curmodel_tf);
+
+		registerNode(packageName + ".knime.nodes." + nodeName + "." + nodeName
+				+ "NodeFactory", cur_cat, pluginXML, categories);
+
 	}
-	
-	/**
-	 * returns all prefix paths of a given path.
-	 * 
-	 * /foo/bar/baz --> [/foo/bar/,/foo/,/]
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public static List<String> getPathPrefixes(String path)
-	{
-		List<String> ret = new ArrayList<String>();
-		File pth = new File(path);
-		ret.add(path);
-		while(pth.getParent()!=null)
-		{
-			ret.add(pth.getParent());
-			pth = pth.getParentFile();
-		}
-		return ret;
-	}
-	
-	/**
-	 * returns the path suffix for a given path.
-	 * 
-	 * /foo/bar/baz --> baz
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public static String getPathSuffix(String path)
-	{
-		File pth = new File(path);
-		return pth.getName();
-	}
-	
-	public static Set<String> categories = new HashSet<String>();
-	
-	public static void registerPath(String path)
-	{
-		List<String> prefixes = getPathPrefixes(path);
-		
-		for(String prefix: prefixes)
-		{
-			registerPathPrefix(prefix);
+
+	public static void registerPath(String path, Document pluginXML,
+			Set<String> categories) {
+		List<String> prefixes = Utils.getPathPrefixes(path);
+		for (String prefix : prefixes) {
+			registerPathPrefix(prefix, pluginXML, categories);
 		}
 	}
-	
-	public static void registerPathPrefix(String path)
-	{
+
+	public static void registerPathPrefix(String path, Document pluginXML,
+			Set<String> categories) {
 		// do not register any top level or root path
-		if(path.equals("/")||new File(path).getParent().equals("/"))
+		if (path.equals("/") || new File(path).getParent().equals("/"))
 			return;
-		
-		if(categories.contains(path))
+
+		if (categories.contains(path))
 			return;
-		
+
 		logger.info("registering path prefix " + path);
-		
+
 		categories.add(path);
-		
-		String   cat_name    = getPathSuffix(path);
-		String   path_prefix = getPathPrefix(path);
-		
-		Node node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
-		
+
+		String cat_name = Utils.getPathSuffix(path);
+		String path_prefix = Utils.getPathPrefix(path);
+
+		Node node = pluginXML
+				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
+
 		Element elem = (Element) node;
-		logger.info("name="+cat_name);
-		
-		elem.addElement("category").addAttribute("description", path).addAttribute("icon", "icons/category.png")
-			.addAttribute("path", path_prefix).addAttribute("name", cat_name).addAttribute("level-id", cat_name);
+		logger.info("name=" + cat_name);
+
+		elem.addElement("category").addAttribute("description", path)
+				.addAttribute("icon", "icons/category.png")
+				.addAttribute("path", path_prefix)
+				.addAttribute("name", cat_name)
+				.addAttribute("level-id", cat_name);
 	}
-	
-	public static void createFactory(String nodeName) throws IOException
-	{
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/NodeFactory.template");
+
+	public static void createFactory(String nodeName,
+			File destinationFQNNodeDirectory, String packageName)
+			throws IOException {
+		InputStream template = NodeGenerator.class
+				.getResourceAsStream("templates/NodeFactory.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeFactory.java");
+		tf.replace("__BASE__", packageName);
+		tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/" + nodeName
+				+ "NodeFactory.java");
 	}
 
-	public static void createDialog(String nodeName) throws IOException
-	{
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/NodeDialog.template");
+	public static void createDialog(String nodeName,
+			File destinationFQNNodeDirectory, String packageName)
+			throws IOException {
+		InputStream template = NodeGenerator.class
+				.getResourceAsStream("templates/NodeDialog.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeDialog.java");
+		tf.replace("__BASE__", packageName);
+		tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/" + nodeName
+				+ "NodeDialog.java");
 	}
 
-	public static String join(Collection<String> col)
-	{
+	public static String join(Collection<String> col) {
 		String ret = "";
-		for(String s: col)
-		{
-			ret += s+",";
+		for (String s : col) {
+			ret += s + ",";
 		}
-		ret = ret.substring(0,ret.length()-1);
+		ret = ret.substring(0, ret.length() - 1);
 		return ret;
 	}
-	
-	public static void createXMLDescriptor(String nodeName) throws IOException
-	{
+
+	public static TemplateFiller createXMLDescriptor(String nodeName,
+			NodeConfiguration config) throws IOException {
 		// ports
 		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inports = "";
 		int idx = 0;
-		for (Port port : config.getInputPorts())
-		{
+		for (Port port : config.getInputPorts()) {
 			String ipp = ip;
 			ipp = ip.replace("__PORTNAME__", port.getName());
 			ipp = ipp.replace("__PORTDESCR__", port.getDescription());
 			ipp = ipp.replace("__IDX__", String.format("%d", idx++));
-			
+
 			// fix me
-			//ipp = ipp.replace("__MIMETYPE__", port.getMimeTypes().get(0).getExt());
+			// ipp = ipp.replace("__MIMETYPE__",
+			// port.getMimeTypes().get(0).getExt());
 			List<String> mts = new ArrayList<String>();
-			for(MIMEtype mt: port.getMimeTypes())
-			{
+			for (MIMEtype mt : port.getMimeTypes()) {
 				mts.add(mt.getExt());
 			}
 			ipp = ipp.replace("__MIMETYPE__", join(mts));
-			
-			ipp = ipp.replace("__OPT__", (port.isOptional()?",opt.":""));
+
+			ipp = ipp.replace("__OPT__", (port.isOptional() ? ",opt." : ""));
 			inports += ipp + "\n";
 		}
 
 		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outports = "";
 		idx = 0;
-		for (Port port : config.getOutputPorts())
-		{
+		for (Port port : config.getOutputPorts()) {
 			String opp = op;
 			opp = op.replace("__PORTNAME__", port.getName());
 			opp = opp.replace("__PORTDESCR__", port.getDescription());
 			opp = opp.replace("__IDX__", String.format("%d", idx++));
-			
+
 			// fix me
-			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0).getExt());
-			
+			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0)
+					.getExt());
+
 			outports += opp + "\n";
 		}
 
 		StringBuffer buf = new StringBuffer();
-		for (Parameter<?> p : config.getParameters())
-		{
-			buf.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA[" + p.getDescription() + "]]></option>\n");
+		for (Parameter<?> p : config.getParameters()) {
+			buf.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA["
+					+ p.getDescription() + "]]></option>\n");
 		}
 		String opts = buf.toString();
 
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/NodeXMLDescriptor.template");
+		InputStream template = NodeGenerator.class
+				.getResourceAsStream("templates/NodeXMLDescriptor.template");
 
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
@@ -710,288 +769,273 @@ public class NodeGenerator
 		tf.replace("__DESCRIPTION__", config.getDescription());
 		String pp = prettyPrint(config.getManual());
 		tf.replace("__MANUAL__", pp);
-		if(!config.getDocUrl().equals(""))
-		{
-			String ahref = "<a href=\""+config.getDocUrl()+"\">Web Documentation for "+nodeName+"</a>";
-			tf.replace("__DOCLINK__", ahref);	
-		}
-		else
-		{
+		if (!config.getDocUrl().equals("")) {
+			String ahref = "<a href=\"" + config.getDocUrl()
+					+ "\">Web Documentation for " + nodeName + "</a>";
+			tf.replace("__DOCLINK__", ahref);
+		} else {
 			tf.replace("__DOCLINK__", "");
 		}
-		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeFactory.xml");
-
+		return tf;
 	}
 
-	private static String prettyPrint(String manual)
-	{
-		if(manual.equals(""))
+	private static String prettyPrint(String manual) {
+		if (manual.equals(""))
 			return "";
 		StringBuffer sb = new StringBuffer();
 		String[] toks = manual.split("\\n");
-		for(String tok: toks)
-		{
-			sb.append("<p><![CDATA["+tok+"]]></p>");
+		for (String tok : toks) {
+			sb.append("<p><![CDATA[" + tok + "]]></p>");
 		}
 		return sb.toString();
 	}
 
-	public static void createView(String nodeName) throws IOException
-	{
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/NodeView.template");
+	public static void createView(String nodeName,
+			File destinationFQNNodeDirectory, String packageName)
+			throws IOException {
+		InputStream template = NodeGenerator.class
+				.getResourceAsStream("templates/NodeView.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
 		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeView.java");
+		tf.replace("__BASE__", packageName);
+		tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/" + nodeName
+				+ "NodeView.java");
 	}
 
-	private static TemplateFiller curmodel_tf = null;
-	
-	public static void createModel(String nodeName) throws IOException
-	{
-		InputStream template = NodeGenerator.class.getResourceAsStream("templates/NodeModel.template");
-		curmodel_tf = new TemplateFiller();
+	public static TemplateFiller createModel(String nodeName,
+			File destinationFQNNodeDirectory, String packageName)
+			throws IOException {
+		InputStream template = NodeGenerator.class
+				.getResourceAsStream("templates/NodeModel.template");
+		TemplateFiller curmodel_tf = new TemplateFiller();
 
 		curmodel_tf.read(template);
 		curmodel_tf.replace("__NODENAME__", nodeName);
-		curmodel_tf.replace("__BASE__", _pluginpackage_);
-		curmodel_tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeModel.java");
+		curmodel_tf.replace("__BASE__", packageName);
+		curmodel_tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/"
+				+ nodeName + "NodeModel.java");
+		return curmodel_tf;
 	}
 
-	protected static void writeModel(String nodeName) throws IOException
-	{
-		curmodel_tf.write(_absnodedir_ + "/" + nodeName + "/" + nodeName + "NodeModel.java");
+	protected static void writeModel(String nodeName,
+			File destinationFQNNodeDirectory, TemplateFiller curmodel_tf)
+			throws IOException {
+		curmodel_tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/"
+				+ nodeName + "NodeModel.java");
 	}
-	
-	
-	public static Map<String,String> ext2type = new HashMap<String,String>();
-	
-	private static void fillMimeTypes() throws IOException
-	{		
+
+	private static void fillMimeTypes(NodeConfiguration config,
+			TemplateFiller curmodel_tf) throws UnknownMimeTypeException {
 		String clazzez = "";
-		for (Port port : config.getInputPorts())
-		{
+		for (Port port : config.getInputPorts()) {
 			String tmp = "{";
-			for(MIMEtype type: port.getMimeTypes())
-			{
+			for (MIMEtype type : port.getMimeTypes()) {
 				String ext = type.getExt().toLowerCase();
-				if(ext==null)
-				{
-					panic("unknown mime type : |"+type.getExt()+"|");
-				}
+				if (ext == null)
+					throw new UnknownMimeTypeException(type);
 				/*
-				if(port.isMultiFile())
-					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
-				else
-					tmp += "DataType.getType(" + ext + "FileCell.class),";
-				*/
-				tmp += "new MIMEType(\""+ext+"\"),";
+				 * if(port.isMultiFile()) tmp +=
+				 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
+				 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
+				 * "FileCell.class),";
+				 */
+				tmp += "new MIMEType(\"" + ext + "\"),";
 			}
-			tmp = tmp.substring(0,tmp.length()-1);
-			tmp+="},";
+			tmp = tmp.substring(0, tmp.length() - 1);
+			tmp += "},";
 			clazzez += tmp;
 		}
-		
-		if(!clazzez.equals(""))
-			clazzez = clazzez.substring(0,clazzez.length()-1);
-		
-		clazzez += "}";
-		createInClazzezModel(clazzez);
-		
-		clazzez = "";
-		for (Port port : config.getOutputPorts())
-		{
-			String tmp = "{";
-			for(MIMEtype type: port.getMimeTypes())
-			{
-				String ext = type.getExt().toLowerCase();
-				if(ext==null)
-				{
-					panic("unknown mime type : |"+type.getExt()+"|");
-				}
-				/*
-				if(port.isMultiFile())
-					tmp += "DataType.getType(ListCell.class, DataType.getType(" + ext + "FileCell.class)),";
-				else
-					tmp += "DataType.getType(" + ext + "FileCell.class),";
-				*/
-				tmp += "new MIMEType(\""+ext+"\"),";
-			}
-			tmp = tmp.substring(0,tmp.length()-1);
-			tmp+="},";
-			clazzez += tmp;
-		}		
-		
-		if(!clazzez.equals(""))
-			clazzez = clazzez.substring(0,clazzez.length()-1);
-		
-		clazzez += "}";
-		
-		createOutClazzezModel(clazzez);
-	}
-	
-	public static void makeMimeFileCellFactory()
-	{
-		
-		
-	}
-	
-	public static void createInClazzezModel(String clazzez) throws IOException
-	{
-		if (clazzez.equals(""))
-			clazzez = "null";
-		else
+
+		if (!clazzez.equals("")) {
 			clazzez = clazzez.substring(0, clazzez.length() - 1);
+		}
+
+		clazzez += "}";
+		createInClazzezModel(clazzez, curmodel_tf);
+
+		clazzez = "";
+		for (Port port : config.getOutputPorts()) {
+			String tmp = "{";
+			for (MIMEtype type : port.getMimeTypes()) {
+				String ext = type.getExt().toLowerCase();
+				if (ext == null)
+					throw new UnknownMimeTypeException(type);
+				/*
+				 * if(port.isMultiFile()) tmp +=
+				 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
+				 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
+				 * "FileCell.class),";
+				 */
+				tmp += "new MIMEType(\"" + ext + "\"),";
+			}
+			tmp = tmp.substring(0, tmp.length() - 1);
+			tmp += "},";
+			clazzez += tmp;
+		}
+
+		if (!clazzez.equals("")) {
+			clazzez = clazzez.substring(0, clazzez.length() - 1);
+		}
+
+		clazzez += "}";
+
+		createOutClazzezModel(clazzez, curmodel_tf);
+	}
+
+	public static void createInClazzezModel(String clazzez,
+			TemplateFiller curmodel_tf) {
+		if (clazzez.equals("")) {
+			clazzez = "null";
+		} else {
+			clazzez = clazzez.substring(0, clazzez.length() - 1);
+		}
 		curmodel_tf.replace("__INCLAZZEZ__", clazzez);
 	}
 
-	public static void createOutClazzezModel(String clazzez) throws IOException
-	{
-		if (clazzez.equals(""))
+	public static void createOutClazzezModel(String clazzez,
+			TemplateFiller curmodel_tf) {
+		if (clazzez.equals("")) {
 			clazzez = "null";
-		else
+		} else {
 			clazzez = clazzez.substring(0, clazzez.length() - 1);
+		}
 		curmodel_tf.replace("__OUTCLAZZEZ__", clazzez);
 	}
-	
-	public static void registerNode(String clazz, String path)
-	{
+
+	public static void registerNode(String clazz, String path,
+			Document pluginXML, Set<String> categories) {
 		logger.info("registering Node " + clazz);
-		registerPath(path);
-		
-		Node    node = plugindoc.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
+		registerPath(path, pluginXML, categories);
+
+		Node node = pluginXML
+				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
 		Element elem = (Element) node;
 
-
-		elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("id", clazz).addAttribute("category-path", path);
+		elem.addElement("node").addAttribute("factory-class", clazz)
+				.addAttribute("id", clazz).addAttribute("category-path", path);
 	}
-	
-	public static void post() throws IOException
-	{			
-		OutputFormat format = OutputFormat.createPrettyPrint();
-		
-		XMLWriter writer = new XMLWriter( new FileWriter(_destdir_ + File.separator+"plugin.xml") , format );
-        writer.write( plugindoc );
 
+	public static void post(Document pluginXML, File destinationPluginXML,
+			String packageName, File destinationFQNDirectory,
+			File destinationFQNNodeDirectory, File payloadDirectory,
+			Set<String> node_names, Set<String> ext_tools) throws IOException {
+		OutputFormat format = OutputFormat.createPrettyPrint();
+
+		XMLWriter writer = new XMLWriter(new FileWriter(destinationPluginXML),
+				format);
+		writer.write(pluginXML);
 		writer.close();
-		
+
 		// prepare binary resources
-		InputStream template = TemplateResources.class.getResourceAsStream("BinaryResources.template");
-		curmodel_tf = new TemplateFiller();
+		InputStream template = TemplateResources.class
+				.getResourceAsStream("BinaryResources.template");
+		TemplateFiller curmodel_tf = new TemplateFiller();
 
 		curmodel_tf.read(template);
-		curmodel_tf.replace("__BASE__", _pluginpackage_);
-		curmodel_tf.replace("__BINPACKNAME__", _BINPACKNAME_);
-		curmodel_tf.write(_absnodedir_ + "/binres/BinaryResources.java");
+		curmodel_tf.replace("__BASE__", packageName);
+		curmodel_tf.replace("__BINPACKNAME__", packageName);
+		curmodel_tf.write(new File(destinationFQNNodeDirectory,
+				"/binres/BinaryResources.java"));
 		template.close();
-		
-		String pathsep = System.getProperty("file.separator");
-		
+
 		//
-		String[] binFiles =  new File(_payloaddir_).list();
-		for(String filename: binFiles)
-		{
+		String[] binFiles = payloadDirectory.list();
+		for (String filename : binFiles) {
 			// do not copy directories
-			if(new File(_payloaddir_+pathsep+filename).isDirectory())
+			if (new File(payloadDirectory, filename).isDirectory()) {
 				continue;
-			
-			// only copy zip and ini files
-			if(filename.toLowerCase().endsWith("zip"))
-			{
-				Helper.copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
-				verifyZip(_absnodedir_ +pathsep+"binres"+pathsep+filename);
 			}
-			if(filename.toLowerCase().endsWith("ini"))
-			{
-				Helper.copyFile(new File(_payloaddir_+pathsep+filename),new File(_absnodedir_ +pathsep+"binres"+pathsep+filename));
+
+			// only copy zip and ini files
+			if (filename.toLowerCase().endsWith("zip")) {
+				Helper.copyFile(new File(payloadDirectory, filename), new File(
+						destinationFQNNodeDirectory, "binres"
+								+ File.pathSeparator + filename));
+				// TODO
+				// verifyZip(destinationFQNNodeDirectory + pathsep + "binres"
+				// + pathsep + filename);
+			}
+			if (filename.toLowerCase().endsWith("ini")) {
+				Helper.copyFile(new File(payloadDirectory, filename), new File(
+						destinationFQNNodeDirectory, "binres"
+								+ File.pathSeparator + filename));
 			}
 		}
-		
-		template = TemplateResources.class.getResourceAsStream("PluginActivator.template");
+
+		template = TemplateResources.class
+				.getResourceAsStream("PluginActivator.template");
 		TemplateFiller tf = new TemplateFiller();
 		tf.read(template);
-		tf.replace("__BASE__", _pluginpackage_);
-		tf.replace("__NAME__", _pluginpackage_);
-		tf.write(_abspackagedir_ + File.separator+"knime"+File.separator+"PluginActivator.java");
+		tf.replace("__BASE__", packageName);
+		tf.replace("__NAME__", packageName);
+		tf.write(destinationFQNDirectory + File.separator + "knime"
+				+ File.separator + "PluginActivator.java");
 		template.close();
-		
-		FileWriter ini_writer = new FileWriter(_abspackagedir_ + File.separator+"knime"+File.separator+"ExternalTools.dat");
-		for(String ext_tool: ext_tools)
-			ini_writer.write(ext_tool+"\n");
-		ini_writer.close();
-				
-		ini_writer = new FileWriter(_abspackagedir_ + File.separator+"knime"+File.separator+"InternalTools.dat");
-		for(String int_tool: node_names)
-			ini_writer.write(int_tool+"\n");
-		ini_writer.close();
-	}
-	
-	public static void verifyZip(String filename)
-	{
-		boolean ok = false;
-		
-		Set<String> found_exes = new HashSet<String>();
-		
-		try
-		{
-			ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
-			ZipEntry       ze  = null;
 
-			while ((ze = zin.getNextEntry()) != null)
-			{
-				if (ze.isDirectory())
-				{
-					// we need a bin directory at the top level
-					if(ze.getName().equals("bin/") || ze.getName().equals("bin"))
-					{
-						ok = true;
-					}
-					
-				}
-				else
-				{
-					File f = new File(ze.getName());
-					if((f.getParent()!=null)&&f.getParent().equals("bin"))
-					{
-						found_exes.add(f.getName());
-					}
-				}
-			}
+		FileWriter ini_writer = new FileWriter(destinationFQNDirectory
+				+ File.separator + "knime" + File.separator
+				+ "ExternalTools.dat");
+		for (String ext_tool : ext_tools) {
+			ini_writer.write(ext_tool + "\n");
 		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
+		ini_writer.close();
+
+		ini_writer = new FileWriter(destinationFQNDirectory + File.separator
+				+ "knime" + File.separator + "InternalTools.dat");
+		for (String int_tool : node_names) {
+			ini_writer.write(int_tool + "\n");
 		}
-		
-		if(!ok)
-		{
-			panic("binary archive has no toplevel bin directory : "+filename);
-		}
-		
-		for(String nodename: node_names)
-		{
-			boolean found = false;
-			if(found_exes.contains(nodename)||found_exes.contains(nodename+".bin")||found_exes.contains(nodename+".exe"))
-			{
-				found = true;
-			}
-			if(!found)
-			{
-				panic("binary archive has no executable in bin directory for node : "+nodename);
-			}
-		}
+		ini_writer.close();
 	}
-	
-	public static void panic(String message)
-	{
-		logger.severe("PANIC - "+message+" - EXITING");
-		System.exit(1);
-	}
-	
-	public static void warn(String message)
-	{
-		logger.warning(message);
-	}
+
+	// TODO
+	// public static void verifyZip(String filename) {
+	// boolean ok = false;
+	//
+	// Set<String> found_exes = new HashSet<String>();
+	//
+	// try {
+	// ZipInputStream zin = new ZipInputStream(new FileInputStream(
+	// filename));
+	// ZipEntry ze = null;
+	//
+	// while ((ze = zin.getNextEntry()) != null) {
+	// if (ze.isDirectory()) {
+	// // we need a bin directory at the top level
+	// if (ze.getName().equals("bin/")
+	// || ze.getName().equals("bin")) {
+	// ok = true;
+	// }
+	//
+	// } else {
+	// File f = new File(ze.getName());
+	// if ((f.getParent() != null) && f.getParent().equals("bin")) {
+	// found_exes.add(f.getName());
+	// }
+	// }
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	//
+	// if (!ok) {
+	// this.panic("binary archive has no toplevel bin directory : "
+	// + filename);
+	// }
+	//
+	// for (String nodename : this.node_names) {
+	// boolean found = false;
+	// if (found_exes.contains(nodename)
+	// || found_exes.contains(nodename + ".bin")
+	// || found_exes.contains(nodename + ".exe")) {
+	// found = true;
+	// }
+	// if (!found) {
+	// this.panic("binary archive has no executable in bin directory for node : "
+	// + nodename);
+	// }
+	// }
+	// }
 
 }
