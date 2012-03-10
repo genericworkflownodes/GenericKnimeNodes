@@ -25,12 +25,15 @@ public class NodesBuildDirectory extends TempDirectory {
 	public NodesBuildDirectory(String packageRoot) throws FileNotFoundException {
 		super("GKN-pluginsource");
 
-		this.deleteOnExit();
+		String packageRootPath = packageRoot.replace('.', File.separatorChar);
+
+		new File(this, "src" + File.separator + packageRootPath
+				+ File.separator + "knime" + File.separator + "nodes").mkdirs();
 
 		this.srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
 
 		this.packageRootDirectory = new NodesBuildPackageRootDirectory(
-				new File(this.srcDirectory, packageRoot));
+				new File(this.srcDirectory, packageRootPath));
 
 		this.nodesBuildKnimeNodesDirectory = new NodesBuildKnimeNodesDirectory(
 				new File(new File(this.packageRootDirectory, "knime"), "nodes"));

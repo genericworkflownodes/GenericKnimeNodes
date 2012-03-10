@@ -86,7 +86,8 @@ public class NodeGenerator {
 		Document pluginXML = PluginXmlTemplate.getFromTemplate();
 
 		try {
-			installMimeTypes(pluginXML, this.buildDir.getKnimeNodesDirectory(),
+			createMimeFileCellFactoryFile(
+					this.buildDir.getKnimeNodesDirectory(),
 					srcDir.getMimeTypes(), meta.getName());
 		} catch (JaxenException e) {
 			throw new DocumentException(e);
@@ -177,47 +178,44 @@ public class NodeGenerator {
 	/**
 	 * TODO
 	 * 
-	 * @param pluginXML
-	 * @param destinationFQNNodeDirectory
-	 * @param mimetypesXML
+	 * @param knimeNodesDir
+	 * @param mimeTypes
 	 * @param packageName
 	 * @throws DocumentException
 	 * @throws IOException
 	 * @throws JaxenException
 	 */
-	private static void installMimeTypes(Document pluginXML,
-			File destinationFQNNodeDirectory, List<MimeType> mimeTypes,
-			String packageName) throws DocumentException, IOException,
-			JaxenException {
+	private static void createMimeFileCellFactoryFile(File knimeNodesDir,
+			List<MimeType> mimeTypes, String packageName)
+			throws DocumentException, IOException, JaxenException {
 
-		InputStream template = TemplateResources.class
-				.getResourceAsStream("MimeFileCellFactory.template");
+		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
+		String mimeTypeAddCode = "";
 
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-
-		String mimeTypeAddTemplate = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
-		String mimetypes_code = "";
-
-		Set<String> mimetypes = new HashSet<String>();
+		Set<MimeType> processedMimeTypes = new HashSet<MimeType>();
 
 		for (MimeType mimeType : mimeTypes) {
 			logger.info("MIME Type read: " + mimeType.getName());
 
-			if (mimetypes.contains(mimeType.getName())) {
+			if (processedMimeTypes.contains(mimeType)) {
 				logger.log(Level.WARNING, "skipping duplicate mime type "
 						+ mimeType.getName());
+			} else {
+				processedMimeTypes.add(mimeType);
 			}
 
-			String s4 = mimeTypeAddTemplate.replace("__EXT__", mimeType.getExt()
-					.toLowerCase());
-			mimetypes_code += s4;
+			mimeTypeAddCode += mimeTypeAddTemplateCodeLine.replace("__EXT__",
+					mimeType.getExt().toLowerCase());
 		}
 
-		tf.replace("__MIMETYPES__", mimetypes_code);
+		InputStream template = TemplateResources.class
+				.getResourceAsStream("MimeFileCellFactory.template");
+		TemplateFiller tf = new TemplateFiller();
+		tf.read(template);
+		tf.replace("__MIMETYPES__", mimeTypeAddCode);
 		tf.replace("__BASE__", packageName);
-		tf.write(new File(destinationFQNNodeDirectory, "mimetypes"
-				+ File.separator + "MimeFileCellFactory.java"));
+		tf.write(new File(knimeNodesDir, "mimetypes" + File.separator
+				+ "MimeFileCellFactory.java"));
 		template.close();
 	}
 

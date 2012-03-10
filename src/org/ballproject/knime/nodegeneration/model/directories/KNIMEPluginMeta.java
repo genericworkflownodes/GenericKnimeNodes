@@ -64,7 +64,7 @@ public class KNIMEPluginMeta {
 	 * @return
 	 */
 	private static String getPackageRoot(Properties props) {
-		return props.getProperty("package_root");
+		return props.getProperty("pluginpackage");
 	}
 
 	/**
@@ -80,9 +80,33 @@ public class KNIMEPluginMeta {
 						.matches("^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$");
 	}
 
+	/**
+	 * Returns the package name the generated plugin uses. (e.g.
+	 * org.roettig.foo).
+	 * 
+	 * @param props
+	 * @return
+	 */
+	private static String getNodeRepositoyPath(Properties props) {
+		return props.getProperty("package_root");
+	}
+
+	/**
+	 * Checks whether a given package name is valid.
+	 * 
+	 * @param nodeRepositoryPath
+	 * @param id
+	 * @return true if package name is valid; false otherwise
+	 */
+	public static boolean isNodeRepositoyPathValid(String nodeRepositoryPath) {
+		// TODO
+		return true;
+	}
+
 	private String name;
 	private String version;
 	private String packageRoot;
+	private String nodeRepositoyPath;
 
 	public KNIMEPluginMeta(Properties properties) {
 		packageRoot = getPackageRoot(properties);
@@ -106,6 +130,15 @@ public class KNIMEPluginMeta {
 		if (!isPluginVersionValid(version)) {
 			throw new InvalidParameterException("The plugin version \""
 					+ version + "\" is not valid");
+		}
+
+		nodeRepositoyPath = getNodeRepositoyPath(properties);
+		if (nodeRepositoyPath == null || nodeRepositoyPath.isEmpty())
+			throw new InvalidParameterException(
+					"No path within the node repository was specified");
+		if (!isNodeRepositoyPathValid(version)) {
+			throw new InvalidParameterException("The node repository path \""
+					+ nodeRepositoyPath + "\" is not valid");
 		}
 	}
 
@@ -140,5 +173,16 @@ public class KNIMEPluginMeta {
 	 */
 	public String getPackageRoot() {
 		return packageRoot;
+	}
+
+	/**
+	 * Returns the path within KNIME node repository.
+	 * <p>
+	 * e.g. community/foo/bar
+	 * 
+	 * @return
+	 */
+	public String getNodeRepositoryRoot() {
+		return nodeRepositoyPath;
 	}
 }
