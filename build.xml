@@ -1,11 +1,20 @@
 <project name="pluginbuilder" default="buildbaseplugin" basedir=".">
+	<!-- user modifiable properties -->
 
 	<property name="debug" value="false"/>
 
 	<property file="build.properties"/>
+        <property file="plugin.properties"/>
+        
+	<!-- DO NOT CHANGE ANYTHING BELOW -->
 
-
-
+	<!-- ant contrib contains conditional ant tags (if,then,else,..) -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="lib/ant-contrib.jar"/>
+		</classpath>
+	</taskdef>
+ 
 	<!-- fixed/automatic properties -->
 	<property name="basepluginname"   value="org.ballproject.knime"/>
 
@@ -18,7 +27,18 @@
 	<property name="temp.folder" value="${java.io.tmpdir}/temp.folder"/>
 	<property name="src" value="src"/>
 
+	<!-- the targets                -->
+	<target name="initial_checks">
+		<if>
+			<equals arg1="${knimeSDKpath}" arg2=""/>
+        	        <then>
+				<fail message="Please specify the knime SDK directory within build.properties" />
+        	        </then>
+		</if> 
+	</target>
+
 	<target name="clean">
+                <delete dir="build"/>
 		<delete dir="${temp.folder}"/>
 		<delete dir="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 	</target>
@@ -29,11 +49,12 @@
 		<mkdir dir="build"/>
 	</target>
 
-	<target name="buildbaseplugin" depends="prepare">
+	<target name="buildbaseplugin" depends="initial_checks,prepare">
 
 		<echo message="Debug is:  ${debug}"/>
 		
 		<mkdir dir="${temp.folder}/package"/>
+
 		<mkdir dir="${temp.folder}/package/META-INF"/>
 
 		<antcall target="buildbaseclasses"/>
@@ -54,7 +75,9 @@
 		<mkdir dir="${temp.folder}/package/icons"/>
 		
 		<copy file="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${temp.folder}/package/data"/>
-		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>		
+		
+		<copy file="data/plugin.xml" todir="${temp.folder}/package/"/>
+		
 		<copy file="data/GKN.png" todir="${temp.folder}/package/icons"/>
 		
 		<replace file="${temp.folder}/package/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${basepluginname}" />
@@ -76,7 +99,6 @@
 				<include name="*.jar" />
 			</fileset>
 		</path>
-		
 		<javac srcdir="${src}" destdir="${temp.folder}/package" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="lib.jar.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
@@ -87,6 +109,7 @@
 		<propertyfile file="${temp.folder}/package/org/ballproject/knime/baseplugin.properties">
 			<entry  key="debug" value="${debug}"/>
 		</propertyfile>
+
 
 		<!-- copy factory-xmls and other stuff -->
 		<copy todir="${temp.folder}/package" failonerror="true" overwrite="true">
@@ -135,9 +158,11 @@
 	<target name="buildplugin" depends="prepare">
 
 		<property file="plugin.properties"/>
+
 		<property name="pluginsources" value="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC"/>
 
-		<mkdir dir="${temp.folder}/pluginpackage"/>		
+		<mkdir dir="${temp.folder}/pluginpackage"/>
+		
 		<mkdir dir="${temp.folder}/pluginpackage/icons"/>
 	
 		<available property="iconfile.exists" file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/icons/logo.png"/>
@@ -149,6 +174,7 @@
 		<antcall target="buildpluginclasses"/>
 
 		<copy file="${java.io.tmpdir}/GENERIC_KNIME_NODES_PLUGINSRC/plugin.xml" todir="${temp.folder}/pluginpackage"/>
+		
 		<copy file="data/PluginMANIFEST.MF" tofile="${temp.folder}/pluginpackage/META-INF/MANIFEST.MF"/>
 
 		<replace file="${temp.folder}/pluginpackage/META-INF/MANIFEST.MF" token="@@pluginname@@" value="${pluginpackage}" />
@@ -188,4 +214,18 @@
 			<test name="org.ballproject.knime.test.MIMEFileStuffTest"/>
 		</junit>
 	</target>
+
+	<target name="deploy" depends="nodegen">
+		<if>
+			<isset property="knimedir"/>
+			<then>
+				<copy file="build/${basepluginname}_${basepluginversion}.jar" todir="${knimedir}/plugins/" overwrite="true"/>
+				<copy file="lib/org.knime.core.data.urltype.jar" todir="${knimedir}/plugins/" overwrite="true"/>
+				<copy file="build/${pluginpackage}_${pluginversion}.jar" todir="${knimedir}/plugins/" overwrite="true"/>
+			</then>
+		<else>
+			<fail message="Please specify the knime directory where the plugin should be deployed to via -Dknimedir=&lt;path&gt;" />
+		</else>
+		</if>
+        </target>
 </project>
