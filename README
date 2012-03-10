@@ -1,15 +1,48 @@
+
+
 This package provides the source code for the KNIME plugin
 
   org.ballproject.kime
 
-providing basic functionality for further plugins depending 
-on the GenericKnimeNodes mechanism.
+which provides basic functionality for integration of external
+(commandline) programs into KNIME. The whole system is named  
+GenericKnimeNodes.
 
-Please adjust the file build.properties and make the property
-knimeSDKpath point to the path of the KNIME SDK root. You can
+
+-- QuickStart --
+
+Please adjust the file build.properties that the property
+knimeSDKpath points to the path of the KNIME SDK root. You can
 download the KNIME SDK at http://knime.org/downloads/overview.  
 
+To build your first GKN demo plugin (a BLAST node) simply issue 
 
+  ant deploy -Dknimedir=<path-to-knime-root-dir>
+
+where <path-to-knime-root-dir> points to the directoy containing 
+your KNIME installation. This will generate the GKN base plugin
+and the BLAST plugin and copy them into the plugins folder of your
+KNIME installation. You should (re)start KNIME now and see the 
+BLAST plugin as a new available node within the community section
+of KNIME.
+
+The plugin properties, like name, version, pointers to node config
+files (ctd) are given in the plugin.properties file and link most
+of the time to the demo folder. You should have a detailed look at
+the demo folder files for more information about how to configure
+GKN node generation.
+
+BLAST is a simple command line tool to execute efficient DNA/protein 
+sequence searches against a database of sequences (http://blast.ncbi.nlm.nih.gov/).
+
+
+-- Further information --
+
+
+The deploy target automatically executes the targets mentioned
+below:
+
+# Base plugin #
 The base plugin can then be built by issuing
 
 ant buildbaseplugin
@@ -21,6 +54,7 @@ which will produce the respective jar file
 in the build directory that has to be  copied into the plugins
 folder of the KNIME installation.
 
+# Your plugin #
 The NodeGenerator, that creates the source code of further
 plugins from the tool description files (ctd), can be built
 by issuing
@@ -51,7 +85,8 @@ Finally, you should copy the resulting two jar files
 - org.ballproject.knime_x.y.z.jar
 - orf.mydomain.myplugin_a.b.c.jar
 
-into the plugins folder of KNIME.
+into the plugins folder of KNIME (done automatically by deploy
+target).
 
 
  
