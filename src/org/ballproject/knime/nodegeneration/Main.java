@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 public class Main {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 

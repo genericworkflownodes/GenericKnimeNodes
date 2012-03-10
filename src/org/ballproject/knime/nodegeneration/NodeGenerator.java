@@ -46,8 +46,8 @@ import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
+import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
-import org.ballproject.knime.nodegeneration.model.directories.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
 import org.ballproject.knime.nodegeneration.model.mime.MimeType;
@@ -80,18 +80,13 @@ public class NodeGenerator {
 				.createCTDsIfNecessary(srcDir);
 		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 
-		// GO
 		logger.info("Creating KNIME plugin sources in: " + buildDir.getPath());
 
 		Document pluginXML = PluginXmlTemplate.getFromTemplate();
 
-		try {
-			createMimeFileCellFactoryFile(
-					this.buildDir.getKnimeNodesDirectory(),
-					srcDir.getMimeTypes(), meta.getName());
-		} catch (JaxenException e) {
-			throw new DocumentException(e);
-		}
+		createMimeFileCellFactoryFile(meta.getName(), srcDir.getMimeTypes(),
+				new File(buildDir.getKnimeNodesDirectory(), "mimetypes"
+						+ File.separator + "MimeFileCellFactory.java"));
 
 		Set<String> node_names = new HashSet<String>();
 		Set<String> ext_tools = new HashSet<String>();
@@ -116,8 +111,7 @@ public class NodeGenerator {
 
 		PluginXmlTemplate.saveTo(pluginXML, buildDir.getPluginXml());
 
-		createManifest(new File(buildDir, "META-INF" + File.separator
-				+ "MANIFEST.MF"), meta.getName(), meta.getVersion());
+		createManifest(meta, buildDir.getManifestMf());
 	}
 
 	public File getPluginDirectory() {
@@ -163,13 +157,14 @@ public class NodeGenerator {
 	//
 	// }
 
-	public static void createManifest(File destinationManifest,
-			String pluginname, String pluginversion) throws IOException {
+	public static void createManifest(KNIMEPluginMeta pluginMeta,
+			File destinationManifest) throws IOException {
 		String manifest = IOUtils.toString(TemplateResources.class
 				.getResourceAsStream("MANIFEST.MF.template"));
 
-		manifest = manifest.replaceAll("@@pluginname@@", pluginname);
-		manifest = manifest.replaceAll("@@pluginversion@@", pluginversion);
+		manifest = manifest.replaceAll("@@pluginname@@", pluginMeta.getName());
+		manifest = manifest.replaceAll("@@pluginversion@@",
+				pluginMeta.getVersion());
 
 		destinationManifest.getParentFile().mkdirs();
 		FileUtils.writeStringToFile(destinationManifest, manifest);
@@ -178,16 +173,16 @@ public class NodeGenerator {
 	/**
 	 * TODO
 	 * 
-	 * @param knimeNodesDir
-	 * @param mimeTypes
 	 * @param packageName
+	 * @param mimeTypes
+	 * @param file
+	 * 
 	 * @throws DocumentException
 	 * @throws IOException
 	 * @throws JaxenException
 	 */
-	private static void createMimeFileCellFactoryFile(File knimeNodesDir,
-			List<MimeType> mimeTypes, String packageName)
-			throws DocumentException, IOException, JaxenException {
+	private static void createMimeFileCellFactoryFile(String packageName,
+			List<MimeType> mimeTypes, File file) throws IOException {
 
 		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
 		String mimeTypeAddCode = "";
@@ -214,8 +209,7 @@ public class NodeGenerator {
 		tf.read(template);
 		tf.replace("__MIMETYPES__", mimeTypeAddCode);
 		tf.replace("__BASE__", packageName);
-		tf.write(new File(knimeNodesDir, "mimetypes" + File.separator
-				+ "MimeFileCellFactory.java"));
+		tf.write(file);
 		template.close();
 	}
 

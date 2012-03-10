@@ -1,4 +1,4 @@
-package org.ballproject.knime.nodegeneration.model;
+package org.ballproject.knime.nodegeneration.model.directories;
 
 import java.io.File;
 import java.io.FileNotFoundException;

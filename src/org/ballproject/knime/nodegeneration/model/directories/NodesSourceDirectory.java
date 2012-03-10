@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
-import org.ballproject.knime.nodegeneration.model.Directory;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.MimeTypesFile;
@@ -18,9 +16,6 @@ import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
 
 public class NodesSourceDirectory extends Directory {
-
-	private Logger logger = Logger.getLogger(NodesSourceDirectory.class
-			.getCanonicalName());
 
 	private static final long serialVersionUID = -2772836144406225644L;
 	private DescriptorsDirectory descriptorsDirectory = null;

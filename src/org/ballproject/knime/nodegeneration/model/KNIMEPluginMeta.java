@@ -1,4 +1,4 @@
-package org.ballproject.knime.nodegeneration.model.directories;
+package org.ballproject.knime.nodegeneration.model;
 
 import java.security.InvalidParameterException;
 import java.util.Properties;
