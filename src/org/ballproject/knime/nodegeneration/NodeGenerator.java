@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
 import org.ballproject.knime.base.config.NodeConfiguration;
@@ -71,6 +73,11 @@ public class NodeGenerator {
 	private static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
+	private File pluginDirectory;
+	private Properties props;
+
+	private File destinationDirectory;
+
 	public NodeGenerator(File pluginDir) throws IOException,
 			ExecutionException, DocumentException, DuplicateNodeNameException,
 			InvalidNodeNameException, CTDNodeConfigurationReaderException,
@@ -78,6 +85,7 @@ public class NodeGenerator {
 		if (!pluginDir.isDirectory())
 			throw new FileNotFoundException("Path " + pluginDir.getPath()
 					+ " is no valid directory.");
+		this.pluginDirectory = pluginDir;
 
 		File payloadDirectory = getPluginDirectory(pluginDir);
 		if (!payloadDirectory.isDirectory())
@@ -89,7 +97,7 @@ public class NodeGenerator {
 
 		File propertyFile = new File(pluginDir, PLUGIN_PROPERTIES);
 
-		Properties props = new Properties();
+		this.props = new Properties();
 		try {
 			props.load(new FileInputStream(propertyFile));
 		} catch (FileNotFoundException e) {
@@ -113,6 +121,12 @@ public class NodeGenerator {
 			throw new InvalidParameterException("The package name \""
 					+ pluginname
 					+ "\" must only contain alpha numeric characters");
+
+		String pluginversion = getPluginVersion(props);
+		if (pluginversion == null || pluginversion.isEmpty())
+			throw new InvalidParameterException(
+					"No plugin version was specified");
+		// TODO validy check
 
 		// the root node where to attach the generated nodes
 		String nodeRepositoryRoot = getNodeRepositoryRoot(props);
@@ -144,8 +158,7 @@ public class NodeGenerator {
 		}
 
 		// e.g. /tmp/327
-		File destinationDirectory = this.getDestinationDirectory();
-		System.out.println(destinationDirectory.getPath());
+		this.destinationDirectory = this.getDestinationDirectory();
 
 		// e.g. /tmp/327/src
 		File destinationSourceDirectory = new File(destinationDirectory, "src");
@@ -157,6 +170,10 @@ public class NodeGenerator {
 		// e.g. /tmp/327/foo.bar/knime/nodes
 		File destinationFQNNodeDirectory = new File(destinationFQNDirectory,
 				"knime" + File.separator + "nodes");
+
+		// GO
+		logger.info("Creating KNIME plugin sources in: "
+				+ destinationDirectory.getPath());
 
 		File destinationPluginXML = new File(destinationDirectory, "plugin.xml");
 		Document pluginXML = preparePluginXML(destinationDirectory,
@@ -184,6 +201,29 @@ public class NodeGenerator {
 				destinationFQNDirectory, destinationFQNNodeDirectory,
 				payloadDirectory, node_names, ext_tools);
 
+		createManifest(new File(destinationDirectory, "META-INF"
+				+ File.separator + "MANIFEST.MF"), pluginname, pluginversion);
+
+		File jar = new File(pluginDir.getParent(), pluginname + "_"
+				+ pluginversion + ".jar");
+		logger.info("Zipping KNIME plugin to: " + jar);
+		Utils.zipDirectory(destinationDirectory, jar);
+	}
+
+	public File getPluginDirectory() {
+		return this.pluginDirectory;
+	}
+
+	public File getPreparedPluginDirectory() {
+		return this.destinationDirectory;
+	}
+
+	public String getPluginName() {
+		return getPluginName(props, getPackageName(this.props));
+	}
+
+	public String getPluginVersion() {
+		return getPluginVersion(this.props);
 	}
 
 	/**
@@ -240,6 +280,16 @@ public class NodeGenerator {
 		if (idx == -1)
 			return packageName;
 		return packageName.substring(idx + 1);
+	}
+
+	/**
+	 * Returns the plugin version.
+	 * 
+	 * @param packageName
+	 * @return
+	 */
+	public static String getPluginVersion(Properties props) {
+		return props.getProperty("pluginversion");
 	}
 
 	/**
@@ -434,6 +484,18 @@ public class NodeGenerator {
 		reader.setDocumentFactory(new DOMDocumentFactory());
 
 		return reader.read(new FileInputStream(destinationPluginXML));
+	}
+
+	public static void createManifest(File destinationManifest,
+			String pluginname, String pluginversion) throws IOException {
+		String manifest = IOUtils.toString(TemplateResources.class
+				.getResourceAsStream("MANIFEST.MF.template"));
+
+		manifest = manifest.replaceAll("@@pluginname@@", pluginname);
+		manifest = manifest.replaceAll("@@pluginversion@@", pluginversion);
+
+		destinationManifest.getParentFile().mkdirs();
+		FileUtils.writeStringToFile(destinationManifest, manifest);
 	}
 
 	/**
@@ -938,16 +1000,16 @@ public class NodeGenerator {
 			// only copy zip and ini files
 			if (filename.toLowerCase().endsWith("zip")) {
 				Helper.copyFile(new File(payloadDirectory, filename), new File(
-						destinationFQNNodeDirectory, "binres"
-								+ File.pathSeparator + filename));
+						destinationFQNNodeDirectory, "binres" + File.separator
+								+ filename));
 				// TODO
 				// verifyZip(destinationFQNNodeDirectory + pathsep + "binres"
 				// + pathsep + filename);
 			}
 			if (filename.toLowerCase().endsWith("ini")) {
 				Helper.copyFile(new File(payloadDirectory, filename), new File(
-						destinationFQNNodeDirectory, "binres"
-								+ File.pathSeparator + filename));
+						destinationFQNNodeDirectory, "binres" + File.separator
+								+ filename));
 			}
 		}
 

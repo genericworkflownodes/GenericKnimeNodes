@@ -15,6 +15,7 @@ public class Main {
 
 		try {
 			NodeGenerator nodeGenerator = new NodeGenerator(pluginDir);
+			NodePackager.zip(nodeGenerator);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

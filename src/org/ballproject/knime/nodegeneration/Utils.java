@@ -1,8 +1,13 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class Utils {
 	/**
@@ -48,5 +53,34 @@ public class Utils {
 	public static String getPathSuffix(String path) {
 		File pth = new File(path);
 		return pth.getName();
+	}
+
+	public static void zipDirectory(File directory, File zipFile)
+			throws IOException {
+		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+		addDir(directory, directory, out);
+		out.close();
+	}
+
+	private static void addDir(File root, File directory, ZipOutputStream out)
+			throws IOException {
+		File[] files = directory.listFiles();
+		byte[] tmpBuf = new byte[1024];
+
+		for (int i = 0; i < files.length; i++) {
+			if (files[i].isDirectory()) {
+				addDir(root, files[i], out);
+				continue;
+			}
+			FileInputStream in = new FileInputStream(files[i].getAbsolutePath());
+			out.putNextEntry(new ZipEntry(files[i].getAbsolutePath().substring(
+					root.getAbsolutePath().length())));
+			int len;
+			while ((len = in.read(tmpBuf)) > 0) {
+				out.write(tmpBuf, 0, len);
+			}
+			out.closeEntry();
+			in.close();
+		}
 	}
 }
