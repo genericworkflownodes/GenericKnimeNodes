@@ -13,7 +13,7 @@ public class Utils {
 	/**
 	 * returns all prefix paths of a given path.
 	 * 
-	 * /foo/bar/baz --> [/foo/bar/,/foo/,/]
+	 * /foo/bar/baz --> [/foo/bar, /foo, /]
 	 * 
 	 * @param path
 	 * @return

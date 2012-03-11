@@ -50,19 +50,18 @@ import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
+import org.ballproject.knime.nodegeneration.model.files.CtdFile;
 import org.ballproject.knime.nodegeneration.model.mime.MimeType;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
 import org.eclipse.core.commands.ExecutionException;
 import org.jaxen.JaxenException;
 
 public class NodeGenerator {
 	private static final String PLUGIN_PROPERTIES = "plugin.properties";
 
-	static Logger logger = Logger.getLogger(NodeGenerator.class
+	public static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
 	private NodesSourceDirectory srcDir;
@@ -82,22 +81,24 @@ public class NodeGenerator {
 
 		logger.info("Creating KNIME plugin sources in: " + buildDir.getPath());
 
-		Document pluginXML = PluginXmlTemplate.getFromTemplate();
+		PluginXmlTemplate pluginXML = new PluginXmlTemplate();
 
 		createMimeFileCellFactoryFile(meta.getName(), srcDir.getMimeTypes(),
 				new File(buildDir.getKnimeNodesDirectory(), "mimetypes"
 						+ File.separator + "MimeFileCellFactory.java"));
 
+		// TODO: hier weiter machen
+		// Plugin zum laufen bekommen
 		Set<String> node_names = new HashSet<String>();
 		Set<String> ext_tools = new HashSet<String>();
 		processDescriptors(
 				node_names,
 				ext_tools,
 				pluginXML,
-				(dynamicCTDs) ? srcDir.getExecutablesDirectory() : srcDir
-						.getDescriptorsDirectory(), meta.getPackageRoot(),
-				meta.getName(), this.buildDir.getKnimeNodesDirectory(),
-				meta.getPackageRoot());
+				(dynamicCTDs) ? new DescriptorsDirectory(srcDir
+						.getExecutablesDirectory()) : srcDir
+						.getDescriptorsDirectory(),
+				this.buildDir.getKnimeNodesDirectory(), meta);
 
 		// TODO
 		// this.installIcon();
@@ -109,7 +110,7 @@ public class NodeGenerator {
 				this.buildDir.getKnimeNodesDirectory(),
 				srcDir.getPayloadDirectory(), node_names, ext_tools);
 
-		PluginXmlTemplate.saveTo(pluginXML, buildDir.getPluginXml());
+		pluginXML.saveTo(buildDir.getPluginXml());
 
 		createManifest(meta, buildDir.getManifestMf());
 	}
@@ -214,30 +215,27 @@ public class NodeGenerator {
 	}
 
 	private static void processDescriptors(Set<String> node_names,
-			Set<String> ext_tools, Document pluginXML,
-			File descriptorDirectory, String nodeRepositoryRoot,
-			String pluginName, File destinationFQNNodeDirectory,
-			String packageName) throws IOException, DuplicateNodeNameException,
+			Set<String> ext_tools, PluginXmlTemplate pluginXML,
+			DescriptorsDirectory descriptorDirectory,
+			File destinationFQNNodeDirectory, KNIMEPluginMeta pluginMeta)
+			throws IOException, DuplicateNodeNameException,
 			InvalidNodeNameException, CTDNodeConfigurationReaderException,
 			UnknownMimeTypeException {
+
 		Set<String> categories = new HashSet<String>();
-		for (File file : descriptorDirectory.listFiles()) {
-			if (file.getName().endsWith(".ctd")) {
-				logger.info("start processing node " + file);
-				processNode(pluginXML, file, node_names, ext_tools,
-						nodeRepositoryRoot, pluginName,
-						destinationFQNNodeDirectory, categories, packageName);
-			}
+		for (CtdFile ctdFile : descriptorDirectory.getCtdFiles()) {
+			logger.info("Start processing node: " + ctdFile);
+			processNode(pluginMeta, pluginXML, ctdFile, node_names, ext_tools,
+					destinationFQNNodeDirectory, categories);
 		}
 	}
 
-	public static void processNode(Document pluginXML, File ctdFile,
-			Set<String> node_names, Set<String> ext_tools,
-			String nodeRepositoryRoot, String pluginName,
-			File destinationFQNNodeDirectory, Set<String> categories,
-			String packageName) throws IOException, DuplicateNodeNameException,
-			InvalidNodeNameException, CTDNodeConfigurationReaderException,
-			UnknownMimeTypeException {
+	public static void processNode(KNIMEPluginMeta pluginMeta,
+			PluginXmlTemplate pluginXML, File ctdFile, Set<String> node_names,
+			Set<String> ext_tools, File destinationFQNNodeDirectory,
+			Set<String> categories) throws IOException,
+			DuplicateNodeNameException, InvalidNodeNameException,
+			CTDNodeConfigurationReaderException, UnknownMimeTypeException {
 
 		logger.info("## processing Node " + ctdFile.getName());
 
@@ -279,8 +277,8 @@ public class NodeGenerator {
 			}
 		}
 
-		String cur_cat = new File("/" + nodeRepositoryRoot + "/" + pluginName,
-				config.getCategory()).getPath();
+		String cur_cat = new File("/" + pluginMeta.getNodeRepositoryRoot()
+				+ "/" + pluginMeta.getName(), config.getCategory()).getPath();
 
 		File nodeConfigDir = new File(destinationFQNNodeDirectory
 				+ File.separator + nodeName + File.separator + "config");
@@ -290,16 +288,19 @@ public class NodeGenerator {
 				+ File.separator + nodeName + File.separator + "config"
 				+ File.separator + "config.xml"));
 
-		registerPath(cur_cat, pluginXML, categories);
+		pluginXML.registerPath(cur_cat);
 
-		createFactory(nodeName, destinationFQNNodeDirectory, packageName);
+		createFactory(nodeName, destinationFQNNodeDirectory,
+				pluginMeta.getPackageRoot());
 
-		createDialog(nodeName, destinationFQNNodeDirectory, packageName);
+		createDialog(nodeName, destinationFQNNodeDirectory,
+				pluginMeta.getPackageRoot());
 
-		createView(nodeName, destinationFQNNodeDirectory, packageName);
+		createView(nodeName, destinationFQNNodeDirectory,
+				pluginMeta.getPackageRoot());
 
 		TemplateFiller curmodel_tf = createModel(nodeName,
-				destinationFQNNodeDirectory, packageName);
+				destinationFQNNodeDirectory, pluginMeta.getPackageRoot());
 
 		fillMimeTypes(config, curmodel_tf);
 
@@ -309,46 +310,9 @@ public class NodeGenerator {
 
 		writeModel(nodeName, destinationFQNNodeDirectory, curmodel_tf);
 
-		registerNode(packageName + ".knime.nodes." + nodeName + "." + nodeName
-				+ "NodeFactory", cur_cat, pluginXML, categories);
+		pluginXML.registerNode(pluginMeta.getPackageRoot() + ".knime.nodes."
+				+ nodeName + "." + nodeName + "NodeFactory", cur_cat);
 
-	}
-
-	public static void registerPath(String path, Document pluginXML,
-			Set<String> categories) {
-		List<String> prefixes = Utils.getPathPrefixes(path);
-		for (String prefix : prefixes) {
-			registerPathPrefix(prefix, pluginXML, categories);
-		}
-	}
-
-	public static void registerPathPrefix(String path, Document pluginXML,
-			Set<String> categories) {
-		// do not register any top level or root path
-		if (path.equals("/") || new File(path).getParent().equals("/"))
-			return;
-
-		if (categories.contains(path))
-			return;
-
-		logger.info("registering path prefix " + path);
-
-		categories.add(path);
-
-		String cat_name = Utils.getPathSuffix(path);
-		String path_prefix = Utils.getPathPrefix(path);
-
-		Node node = pluginXML
-				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
-
-		Element elem = (Element) node;
-		logger.info("name=" + cat_name);
-
-		elem.addElement("category").addAttribute("description", path)
-				.addAttribute("icon", "icons/category.png")
-				.addAttribute("path", path_prefix)
-				.addAttribute("name", cat_name)
-				.addAttribute("level-id", cat_name);
 	}
 
 	public static void createFactory(String nodeName,
@@ -579,19 +543,6 @@ public class NodeGenerator {
 			clazzez = clazzez.substring(0, clazzez.length() - 1);
 		}
 		curmodel_tf.replace("__OUTCLAZZEZ__", clazzez);
-	}
-
-	public static void registerNode(String clazz, String path,
-			Document pluginXML, Set<String> categories) {
-		logger.info("registering Node " + clazz);
-		registerPath(path, pluginXML, categories);
-
-		Node node = pluginXML
-				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
-		Element elem = (Element) node;
-
-		elem.addElement("node").addAttribute("factory-class", clazz)
-				.addAttribute("id", clazz).addAttribute("category-path", path);
 	}
 
 	public static void post(String packageName, File destinationFQNDirectory,

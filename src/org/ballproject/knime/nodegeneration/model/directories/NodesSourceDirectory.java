@@ -9,11 +9,10 @@ import java.util.Properties;
 
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
-import org.ballproject.knime.nodegeneration.model.directories.source.MimeTypesFile;
 import org.ballproject.knime.nodegeneration.model.directories.source.PayloadDirectory;
+import org.ballproject.knime.nodegeneration.model.files.CtdFile;
 import org.ballproject.knime.nodegeneration.model.mime.MimeType;
 import org.dom4j.DocumentException;
-import org.jaxen.JaxenException;
 
 public class NodesSourceDirectory extends Directory {
 
@@ -22,7 +21,6 @@ public class NodesSourceDirectory extends Directory {
 	private ExecutablesDirectory executablesDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
 	private Properties properties = null;
-	private MimeTypesFile mimeTypesFile;
 
 	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
 			DocumentException {
@@ -61,14 +59,6 @@ public class NodesSourceDirectory extends Directory {
 		} catch (IOException e) {
 			throw new IOException("Could not load property file", e);
 		}
-
-		File mimeTypeFile = new File(descriptorsDirectory, "mimetypes.xml");
-		try {
-			this.mimeTypesFile = new MimeTypesFile(mimeTypeFile);
-		} catch (JaxenException e) {
-			throw new IOException("Error reading MIME types from "
-					+ mimeTypeFile.getPath());
-		}
 	}
 
 	public DescriptorsDirectory getDescriptorsDirectory() {
@@ -87,7 +77,11 @@ public class NodesSourceDirectory extends Directory {
 		return properties;
 	}
 
+	public List<CtdFile> getCtdFiles() {
+		return this.descriptorsDirectory.getCtdFiles();
+	}
+
 	public List<MimeType> getMimeTypes() {
-		return this.mimeTypesFile.getMimeTypes();
+		return this.descriptorsDirectory.getMimeTypesFile().getMimeTypes();
 	}
 }
