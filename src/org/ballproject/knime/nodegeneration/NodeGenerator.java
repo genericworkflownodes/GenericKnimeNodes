@@ -288,8 +288,6 @@ public class NodeGenerator {
 				+ File.separator + nodeName + File.separator + "config"
 				+ File.separator + "config.xml"));
 
-		pluginXML.registerPath(cur_cat);
-
 		createFactory(nodeName, destinationFQNNodeDirectory,
 				pluginMeta.getPackageRoot());
 
