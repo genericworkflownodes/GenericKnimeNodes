@@ -21,14 +21,12 @@ package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.util.Helper;
@@ -105,7 +103,7 @@ public class NodeGenerator {
 		new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
 				this.buildDir.getBinaryResourcesDirectory(),
 				"BinaryResources.java"));
-		copyPayload(srcDir.getPayloadDirectory(),
+		this.srcDir.getPayloadDirectory().copyPayloadTo(
 				this.buildDir.getBinaryResourcesDirectory());
 
 		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
@@ -248,83 +246,6 @@ public class NodeGenerator {
 
 		pluginXML.registerNode(pluginMeta.getPackageRoot() + ".knime.nodes."
 				+ nodeName + "." + nodeName + "NodeFactory", absoluteCategory);
-	}
-
-	// TODO
-	// public static void verifyZip(String filename) {
-	// boolean ok = false;
-	//
-	// Set<String> found_exes = new HashSet<String>();
-	//
-	// try {
-	// ZipInputStream zin = new ZipInputStream(new FileInputStream(
-	// filename));
-	// ZipEntry ze = null;
-	//
-	// while ((ze = zin.getNextEntry()) != null) {
-	// if (ze.isDirectory()) {
-	// // we need a bin directory at the top level
-	// if (ze.getName().equals("bin/")
-	// || ze.getName().equals("bin")) {
-	// ok = true;
-	// }
-	//
-	// } else {
-	// File f = new File(ze.getName());
-	// if ((f.getParent() != null) && f.getParent().equals("bin")) {
-	// found_exes.add(f.getName());
-	// }
-	// }
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// if (!ok) {
-	// this.panic("binary archive has no toplevel bin directory : "
-	// + filename);
-	// }
-	//
-	// for (String nodename : this.node_names) {
-	// boolean found = false;
-	// if (found_exes.contains(nodename)
-	// || found_exes.contains(nodename + ".bin")
-	// || found_exes.contains(nodename + ".exe")) {
-	// found = true;
-	// }
-	// if (!found) {
-	// this.panic("binary archive has no executable in bin directory for node : "
-	// + nodename);
-	// }
-	// }
-	// }
-
-	/**
-	 * Copies all valid ini and zip files to the specified {@link File
-	 * directory}.
-	 * 
-	 * @param srcDir
-	 * @param destDir
-	 * @throws IOException
-	 */
-	private static void copyPayload(File srcDir, File destDir)
-			throws IOException {
-		for (String filename : srcDir.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String filename) {
-				if (filename.endsWith(".ini"))
-					return true;
-				if (filename.endsWith(".zip")) {
-					// verifyZip(destinationFQNNodeDirectory + pathsep +
-					// "binres"
-					// + pathsep + filename);
-					return true;
-				}
-				return false;
-			}
-		})) {
-			FileUtils.copyFileToDirectory(new File(srcDir, filename), destDir);
-		}
 	}
 
 }
