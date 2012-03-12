@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileInputStream;
 
-import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
+import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
@@ -19,8 +19,8 @@ public class CTDNodeConfigurationWriterTest
 	@Test
 	public void test1() throws Exception
 	{
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
-		NodeConfiguration config = reader.read(TestDataSource.class.getResourceAsStream("test.ctd"));
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		INodeConfiguration config = reader.read(TestDataSource.class.getResourceAsStream("test.ctd"));
 		
 		CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
 		
@@ -55,8 +55,8 @@ public class CTDNodeConfigurationWriterTest
 	@Test
 	public void test2() throws Exception
 	{
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
-		NodeConfiguration config = reader.read(TestDataSource.class.getResourceAsStream("test3.ctd"));
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		INodeConfiguration config = reader.read(TestDataSource.class.getResourceAsStream("test3.ctd"));
 		
 		CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(config.getXML());
 		

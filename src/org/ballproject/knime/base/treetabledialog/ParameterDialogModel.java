@@ -33,7 +33,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
 
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.IntegerParameter;
@@ -49,12 +49,12 @@ import org.jdesktop.swingx.treetable.TreeTableModel;
 
 public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeTableModel
 {
-	private NodeConfiguration config;
+	private INodeConfiguration config;
 	private ConfigWrapper     wrapper;
 	private boolean           showAdvanced = true;
 	private Object root;
 	
-	public ParameterDialogModel(NodeConfiguration config) throws FileNotFoundException, Exception
+	public ParameterDialogModel(INodeConfiguration config) throws FileNotFoundException, Exception
 	{
 		this.config = config;
 		wrapper     = new ConfigWrapper(this.config);

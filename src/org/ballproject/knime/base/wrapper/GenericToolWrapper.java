@@ -28,12 +28,12 @@ import java.util.Map;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
+import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
 import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.nodegeneration.TemplateFiller;
+import org.ballproject.knime.nodegeneration.templates.Template;
 import org.ballproject.knime.test.data.TestDataSource;
 
 public class GenericToolWrapper extends Project
@@ -50,7 +50,7 @@ public class GenericToolWrapper extends Project
 		return switches;
 	}
 	
-	public GenericToolWrapper(NodeConfiguration config, NodeConfigurationStore store)
+	public GenericToolWrapper(INodeConfiguration config, NodeConfigurationStore store)
 	{
 		File buildFile = prepareFile(config.getMapping());
 		setUserProperty("ant.file", buildFile.getAbsolutePath());
@@ -73,7 +73,7 @@ public class GenericToolWrapper extends Project
 	private File prepareFile(String commands)
 	{
 		String filename = null;
-		TemplateFiller tf = new TemplateFiller();
+		Template tf = new Template();
 		try
 		{
 			filename = Helper.getTemporaryFilename("buildxml", true);

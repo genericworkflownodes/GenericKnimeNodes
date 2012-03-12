@@ -39,7 +39,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.tree.TreePath;
 
 
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -56,7 +56,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
 	private static Font OPT_FONT  = new Font("Dialog", Font.ITALIC, 12);
 	
-	public ParameterDialog(NodeConfiguration config) throws FileNotFoundException, Exception
+	public ParameterDialog(INodeConfiguration config) throws FileNotFoundException, Exception
 	{
 		setLayout(new GridBagLayout());
 		

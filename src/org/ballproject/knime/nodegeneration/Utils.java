@@ -3,13 +3,23 @@ package org.ballproject.knime.nodegeneration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.dom4j.Document;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+
 public class Utils {
+
+	private static final Logger LOGGER = Logger.getLogger(Utils.class
+			.getCanonicalName());
+
 	/**
 	 * returns all prefix paths of a given path.
 	 * 
@@ -82,5 +92,39 @@ public class Utils {
 			out.closeEntry();
 			in.close();
 		}
+	}
+
+	/**
+	 * Formats a {@link Document} as XML and writes it to the given {@link File}
+	 * 
+	 * @param doc
+	 * @param dest
+	 * @throws IOException
+	 */
+	public static void writeDocumentTo(Document doc, File dest)
+			throws IOException {
+		XMLWriter writer = new XMLWriter(new FileWriter(dest),
+				OutputFormat.createPrettyPrint());
+		writer.write(doc);
+		writer.close();
+	}
+
+	public static boolean checkKNIMENodeName(String name) {
+		if (!name.matches("[[A-Z]|[a-z]][[0-9]|[A-Z]|[a-z]]+"))
+			return false;
+		return true;
+	}
+
+	public static String fixKNIMENodeName(String name) {
+		LOGGER.info("trying to fix node class name " + name);
+		name = name.replace(".", "");
+		name = name.replace("-", "");
+		name = name.replace("_", "");
+		name = name.replace("#", "");
+		name = name.replace("+", "");
+		name = name.replace("$", "");
+		name = name.replace(":", "");
+		LOGGER.info("fixed node name " + name);
+		return name;
 	}
 }

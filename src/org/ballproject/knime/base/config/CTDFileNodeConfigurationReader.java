@@ -52,15 +52,16 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-public class CTDNodeConfigurationReader implements NodeConfigurationReader {
+public class CTDFileNodeConfigurationReader implements INodeConfigurationReader {
 
+	@SuppressWarnings("unused")
 	private static Logger log = Logger
-			.getLogger(CTDNodeConfigurationReader.class.getCanonicalName());
+			.getLogger(CTDFileNodeConfigurationReader.class.getCanonicalName());
 
 	private Document doc;
-	private DefaultNodeConfiguration config = new DefaultNodeConfiguration();
+	private NodeConfiguration config = new NodeConfiguration();
 
-	public CTDNodeConfigurationReader() {
+	public CTDFileNodeConfigurationReader() {
 	}
 
 	protected String SECTION_NODE_NAME = "NODE";
@@ -362,7 +363,6 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader {
 	private Parameter<?> getMultiParameterFromNode(Node node) throws Exception {
 		String type = node.valueOf("@type");
 		String name = node.valueOf("@name");
-		String value = node.valueOf("@value");
 		String restrs = node.valueOf("@restrictions");
 		String descr = node.valueOf("@description");
 		String tags = node.valueOf("@tags");
@@ -602,7 +602,7 @@ public class CTDNodeConfigurationReader implements NodeConfigurationReader {
 	}
 
 	@Override
-	public NodeConfiguration read(InputStream xmlstream)
+	public INodeConfiguration read(InputStream xmlstream)
 			throws CTDNodeConfigurationReaderException {
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();

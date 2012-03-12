@@ -1,12 +1,30 @@
 package org.ballproject.knime.nodegeneration.model.files;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-public class CtdFile extends File {
+import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
+import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
+import org.ballproject.knime.base.config.INodeConfiguration;
 
-	private static final long serialVersionUID = 7823704234803605729L;
+public class CTDFile extends File implements INodeConfigurationFile {
 
-	public CtdFile(File file) {
-		super(file.getAbsolutePath());
+	private static final long serialVersionUID = -3472073355559210376L;
+
+	private INodeConfiguration nodeConfiguration;
+
+	public CTDFile(File file) throws FileNotFoundException,
+			CTDNodeConfigurationReaderException {
+		super(file.getPath());
+
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		this.nodeConfiguration = reader.read(new FileInputStream(file));
 	}
+
+	@Override
+	public INodeConfiguration getNodeConfiguration() {
+		return nodeConfiguration;
+	}
+
 }

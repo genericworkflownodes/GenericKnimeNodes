@@ -20,28 +20,17 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
 import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
-import org.ballproject.knime.base.config.NodeConfiguration;
-import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.port.Port;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
@@ -51,12 +40,18 @@ import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
-import org.ballproject.knime.nodegeneration.model.files.CtdFile;
-import org.ballproject.knime.nodegeneration.model.mime.MimeType;
-import org.ballproject.knime.nodegeneration.templates.TemplateResources;
+import org.ballproject.knime.nodegeneration.model.files.CTDFile;
+import org.ballproject.knime.nodegeneration.templates.BinaryResourcesTemplate;
+import org.ballproject.knime.nodegeneration.templates.ManifestMFTemplate;
+import org.ballproject.knime.nodegeneration.templates.MimeFileCellFactoryTemplate;
+import org.ballproject.knime.nodegeneration.templates.NodeDialogTemplate;
+import org.ballproject.knime.nodegeneration.templates.NodeFactoryTemplate;
+import org.ballproject.knime.nodegeneration.templates.NodeFactoryXMLTemplate;
+import org.ballproject.knime.nodegeneration.templates.NodeModelTemplate;
+import org.ballproject.knime.nodegeneration.templates.NodeViewTemplate;
+import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
 import org.dom4j.DocumentException;
 import org.eclipse.core.commands.ExecutionException;
-import org.jaxen.JaxenException;
 
 public class NodeGenerator {
 	private static final String PLUGIN_PROPERTIES = "plugin.properties";
@@ -83,12 +78,13 @@ public class NodeGenerator {
 
 		PluginXmlTemplate pluginXML = new PluginXmlTemplate();
 
-		createMimeFileCellFactoryFile(meta.getName(), srcDir.getMimeTypes(),
-				new File(buildDir.getKnimeNodesDirectory(), "mimetypes"
+		new ManifestMFTemplate(meta).write(buildDir.getManifestMf());
+		new PluginActivatorTemplate(meta.getPackageRoot()).write(new File(
+				this.buildDir.getKnimeDirectory(), "PluginActivator.java"));
+		new MimeFileCellFactoryTemplate(meta.getName(), srcDir.getMimeTypes())
+				.write(new File(buildDir.getKnimeNodesDirectory(), "mimetypes"
 						+ File.separator + "MimeFileCellFactory.java"));
 
-		// TODO: hier weiter machen
-		// Plugin zum laufen bekommen
 		Set<String> node_names = new HashSet<String>();
 		Set<String> ext_tools = new HashSet<String>();
 		processDescriptors(
@@ -106,20 +102,25 @@ public class NodeGenerator {
 		fillProperties(srcDir.getProperties(),
 				this.buildDir.getPackageRootDirectory());
 
-		post(meta.getPackageRoot(), this.buildDir.getPackageRootDirectory(),
-				this.buildDir.getKnimeNodesDirectory(),
-				srcDir.getPayloadDirectory(), node_names, ext_tools);
+		new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
+				this.buildDir.getBinaryResourcesDirectory(),
+				"BinaryResources.java"));
+		copyPayload(srcDir.getPayloadDirectory(),
+				this.buildDir.getBinaryResourcesDirectory());
+
+		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
+				"ExternalTools.dat")).write(ext_tools);
+		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
+				"InternalTools.dat")).write(node_names);
 
 		pluginXML.saveTo(buildDir.getPluginXml());
-
-		createManifest(meta, buildDir.getManifestMf());
 	}
 
-	public File getPluginDirectory() {
+	public File getSourceDirectory() {
 		return this.srcDir;
 	}
 
-	public File getPreparedPluginDirectory() {
+	public File getBuildDirectory() {
 		return this.buildDir;
 	}
 
@@ -158,62 +159,6 @@ public class NodeGenerator {
 	//
 	// }
 
-	public static void createManifest(KNIMEPluginMeta pluginMeta,
-			File destinationManifest) throws IOException {
-		String manifest = IOUtils.toString(TemplateResources.class
-				.getResourceAsStream("MANIFEST.MF.template"));
-
-		manifest = manifest.replaceAll("@@pluginname@@", pluginMeta.getName());
-		manifest = manifest.replaceAll("@@pluginversion@@",
-				pluginMeta.getVersion());
-
-		destinationManifest.getParentFile().mkdirs();
-		FileUtils.writeStringToFile(destinationManifest, manifest);
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @param packageName
-	 * @param mimeTypes
-	 * @param file
-	 * 
-	 * @throws DocumentException
-	 * @throws IOException
-	 * @throws JaxenException
-	 */
-	private static void createMimeFileCellFactoryFile(String packageName,
-			List<MimeType> mimeTypes, File file) throws IOException {
-
-		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
-		String mimeTypeAddCode = "";
-
-		Set<MimeType> processedMimeTypes = new HashSet<MimeType>();
-
-		for (MimeType mimeType : mimeTypes) {
-			logger.info("MIME Type read: " + mimeType.getName());
-
-			if (processedMimeTypes.contains(mimeType)) {
-				logger.log(Level.WARNING, "skipping duplicate mime type "
-						+ mimeType.getName());
-			} else {
-				processedMimeTypes.add(mimeType);
-			}
-
-			mimeTypeAddCode += mimeTypeAddTemplateCodeLine.replace("__EXT__",
-					mimeType.getExt().toLowerCase());
-		}
-
-		InputStream template = TemplateResources.class
-				.getResourceAsStream("MimeFileCellFactory.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__MIMETYPES__", mimeTypeAddCode);
-		tf.replace("__BASE__", packageName);
-		tf.write(file);
-		template.close();
-	}
-
 	private static void processDescriptors(Set<String> node_names,
 			Set<String> ext_tools, PluginXmlTemplate pluginXML,
 			DescriptorsDirectory descriptorDirectory,
@@ -222,37 +167,34 @@ public class NodeGenerator {
 			InvalidNodeNameException, CTDNodeConfigurationReaderException,
 			UnknownMimeTypeException {
 
-		Set<String> categories = new HashSet<String>();
-		for (CtdFile ctdFile : descriptorDirectory.getCtdFiles()) {
-			logger.info("Start processing node: " + ctdFile);
+		for (CTDFile ctdFile : descriptorDirectory.getCTDFiles()) {
+			logger.info("Start processing ctd file: " + ctdFile.getName());
 			processNode(pluginMeta, pluginXML, ctdFile, node_names, ext_tools,
-					destinationFQNNodeDirectory, categories);
+					destinationFQNNodeDirectory);
 		}
 	}
 
 	public static void processNode(KNIMEPluginMeta pluginMeta,
-			PluginXmlTemplate pluginXML, File ctdFile, Set<String> node_names,
-			Set<String> ext_tools, File destinationFQNNodeDirectory,
-			Set<String> categories) throws IOException,
+			PluginXmlTemplate pluginXML, CTDFile ctdFile,
+			Set<String> node_names, Set<String> ext_tools,
+			File destinationFQNNodeDirectory) throws IOException,
 			DuplicateNodeNameException, InvalidNodeNameException,
 			CTDNodeConfigurationReaderException, UnknownMimeTypeException {
 
-		logger.info("## processing Node " + ctdFile.getName());
+		INodeConfiguration nodeConfiguration = ctdFile.getNodeConfiguration();
+		NodeGenerator.logger.info("## processing Node "
+				+ nodeConfiguration.getName());
 
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
-		NodeConfiguration config = reader.read(new FileInputStream(ctdFile));
-
-		String nodeName = config.getName();
-
+		String nodeName = nodeConfiguration.getName();
 		String oldNodeName = null;
 
-		if (!KNIMENode.checkNodeName(nodeName)) {
+		if (!Utils.checkKNIMENodeName(nodeName)) {
 			oldNodeName = nodeName;
 
 			// we try to fix the nodename
-			nodeName = KNIMENode.fixNodeName(nodeName);
+			nodeName = Utils.fixKNIMENodeName(nodeName);
 
-			if (!KNIMENode.checkNodeName(nodeName))
+			if (!Utils.checkKNIMENodeName(nodeName))
 				throw new InvalidNodeNameException("The node name \""
 						+ nodeName + "\" is invalid.");
 		}
@@ -261,7 +203,7 @@ public class NodeGenerator {
 			if (node_names.contains(nodeName))
 				throw new DuplicateNodeNameException(nodeName);
 
-			if (config.getStatus().equals("internal")) {
+			if (nodeConfiguration.getStatus().equals("internal")) {
 				node_names.add(nodeName);
 			} else {
 				ext_tools.add(nodeName);
@@ -270,343 +212,42 @@ public class NodeGenerator {
 			if (node_names.contains(oldNodeName))
 				throw new DuplicateNodeNameException(nodeName);
 
-			if (config.getStatus().equals("internal")) {
+			if (nodeConfiguration.getStatus().equals("internal")) {
 				node_names.add(oldNodeName);
 			} else {
 				ext_tools.add(nodeName);
 			}
 		}
 
-		String cur_cat = new File("/" + pluginMeta.getNodeRepositoryRoot()
-				+ "/" + pluginMeta.getName(), config.getCategory()).getPath();
+		String absoluteCategory = "/" + pluginMeta.getNodeRepositoryRoot()
+				+ "/" + pluginMeta.getName() + "/"
+				+ nodeConfiguration.getCategory();
 
 		File nodeConfigDir = new File(destinationFQNNodeDirectory
 				+ File.separator + nodeName + File.separator + "config");
 		nodeConfigDir.mkdirs();
+		Helper.copyFile(ctdFile, new File(nodeConfigDir, "config.xml"));
 
-		Helper.copyFile(ctdFile, new File(destinationFQNNodeDirectory
-				+ File.separator + nodeName + File.separator + "config"
-				+ File.separator + "config.xml"));
+		File nodeSourceDir = new File(destinationFQNNodeDirectory, nodeName);
 
-		createFactory(nodeName, destinationFQNNodeDirectory,
-				pluginMeta.getPackageRoot());
+		new NodeFactoryTemplate(pluginMeta.getPackageRoot(), nodeName)
+				.write(new File(nodeSourceDir, nodeName + "NodeFactory.java"));
 
-		createDialog(nodeName, destinationFQNNodeDirectory,
-				pluginMeta.getPackageRoot());
+		new NodeDialogTemplate(pluginMeta.getPackageRoot(), nodeName)
+				.write(new File(nodeSourceDir, nodeName + "NodeDialog.java"));
 
-		createView(nodeName, destinationFQNNodeDirectory,
-				pluginMeta.getPackageRoot());
+		new NodeViewTemplate(pluginMeta.getPackageRoot(), nodeName)
+				.write(new File(nodeSourceDir, nodeName + "NodeView.java"));
 
-		TemplateFiller curmodel_tf = createModel(nodeName,
-				destinationFQNNodeDirectory, pluginMeta.getPackageRoot());
+		new NodeModelTemplate(pluginMeta.getPackageRoot(), nodeName,
+				nodeConfiguration).write(new File(nodeSourceDir, nodeName
+				+ "NodeModel.java"));
 
-		fillMimeTypes(config, curmodel_tf);
-
-		TemplateFiller nodeFactoryXML = createXMLDescriptor(nodeName, config);
-		nodeFactoryXML.write(destinationFQNNodeDirectory + "/" + nodeName + "/"
-				+ nodeName + "NodeFactory.xml");
-
-		writeModel(nodeName, destinationFQNNodeDirectory, curmodel_tf);
+		new NodeFactoryXMLTemplate(nodeName, nodeConfiguration).write(new File(
+				nodeSourceDir, nodeName + "NodeFactory.xml"));
 
 		pluginXML.registerNode(pluginMeta.getPackageRoot() + ".knime.nodes."
-				+ nodeName + "." + nodeName + "NodeFactory", cur_cat);
-
-	}
-
-	public static void createFactory(String nodeName,
-			File destinationFQNNodeDirectory, String packageName)
-			throws IOException {
-		InputStream template = NodeGenerator.class
-				.getResourceAsStream("templates/NodeFactory.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", packageName);
-		tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/" + nodeName
-				+ "NodeFactory.java");
-	}
-
-	public static void createDialog(String nodeName,
-			File destinationFQNNodeDirectory, String packageName)
-			throws IOException {
-		InputStream template = NodeGenerator.class
-				.getResourceAsStream("templates/NodeDialog.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", packageName);
-		tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/" + nodeName
-				+ "NodeDialog.java");
-	}
-
-	public static String join(Collection<String> col) {
-		String ret = "";
-		for (String s : col) {
-			ret += s + ",";
-		}
-		ret = ret.substring(0, ret.length() - 1);
-		return ret;
-	}
-
-	public static TemplateFiller createXMLDescriptor(String nodeName,
-			NodeConfiguration config) throws IOException {
-		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
-		String inports = "";
-		int idx = 0;
-		for (Port port : config.getInputPorts()) {
-			String ipp = ip;
-			ipp = ip.replace("__PORTNAME__", port.getName());
-			ipp = ipp.replace("__PORTDESCR__", port.getDescription());
-			ipp = ipp.replace("__IDX__", String.format("%d", idx++));
-
-			// fix me
-			// ipp = ipp.replace("__MIMETYPE__",
-			// port.getMimeTypes().get(0).getExt());
-			List<String> mts = new ArrayList<String>();
-			for (MIMEtype mt : port.getMimeTypes()) {
-				mts.add(mt.getExt());
-			}
-			ipp = ipp.replace("__MIMETYPE__", join(mts));
-
-			ipp = ipp.replace("__OPT__", (port.isOptional() ? ",opt." : ""));
-			inports += ipp + "\n";
-		}
-
-		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
-		String outports = "";
-		idx = 0;
-		for (Port port : config.getOutputPorts()) {
-			String opp = op;
-			opp = op.replace("__PORTNAME__", port.getName());
-			opp = opp.replace("__PORTDESCR__", port.getDescription());
-			opp = opp.replace("__IDX__", String.format("%d", idx++));
-
-			// fix me
-			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0)
-					.getExt());
-
-			outports += opp + "\n";
-		}
-
-		StringBuffer buf = new StringBuffer();
-		for (Parameter<?> p : config.getParameters()) {
-			buf.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA["
-					+ p.getDescription() + "]]></option>\n");
-		}
-		String opts = buf.toString();
-
-		InputStream template = NodeGenerator.class
-				.getResourceAsStream("templates/NodeXMLDescriptor.template");
-
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-
-		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__INPORTS__", inports);
-		tf.replace("__OUTPORTS__", outports);
-		tf.replace("__OPTIONS__", opts);
-		tf.replace("__DESCRIPTION__", config.getDescription());
-		String pp = prettyPrint(config.getManual());
-		tf.replace("__MANUAL__", pp);
-		if (!config.getDocUrl().equals("")) {
-			String ahref = "<a href=\"" + config.getDocUrl()
-					+ "\">Web Documentation for " + nodeName + "</a>";
-			tf.replace("__DOCLINK__", ahref);
-		} else {
-			tf.replace("__DOCLINK__", "");
-		}
-		return tf;
-	}
-
-	private static String prettyPrint(String manual) {
-		if (manual.equals(""))
-			return "";
-		StringBuffer sb = new StringBuffer();
-		String[] toks = manual.split("\\n");
-		for (String tok : toks) {
-			sb.append("<p><![CDATA[" + tok + "]]></p>");
-		}
-		return sb.toString();
-	}
-
-	public static void createView(String nodeName,
-			File destinationFQNNodeDirectory, String packageName)
-			throws IOException {
-		InputStream template = NodeGenerator.class
-				.getResourceAsStream("templates/NodeView.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__NODENAME__", nodeName);
-		tf.replace("__BASE__", packageName);
-		tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/" + nodeName
-				+ "NodeView.java");
-	}
-
-	public static TemplateFiller createModel(String nodeName,
-			File destinationFQNNodeDirectory, String packageName)
-			throws IOException {
-		InputStream template = NodeGenerator.class
-				.getResourceAsStream("templates/NodeModel.template");
-		TemplateFiller curmodel_tf = new TemplateFiller();
-
-		curmodel_tf.read(template);
-		curmodel_tf.replace("__NODENAME__", nodeName);
-		curmodel_tf.replace("__BASE__", packageName);
-		curmodel_tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/"
-				+ nodeName + "NodeModel.java");
-		return curmodel_tf;
-	}
-
-	protected static void writeModel(String nodeName,
-			File destinationFQNNodeDirectory, TemplateFiller curmodel_tf)
-			throws IOException {
-		curmodel_tf.write(destinationFQNNodeDirectory + "/" + nodeName + "/"
-				+ nodeName + "NodeModel.java");
-	}
-
-	private static void fillMimeTypes(NodeConfiguration config,
-			TemplateFiller curmodel_tf) throws UnknownMimeTypeException {
-		String clazzez = "";
-		for (Port port : config.getInputPorts()) {
-			String tmp = "{";
-			for (MIMEtype type : port.getMimeTypes()) {
-				String ext = type.getExt().toLowerCase();
-				if (ext == null)
-					throw new UnknownMimeTypeException(type);
-				/*
-				 * if(port.isMultiFile()) tmp +=
-				 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
-				 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
-				 * "FileCell.class),";
-				 */
-				tmp += "new MIMEType(\"" + ext + "\"),";
-			}
-			tmp = tmp.substring(0, tmp.length() - 1);
-			tmp += "},";
-			clazzez += tmp;
-		}
-
-		if (!clazzez.equals("")) {
-			clazzez = clazzez.substring(0, clazzez.length() - 1);
-		}
-
-		clazzez += "}";
-		createInClazzezModel(clazzez, curmodel_tf);
-
-		clazzez = "";
-		for (Port port : config.getOutputPorts()) {
-			String tmp = "{";
-			for (MIMEtype type : port.getMimeTypes()) {
-				String ext = type.getExt().toLowerCase();
-				if (ext == null)
-					throw new UnknownMimeTypeException(type);
-				/*
-				 * if(port.isMultiFile()) tmp +=
-				 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
-				 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
-				 * "FileCell.class),";
-				 */
-				tmp += "new MIMEType(\"" + ext + "\"),";
-			}
-			tmp = tmp.substring(0, tmp.length() - 1);
-			tmp += "},";
-			clazzez += tmp;
-		}
-
-		if (!clazzez.equals("")) {
-			clazzez = clazzez.substring(0, clazzez.length() - 1);
-		}
-
-		clazzez += "}";
-
-		createOutClazzezModel(clazzez, curmodel_tf);
-	}
-
-	public static void createInClazzezModel(String clazzez,
-			TemplateFiller curmodel_tf) {
-		if (clazzez.equals("")) {
-			clazzez = "null";
-		} else {
-			clazzez = clazzez.substring(0, clazzez.length() - 1);
-		}
-		curmodel_tf.replace("__INCLAZZEZ__", clazzez);
-	}
-
-	public static void createOutClazzezModel(String clazzez,
-			TemplateFiller curmodel_tf) {
-		if (clazzez.equals("")) {
-			clazzez = "null";
-		} else {
-			clazzez = clazzez.substring(0, clazzez.length() - 1);
-		}
-		curmodel_tf.replace("__OUTCLAZZEZ__", clazzez);
-	}
-
-	public static void post(String packageName, File destinationFQNDirectory,
-			File destinationFQNNodeDirectory, File payloadDirectory,
-			Set<String> node_names, Set<String> ext_tools) throws IOException {
-
-		// prepare binary resources
-		InputStream template = TemplateResources.class
-				.getResourceAsStream("BinaryResources.template");
-		TemplateFiller curmodel_tf = new TemplateFiller();
-
-		curmodel_tf.read(template);
-		curmodel_tf.replace("__BASE__", packageName);
-		curmodel_tf.replace("__BINPACKNAME__", packageName);
-		curmodel_tf.write(new File(destinationFQNNodeDirectory,
-				"/binres/BinaryResources.java"));
-		template.close();
-
-		//
-		String[] binFiles = payloadDirectory.list();
-		for (String filename : binFiles) {
-			// do not copy directories
-			if (new File(payloadDirectory, filename).isDirectory()) {
-				continue;
-			}
-
-			// only copy zip and ini files
-			if (filename.toLowerCase().endsWith("zip")) {
-				Helper.copyFile(new File(payloadDirectory, filename), new File(
-						destinationFQNNodeDirectory, "binres" + File.separator
-								+ filename));
-				// TODO
-				// verifyZip(destinationFQNNodeDirectory + pathsep + "binres"
-				// + pathsep + filename);
-			}
-			if (filename.toLowerCase().endsWith("ini")) {
-				Helper.copyFile(new File(payloadDirectory, filename), new File(
-						destinationFQNNodeDirectory, "binres" + File.separator
-								+ filename));
-			}
-		}
-
-		template = TemplateResources.class
-				.getResourceAsStream("PluginActivator.template");
-		TemplateFiller tf = new TemplateFiller();
-		tf.read(template);
-		tf.replace("__BASE__", packageName);
-		tf.replace("__NAME__", packageName);
-		tf.write(destinationFQNDirectory + File.separator + "knime"
-				+ File.separator + "PluginActivator.java");
-		template.close();
-
-		FileWriter ini_writer = new FileWriter(destinationFQNDirectory
-				+ File.separator + "knime" + File.separator
-				+ "ExternalTools.dat");
-		for (String ext_tool : ext_tools) {
-			ini_writer.write(ext_tool + "\n");
-		}
-		ini_writer.close();
-
-		ini_writer = new FileWriter(destinationFQNDirectory + File.separator
-				+ "knime" + File.separator + "InternalTools.dat");
-		for (String int_tool : node_names) {
-			ini_writer.write(int_tool + "\n");
-		}
-		ini_writer.close();
+				+ nodeName + "." + nodeName + "NodeFactory", absoluteCategory);
 	}
 
 	// TODO
@@ -657,5 +298,33 @@ public class NodeGenerator {
 	// }
 	// }
 	// }
+
+	/**
+	 * Copies all valid ini and zip files to the specified {@link File
+	 * directory}.
+	 * 
+	 * @param srcDir
+	 * @param destDir
+	 * @throws IOException
+	 */
+	private static void copyPayload(File srcDir, File destDir)
+			throws IOException {
+		for (String filename : srcDir.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String filename) {
+				if (filename.endsWith(".ini"))
+					return true;
+				if (filename.endsWith(".zip")) {
+					// verifyZip(destinationFQNNodeDirectory + pathsep +
+					// "binres"
+					// + pathsep + filename);
+					return true;
+				}
+				return false;
+			}
+		})) {
+			FileUtils.copyFileToDirectory(new File(srcDir, filename), destDir);
+		}
+	}
 
 }

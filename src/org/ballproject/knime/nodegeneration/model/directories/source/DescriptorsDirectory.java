@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
 import org.ballproject.knime.nodegeneration.model.directories.Directory;
-import org.ballproject.knime.nodegeneration.model.files.CtdFile;
+import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.model.files.MimeTypesFile;
 import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
@@ -14,7 +15,7 @@ import org.jaxen.JaxenException;
 public class DescriptorsDirectory extends Directory {
 
 	private static final long serialVersionUID = -3535393317046918930L;
-	private List<CtdFile> ctdFiles;
+	private List<CTDFile> ctdFiles;
 	private MimeTypesFile mimeTypesFile;
 
 	public DescriptorsDirectory(File sourcesDirectory) throws IOException {
@@ -25,20 +26,24 @@ public class DescriptorsDirectory extends Directory {
 			this.mimeTypesFile = new MimeTypesFile(mimeTypeFile);
 		} catch (JaxenException e) {
 			throw new IOException("Error reading MIME types from "
-					+ mimeTypeFile.getPath());
+					+ mimeTypeFile.getPath(), e);
 		} catch (DocumentException e) {
 			throw new IOException("Error reading MIME types from "
-					+ mimeTypeFile.getPath());
+					+ mimeTypeFile.getPath(), e);
 		}
 
-		ctdFiles = new LinkedList<CtdFile>();
+		this.ctdFiles = new LinkedList<CTDFile>();
 		for (File file : this.listFiles()) {
 			if (file.getName().endsWith(".ctd"))
-				ctdFiles.add(new CtdFile(file));
+				try {
+					this.ctdFiles.add(new CTDFile(file));
+				} catch (CTDNodeConfigurationReaderException e) {
+					throw new IOException("Error reading " + file.getPath(), e);
+				}
 		}
 	}
 
-	public List<CtdFile> getCtdFiles() {
+	public List<CTDFile> getCTDFiles() {
 		return ctdFiles;
 	}
 

@@ -22,7 +22,7 @@ package org.ballproject.knime.test;
 import static org.junit.Assert.*;
 
 import org.ballproject.knime.base.config.GalaxyNodeConfigurationReader;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
@@ -36,7 +36,7 @@ public class GalaxyNodeConfigurationReaderTest
 	@Test
 	public void testReader() throws Exception
 	{
-		NodeConfiguration config = null;
+		INodeConfiguration config = null;
 		GalaxyNodeConfigurationReader reader = new GalaxyNodeConfigurationReader();
 		config = reader.read(TestDataSource.class.getResourceAsStream("emboss_water.xml"));
 		

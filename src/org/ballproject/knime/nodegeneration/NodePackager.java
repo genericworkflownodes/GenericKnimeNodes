@@ -31,17 +31,17 @@ public class NodePackager {
 
 	/**
 	 * Zips the prepared plugin directory of a {@link NodeGenerator} to the
-	 * {@link NodeGenerator#getPluginDirectory() source's parent directory}.
+	 * {@link NodeGenerator#getSourceDirectory() source's parent directory}.
 	 * 
 	 * @param nodeGenerator
 	 * @throws IOException
 	 */
 	public static void zip(NodeGenerator nodeGenerator) throws IOException {
-		File jar = new File(nodeGenerator.getPluginDirectory().getParent(),
+		File jar = new File(nodeGenerator.getSourceDirectory().getParent(),
 				nodeGenerator.getPluginName() + "_"
 						+ nodeGenerator.getPluginVersion() + ".jar");
 		logger.info("Zipping KNIME plugin to: " + jar);
-		Utils.zipDirectory(nodeGenerator.getPreparedPluginDirectory(), jar);
+		Utils.zipDirectory(nodeGenerator.getBuildDirectory(), jar);
 		logger.info("KNIME plugin successfully zipped to: " + jar);
 	}
 }

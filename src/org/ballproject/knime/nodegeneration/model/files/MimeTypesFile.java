@@ -26,7 +26,7 @@ public class MimeTypesFile extends File {
 
 	private static final long serialVersionUID = -1620704972604551679L;
 
-	public static void validate(File file) throws DocumentException {
+	private static void validate(File file) throws DocumentException {
 		SchemaValidator val = new SchemaValidator();
 		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
 		if (!val.validates(file.getPath()))
@@ -34,7 +34,7 @@ public class MimeTypesFile extends File {
 					+ "\" does not conform to schema " + val.getErrorReport());
 	}
 
-	public static Document createDocument(File file)
+	private static Document createDocument(File file)
 			throws FileNotFoundException, DocumentException {
 		DOMDocumentFactory factory = new DOMDocumentFactory();
 		SAXReader reader = new SAXReader();
@@ -42,7 +42,7 @@ public class MimeTypesFile extends File {
 		return reader.read(new FileInputStream(file));
 	}
 
-	public static List<MimeType> readMimeTypes(Document doc)
+	private static List<MimeType> readMimeTypes(Document doc)
 			throws JaxenException {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("bp", "http://www.ball-project.org/mimetypes"); // TODO

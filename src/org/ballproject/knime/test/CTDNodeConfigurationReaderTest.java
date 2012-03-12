@@ -26,8 +26,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleListParameter;
@@ -46,8 +46,8 @@ public class CTDNodeConfigurationReaderTest {
 
 	@Test
 	public void testReader() throws Exception {
-		NodeConfiguration config = null;
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		INodeConfiguration config = null;
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test.ctd"));
 
@@ -158,8 +158,8 @@ public class CTDNodeConfigurationReaderTest {
 
 	@Test
 	public void testReader2() throws Exception {
-		NodeConfiguration config = null;
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		INodeConfiguration config = null;
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test2.ctd"));
 		assertNotNull(config.getParameter("c"));
@@ -167,8 +167,8 @@ public class CTDNodeConfigurationReaderTest {
 
 	@Test
 	public void testReader3() throws Exception {
-		NodeConfiguration config = null;
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		INodeConfiguration config = null;
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test3.ctd"));
 
@@ -221,8 +221,8 @@ public class CTDNodeConfigurationReaderTest {
 
 	@Test
 	public void testReader4() throws Exception {
-		NodeConfiguration config = null;
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		INodeConfiguration config = null;
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test4.ctd"));
 
