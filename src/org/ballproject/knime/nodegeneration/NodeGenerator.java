@@ -74,7 +74,7 @@ public class NodeGenerator {
 		this.meta = new KNIMEPluginMeta(srcDir.getProperties());
 		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 
-		LOGGER.info("Creating KNIME plugin sources\n\tFrom" + this.srcDir
+		LOGGER.info("Creating KNIME plugin sources\n\tFrom: " + this.srcDir
 				+ "\n\tTo: " + this.buildDir);
 
 		boolean dynamicCTDs = NodeDescriptionUtils
