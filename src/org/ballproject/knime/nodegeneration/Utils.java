@@ -117,6 +117,7 @@ public class Utils {
 
 	public static String fixKNIMENodeName(String name) {
 		LOGGER.info("trying to fix node class name " + name);
+		name = name.replace(" ", "");
 		name = name.replace(".", "");
 		name = name.replace("-", "");
 		name = name.replace("_", "");

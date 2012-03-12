@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
+import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.PayloadDirectory;
@@ -23,7 +25,8 @@ public class NodesSourceDirectory extends Directory {
 	private Properties properties = null;
 
 	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
-			DocumentException {
+			DocumentException, InvalidNodeNameException,
+			DuplicateNodeNameException {
 		super(nodeSourceDirectory);
 
 		try {
@@ -75,6 +78,10 @@ public class NodesSourceDirectory extends Directory {
 
 	public Properties getProperties() {
 		return properties;
+	}
+
+	public String getProperty(String key, String defaultValue) {
+		return properties.getProperty(key, defaultValue);
 	}
 
 	public List<CTDFile> getCtdFiles() {

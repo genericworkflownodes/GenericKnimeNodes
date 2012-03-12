@@ -30,12 +30,15 @@ import org.ballproject.knime.base.port.Port;
 
 /**
  * Default implementation of {@link INodeConfiguration}
+ * <p>
+ * Note: Two {@link NodeConfiguration}s are equal iff their {@link #getName()
+ * names} are equal.
  * 
  * @author bkahlert
  * 
  */
-public class NodeConfiguration implements INodeConfiguration,
-		Serializable {
+public class NodeConfiguration implements INodeConfiguration, Serializable {
+
 	private static final long serialVersionUID = -5250528380628071121L;
 
 	protected Map<String, Parameter<?>> params = new LinkedHashMap<String, Parameter<?>>();
@@ -206,6 +209,31 @@ public class NodeConfiguration implements INodeConfiguration,
 
 	public void setMapping(String mapping) {
 		this.mapping = mapping;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NodeConfiguration other = (NodeConfiguration) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
 	}
 
 }

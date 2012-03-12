@@ -55,8 +55,8 @@ public class NodeDescriptionGenerator {
 						+ srcDir.getExecutablesDirectory().getPath()
 						+ "\" exists.");
 
-			generateDescriptors(srcDir.getExecutablesDirectory(), srcDir
-					.getProperties().getProperty("parswitch", "-write_par"));
+			generateDescriptors(srcDir.getExecutablesDirectory(),
+					srcDir.getProperty("parswitch", "-write_par"));
 			return true;
 		}
 		return false;

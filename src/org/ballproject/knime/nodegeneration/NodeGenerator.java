@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2011, Marc Röttig.
+ * Copyright (c) 2011-2012, Marc Röttig.
+ * Copyright (c) 2012, Björn Kahlert.
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -20,11 +22,8 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
@@ -37,6 +36,7 @@ import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.templates.BinaryResourcesTemplate;
@@ -52,66 +52,96 @@ import org.dom4j.DocumentException;
 import org.eclipse.core.commands.ExecutionException;
 
 public class NodeGenerator {
-	private static final String PLUGIN_PROPERTIES = "plugin.properties";
-
-	public static Logger logger = Logger.getLogger(NodeGenerator.class
+	private static final Logger LOGGER = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
 	private NodesSourceDirectory srcDir;
 	private KNIMEPluginMeta meta;
 	private NodesBuildDirectory buildDir;
 
+	@SuppressWarnings("serial")
 	public NodeGenerator(File pluginDir) throws IOException,
 			ExecutionException, DocumentException, DuplicateNodeNameException,
 			InvalidNodeNameException, CTDNodeConfigurationReaderException,
 			UnknownMimeTypeException {
 
-		srcDir = new NodesSourceDirectory(pluginDir);
-		meta = new KNIMEPluginMeta(srcDir.getProperties());
+		this.srcDir = new NodesSourceDirectory(pluginDir);
+		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
+		this.meta = new KNIMEPluginMeta(srcDir.getProperties());
+
+		LOGGER.info("Creating KNIME plugin sources\n\tFrom" + this.srcDir
+				+ "\n\tTo: " + this.buildDir);
+
 		boolean dynamicCTDs = NodeDescriptionGenerator
 				.createCTDsIfNecessary(srcDir);
-		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
+		DescriptorsDirectory descriptorsDirectory = (dynamicCTDs) ? new DescriptorsDirectory(
+				srcDir.getExecutablesDirectory()) : srcDir
+				.getDescriptorsDirectory();
 
-		logger.info("Creating KNIME plugin sources in: " + buildDir.getPath());
+		if (dynamicCTDs)
+			LOGGER.info("Using dynamically created ctd files");
+		else
+			LOGGER.info("Using static ctd files");
 
-		PluginXmlTemplate pluginXML = new PluginXmlTemplate();
-
+		// META-INF/MANIFEST.MF
 		new ManifestMFTemplate(meta).write(buildDir.getManifestMf());
+
+		// src/[PACKAGE]/knime/PluginActivator.java
 		new PluginActivatorTemplate(meta.getPackageRoot()).write(new File(
 				this.buildDir.getKnimeDirectory(), "PluginActivator.java"));
+
+		// src/[PACKAGE]/knime/plugin.properties
+		new PropertiesWriter(new File(this.buildDir.getKnimeDirectory(),
+				"plugin.properties")).write(new HashMap<String, String>() {
+			{
+				put("use_ini", srcDir.getProperty("use_ini", "true"));
+				put("ini_switch", srcDir.getProperty("ini_switch", "-ini"));
+			}
+		});
+
+		// src/[PACKAGE]/knime/InternalTools.dat
+		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
+				"InternalTools.dat")).write(descriptorsDirectory
+				.getInternalCtdFiles());
+
+		// src/[PACKAGE]/knime/ExternalTools.dat
+		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
+				"ExternalTools.dat")).write(descriptorsDirectory
+				.getExternalCtdFiles());
+
+		// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
 		new MimeFileCellFactoryTemplate(meta.getName(), srcDir.getMimeTypes())
 				.write(new File(buildDir.getKnimeNodesDirectory(), "mimetypes"
 						+ File.separator + "MimeFileCellFactory.java"));
 
-		Set<String> node_names = new HashSet<String>();
-		Set<String> ext_tools = new HashSet<String>();
-		processDescriptors(
-				node_names,
-				ext_tools,
-				pluginXML,
-				(dynamicCTDs) ? new DescriptorsDirectory(srcDir
-						.getExecutablesDirectory()) : srcDir
-						.getDescriptorsDirectory(),
-				this.buildDir.getKnimeNodesDirectory(), meta);
+		PluginXmlTemplate pluginXML = new PluginXmlTemplate();
 
-		// TODO
-		// this.installIcon();
+		// src/[PACKAGE]/knime/nodes/*/*
+		for (CTDFile ctdFile : descriptorsDirectory.getCTDFiles()) {
+			LOGGER.info("Start processing ctd file: " + ctdFile.getName());
+			String factoryClass = copyNodeSources(ctdFile,
+					this.buildDir.getKnimeNodesDirectory(), meta);
 
-		fillProperties(srcDir.getProperties(),
-				this.buildDir.getPackageRootDirectory());
+			String absoluteCategory = "/" + meta.getNodeRepositoryRoot() + "/"
+					+ meta.getName() + "/"
+					+ ctdFile.getNodeConfiguration().getCategory();
+			pluginXML.registerNode(factoryClass, absoluteCategory);
 
+			// TODO
+			// this.installIcon();
+		}
+
+		// plugin.xml
+		pluginXML.saveTo(buildDir.getPluginXml());
+
+		// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
 		new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
 				this.buildDir.getBinaryResourcesDirectory(),
 				"BinaryResources.java"));
+
+		// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
 		this.srcDir.getPayloadDirectory().copyPayloadTo(
 				this.buildDir.getBinaryResourcesDirectory());
-
-		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
-				"ExternalTools.dat")).write(ext_tools);
-		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
-				"InternalTools.dat")).write(node_names);
-
-		pluginXML.saveTo(buildDir.getPluginXml());
 	}
 
 	public File getSourceDirectory() {
@@ -128,15 +158,6 @@ public class NodeGenerator {
 
 	public String getPluginVersion() {
 		return meta.getVersion();
-	}
-
-	public static void fillProperties(Properties props,
-			File destinationFQNDirectory) throws IOException {
-		Properties p = new Properties();
-		p.put("use_ini", props.getProperty("use_ini", "true"));
-		p.put("ini_switch", props.getProperty("ini_switch", "-ini"));
-		p.store(new FileOutputStream(destinationFQNDirectory + File.separator
-				+ "knime" + File.separator + PLUGIN_PROPERTIES), null);
 	}
 
 	// TODO
@@ -157,95 +178,60 @@ public class NodeGenerator {
 	//
 	// }
 
-	private static void processDescriptors(Set<String> node_names,
-			Set<String> ext_tools, PluginXmlTemplate pluginXML,
-			DescriptorsDirectory descriptorDirectory,
-			File destinationFQNNodeDirectory, KNIMEPluginMeta pluginMeta)
-			throws IOException, DuplicateNodeNameException,
-			InvalidNodeNameException, CTDNodeConfigurationReaderException,
-			UnknownMimeTypeException {
-
-		for (CTDFile ctdFile : descriptorDirectory.getCTDFiles()) {
-			logger.info("Start processing ctd file: " + ctdFile.getName());
-			processNode(pluginMeta, pluginXML, ctdFile, node_names, ext_tools,
-					destinationFQNNodeDirectory);
-		}
-	}
-
-	public static void processNode(KNIMEPluginMeta pluginMeta,
-			PluginXmlTemplate pluginXML, CTDFile ctdFile,
-			Set<String> node_names, Set<String> ext_tools,
-			File destinationFQNNodeDirectory) throws IOException,
-			DuplicateNodeNameException, InvalidNodeNameException,
-			CTDNodeConfigurationReaderException, UnknownMimeTypeException {
+	/**
+	 * Copies the java sources needed to invoke a tool (described by a
+	 * {@link CTDFile}) to the specified {@link NodesBuildKnimeNodesDirectory}.
+	 * 
+	 * @param ctdFile
+	 *            which described the wrapped tool
+	 * @param nodesDir
+	 *            location where to create a sub directory containing the
+	 *            generated sources
+	 * @param pluginMeta
+	 *            meta information used to adapt the java files
+	 * @return
+	 * @throws IOException
+	 * @throws UnknownMimeTypeException
+	 */
+	public static String copyNodeSources(CTDFile ctdFile,
+			NodesBuildKnimeNodesDirectory nodesDir, KNIMEPluginMeta pluginMeta)
+			throws IOException, UnknownMimeTypeException {
 
 		INodeConfiguration nodeConfiguration = ctdFile.getNodeConfiguration();
-		NodeGenerator.logger.info("## processing Node "
-				+ nodeConfiguration.getName());
+		String nodeName = Utils.fixKNIMENodeName(nodeConfiguration.getName());
 
-		String nodeName = nodeConfiguration.getName();
-		String oldNodeName = null;
+		File nodeSourceDir = new File(nodesDir, nodeName);
+		nodeSourceDir.mkdirs();
 
-		if (!Utils.checkKNIMENodeName(nodeName)) {
-			oldNodeName = nodeName;
-
-			// we try to fix the nodename
-			nodeName = Utils.fixKNIMENodeName(nodeName);
-
-			if (!Utils.checkKNIMENodeName(nodeName))
-				throw new InvalidNodeNameException("The node name \""
-						+ nodeName + "\" is invalid.");
-		}
-
-		if (oldNodeName == null) {
-			if (node_names.contains(nodeName))
-				throw new DuplicateNodeNameException(nodeName);
-
-			if (nodeConfiguration.getStatus().equals("internal")) {
-				node_names.add(nodeName);
-			} else {
-				ext_tools.add(nodeName);
-			}
-		} else {
-			if (node_names.contains(oldNodeName))
-				throw new DuplicateNodeNameException(nodeName);
-
-			if (nodeConfiguration.getStatus().equals("internal")) {
-				node_names.add(oldNodeName);
-			} else {
-				ext_tools.add(nodeName);
-			}
-		}
-
-		String absoluteCategory = "/" + pluginMeta.getNodeRepositoryRoot()
-				+ "/" + pluginMeta.getName() + "/"
-				+ nodeConfiguration.getCategory();
-
-		File nodeConfigDir = new File(destinationFQNNodeDirectory
-				+ File.separator + nodeName + File.separator + "config");
-		nodeConfigDir.mkdirs();
-		Helper.copyFile(ctdFile, new File(nodeConfigDir, "config.xml"));
-
-		File nodeSourceDir = new File(destinationFQNNodeDirectory, nodeName);
-
-		new NodeFactoryTemplate(pluginMeta.getPackageRoot(), nodeName)
-				.write(new File(nodeSourceDir, nodeName + "NodeFactory.java"));
-
+		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeDialog.java
 		new NodeDialogTemplate(pluginMeta.getPackageRoot(), nodeName)
 				.write(new File(nodeSourceDir, nodeName + "NodeDialog.java"));
 
+		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeDialog.java
 		new NodeViewTemplate(pluginMeta.getPackageRoot(), nodeName)
 				.write(new File(nodeSourceDir, nodeName + "NodeView.java"));
 
+		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeModel.java
 		new NodeModelTemplate(pluginMeta.getPackageRoot(), nodeName,
 				nodeConfiguration).write(new File(nodeSourceDir, nodeName
 				+ "NodeModel.java"));
 
+		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeFactory.xml
 		new NodeFactoryXMLTemplate(nodeName, nodeConfiguration).write(new File(
 				nodeSourceDir, nodeName + "NodeFactory.xml"));
 
-		pluginXML.registerNode(pluginMeta.getPackageRoot() + ".knime.nodes."
-				+ nodeName + "." + nodeName + "NodeFactory", absoluteCategory);
+		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeFactory.java
+		new NodeFactoryTemplate(pluginMeta.getPackageRoot(), nodeName)
+				.write(new File(nodeSourceDir, nodeName + "NodeFactory.java"));
+
+		File nodeConfigDir = new File(nodeSourceDir, "config");
+		nodeConfigDir.mkdirs();
+
+		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/config/config.xml
+		Helper.copyFile(ctdFile, new File(nodeConfigDir, "config.xml"));
+
+		return pluginMeta.getPackageRoot() + ".knime.nodes." + nodeName + "."
+				+ nodeName + "NodeFactory";
 	}
 
 }

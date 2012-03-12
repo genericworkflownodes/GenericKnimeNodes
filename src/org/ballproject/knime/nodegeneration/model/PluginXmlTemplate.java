@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.nodegeneration.NodeGenerator;
 import org.ballproject.knime.nodegeneration.Utils;
 import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 import org.dom4j.Document;
@@ -99,7 +98,7 @@ public class PluginXmlTemplate {
 
 	// TODO: documentation
 	public void registerNode(String clazz, String path) {
-		NodeGenerator.logger.info("registering Node " + clazz);
+		LOGGER.info("registering Node " + clazz);
 		this.registerPath(path);
 
 		Node node = this.doc
