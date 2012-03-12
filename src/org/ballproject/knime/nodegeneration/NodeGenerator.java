@@ -48,6 +48,10 @@ import org.ballproject.knime.nodegeneration.templates.NodeModelTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeViewTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginXMLTemplate;
+import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
+import org.ballproject.knime.nodegeneration.util.Utils;
+import org.ballproject.knime.nodegeneration.writer.DatWriter;
+import org.ballproject.knime.nodegeneration.writer.PropertiesWriter;
 import org.dom4j.DocumentException;
 import org.eclipse.core.commands.ExecutionException;
 
@@ -72,7 +76,7 @@ public class NodeGenerator {
 		LOGGER.info("Creating KNIME plugin sources\n\tFrom" + this.srcDir
 				+ "\n\tTo: " + this.buildDir);
 
-		boolean dynamicCTDs = NodeDescriptionGenerator
+		boolean dynamicCTDs = NodeDescriptionUtils
 				.createCTDsIfNecessary(srcDir);
 		DescriptorsDirectory descriptorsDirectory = (dynamicCTDs) ? new DescriptorsDirectory(
 				srcDir.getExecutablesDirectory()) : srcDir

@@ -1,4 +1,4 @@
-package org.ballproject.knime.nodegeneration;
+package org.ballproject.knime.nodegeneration.writer;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.ballproject.knime.nodegeneration.model.files.CTDFile;
+import org.ballproject.knime.nodegeneration.util.Utils;
 
 public class DatWriter {
 

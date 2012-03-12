@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.nodegeneration.Utils;
+import org.ballproject.knime.nodegeneration.util.Utils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;

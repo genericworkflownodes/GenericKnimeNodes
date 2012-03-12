@@ -1,4 +1,4 @@
-package org.ballproject.knime.nodegeneration;
+package org.ballproject.knime.nodegeneration.util;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package org.ballproject.knime.nodegeneration;
+package org.ballproject.knime.nodegeneration.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,10 +12,10 @@ import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirecto
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import org.eclipse.core.commands.ExecutionException;
 
-public class NodeDescriptionGenerator {
+public class NodeDescriptionUtils {
 
 	private static Logger logger = Logger
-			.getLogger(NodeDescriptionGenerator.class.getCanonicalName());
+			.getLogger(NodeDescriptionUtils.class.getCanonicalName());
 
 	/**
 	 * Checks whether ctd files should be generated dynamically.

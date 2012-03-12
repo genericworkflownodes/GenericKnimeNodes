@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.ballproject.knime.nodegeneration.util.Utils;
+
 /**
  * This class is responsible for packaging prepared KNIME nodes to usables ones.
  * 
