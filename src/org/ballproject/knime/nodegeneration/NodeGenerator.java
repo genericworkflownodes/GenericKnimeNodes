@@ -54,6 +54,7 @@ import org.ballproject.knime.nodegeneration.writer.DatWriter;
 import org.ballproject.knime.nodegeneration.writer.PropertiesWriter;
 import org.dom4j.DocumentException;
 import org.eclipse.core.commands.ExecutionException;
+import org.knime.core.node.NodeFactory;
 
 public class NodeGenerator {
 	private static final Logger LOGGER = Logger.getLogger(NodeGenerator.class
@@ -194,7 +195,8 @@ public class NodeGenerator {
 	 *            generated sources
 	 * @param pluginMeta
 	 *            meta information used to adapt the java files
-	 * @return
+	 * @return the fully qualified name of the {@link NodeFactory} class able to
+	 *         build instances of the node.
 	 * @throws IOException
 	 * @throws UnknownMimeTypeException
 	 */
