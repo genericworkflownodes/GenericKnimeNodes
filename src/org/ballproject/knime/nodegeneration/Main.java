@@ -1,7 +1,6 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 public class Main {
@@ -14,14 +13,13 @@ public class Main {
 		File pluginDir = new File((args.length > 0) ? args[0] : ".")
 				.getAbsoluteFile();
 
+		NodeGenerator nodeGenerator;
 		try {
-			NodeGenerator nodeGenerator = new NodeGenerator(pluginDir);
+			nodeGenerator = new NodeGenerator(pluginDir);
 			NodePackager.zip(nodeGenerator);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 }
