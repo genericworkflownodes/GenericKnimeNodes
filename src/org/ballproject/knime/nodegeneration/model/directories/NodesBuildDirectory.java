@@ -52,7 +52,7 @@ public class NodesBuildDirectory extends TempDirectory {
 
 		this.pluginXml = new File(this, "plugin.xml");
 		this.manifestMf = new File(this, "META-INF" + File.separator
-				+ "plugin.xml");
+				+ "MANIFEST.MF");
 	}
 
 	/**

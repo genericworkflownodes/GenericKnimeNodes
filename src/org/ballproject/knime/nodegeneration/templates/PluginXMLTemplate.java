@@ -1,4 +1,4 @@
-package org.ballproject.knime.nodegeneration.model;
+package org.ballproject.knime.nodegeneration.templates;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.Utils;
-import org.ballproject.knime.nodegeneration.templates.TemplateResources;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -18,10 +17,10 @@ import org.dom4j.Node;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.io.SAXReader;
 
-public class PluginXmlTemplate {
+public class PluginXMLTemplate {
 
 	private static final Logger LOGGER = Logger
-			.getLogger(PluginXmlTemplate.class.getCanonicalName());
+			.getLogger(PluginXMLTemplate.class.getCanonicalName());
 
 	private Document doc;
 	private Set<String> registeredPrefixed = new HashSet<String>();
@@ -34,7 +33,7 @@ public class PluginXmlTemplate {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	public PluginXmlTemplate() throws DocumentException, IOException {
+	public PluginXMLTemplate() throws DocumentException, IOException {
 		File temp = File.createTempFile("plugin", "xml");
 		temp.deleteOnExit();
 		Helper.copyStream(TemplateResources.class
@@ -59,7 +58,6 @@ public class PluginXmlTemplate {
 
 	// TODO: documentation
 	public void registerPath(String path) {
-		System.out.println(path);
 		List<String> prefixes = Utils.getPathPrefixes(path);
 		for (String prefix : prefixes) {
 			this.registerPathPrefix(prefix);

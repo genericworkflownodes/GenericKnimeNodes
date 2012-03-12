@@ -33,7 +33,6 @@ import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameExceptio
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
-import org.ballproject.knime.nodegeneration.model.PluginXmlTemplate;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
@@ -48,6 +47,7 @@ import org.ballproject.knime.nodegeneration.templates.NodeFactoryXMLTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeModelTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeViewTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
+import org.ballproject.knime.nodegeneration.templates.PluginXMLTemplate;
 import org.dom4j.DocumentException;
 import org.eclipse.core.commands.ExecutionException;
 
@@ -66,8 +66,8 @@ public class NodeGenerator {
 			UnknownMimeTypeException {
 
 		this.srcDir = new NodesSourceDirectory(pluginDir);
-		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 		this.meta = new KNIMEPluginMeta(srcDir.getProperties());
+		this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 
 		LOGGER.info("Creating KNIME plugin sources\n\tFrom" + this.srcDir
 				+ "\n\tTo: " + this.buildDir);
@@ -110,11 +110,12 @@ public class NodeGenerator {
 				.getExternalCtdFiles());
 
 		// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
-		new MimeFileCellFactoryTemplate(meta.getName(), srcDir.getMimeTypes())
-				.write(new File(buildDir.getKnimeNodesDirectory(), "mimetypes"
-						+ File.separator + "MimeFileCellFactory.java"));
+		new MimeFileCellFactoryTemplate(meta.getPackageRoot(),
+				srcDir.getMimeTypes()).write(new File(buildDir
+				.getKnimeNodesDirectory(), "mimetypes" + File.separator
+				+ "MimeFileCellFactory.java"));
 
-		PluginXmlTemplate pluginXML = new PluginXmlTemplate();
+		PluginXMLTemplate pluginXML = new PluginXMLTemplate();
 
 		// src/[PACKAGE]/knime/nodes/*/*
 		for (CTDFile ctdFile : descriptorsDirectory.getCTDFiles()) {
