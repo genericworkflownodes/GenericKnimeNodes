@@ -9,14 +9,23 @@ public class Main {
 	private static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
+	/**
+	 * 
+	 * @param args
+	 *            #1: plugin directory; #2: build directory
+	 */
 	public static void main(String[] args) {
 		File pluginDir = new File((args.length > 0) ? args[0] : ".")
 				.getAbsoluteFile();
+		File buildDir = (args.length > 1) ? new File(args[1]).getAbsoluteFile()
+				: null;
+		if (buildDir != null)
+			buildDir.mkdirs();
 
 		NodeGenerator nodeGenerator;
 		try {
-			nodeGenerator = new NodeGenerator(pluginDir);
-			NodePackager.zip(nodeGenerator);
+			nodeGenerator = new NodeGenerator(pluginDir, buildDir);
+			// NodePackager.zip(nodeGenerator);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

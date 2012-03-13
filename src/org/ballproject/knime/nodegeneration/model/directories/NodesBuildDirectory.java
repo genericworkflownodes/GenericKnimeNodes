@@ -15,7 +15,7 @@ import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildSr
  * @author bkahlert
  * 
  */
-public class NodesBuildDirectory extends TempDirectory {
+public class NodesBuildDirectory extends Directory {
 
 	private static final long serialVersionUID = -2772836144406225644L;
 	private NodesBuildSrcDirectory srcDirectory = null;
@@ -26,9 +26,18 @@ public class NodesBuildDirectory extends TempDirectory {
 	private File pluginXml;
 	private File manifestMf;
 
+	public NodesBuildDirectory(File buildDir, String packageRoot)
+			throws FileNotFoundException {
+		super(buildDir);
+		init(packageRoot);
+	}
+
 	public NodesBuildDirectory(String packageRoot) throws FileNotFoundException {
 		super("GKN-pluginsource");
+		init(packageRoot);
+	}
 
+	private void init(String packageRoot) throws FileNotFoundException {
 		String packageRootPath = packageRoot.replace('.', File.separatorChar);
 
 		new File(this, "src" + File.separator + packageRootPath

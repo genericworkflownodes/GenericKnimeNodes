@@ -33,8 +33,10 @@ public class NodesSourceDirectory extends Directory {
 			this.descriptorsDirectory = new DescriptorsDirectory(new File(
 					nodeSourceDirectory, "descriptors"));
 		} catch (FileNotFoundException e) {
-			throw new FileNotFoundException("Could not find payload directory "
-					+ payloadDirectory.getPath());
+			throw new FileNotFoundException(
+					"Could not find descriptors directory "
+							+ new File(nodeSourceDirectory, "descriptors")
+									.getPath());
 		}
 
 		try {

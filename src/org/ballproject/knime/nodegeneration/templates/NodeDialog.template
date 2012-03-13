@@ -5,7 +5,7 @@ import org.ballproject.knime.base.config.*;
 
 public class __NODENAME__NodeDialog extends GenericKnimeNodeDialog
 {
-	protected __NODENAME__NodeDialog(NodeConfiguration config)
+	protected __NODENAME__NodeDialog(INodeConfiguration config)
 	{
 		super(config);
 	}

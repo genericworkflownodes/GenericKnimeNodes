@@ -13,6 +13,7 @@ public class ManifestMFTemplate extends Template {
 
 		this.replace("@@pluginname@@", pluginMeta.getName());
 		this.replace("@@pluginversion@@", pluginMeta.getVersion());
+		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
 	}
 
 }

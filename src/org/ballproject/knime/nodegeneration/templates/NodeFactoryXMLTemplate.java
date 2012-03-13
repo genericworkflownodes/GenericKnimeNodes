@@ -2,9 +2,9 @@ package org.ballproject.knime.nodegeneration.templates;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.Parameter;
@@ -12,6 +12,16 @@ import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.nodegeneration.NodeGenerator;
 
 public class NodeFactoryXMLTemplate extends Template {
+
+	private static String join(List<String> mts, String delimiter) {
+		if (mts.isEmpty())
+			return "";
+		Iterator<String> iter = mts.iterator();
+		StringBuffer buffer = new StringBuffer(iter.next());
+		while (iter.hasNext())
+			buffer.append(delimiter).append(iter.next());
+		return buffer.toString();
+	}
 
 	private static String getInPorts(INodeConfiguration nodeConfiguration) {
 		// ports
@@ -31,7 +41,7 @@ public class NodeFactoryXMLTemplate extends Template {
 			for (MIMEtype mt : port.getMimeTypes()) {
 				mts.add(mt.getExt());
 			}
-			ipp = ipp.replace("__MIMETYPE__", StringUtils.join(mts, ","));
+			ipp = ipp.replace("__MIMETYPE__", join(mts, ","));
 
 			ipp = ipp.replace("__OPT__", (port.isOptional() ? ",opt." : ""));
 			inPorts += ipp + "\n";

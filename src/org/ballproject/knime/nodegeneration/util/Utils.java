@@ -17,6 +17,7 @@ import org.dom4j.io.XMLWriter;
 
 public class Utils {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(Utils.class
 			.getCanonicalName());
 
@@ -116,7 +117,6 @@ public class Utils {
 	}
 
 	public static String fixKNIMENodeName(String name) {
-		LOGGER.info("trying to fix node class name " + name);
 		name = name.replace(" ", "");
 		name = name.replace(".", "");
 		name = name.replace("-", "");
@@ -125,7 +125,6 @@ public class Utils {
 		name = name.replace("+", "");
 		name = name.replace("$", "");
 		name = name.replace(":", "");
-		LOGGER.info("fixed node name " + name);
 		return name;
 	}
 }

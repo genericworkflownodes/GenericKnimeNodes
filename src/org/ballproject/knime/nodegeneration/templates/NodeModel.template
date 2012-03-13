@@ -20,18 +20,10 @@ import org.knime.core.data.url.MIMEType;
 
 public class __NODENAME__NodeModel extends GenericKnimeNodeModel
 {	
-	protected __NODENAME__NodeModel(NodeConfiguration config)
+	protected __NODENAME__NodeModel(INodeConfiguration config)
 	{
 		super(config);
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader(); 
-		try
-		{
-			this.config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		
 		this.mimetypes_in  = new MIMEType[][]{__INCLAZZEZ__};
 		this.mimetypes_out = new MIMEType[][]{__OUTCLAZZEZ__};
 		
