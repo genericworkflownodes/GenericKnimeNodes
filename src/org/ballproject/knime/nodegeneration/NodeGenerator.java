@@ -176,23 +176,6 @@ public class NodeGenerator {
 		return meta.getVersion();
 	}
 
-	// TODO
-	// public void installIcon() throws IOException {
-	// if (this._iconpath_ != null) {
-	// Node node = this.plugindoc
-	// .selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
-	// Element elem = (Element) node;
-	//
-	// elem.addElement("splashExtension")
-	// .addAttribute("icon", "icons/logo.png")
-	// .addAttribute("id", "logo");
-	//
-	// new File(this._destdir_ + File.separator + "icons").mkdirs();
-	// Helper.copyFile(new File(this._iconpath_), new File(this._destdir_
-	// + File.separator + "icons" + File.separator + "logo.png"));
-	// }
-	// }
-
 	/**
 	 * Copies the java sources needed to invoke a tool (described by a
 	 * {@link CTDFile}) to the specified {@link NodesBuildKnimeNodesDirectory}.
@@ -219,31 +202,27 @@ public class NodeGenerator {
 		File nodeSourceDir = new File(nodesDir, nodeName);
 		nodeSourceDir.mkdirs();
 
-		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeDialog.java
+		/*
+		 * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]
+		 */
 		new NodeDialogTemplate(pluginMeta.getPackageRoot(), nodeName)
 				.write(new File(nodeSourceDir, nodeName + "NodeDialog.java"));
-
-		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeView.java
 		new NodeViewTemplate(pluginMeta.getPackageRoot(), nodeName)
 				.write(new File(nodeSourceDir, nodeName + "NodeView.java"));
-
-		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeModel.java
 		new NodeModelTemplate(pluginMeta.getPackageRoot(), nodeName,
 				nodeConfiguration).write(new File(nodeSourceDir, nodeName
 				+ "NodeModel.java"));
-
-		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeFactory.xml
 		new NodeFactoryXMLTemplate(nodeName, nodeConfiguration).write(new File(
 				nodeSourceDir, nodeName + "NodeFactory.xml"));
-
-		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/NodeFactory.java
 		new NodeFactoryTemplate(pluginMeta.getPackageRoot(), nodeName)
 				.write(new File(nodeSourceDir, nodeName + "NodeFactory.java"));
 
 		File nodeConfigDir = new File(nodeSourceDir, "config");
 		nodeConfigDir.mkdirs();
 
-		// src/[PACKAGE]/knime/nodes/[NODE_NAME]/config/config.xml
+		/*
+		 * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]/config
+		 */
 		Helper.copyFile(ctdFile, new File(nodeConfigDir, "config.xml"));
 
 		return pluginMeta.getPackageRoot() + ".knime.nodes." + nodeName + "."
