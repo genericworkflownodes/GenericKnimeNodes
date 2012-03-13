@@ -22,13 +22,10 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
-import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
@@ -50,7 +47,6 @@ import org.ballproject.knime.nodegeneration.templates.NodeModelTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeViewTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginXMLTemplate;
-import org.ballproject.knime.nodegeneration.templates.Template;
 import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
 import org.ballproject.knime.nodegeneration.util.Utils;
 import org.ballproject.knime.nodegeneration.writer.DatWriter;
@@ -252,68 +248,5 @@ public class NodeGenerator {
 
 		return pluginMeta.getPackageRoot() + ".knime.nodes." + nodeName + "."
 				+ nodeName + "NodeFactory";
-	}
-
-	private static File getProjectRoot() throws IOException {
-		return getProjectRoot(new File(".").getAbsoluteFile(), true);
-	}
-
-	private static File getProjectRoot(File start, boolean allowRecursion)
-			throws IOException {
-		start = start.getCanonicalFile();
-		for (File root : File.listRoots())
-			if (start.equals(root))
-				return null;
-
-		for (File child : start.listFiles()) {
-			if (child.isDirectory()) {
-				if (child.getName().equals("src")) {
-					return start;
-				}
-				if (allowRecursion) {
-					File projectRoot = getProjectRoot(child, false);
-					if (projectRoot != null)
-						return projectRoot;
-				}
-			}
-		}
-
-		return (allowRecursion) ? getProjectRoot(start.getParentFile(), true)
-				: null;
-	}
-
-	private static void copyStaticFiles(NodesBuildDirectory buildDir)
-			throws IOException {
-
-		File projectRoot = getProjectRoot();
-		if (projectRoot == null)
-			throw new FileNotFoundException("Could not find project root");
-
-		String knimeSourceDir = GenericNodesPlugin.class.getPackage().getName()
-				.replace(".", File.separator);
-		String genericNodesFile = knimeSourceDir + File.separator
-				+ GenericNodesPlugin.class.getSimpleName() + ".java";
-		String baseDir = knimeSourceDir + File.separator + "base";
-		String templateFile = Template.class.getPackage().getName()
-				.replace(".", File.separator)
-				+ File.separator + Template.class.getSimpleName() + ".java";
-
-		// GenericNodesPlugin.java
-		FileUtils.copyFile(new File(projectRoot, "src" + File.separator
-				+ genericNodesFile), new File(buildDir.getSrcDirectory(),
-				genericNodesFile));
-
-		// lib
-		FileUtils.copyDirectory(new File(projectRoot, "lib"), new File(
-				buildDir, "lib"));
-
-		// base
-		FileUtils.copyDirectory(new File(projectRoot, "src" + File.separator
-				+ baseDir), new File(buildDir.getSrcDirectory(), baseDir));
-
-		// Template.java
-		FileUtils.copyFile(new File(projectRoot, "src" + File.separator
-				+ templateFile), new File(buildDir.getSrcDirectory(),
-				templateFile));
 	}
 }
