@@ -19,7 +19,7 @@
 	<property name="custom.plugin.version" value="${pluginVersion}" />
 	
 	<tstamp>
-		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ssZ"/> <!-- ISO8601 -->
+		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ss-SZ"/> <!-- about ISO8601 -->
 	</tstamp>
 	<property name="tmp" value="${java.io.tmpdir}/GKN-${fulltime}" />
 	<property name="base.plugin.build.dir" value="${tmp}/basePlugin" />
