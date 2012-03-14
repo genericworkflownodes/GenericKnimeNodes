@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.base.util.Helper;
+import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.util.Utils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -54,6 +55,28 @@ public class PluginXMLTemplate {
 	 */
 	public void saveTo(File dest) throws IOException {
 		Utils.writeDocumentTo(this.doc, dest);
+	}
+
+	/**
+	 * Registers an icon that is displayed on the KNIME splash screen when KNIME
+	 * starts.
+	 * 
+	 * @param meta
+	 * 
+	 * @param splashIcon
+	 *            project relative path to icon file, e.g. icons/logo.png
+	 * @throws IOException
+	 */
+	public void registerSplashIcon(KNIMEPluginMeta meta, File splashIcon)
+			throws IOException {
+		if (splashIcon == null)
+			return;
+		Node node = this.doc
+				.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
+		Element elem = (Element) node;
+		elem.addElement("splashExtension")
+				.addAttribute("icon", splashIcon.getPath())
+				.addAttribute("id", meta.getPackageRoot() + ".icons.splashIcon");
 	}
 
 	// TODO: documentation

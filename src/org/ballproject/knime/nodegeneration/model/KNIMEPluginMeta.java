@@ -42,7 +42,7 @@ public class KNIMEPluginMeta {
 	 * @return
 	 */
 	private static String getPluginVersion(Properties props) {
-		return props.getProperty("pluginversion");
+		return props.getProperty("pluginVersion");
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class KNIMEPluginMeta {
 	 * @return
 	 */
 	private static String getPackageRoot(Properties props) {
-		return props.getProperty("pluginpackage");
+		return props.getProperty("pluginPackage");
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class KNIMEPluginMeta {
 	 * @return
 	 */
 	private static String getNodeRepositoyPath(Properties props) {
-		return props.getProperty("package_root");
+		return props.getProperty("nodeRepositoyRoot");
 	}
 
 	/**

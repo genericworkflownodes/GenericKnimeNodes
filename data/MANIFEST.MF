@@ -10,7 +10,8 @@ Bundle-ClassPath: .,
  lib/bsh-2.0b4.jar,
  lib/ant-contrib.jar,
  lib/ant-launcher.jar,
- lib/ant.jar
+ lib/ant.jar,
+ lib/org.knime.core.data.urltype.jar
 Bundle-Vendor: roettig
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
@@ -23,7 +24,6 @@ Export-Package: org.ballproject.knime.base.config,
  org.ballproject.knime.base.port,
  org.ballproject.knime.base.mime,
  org.ballproject.knime.base.mime.demangler,
- org.ballproject.knime.base.io,
  org.ballproject.knime.base.treetabledialog,
  org.ballproject.knime.base.util,
  org.ballproject.knime.nodegeneration,
@@ -104,7 +104,10 @@ Export-Package: org.ballproject.knime.base.config,
  org.jdesktop.swingx.tips,
  org.jdesktop.swingx.tree,
  org.jdesktop.swingx.treetable,
- org.jdesktop.swingx.util
+ org.jdesktop.swingx.util,
+ org.knime.core.data.url,
+ org.knime.core.data.url.cell,
+ org.knime.core.data.url.port
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.ballproject.knime.GenericNodesPlugin
 Eclipse-RegisterBuddy: org.knime.core

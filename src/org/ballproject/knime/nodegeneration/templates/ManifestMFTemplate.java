@@ -11,8 +11,8 @@ public class ManifestMFTemplate extends Template {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/MANIFEST.MF.template"));
 
-		this.replace("@@pluginname@@", pluginMeta.getName());
-		this.replace("@@pluginversion@@", pluginMeta.getVersion());
+		this.replace("@@pluginName@@", pluginMeta.getName());
+		this.replace("@@pluginVersion@@", pluginMeta.getVersion());
 		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
 	}
 

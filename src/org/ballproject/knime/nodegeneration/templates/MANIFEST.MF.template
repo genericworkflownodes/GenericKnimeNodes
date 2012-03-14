@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Knime plugin @@pluginname@@
 Bundle-SymbolicName: @@packageName@@;singleton:=true
-Bundle-Version: @@pluginversion@@
+Bundle-Version: @@pluginVersion@@
 Bundle-Activator: @@packageName@@.knime.PluginActivator
 Bundle-Vendor: Freie Universität Berlin, Universität Tübingen
 Require-Bundle: org.eclipse.core.runtime,

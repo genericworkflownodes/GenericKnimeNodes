@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
@@ -34,10 +35,13 @@ import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildIconsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.source.IconsDirectory;
 import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.templates.BinaryResourcesTemplate;
+import org.ballproject.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import org.ballproject.knime.nodegeneration.templates.ManifestMFTemplate;
 import org.ballproject.knime.nodegeneration.templates.MimeFileCellFactoryTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeDialogTemplate;
@@ -92,6 +96,10 @@ public class NodeGenerator {
 		else
 			LOGGER.info("Using static ctd files");
 
+		// build.properties - only useful if you re-import the generated node in
+		// Eclipse
+		new BuildPropertiesTemplate().write(buildDir.getBuildProperties());
+
 		// META-INF/MANIFEST.MF
 		new ManifestMFTemplate(meta).write(buildDir.getManifestMf());
 
@@ -130,16 +138,19 @@ public class NodeGenerator {
 		for (CTDFile ctdFile : descriptorsDirectory.getCTDFiles()) {
 			LOGGER.info("Start processing ctd file: " + ctdFile.getName());
 			String factoryClass = copyNodeSources(ctdFile,
-					this.buildDir.getKnimeNodesDirectory(), meta);
+					srcDir.getIconsDirectory(),
+					buildDir.getKnimeNodesDirectory(), meta);
 
 			String absoluteCategory = "/" + meta.getNodeRepositoryRoot() + "/"
 					+ meta.getName() + "/"
 					+ ctdFile.getNodeConfiguration().getCategory();
 			pluginXML.registerNode(factoryClass, absoluteCategory);
-
-			// TODO
-			// this.installIcon();
 		}
+
+		// icons/*
+		copyFolderIcon(srcDir.getIconsDirectory(), buildDir.getIconsDirectory());
+		registerSplashIcon(meta, pluginXML, srcDir.getIconsDirectory(),
+				buildDir.getIconsDirectory());
 
 		// plugin.xml
 		pluginXML.saveTo(buildDir.getPluginXml());
@@ -156,8 +167,6 @@ public class NodeGenerator {
 
 		LOGGER.info("KNIME plugin sources successfully created in:\n\t"
 				+ this.buildDir);
-
-		// copy StaticFiles(this.buildDir);
 	}
 
 	public File getSourceDirectory() {
@@ -176,12 +185,34 @@ public class NodeGenerator {
 		return meta.getVersion();
 	}
 
+	public static void copyFolderIcon(IconsDirectory iconsSrc,
+			NodesBuildIconsDirectory iconsDest) throws IOException {
+		File categoryIcon = iconsSrc.getCategoryIcon();
+		if (categoryIcon != null && categoryIcon.canRead()) {
+			// TODO: only set icon file in plugin.xml for categories if this
+			// method was called
+			Helper.copyFile(categoryIcon, new File(iconsDest, "category.png"));
+		}
+	}
+
+	public static void registerSplashIcon(KNIMEPluginMeta meta,
+			PluginXMLTemplate pluginXML, IconsDirectory iconsSrc,
+			NodesBuildIconsDirectory iconsDest) throws IOException {
+		File splashIcon = iconsSrc.getSplashIcon();
+		if (splashIcon != null && splashIcon.canRead()) {
+			Helper.copyFile(splashIcon, new File(iconsDest, "splash.png"));
+			pluginXML.registerSplashIcon(meta, new File("icons/splash.png"));
+		}
+	}
+
 	/**
 	 * Copies the java sources needed to invoke a tool (described by a
 	 * {@link CTDFile}) to the specified {@link NodesBuildKnimeNodesDirectory}.
 	 * 
 	 * @param ctdFile
 	 *            which described the wrapped tool
+	 * @param iconsDir
+	 *            location where node icons reside
 	 * @param nodesDir
 	 *            location where to create a sub directory containing the
 	 *            generated sources
@@ -193,14 +224,19 @@ public class NodeGenerator {
 	 * @throws UnknownMimeTypeException
 	 */
 	public static String copyNodeSources(CTDFile ctdFile,
-			NodesBuildKnimeNodesDirectory nodesDir, KNIMEPluginMeta pluginMeta)
-			throws IOException, UnknownMimeTypeException {
+			IconsDirectory iconsDir, NodesBuildKnimeNodesDirectory nodesDir,
+			KNIMEPluginMeta pluginMeta) throws IOException,
+			UnknownMimeTypeException {
 
 		INodeConfiguration nodeConfiguration = ctdFile.getNodeConfiguration();
 		String nodeName = Utils.fixKNIMENodeName(nodeConfiguration.getName());
 
 		File nodeSourceDir = new File(nodesDir, nodeName);
 		nodeSourceDir.mkdirs();
+
+		File nodeIcon = iconsDir.getNodeIcon(nodeConfiguration);
+		if (nodeIcon != null)
+			FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
 
 		/*
 		 * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]
@@ -212,8 +248,9 @@ public class NodeGenerator {
 		new NodeModelTemplate(pluginMeta.getPackageRoot(), nodeName,
 				nodeConfiguration).write(new File(nodeSourceDir, nodeName
 				+ "NodeModel.java"));
-		new NodeFactoryXMLTemplate(nodeName, nodeConfiguration).write(new File(
-				nodeSourceDir, nodeName + "NodeFactory.xml"));
+		new NodeFactoryXMLTemplate(nodeName, nodeConfiguration,
+				(nodeIcon != null) ? nodeIcon.getName() : "./default.png")
+				.write(new File(nodeSourceDir, nodeName + "NodeFactory.xml"));
 		new NodeFactoryTemplate(pluginMeta.getPackageRoot(), nodeName)
 				.write(new File(nodeSourceDir, nodeName + "NodeFactory.java"));
 

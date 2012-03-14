@@ -11,6 +11,7 @@ import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameExceptio
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.source.IconsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.PayloadDirectory;
 import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.model.mime.MimeType;
@@ -22,6 +23,7 @@ public class NodesSourceDirectory extends Directory {
 	private DescriptorsDirectory descriptorsDirectory = null;
 	private ExecutablesDirectory executablesDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
+	private IconsDirectory iconsDirectory = null;
 	private Properties properties = null;
 
 	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
@@ -53,6 +55,13 @@ public class NodesSourceDirectory extends Directory {
 
 		}
 
+		try {
+			this.iconsDirectory = new IconsDirectory(new File(
+					nodeSourceDirectory, "icons"));
+		} catch (FileNotFoundException e) {
+
+		}
+
 		File propertyFile = new File(nodeSourceDirectory, "plugin.properties");
 		try {
 			Properties properties = new Properties();
@@ -76,6 +85,10 @@ public class NodesSourceDirectory extends Directory {
 
 	public PayloadDirectory getPayloadDirectory() {
 		return payloadDirectory;
+	}
+
+	public IconsDirectory getIconsDirectory() {
+		return iconsDirectory;
 	}
 
 	public Properties getProperties() {

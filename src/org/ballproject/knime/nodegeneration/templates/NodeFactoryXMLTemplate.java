@@ -89,10 +89,12 @@ public class NodeFactoryXMLTemplate extends Template {
 	}
 
 	public NodeFactoryXMLTemplate(String nodeName,
-			INodeConfiguration nodeConfiguration) throws IOException {
+			INodeConfiguration nodeConfiguration, String iconPath)
+			throws IOException {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/NodeXMLDescriptor.template"));
 
+		this.replace("__ICON__", iconPath);
 		this.replace("__NODENAME__", nodeName);
 		this.replace("__INPORTS__", getInPorts(nodeConfiguration));
 		this.replace("__OUTPORTS__", getOutPorts(nodeConfiguration));

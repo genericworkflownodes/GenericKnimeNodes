@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildBinaryResourcesDirectory;
+import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildIconsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildPackageRootDirectory;
@@ -18,11 +19,13 @@ import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildSr
 public class NodesBuildDirectory extends Directory {
 
 	private static final long serialVersionUID = -2772836144406225644L;
+	private NodesBuildIconsDirectory iconsDirectory = null;
 	private NodesBuildSrcDirectory srcDirectory = null;
 	private NodesBuildPackageRootDirectory packageRootDirectory = null;
 	private NodesBuildKnimeDirectory knimeDirectory = null;
 	private NodesBuildKnimeNodesDirectory knimeNodesDirectory = null;
 	private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
+	private File buildProperties;
 	private File pluginXml;
 	private File manifestMf;
 
@@ -40,10 +43,14 @@ public class NodesBuildDirectory extends Directory {
 	private void init(String packageRoot) throws FileNotFoundException {
 		String packageRootPath = packageRoot.replace('.', File.separatorChar);
 
+		new File(this, "icons").mkdirs();
 		new File(this, "src" + File.separator + packageRootPath
 				+ File.separator + "knime" + File.separator + "nodes"
 				+ File.separator + "binres").mkdirs();
 		new File(this, "META-INF").mkdirs();
+
+		this.iconsDirectory = new NodesBuildIconsDirectory(new File(this,
+				"icons"));
 
 		this.srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
 
@@ -59,9 +66,21 @@ public class NodesBuildDirectory extends Directory {
 		this.binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
 				new File(this.knimeNodesDirectory, "binres"));
 
+		this.buildProperties = new File(this, "build.properties");
 		this.pluginXml = new File(this, "plugin.xml");
 		this.manifestMf = new File(this, "META-INF" + File.separator
 				+ "MANIFEST.MF");
+	}
+
+	/**
+	 * Returns the directory where to put all icons in.
+	 * <p>
+	 * e.g. /tmp/372/icons
+	 * 
+	 * @return
+	 */
+	public NodesBuildIconsDirectory getIconsDirectory() {
+		return iconsDirectory;
 	}
 
 	/**
@@ -118,6 +137,10 @@ public class NodesBuildDirectory extends Directory {
 	 */
 	public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
 		return binaryResourcesDirectory;
+	}
+
+	public File getBuildProperties() {
+		return buildProperties;
 	}
 
 	public File getPluginXml() {
