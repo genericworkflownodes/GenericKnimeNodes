@@ -9,7 +9,7 @@ Please adjust the file build.properties and make the property
 knimeSDKpath point to the path of the KNIME SDK root. You can
 download the KNIME SDK at http://knime.org/downloads/overview.  
 
-Creating you personal is as easy as typing "ant"!
+Creating your personal KNIME nodes is as easy as typing "ant"!
 
 1. Switch to you GenericKnimeNodes directory
 2. Call "ant"
