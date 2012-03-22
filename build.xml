@@ -23,23 +23,56 @@
 	</tstamp>
 	<property name="tmp" value="${java.io.tmpdir}/GKN-${fulltime}" />
 	<property name="base.plugin.build.dir" value="${tmp}/basePlugin" />
-	<property name="base.plugin.build.jar" value="${plugin.dir}/../build/${base.plugin.name}_${base.plugin.version}.jar" />
+  <property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" /> 
 	<property name="custom.plugin.build.src" value="${tmp}/customPlugin-sources" />
 	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
 	<property name="custom.plugin.build.jar" value="${plugin.dir}/../build/${custom.plugin.name}_${custom.plugin.version}.jar" />
 	<property name="src" value="src" />
+  
+  <!-- the classpath for the base plugin (KNIME and jars in lib/) -->
+  <path id="base.plugin.classpath">
+    <!-- include all jars found in KNIME SDK plugins -->
+    <fileset dir="${knime.sdk}/plugins">
+      <include name="**/*.jar" />
+    </fileset>
+    <!-- include our own dependencies -->
+    <fileset dir="lib">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <!-- the classpath used to compile and generate the plugin sources -->
+  <path id="custom.plugin.classpath">
+    <pathelement location="${base.plugin.build.jar}"/>
+    <path refid="base.plugin.classpath"/>
+  </path>
 
 	<target name="clean">
 		<delete dir="${tmp}" />
 	</target>
 
-	<target name="prepare" depends="clean">
+  <target name="knime.sdk.condition">
+    <!-- check if knime.sdk was set correctly -->
+    <condition property="knime.sdk.exists">
+      <available file="${knime.sdk}" type="dir"/>
+    </condition>
+  </target>
+  
+  <target name="knime.sdk.check" depends="knime.sdk.condition" unless="knime.sdk.exists" >
+    <echo message="knime.sdk was not set properly. Please edit the a file build.properties containing the following settings:" />
+    <echo message="knime.sdk=/path/to/your/knime/sdk" />
+    <fail message="Cannot build without a valid knime.sdk."/>
+  </target>
+
+	<target name="prepare" depends="knime.sdk.check,clean">
+		<echo message="knime.sdk.exists: ${knime.sdk.exists}" />
+		
 		<mkdir dir="${tmp}" />
 		<mkdir dir="build" />
 	</target>
 
-	<target name="base.plugin.build">
-		<echo message="Debug: {debug}" />
+	<target name="base.plugin.build" depends="prepare">
+		<echo message="Debug: ${debug}" />
 
 		<mkdir dir="${base.plugin.build.dir}" />
 		
@@ -80,19 +113,8 @@
 	</target>
 
 	<target name="base.plugin.classes.build">
-		<path id="lib.jar.classpath">
-			<!-- include all jars found in KNIME SDK plugins -->
-			<fileset dir="${knime.sdk}/plugins">
-				<include name="**/*.jar" />
-			</fileset>
-			<!-- include our own dependencies -->
-			<fileset dir="lib">
-				<include name="*.jar" />
-			</fileset>
-		</path>
-
 		<javac srcdir="${src}" destdir="${base.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
-			<classpath refid="lib.jar.classpath" />
+			<classpath refid="base.plugin.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
 			<compilerarg value="-Xlint:deprecation" />
 		</javac>
@@ -120,35 +142,15 @@
 
 	<target name="custom.plugin.generate_sources" description="run node generator">
 		<java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
-			<classpath>
-				<fileset dir="lib">
-					<include name="*.jar" />
-				</fileset>
-				<fileset dir="${knime.sdk}/plugins">
-					<include name="**/*.jar" />
-				</fileset>
-				<pathelement location="${base.plugin.build.jar}" />
-			</classpath>
+      <classpath refid="custom.plugin.classpath"/>
 			<arg value="${plugin.dir}" />
 			<arg value="${custom.plugin.build.src}" />
 		</java>
 	</target>
 
 	<target name="custom.plugin.classes.build">
-		<path id="lib.jar.classpath">
-			<!-- include all jars found in KNIME SDK plugins -->
-			<fileset dir="${knime.sdk}/plugins">
-				<include name="**/*.jar" />
-			</fileset>
-			<!-- include our own dependencies -->
-			<fileset dir="lib">
-				<include name="*.jar" />
-			</fileset>
-			<pathelement location="build/${base.plugin.name}_${base.plugin.version}.jar" />
-		</path>
-
 		<javac srcdir="${custom.plugin.build.src}" destdir="${custom.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
-			<classpath refid="lib.jar.classpath" />
+			<classpath refid="custom.plugin.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
 			<compilerarg value="-Xlint:deprecation" />
 		</javac>
@@ -174,14 +176,9 @@
 
 	<target name="test" depends="base.plugin.build">
 		<junit printsummary="yes" haltonfailure="yes" showoutput="yes">
-			<classpath>
-				<pathelement location="${base.plugin.build.jar}" />
-				<fileset dir="lib">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
-
-			<!--<formatter type="plain"/>-->
+  		<classpath refid="base.plugin.classpath"/>
+	
+	    <!--<formatter type="plain"/>-->
 			<test name="org.ballproject.knime.test.CTDNodeConfigurationWriterTest" />
 			<test name="org.ballproject.knime.test.CTDNodeConfigurationReaderTest" />
 			<test name="org.ballproject.knime.test.ParameterTest" />
