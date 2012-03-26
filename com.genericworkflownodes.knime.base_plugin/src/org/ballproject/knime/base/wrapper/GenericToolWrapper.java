@@ -20,18 +20,20 @@
 package org.ballproject.knime.base.wrapper;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.nodegeneration.templates.Template;
 
 public class GenericToolWrapper extends Project {
 	private Map<String, String> switches = new HashMap<String, String>();
@@ -63,11 +65,18 @@ public class GenericToolWrapper extends Project {
 	}
 
 	private File prepareFile(String commands) throws IOException {
-		Template tf = new Template(this.getClass().getResourceAsStream(
-				"build.xml"));
+		// TODO remove ant based CLI mapping
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(this.getClass().getResourceAsStream("build.xml"), writer,
+				"UTF-8");
+		String antBuildFileString = writer.toString();
+		antBuildFileString = antBuildFileString.replace("<!-- __TASKS__ -->",
+				commands);
+
 		File file = new File(Helper.getTemporaryFilename("buildxml", true));
-		tf.replace("<!-- __TASKS__ -->", commands);
-		tf.write(file);
+		FileOutputStream out = new FileOutputStream(file);
+		out.write(antBuildFileString.getBytes());
+		out.close();
 		return file;
 	}
 

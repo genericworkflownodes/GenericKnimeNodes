@@ -24,7 +24,7 @@
    </extension>
    
    <!-- id seems to be package relative (so leading org.ballproject.knime was dropped) -->
-   <extension-point id="base.mime.demangler.DemanglerProvider" name="DemanglerProvider" schema="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
+   <extension-point id="base.mime.demangler.DemanglerProvider" name="DemanglerProvider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
    
    <extension point="org.knime.product.splashExtension">
         <splashExtension icon="icons/GKN.png" id="org.ballproject.knime.splashExtension"/>

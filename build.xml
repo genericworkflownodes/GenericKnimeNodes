@@ -2,12 +2,14 @@
 
 	<property name="debug" value="true" />
 	
-	<property name="plugin.dir" value="sample" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
+	<property name="plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
 
 	<property name="base.plugin.name" value="org.ballproject.knime" />
 	<property name="base.plugin.version.major" value="0" />
 	<property name="base.plugin.version.minor" value="6" />
 	<property name="base.plugin.version.patch" value="0" />
+
+	<property name="nodegenerator.name" value="org.ballproject.knime.node_generator" />
 	
 	<!-- do not edit below this line -->
 
@@ -22,11 +24,19 @@
 		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ss-SZ"/> <!-- about ISO8601 -->
 	</tstamp>
 	<property name="tmp" value="${java.io.tmpdir}/GKN-${fulltime}" />
+	
+	<property name="base.plugin.src" value="com.genericworkflownodes.knime.base_plugin" />
 	<property name="base.plugin.build.dir" value="${tmp}/basePlugin" />
-  <property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" /> 
+  	<property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" /> 
+
+	<property name="nodegenerator.src" value="com.genericworkflownodes.knime.node_generator" />
+	<property name="nodegenerator.build.dir" value="${tmp}/nodeGenerator" />
+  	<property name="nodegenerator.build.jar" value="build/${nodegenerator.name}.jar" /> 
+
 	<property name="custom.plugin.build.src" value="${tmp}/customPlugin-sources" />
 	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
 	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
+	
 	<property name="src" value="src" />
   
   <!-- the classpath for the base plugin (KNIME and jars in lib/) -->
@@ -36,13 +46,26 @@
       <include name="**/*.jar" />
     </fileset>
     <!-- include our own dependencies -->
-    <fileset dir="lib">
+    <fileset dir="${base.plugin.src}/lib">
       <include name="*.jar" />
     </fileset>
   </path>
 
+	<path id="nodegenerator.build.classpath">
+		<pathelement location="${base.plugin.build.jar}" />
+		<!-- include our own dependencies -->
+		<fileset dir="${nodegenerator.src}/lib">
+		  <include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="nodegenerator.exec.classpath">
+		<path refid="nodegenerator.build.classpath" />
+		<pathelement location="${nodegenerator.build.jar}" />
+	</path>
+
   <!-- the classpath used to compile and generate the plugin sources -->
-  <path id="custom.plugin.classpath">
+  <path id="custom.plugin.build.classpath">
     <pathelement location="${base.plugin.build.jar}"/>
     <path refid="base.plugin.classpath"/>
   </path>
@@ -76,64 +99,80 @@
 
 		<mkdir dir="${base.plugin.build.dir}" />
 		
-		<copy file="data/plugin.xml" todir="${base.plugin.build.dir}" />
-		<copy file="data/build.properties" todir="${base.plugin.build.dir}" />
+		<copy file="${base.plugin.src}/plugin.xml" todir="${base.plugin.build.dir}" />
+		<copy file="${base.plugin.src}/build.properties" todir="${base.plugin.build.dir}" />
 
 		<mkdir dir="${base.plugin.build.dir}/lib" />
 		<copy todir="${base.plugin.build.dir}/lib" failonerror="true" overwrite="true">
-			<fileset dir="lib/">
+			<fileset dir="${base.plugin.src}/lib/">
 				<include name="*.jar" />
 			</fileset>
 		</copy>
 
 		<mkdir dir="${base.plugin.build.dir}/META-INF" />
 		<copy todir="${base.plugin.build.dir}/META-INF" failonerror="true" overwrite="true">
-			<fileset dir="data">
+			<fileset dir="${base.plugin.src}/META-INF">
 				<include name="MANIFEST.MF" />
 			</fileset>
 		</copy>
-		<replace file="${base.plugin.build.dir}/META-INF/MANIFEST.MF" token="@@pluginVersion@@" value="${base.plugin.version}" />
-
+	
 		<antcall target="base.plugin.classes.build" />
 
-		<mkdir dir="${base.plugin.build.dir}/data" />
-		<copy file="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${base.plugin.build.dir}/data" />
+		<mkdir dir="${base.plugin.build.dir}/schema" />
+		<copy file="${base.plugin.src}/schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${base.plugin.build.dir}/schema" />
 
 		<mkdir dir="${base.plugin.build.dir}/icons" />
 		<copy todir="${base.plugin.build.dir}/icons" failonerror="true" overwrite="true">
-			<fileset dir="data">
+			<fileset dir="${base.plugin.src}/icons">
 				<include name="**/*.png"/>
 				<include name="**/*.jpg"/>
 				<include name="**/*.gif"/>
 			</fileset>
 		</copy>
-		<copy file="data/GKN.png" todir="${base.plugin.build.dir}/icons" />
-
 		<zip destfile="${base.plugin.build.jar}" basedir="${base.plugin.build.dir}" />
 	</target>
 
 	<target name="base.plugin.classes.build">
-		<javac srcdir="${src}" destdir="${base.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+		<javac srcdir="${base.plugin.src}/${src}" destdir="${base.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="base.plugin.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
 			<compilerarg value="-Xlint:deprecation" />
 		</javac>
 
-		<touch file="${base.plugin.build.dir}/org/ballproject/knime/baseplugin.properties" />
-		<propertyfile file="${base.plugin.build.dir}/org/ballproject/knime/baseplugin.properties">
-			<entry key="debug" value="${debug}" />
-		</propertyfile>
-
 		<!-- copy factory-xmls and other stuff -->
 		<copy todir="${base.plugin.build.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${src}">
+			<fileset dir="${base.plugin.src}/${src}">
 				<!--<exclude name="**/*.java"/>-->
 				<exclude name="**/package.htm*" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="custom.plugin.build" depends="base.plugin.build">
+	<target name="nodegenerator.build" depends="base.plugin.build">
+		<mkdir dir="${nodegenerator.build.dir}" />
+		<javac srcdir="${nodegenerator.src}/${src}" destdir="${nodegenerator.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="nodegenerator.build.classpath" />
+			<compilerarg value="-Xlint:unchecked" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+		
+		<!-- copy templates and assets into nodegenerator.jar
+		 e.g., 
+		 		* assets/.classpath
+		 		* templates/BinaryResources.template
+		 -->
+		<copy todir="${nodegenerator.build.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${nodegenerator.src}/${src}">
+				<!--<exclude name="**/*.java"/>-->
+				<exclude name="**/package.htm*" />
+			</fileset>
+		</copy>
+
+		
+		<zip destfile="${nodegenerator.build.jar}" basedir="${nodegenerator.build.dir}" />
+	</target>
+
+	<target name="custom.plugin.build" depends="nodegenerator.build">
 		<mkdir dir="${custom.plugin.build.dir}"/>
 		<antcall target="custom.plugin.generate_sources" />
 		<antcall target="custom.plugin.classes.build" />
@@ -141,8 +180,9 @@
 	</target>
 
 	<target name="custom.plugin.generate_sources" description="run node generator">
+		<echo message="${toString:nodegenerator.exec.classpath}" />
 		<java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
-      <classpath refid="custom.plugin.classpath"/>
+      <classpath refid="nodegenerator.exec.classpath"/>
 			<arg value="${plugin.dir}" />
 			<arg value="${custom.plugin.build.src}" />
 		</java>
@@ -150,7 +190,7 @@
 
 	<target name="custom.plugin.classes.build">
 		<javac srcdir="${custom.plugin.build.src}" destdir="${custom.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
-			<classpath refid="custom.plugin.classpath" />
+			<classpath refid="custom.plugin.build.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
 			<compilerarg value="-Xlint:deprecation" />
 		</javac>
