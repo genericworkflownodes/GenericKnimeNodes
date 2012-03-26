@@ -23,53 +23,49 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The StringChoiceParameter class reprents string values taken from a restricted set.
+ * The StringChoiceParameter class reprents string values taken from a
+ * restricted set.
  * 
  * @author roettig
- *
+ * 
  */
-public class StringChoiceParameter extends Parameter<String>
-{
+public class StringChoiceParameter extends Parameter<String> {
+	private static final long serialVersionUID = -2717347970783695908L;
 	private List<String> values;
 	private List<String> labels;
-	
-	public StringChoiceParameter(String key, String value)
-	{
+
+	public StringChoiceParameter(String key, String value) {
 		super(key, value);
 	}
-	
-	public StringChoiceParameter(String key, List<String> values)
-	{
+
+	public StringChoiceParameter(String key, List<String> values) {
 		super(key, values.get(0));
 		this.values = values;
 		this.labels = values;
-	}	
-	
-	public StringChoiceParameter(String key, String[] values)
-	{
+	}
+
+	public StringChoiceParameter(String key, String[] values) {
 		super(key, values[0]);
 		this.values = Arrays.asList(values);
 		this.labels = Arrays.asList(values);
 	}
-	
-	public StringChoiceParameter(String key, List<String> values, List<String> labels)
-	{
+
+	public StringChoiceParameter(String key, List<String> values,
+			List<String> labels) {
 		super(key, values.get(0));
 		this.values = values;
 		this.labels = labels;
-	}	
-	
-	public StringChoiceParameter(String key, String[] values, String[] labels)
-	{
+	}
+
+	public StringChoiceParameter(String key, String[] values, String[] labels) {
 		super(key, values[0]);
 		this.values = Arrays.asList(values);
 		this.labels = Arrays.asList(labels);
 	}
-	
+
 	@Override
-	public void setValue(String value)
-	{
-		if(values.contains(value))
+	public void setValue(String value) {
+		if (values.contains(value))
 			super.setValue(value);
 	}
 
@@ -78,11 +74,10 @@ public class StringChoiceParameter extends Parameter<String>
 	 * 
 	 * @return allowed values
 	 */
-	public List<String> getAllowedValues()
-	{
+	public List<String> getAllowedValues() {
 		return values;
 	}
-	
+
 	/**
 	 * returns the list of associated labels for each value.
 	 * 
@@ -90,40 +85,35 @@ public class StringChoiceParameter extends Parameter<String>
 	 * 
 	 * @return list of labels
 	 */
-	public List<String> getLabels()
-	{
+	public List<String> getLabels() {
 		return labels;
 	}
-	
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return value;
 	}
-	
+
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException
-	{
-		if(s==null)
-		{
+	public void fillFromString(String s) throws InvalidParameterValueException {
+		if (s == null) {
 			value = null;
 			return;
 		}
-		if(!this.getAllowedValues().contains(s))
-			throw new InvalidParameterValueException("parameter "+this.getKey()+" value is invalid");
+		if (!this.getAllowedValues().contains(s))
+			throw new InvalidParameterValueException("parameter "
+					+ this.getKey() + " value is invalid");
 		value = s;
-		
+
 	}
-	
+
 	@Override
-	public boolean validate(String val)
-	{
+	public boolean validate(String val) {
 		return true;
 	}
-	
+
 	@Override
-	public String getMnemonic()
-	{
+	public String getMnemonic() {
 		return "string choice";
 	}
 }

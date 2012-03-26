@@ -22,90 +22,84 @@ package org.ballproject.knime.base.mime;
 import java.io.File;
 import java.io.IOException;
 
+import org.ballproject.knime.base.port.MimeMarker;
+import org.ballproject.knime.base.util.Helper;
 import org.knime.core.data.DataType;
 import org.knime.core.data.container.BlobDataCell;
-import org.ballproject.knime.base.port.*;
-import org.ballproject.knime.base.util.Helper;
 
 /**
- * The abstract MIMEFileCell class is the base class for any MIME-based cells within GenericKnimeNodes.
+ * The abstract MIMEFileCell class is the base class for any MIME-based cells
+ * within GenericKnimeNodes.
  * 
  * @author roettig
- *
+ * 
  */
-public abstract class MIMEFileCell extends BlobDataCell implements MIMEFileValue, MimeMarker
-{
+public abstract class MIMEFileCell extends BlobDataCell implements
+		MIMEFileValue, MimeMarker {
+	private static final long serialVersionUID = 1533146970730706846L;
 	public transient DataType TYPE;
 	protected MIMEFileDelegate data_delegate;
-	
+
 	private long SIZELIMIT = 20000000;
-	
-	public DataType getDataType()
-	{
+
+	public DataType getDataType() {
 		return TYPE;
 	}
-	
-	public MIMEFileCell()
-	{
-		data_delegate = new DefaultMIMEFileDelegate(); 
+
+	public MIMEFileCell() {
+		data_delegate = new DefaultMIMEFileDelegate();
 	}
-	
+
 	/**
 	 * read in the byte data contained in the supplied file.
 	 * 
-	 * @param file filename to read
+	 * @param file
+	 *            filename to read
 	 * 
 	 * @throws IOException
 	 */
-	public void read(File file) throws IOException
-	{
-		if(file.length()>SIZELIMIT)
-		{
+	public void read(File file) throws IOException {
+		if (file.length() > SIZELIMIT) {
 			data_delegate = new ReferenceMIMEFileDelegate();
-		}
-		else
-		{
+		} else {
 			data_delegate = new DefaultMIMEFileDelegate();
 		}
-		
+
 		data_delegate.read(file);
 	}
-		
+
 	/**
 	 * write the byte data stored out into the supplied file.
 	 * 
-	 * @param file filename to write
+	 * @param file
+	 *            filename to write
 	 * 
 	 * @throws IOException
 	 */
-	public void write(String filename) throws IOException
-	{
+	public void write(String filename) throws IOException {
 		data_delegate.write(filename);
 	}
-	
-	public File writeTemp(String directory) throws IOException
-	{
-		String filename = Helper.getTemporaryFilename(directory, getExtension(), false);
+
+	public File writeTemp(String directory) throws IOException {
+		String filename = Helper.getTemporaryFilename(directory,
+				getExtension(), false);
 		return data_delegate.writeTemp(filename);
 	}
-	
+
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		// hashCode is considered to give hash code of
 		// wrapped content
 		return data_delegate.getHash();
-	}	
-	
+	}
+
 	@Override
-	public byte[] getData()
-	{
+	public byte[] getData() {
 		return data_delegate.getByteArrayReference();
 	}
-	
+
 	@Override
-	public MIMEFileDelegate getDelegate()
-	{
+	public MIMEFileDelegate getDelegate() {
 		return data_delegate;
-	}	
+	}
 }

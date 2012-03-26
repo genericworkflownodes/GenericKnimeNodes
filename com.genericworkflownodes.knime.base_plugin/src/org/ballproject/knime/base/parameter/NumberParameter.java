@@ -19,14 +19,13 @@
 
 package org.ballproject.knime.base.parameter;
 
-public abstract class NumberParameter<T> extends Parameter<T>
-{
+public abstract class NumberParameter<T> extends Parameter<T> {
 
+	private static final long serialVersionUID = 3529659248042850739L;
 	protected T lowerBound;
 	protected T upperBound;
-	
-	public NumberParameter(String key, T value)
-	{
+
+	public NumberParameter(String key, T value) {
 		super(key, value);
 	}
 
@@ -35,8 +34,7 @@ public abstract class NumberParameter<T> extends Parameter<T>
 	 * 
 	 * @return lower bound
 	 */
-	public T getLowerBound()
-	{
+	public T getLowerBound() {
 		return lowerBound;
 	}
 
@@ -45,8 +43,7 @@ public abstract class NumberParameter<T> extends Parameter<T>
 	 * 
 	 * @param lowerBound
 	 */
-	public void setLowerBound(T lowerBound)
-	{
+	public void setLowerBound(T lowerBound) {
 		this.lowerBound = lowerBound;
 	}
 
@@ -55,8 +52,7 @@ public abstract class NumberParameter<T> extends Parameter<T>
 	 * 
 	 * @return upper bound
 	 */
-	public T getUpperBound()
-	{
+	public T getUpperBound() {
 		return upperBound;
 	}
 
@@ -65,8 +61,7 @@ public abstract class NumberParameter<T> extends Parameter<T>
 	 * 
 	 * @param upperBound
 	 */
-	public void setUpperBound(T upperBound)
-	{
+	public void setUpperBound(T upperBound) {
 		this.upperBound = upperBound;
 	}
 }

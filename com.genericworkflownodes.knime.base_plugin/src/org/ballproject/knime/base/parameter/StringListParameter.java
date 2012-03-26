@@ -27,82 +27,71 @@ import java.util.List;
  * The StringListParameter class is used to store lists of string values.
  * 
  * @author roettig
- *
+ * 
  */
-public class StringListParameter extends Parameter<List<String>> implements ListParameter
-{
-	public StringListParameter(String key, List<String> value)
-	{
+public class StringListParameter extends Parameter<List<String>> implements
+		ListParameter {
+	private static final long serialVersionUID = -3843594608327851669L;
+
+	public StringListParameter(String key, List<String> value) {
 		super(key, value);
 	}
 
 	@Override
-	public String getMnemonic()
-	{
+	public String getMnemonic() {
 		return "string list";
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException
-	{
-		if(s==null||s.equals(""))
-		{
+	public void fillFromString(String s) throws InvalidParameterValueException {
+		if (s == null || s.equals("")) {
 			value = new ArrayList<String>();
 			return;
 		}
 		this.value = new ArrayList<String>();
 		String[] toks = s.split(SEPERATORTOKEN);
-		for(int i=0;i<toks.length;i++)
-		{
+		for (int i = 0; i < toks.length; i++) {
 			this.value.add(toks[i]);
 		}
 	}
-	
+
 	@Override
-	public String getStringRep()
-	{
-		if(value==null)
+	public String getStringRep() {
+		if (value == null)
 			return "";
 		StringBuffer sb = new StringBuffer();
-		for(String s: this.value)
-		{
-			sb.append(s+SEPERATORTOKEN);
+		for (String s : this.value) {
+			sb.append(s + SEPERATORTOKEN);
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public boolean validate(List<String> val)
-	{
+	public boolean validate(List<String> val) {
 		return true;
 	}
 
 	@Override
-	public String toString()
-	{
-		if(value==null)
+	public String toString() {
+		if (value == null)
 			return "[]";
 		String[] values = value.toArray(new String[0]);
 		return Arrays.toString(values);
 	}
 
 	@Override
-	public List<String> getStrings()
-	{
+	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for(String s: this.value)
-		{
+		for (String s : this.value) {
 			ret.add(s);
 		}
 		return ret;
 	}
 
 	@Override
-	public void fillFromStrings(String[] values)
-	{
+	public void fillFromStrings(String[] values) {
 		this.value = new ArrayList<String>();
-		for(int i=0;i<values.length;i++)
-		{
+		for (int i = 0; i < values.length; i++) {
 			this.value.add(values[i]);
 		}
 	}

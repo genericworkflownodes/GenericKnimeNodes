@@ -25,6 +25,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.FileNotFoundException;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -38,82 +39,71 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.TreePath;
 
-
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
-
-public class ParameterDialog extends JPanel implements ListSelectionListener
-{
+public class ParameterDialog extends JPanel implements ListSelectionListener {
+	private static final long serialVersionUID = 8098990326681120709L;
 	private JXTreeTable table;
-	private JTextPane   help;
-	//private JButton     toggle;
+	private JTextPane help;
+	// private JButton toggle;
 	private ParameterDialogModel model;
-	
+
 	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
-	private static Font OPT_FONT  = new Font("Dialog", Font.ITALIC, 12);
-	
-	public ParameterDialog(INodeConfiguration config) throws FileNotFoundException, Exception
-	{
+	private static Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
+
+	public ParameterDialog(INodeConfiguration config)
+			throws FileNotFoundException, Exception {
 		setLayout(new GridBagLayout());
-		
+
 		model = new ParameterDialogModel(config);
-		
-		JXTreeTable treeTable      = new JXTreeTable(model);
+
+		JXTreeTable treeTable = new JXTreeTable(model);
 		table = treeTable;
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		treeTable.getColumn(1).setCellEditor(model.getCellEditor());
-		JScrollPane     scrollpane     = new JScrollPane(treeTable);
 		treeTable.getSelectionModel().addListSelectionListener(this);
-		
-		
-		treeTable.setHighlighters(new Highlighter(){
+
+		treeTable.setHighlighters(new Highlighter() {
 
 			@Override
-			public void addChangeListener(ChangeListener arg0)
-			{				
+			public void addChangeListener(ChangeListener arg0) {
 			}
 
 			@Override
-			public ChangeListener[] getChangeListeners()
-			{
+			public ChangeListener[] getChangeListeners() {
 				return null;
 			}
 
 			@Override
-			public Component highlight(Component comp, ComponentAdapter adapter)
-			{
+			public Component highlight(Component comp, ComponentAdapter adapter) {
 				boolean optional = true;
 				boolean advanced = false;
 				TreePath path = table.getPathForRow(adapter.row);
 
-				if(path!=null&&path.getLastPathComponent()!=null)
-				{
-					//@SuppressWarnings("unchecked")
-					//Node<Parameter<?>> node = (Node<Parameter<?>>) path.getLastPathComponent();
-					ParameterNode node = (ParameterNode) path.getLastPathComponent();
-					if(node.getPayload()!=null)
-					{
+				if (path != null && path.getLastPathComponent() != null) {
+					// @SuppressWarnings("unchecked")
+					// Node<Parameter<?>> node = (Node<Parameter<?>>)
+					// path.getLastPathComponent();
+					ParameterNode node = (ParameterNode) path
+							.getLastPathComponent();
+					if (node.getPayload() != null) {
 						optional = node.getPayload().getIsOptional();
 						advanced = node.getPayload().isAdvanced();
 					}
 				}
-				if(!optional)
-				{
+				if (!optional) {
 					comp.setForeground(Color.blue);
 					comp.setFont(MAND_FONT);
 					return comp;
-				}
-				else
-				{
+				} else {
 					comp.setFont(OPT_FONT);
-					if(advanced)
-					{
+					if (advanced) {
 						comp.setForeground(Color.GRAY);
 					}
 				}
@@ -121,65 +111,55 @@ public class ParameterDialog extends JPanel implements ListSelectionListener
 			}
 
 			@Override
-			public void removeChangeListener(ChangeListener arg0)
-			{	
+			public void removeChangeListener(ChangeListener arg0) {
 			}
-			
+
 		});
-		
+
 		// expand full tree by default
 		treeTable.expandAll();
-		
-		UIHelper.addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,2.0f);
+
+		UIHelper.addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1,
+				GridBagConstraints.CENTER, GridBagConstraints.BOTH, 2.0f);
 		help = new JTextPane();
-		UIHelper.addComponent(this, new JScrollPane(help), 0, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
+		UIHelper.addComponent(this, new JScrollPane(help), 0, 1, 1, 1,
+				GridBagConstraints.CENTER, GridBagConstraints.BOTH, 1.0f);
 		/*
-		toggle = new JButton("Toggle adv. Parameters");
-		toggle.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				model.toggleAdvanced();
-			}}
-		);
-		UIHelper.addComponent(this, toggle, 0, 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
-		*/
+		 * toggle = new JButton("Toggle adv. Parameters");
+		 * toggle.addActionListener(new ActionListener(){
+		 * 
+		 * @Override public void actionPerformed(ActionEvent arg0) {
+		 * model.toggleAdvanced(); }} ); UIHelper.addComponent(this, toggle, 0,
+		 * 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
+		 */
 	}
-	
-	public ParameterDialogModel getModel()
-	{
+
+	public ParameterDialogModel getModel() {
 		return model;
 	}
-	
-	
+
 	@Override
-	public void valueChanged(ListSelectionEvent evt)
-	{
-		if(evt.getValueIsAdjusting())
+	public void valueChanged(ListSelectionEvent evt) {
+		if (evt.getValueIsAdjusting())
 			return;
-		if(evt.getSource() == table.getSelectionModel())
-		{
+		if (evt.getSource() == table.getSelectionModel()) {
 			int row = table.getSelectedRow();
 			Object val = table.getModel().getValueAt(row, 1);
-			if(val instanceof Parameter<?>)
-			{
-				Parameter<?>  param = (Parameter<?>) val;
+			if (val instanceof Parameter<?>) {
+				Parameter<?> param = (Parameter<?>) val;
 
 				StyledDocument doc = (StyledDocument) help.getDocument();
 				Style style = doc.addStyle("StyleName", null);
 				StyleConstants.setFontFamily(style, "SansSerif");
 
-				try
-				{
+				try {
 					doc.remove(0, doc.getLength());
 					doc.insertString(0, param.getDescription(), style);
-				}
-				catch (BadLocationException e)
-				{
+				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-				
+
 	}
 }

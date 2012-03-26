@@ -22,19 +22,19 @@ package org.ballproject.knime.base.parameter;
 import java.util.List;
 
 /**
- * The abstract NumberListParameter class is used to store lists of numeric values.
+ * The abstract NumberListParameter class is used to store lists of numeric
+ * values.
  * 
  * @author roettig
- *
+ * 
  */
-public abstract class NumberListParameter<T> extends Parameter<List<T>>
-{
+public abstract class NumberListParameter<T> extends Parameter<List<T>> {
 
+	private static final long serialVersionUID = -4722657913698964700L;
 	protected T lowerBound;
 	protected T upperBound;
-	
-	public NumberListParameter(String key, List<T> value)
-	{
+
+	public NumberListParameter(String key, List<T> value) {
 		super(key, value);
 	}
 
@@ -43,8 +43,7 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>>
 	 * 
 	 * @return lower bound
 	 */
-	public T getLowerBound()
-	{
+	public T getLowerBound() {
 		return lowerBound;
 	}
 
@@ -53,8 +52,7 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>>
 	 * 
 	 * @param lowerBound
 	 */
-	public void setLowerBound(T lowerBound)
-	{
+	public void setLowerBound(T lowerBound) {
 		this.lowerBound = lowerBound;
 	}
 
@@ -63,18 +61,17 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>>
 	 * 
 	 * @return upper bound
 	 */
-	public T getUpperBound()
-	{
+	public T getUpperBound() {
 		return upperBound;
 	}
 
 	/**
 	 * sets the upper bound for constrained numeric parameters.
 	 * 
-	 * @param upperBound upper bound
+	 * @param upperBound
+	 *            upper bound
 	 */
-	public void setUpperBound(T upperBound)
-	{
+	public void setUpperBound(T upperBound) {
 		this.upperBound = upperBound;
 	}
 }

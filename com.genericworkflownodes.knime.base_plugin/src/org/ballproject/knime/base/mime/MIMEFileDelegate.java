@@ -20,8 +20,6 @@
 package org.ballproject.knime.base.mime;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -29,14 +27,18 @@ import java.io.Serializable;
  * The MIMEFileDelegate stores the byte data contained within a MIME-typed file.
  * 
  * @author roettig
- *
+ * 
  */
-public interface MIMEFileDelegate extends Serializable
-{
+public interface MIMEFileDelegate extends Serializable {
 	public byte[] getByteArrayReference();
+
 	public boolean isEqual(MIMEFileDelegate del);
+
 	public int getHash();
+
 	public void read(File file) throws IOException;
+
 	public void write(String filename) throws IOException;
+
 	public File writeTemp(String directory) throws IOException;
 }

@@ -27,99 +27,88 @@ import java.util.List;
  * The IntegerListParameter class is used to store lists of int values.
  * 
  * @author roettig
- *
+ * 
  */
-public class IntegerListParameter extends NumberListParameter<Integer> implements ListParameter
-{
-	public IntegerListParameter(String key, List<Integer> value)
-	{
+public class IntegerListParameter extends NumberListParameter<Integer>
+		implements ListParameter {
+	private static final long serialVersionUID = 3136376166293660419L;
+
+	public IntegerListParameter(String key, List<Integer> value) {
 		super(key, value);
 	}
 
 	@Override
-	public String getMnemonic()
-	{
-		String lb = (this.lowerBound==Integer.MIN_VALUE?"-inf":String.format("%d", this.lowerBound));
-		String ub = (this.upperBound==Integer.MAX_VALUE?"+inf":String.format("%d", this.upperBound));
-		return String.format("integer list [%s:%s]",lb,ub);
+	public String getMnemonic() {
+		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
+				.format("%d", this.lowerBound));
+		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
+				.format("%d", this.upperBound));
+		return String.format("integer list [%s:%s]", lb, ub);
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException
-	{
-		if(s==null||s.equals(""))
-		{
+	public void fillFromString(String s) throws InvalidParameterValueException {
+		if (s == null || s.equals("")) {
 			value = new ArrayList<Integer>();
 			return;
 		}
 		this.value = new ArrayList<Integer>();
 		String[] toks = s.split(SEPERATORTOKEN);
-		
-		for(int i=0;i<toks.length;i++)
-		{
+
+		for (int i = 0; i < toks.length; i++) {
 			this.value.add(Integer.parseInt(toks[i]));
 		}
 	}
 
 	@Override
-	public boolean validate(List<Integer> val)
-	{
-		if(isNull())
+	public boolean validate(List<Integer> val) {
+		if (isNull())
 			return true;
-		
+
 		boolean ok = true;
-		
-		for(Integer v: val)
-		{
-			if(v<this.lowerBound || v>this.upperBound)
-				ok = false;				
+
+		for (Integer v : val) {
+			if (v < this.lowerBound || v > this.upperBound)
+				ok = false;
 		}
 		return ok;
 	}
 
 	@Override
-	public String getStringRep()
-	{
-		if(value==null)
-		{
+	public String getStringRep() {
+		if (value == null) {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for(Integer d: this.value)
-		{
-			sb.append(String.format("%d",d)+SEPERATORTOKEN);
+		for (Integer d : this.value) {
+			sb.append(String.format("%d", d) + SEPERATORTOKEN);
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public List<String> getStrings()
-	{
+	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for(Integer i: this.value)
-		{
-			ret.add( i.toString() );
+		for (Integer i : this.value) {
+			ret.add(i.toString());
 		}
 		return ret;
 	}
-	
-	public String toString()
-	{
-		if(value==null)
+
+	public String toString() {
+		if (value == null)
 			return "";
 		String[] ret = new String[this.value.size()];
 		int idx = 0;
-		for(Integer i: value)
+		for (Integer i : value)
 			ret[idx++] = i.toString();
 		return Arrays.toString(ret);
 	}
-	
+
 	@Override
-	public void fillFromStrings(String[] values)
-	{
+	public void fillFromStrings(String[] values) {
 		this.value = new ArrayList<Integer>();
-		for(int i=0;i<values.length;i++)
-		{
+		for (int i = 0; i < values.length; i++) {
 			this.value.add(Integer.parseInt(values[i]));
 		}
 	}

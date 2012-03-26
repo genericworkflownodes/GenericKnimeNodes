@@ -23,56 +23,49 @@ package org.ballproject.knime.base.parameter;
  * The BoolParameter class is used to store boolean values.
  * 
  * @author roettig
- *
+ * 
  */
-public class BoolParameter extends Parameter<Boolean>
-{
-	public BoolParameter(String key, Boolean value)
-	{
+public class BoolParameter extends Parameter<Boolean> {
+	private static final long serialVersionUID = 7880934193463457962L;
+
+	public BoolParameter(String key, Boolean value) {
 		super(key, value);
 	}
-	
-	public BoolParameter(String key, String value)
-	{
+
+	public BoolParameter(String key, String value) {
 		super(key, Boolean.valueOf(value.toLowerCase()));
 	}
-	
+
 	@Override
-	public String toString()
-	{
-		if(value==null)
+	public String toString() {
+		if (value == null)
 			return null;
-		return (value?"true":"false");
+		return (value ? "true" : "false");
 	}
-	
+
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException
-	{
-		if(s==null||s.equals(""))
-		{
+	public void fillFromString(String s) throws InvalidParameterValueException {
+		if (s == null || s.equals("")) {
 			value = null;
 			return;
 		}
-		if( !(s.equalsIgnoreCase("true")||s.equalsIgnoreCase("false")) )
+		if (!(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false")))
 			throw new InvalidParameterValueException("");
 		value = Boolean.parseBoolean(s);
 	}
 
 	@Override
-	public boolean validate(Boolean val)
-	{
+	public boolean validate(Boolean val) {
 		return true;
 	}
 
 	@Override
-	public String getMnemonic()
-	{
+	public String getMnemonic() {
 		return "bool";
 	}
 
 	@Override
-	public String getStringRep()
-	{
+	public String getStringRep() {
 		return toString();
 	}
 }

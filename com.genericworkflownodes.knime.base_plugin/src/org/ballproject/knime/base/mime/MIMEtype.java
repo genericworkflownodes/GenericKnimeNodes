@@ -24,70 +24,65 @@ import java.io.Serializable;
 /**
  * The MIMEtype class represents a classical MIME type of a file identified by
  * the associated file extension.
- *  
+ * 
  * @author roettig
- *
+ * 
  */
-public class MIMEtype implements Serializable
-{
-	protected Class   clazz;
-	protected String  file_extension;
+public class MIMEtype implements Serializable {
+	private static final long serialVersionUID = 6278476552472937978L;
+	protected Class<?> clazz;
+	protected String file_extension;
 	protected boolean binary;
-	
-	
+
 	/**
 	 * constructs a new MIMEtype object associated with supplied file extension.
 	 * 
 	 * @param extension
 	 */
-	public MIMEtype(String extension)
-	{
+	public MIMEtype(String extension) {
 		this.clazz = null;
 		this.file_extension = extension;
 		this.binary = false;
 	}
-	
+
 	/**
 	 * constructs a new MIMEtype object associated with supplied file extension.
 	 * 
 	 * @param extension
 	 */
-	public MIMEtype(Class clazz, String extension)
-	{
+	public MIMEtype(Class<?> clazz, String extension) {
 		this.clazz = clazz;
 		this.file_extension = extension;
 		this.binary = false;
 	}
-	
+
 	/**
-	 * constructs a new MIMEtype object associated with supplied file extension and binary flag.
+	 * constructs a new MIMEtype object associated with supplied file extension
+	 * and binary flag.
 	 * 
 	 * @param extension
 	 */
-	public MIMEtype(Class clazz, String extension, boolean binary)
-	{
+	public MIMEtype(Class<?> clazz, String extension, boolean binary) {
 		this.clazz = clazz;
 		this.file_extension = extension;
 		this.binary = binary;
 	}
-	
+
 	/**
 	 * returns the file extension associated with the MIME type.
 	 * 
 	 * @return file extension
 	 */
-	public String getExt()
-	{
+	public String getExt() {
 		return file_extension;
 	}
-	
+
 	/**
 	 * returns whether the file stores data in binary format.
 	 * 
 	 * @return isBinary
 	 */
-	public boolean isBinary()
-	{
+	public boolean isBinary() {
 		return binary;
 	}
 
@@ -96,18 +91,15 @@ public class MIMEtype implements Serializable
 	 * 
 	 * @param binary
 	 */
-	public void setBinary(boolean binary)
-	{
+	public void setBinary(boolean binary) {
 		this.binary = binary;
 	}
-	
-	public Class getKNIMEClass()
-	{
+
+	public Class<?> getKNIMEClass() {
 		return clazz;
 	}
 
-	public static boolean equals(MIMEtype type1, MIMEtype type2)
-	{
+	public static boolean equals(MIMEtype type1, MIMEtype type2) {
 		return type1.getExt().equalsIgnoreCase(type2.getExt());
 	}
 }

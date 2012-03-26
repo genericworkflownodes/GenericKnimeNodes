@@ -29,24 +29,21 @@ import org.ballproject.knime.base.port.Port;
  * This is a convenience class to handle user supplied output filenames.
  * 
  * @author roettig
- *
+ * 
  */
-public class FileListParameter extends StringListParameter
-{
+public class FileListParameter extends StringListParameter {
+	private static final long serialVersionUID = 3010211738983269403L;
 	private Port port;
-	
-	public FileListParameter(String key, List<String> value)
-	{
+
+	public FileListParameter(String key, List<String> value) {
 		super(key, value);
 	}
 
-	public void setPort(Port port)
-	{
+	public void setPort(Port port) {
 		this.port = port;
 	}
-	
-	public Port getPort()
-	{
+
+	public Port getPort() {
 		return port;
 	}
 }

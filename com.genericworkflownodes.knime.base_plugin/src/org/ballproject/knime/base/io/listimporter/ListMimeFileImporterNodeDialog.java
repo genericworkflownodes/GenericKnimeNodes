@@ -20,8 +20,6 @@
 package org.ballproject.knime.base.io.listimporter;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 
 /**
@@ -35,21 +33,20 @@ import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
  * 
  * @author roettig
  */
-public class ListMimeFileImporterNodeDialog extends DefaultNodeSettingsPane
-{
+public class ListMimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
 	 * New pane for configuring ListMimeFileImporter node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
 	 */
-	protected ListMimeFileImporterNodeDialog(Object obj)
-	{
+	protected ListMimeFileImporterNodeDialog(Object obj) {
 		super();
-		addDialogComponent(new DialogComponentMultiFileChooser(ListMimeFileImporterNodeDialog.createFileChooserModel()));
+		addDialogComponent(new DialogComponentMultiFileChooser(
+				ListMimeFileImporterNodeDialog.createFileChooserModel()));
 	}
-	
-	static SettingsModelStringArray createFileChooserModel()
-	{
-		return new SettingsModelStringArray(ListMimeFileImporterNodeModel.CFG_FILENAME, new String[]{});
+
+	static SettingsModelStringArray createFileChooserModel() {
+		return new SettingsModelStringArray(
+				ListMimeFileImporterNodeModel.CFG_FILENAME, new String[] {});
 	}
 }

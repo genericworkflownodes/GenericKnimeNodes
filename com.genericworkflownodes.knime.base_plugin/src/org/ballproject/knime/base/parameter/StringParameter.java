@@ -23,42 +23,37 @@ package org.ballproject.knime.base.parameter;
  * The StringParameter class is used to store string values.
  * 
  * @author roettig
- *
+ * 
  */
-public class StringParameter extends Parameter<String>
-{
+public class StringParameter extends Parameter<String> {
 
-	public StringParameter(String key, String value)
-	{
+	private static final long serialVersionUID = 2757963248340525354L;
+
+	public StringParameter(String key, String value) {
 		super(key, value);
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return value;
 	}
-	
+
 	@Override
-	public void fillFromString(String s)
-	{
-		if(s==null)
-		{
+	public void fillFromString(String s) {
+		if (s == null) {
 			value = null;
 			return;
 		}
 		value = s;
 	}
-	
+
 	@Override
-	public boolean validate(String val)
-	{
+	public boolean validate(String val) {
 		return true;
 	}
-	
+
 	@Override
-	public String getMnemonic()
-	{
+	public String getMnemonic() {
 		return "string";
 	}
 }

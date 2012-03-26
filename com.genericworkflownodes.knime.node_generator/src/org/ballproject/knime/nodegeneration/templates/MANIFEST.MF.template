@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Knime plugin @@pluginname@@
+Bundle-Name: Generic Workflow Nodes - KNIME plugin @@pluginname@@
 Bundle-SymbolicName: @@packageName@@;singleton:=true
 Bundle-Version: @@pluginVersion@@
 Bundle-Activator: @@packageName@@.knime.PluginActivator
@@ -12,3 +12,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ballproject.knime
 Bundle-ActivationPolicy: lazy
 Export-Package: @@packageName@@.knime.nodes.mimetypes
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

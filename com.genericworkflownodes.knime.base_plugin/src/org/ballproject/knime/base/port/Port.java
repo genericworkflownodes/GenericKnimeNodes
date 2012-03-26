@@ -26,65 +26,64 @@ import java.util.List;
 import org.ballproject.knime.base.mime.MIMEtype;
 
 /**
- * The Port class represents a incoming or outgoing port of a KNIME node. 
+ * The Port class represents a incoming or outgoing port of a KNIME node.
  * 
  * Getters can be used to find out the: <br/>
  * <ul>
- * <li> name of the port </li>
- * <li> description for the port </li>
- * <li> list of MIMEtypes supported by this port </li>
+ * <li>name of the port</li>
+ * <li>description for the port</li>
+ * <li>list of MIMEtypes supported by this port</li>
  * </ul>
- *   
+ * 
  * @author roettig
- *
+ * 
  */
-public class Port implements Serializable
-{
+public class Port implements Serializable {
 
-	protected boolean  isOptional;
-	protected String   name;
-	protected String   description;
-	protected boolean  isMultiFile;
-		
+	private static final long serialVersionUID = 5932681718132094413L;
+	protected boolean isOptional;
+	protected String name;
+	protected String description;
+	protected boolean isMultiFile;
+
 	protected List<MIMEtype> types = new ArrayList<MIMEtype>();
-	
+
 	/**
 	 * adds a supported MIMEtype to the port
 	 * 
 	 * @param MIMEtype
 	 */
-	public void addMimeType(MIMEtype type)
-	{
+	public void addMimeType(MIMEtype type) {
 		types.add(type);
 	}
-	
+
 	/**
 	 * returns the list of supported MIMEtypes of this port
 	 * 
 	 * @return MIMEtypes list
 	 */
-	public List<MIMEtype> getMimeTypes()
-	{
+	public List<MIMEtype> getMimeTypes() {
 		return types;
 	}
-	
+
 	/**
-	 * returns whether this port is optional or needs a mandatory incoming connection
+	 * returns whether this port is optional or needs a mandatory incoming
+	 * connection
 	 * 
 	 * @return isOptional
 	 */
-	public boolean isOptional()
-	{
+	public boolean isOptional() {
 		return isOptional;
 	}
 
 	/**
-	 * sets whether this port is optional or needs a mandatory incoming connection
+	 * sets whether this port is optional or needs a mandatory incoming
+	 * connection
 	 * 
-	 * @param isOptional boolean
+	 * @param isOptional
+	 *            boolean
 	 */
-	public void setOptional(boolean isOptional)
-	{
+	public void setOptional(boolean isOptional) {
 		this.isOptional = isOptional;
 	}
 
@@ -93,18 +92,17 @@ public class Port implements Serializable
 	 * 
 	 * @return port name
 	 */
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
 	/**
 	 * sets the name of the port
 	 * 
-	 * @param port name
+	 * @param port
+	 *            name
 	 */
-	public void setName(String name)
-	{
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -113,8 +111,7 @@ public class Port implements Serializable
 	 * 
 	 * @return description
 	 */
-	public String getDescription()
-	{
+	public String getDescription() {
 		return description;
 	}
 
@@ -123,8 +120,7 @@ public class Port implements Serializable
 	 * 
 	 * @param description
 	 */
-	public void setDescription(String description)
-	{
+	public void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -133,18 +129,17 @@ public class Port implements Serializable
 	 * 
 	 * @return flag
 	 */
-	public boolean isMultiFile()
-	{
+	public boolean isMultiFile() {
 		return isMultiFile;
 	}
 
 	/**
 	 * set whether this port allows multiple files of a given MIMEtype
 	 * 
-	 * @param isMultiFile flag
+	 * @param isMultiFile
+	 *            flag
 	 */
-	public void setMultiFile(boolean isMultiFile)
-	{
+	public void setMultiFile(boolean isMultiFile) {
 		this.isMultiFile = isMultiFile;
 	}
 }

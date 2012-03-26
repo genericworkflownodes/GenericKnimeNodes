@@ -24,17 +24,16 @@ package org.ballproject.knime.base.parameter;
  * parameter could not be validated.
  * 
  * @author roettig
- *
+ * 
  */
-public class InvalidParameterValueException extends Exception
-{
-	public InvalidParameterValueException(String msg)
-	{
+public class InvalidParameterValueException extends Exception {
+	private static final long serialVersionUID = 5408531919859345420L;
+
+	public InvalidParameterValueException(String msg) {
 		super(msg);
 	}
-	
-	public InvalidParameterValueException(String msg, Throwable t)
-	{
-		super(msg,t);
+
+	public InvalidParameterValueException(String msg, Throwable t) {
+		super(msg, t);
 	}
 }

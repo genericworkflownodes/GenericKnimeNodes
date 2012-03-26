@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?eclipse version="3.0"?>
-
-<plugin>   
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="org.ballproject.knime.base.mime.demangler.DemanglerProvider" name="Demangler Provider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
+   
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" path="/community" name="GenericKnimeNodes" level-id="GenericKnimeNodes"/>
     <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" path="/community/GenericKnimeNodes" name="IO" level-id="IO"/>      
@@ -22,9 +23,6 @@
     <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" category-path="/community/GenericKnimeNodes/Flow"/>
     <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" category-path="/community/GenericKnimeNodes/Flow"/>
    </extension>
-   
-   <!-- id seems to be package relative (so leading org.ballproject.knime was dropped) -->
-   <extension-point id="base.mime.demangler.DemanglerProvider" name="DemanglerProvider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
    
    <extension point="org.knime.product.splashExtension">
         <splashExtension icon="icons/GKN.png" id="org.ballproject.knime.splashExtension"/>

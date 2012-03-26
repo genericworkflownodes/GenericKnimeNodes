@@ -24,43 +24,35 @@ import org.ballproject.knime.base.parameter.IntegerListParameter;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 
-
-public class ListParameterModel extends ItemListFillerDialogModel
-{
+public class ListParameterModel extends ItemListFillerDialogModel {
+	private static final long serialVersionUID = -7693134082619250857L;
 	private Parameter<?> param;
-	
-	public ListParameterModel(Parameter<?> param)
-	{
+
+	public ListParameterModel(Parameter<?> param) {
 		super();
 		this.param = param;
 		init();
 	}
 
-	private void init()
-	{
-		if(param instanceof ListParameter)
-		{
+	private void init() {
+		if (param instanceof ListParameter) {
 			ListParameter lp = (ListParameter) param;
 			this.data = lp.getStrings();
-			if(param instanceof DoubleListParameter)
-			{
-				DoubleListParameter dlp = (DoubleListParameter) param;	
-				DoubleValidator val = new DoubleValidator(); 
+			if (param instanceof DoubleListParameter) {
+				DoubleListParameter dlp = (DoubleListParameter) param;
+				DoubleValidator val = new DoubleValidator();
 				val.setLowerBound(dlp.getLowerBound());
 				val.setUpperBound(dlp.getUpperBound());
 				this.setValidator(val);
 			}
-			if(param instanceof IntegerListParameter)
-			{
-				IntegerListParameter ilp = (IntegerListParameter) param;	
-				IntegerValidator val = new IntegerValidator(); 
+			if (param instanceof IntegerListParameter) {
+				IntegerListParameter ilp = (IntegerListParameter) param;
+				IntegerValidator val = new IntegerValidator();
 				val.setLowerBound(ilp.getLowerBound());
 				val.setUpperBound(ilp.getUpperBound());
 				this.setValidator(val);
 			}
-		}
-		else
-		{
+		} else {
 			throw new RuntimeException();
 		}
 	}

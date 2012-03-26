@@ -21,10 +21,8 @@ package org.ballproject.knime.base.treetabledialog;
 
 import java.awt.Component;
 import java.io.FileNotFoundException;
+
 import javax.swing.AbstractCellEditor;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -46,271 +44,232 @@ import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialog;
 import org.ballproject.knime.base.treetabledialog.itemlist.ListParameterModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
-
-public class ParameterDialogModel implements org.jdesktop.swingx.treetable.TreeTableModel
-{
+public class ParameterDialogModel implements
+		org.jdesktop.swingx.treetable.TreeTableModel {
 	private INodeConfiguration config;
-	private ConfigWrapper     wrapper;
-	private boolean           showAdvanced = true;
+	private ConfigWrapper wrapper;
+	private boolean showAdvanced = true;
 	private Object root;
-	
-	public ParameterDialogModel(INodeConfiguration config) throws FileNotFoundException, Exception
-	{
+
+	public ParameterDialogModel(INodeConfiguration config)
+			throws FileNotFoundException, Exception {
 		this.config = config;
-		wrapper     = new ConfigWrapper(this.config);
-		this.root   = wrapper.getRoot();
+		wrapper = new ConfigWrapper(this.config);
+		this.root = wrapper.getRoot();
 	}
-	
-	public void refresh()
-	{
-		wrapper     = new ConfigWrapper(this.config);
+
+	public void refresh() {
+		wrapper = new ConfigWrapper(this.config);
 	}
 
 	@Override
-	public void addTreeModelListener(TreeModelListener arg0)
-	{		
+	public void addTreeModelListener(TreeModelListener arg0) {
 	}
-	
-	public void showAdvanced(boolean flag)
-	{
+
+	public void showAdvanced(boolean flag) {
 		showAdvanced = flag;
 	}
-	
-	public void toggleAdvanced()
-	{
+
+	public void toggleAdvanced() {
 		showAdvanced = !showAdvanced;
 	}
 
 	@Override
-	public Object getChild(Object parent, int idx)
-	{
+	public Object getChild(Object parent, int idx) {
 		ParameterNode par = (ParameterNode) parent;
 		return par.getChild(idx);
 	}
 
 	@Override
-	public int getChildCount(Object parent)
-	{
+	public int getChildCount(Object parent) {
 		ParameterNode par = (ParameterNode) parent;
 		return par.getNumChildren();
 	}
 
 	@Override
-	public int getIndexOfChild(Object parent, Object child_)
-	{
-		ParameterNode par   = (ParameterNode) parent;
+	public int getIndexOfChild(Object parent, Object child_) {
+		ParameterNode par = (ParameterNode) parent;
 		ParameterNode child = (ParameterNode) child_;
 		return par.getChildIndex(child);
 	}
 
 	@Override
-	public Object getRoot()
-	{
+	public Object getRoot() {
 		return root;
 	}
 
 	@Override
-	public boolean isLeaf(Object parent)
-	{
+	public boolean isLeaf(Object parent) {
 		ParameterNode par = (ParameterNode) parent;
 		return par.isLeaf();
 	}
 
 	@Override
-	public void removeTreeModelListener(TreeModelListener arg0)
-	{
+	public void removeTreeModelListener(TreeModelListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void valueForPathChanged(TreePath arg0, Object arg1)
-	{
-		
+	public void valueForPathChanged(TreePath arg0, Object arg1) {
+
 	}
 
-	static protected Class[] cTypes = { TreeTableModel.class, String.class, String.class };
-	
+	static protected Class<?>[] cTypes = { TreeTableModel.class, String.class,
+			String.class };
+
 	@Override
-	public Class<?> getColumnClass(int column)
-	{
+	public Class<?> getColumnClass(int column) {
 		return cTypes[column];
 	}
 
 	@Override
-	public int getColumnCount()
-	{
+	public int getColumnCount() {
 		return cNames.length;
 	}
 
-	private static String[] cNames = {"Parameter","Value","Type"};
-	
+	private static String[] cNames = { "Parameter", "Value", "Type" };
+
 	@Override
-	public String getColumnName(int idx)
-	{
+	public String getColumnName(int idx) {
 		return cNames[idx];
 	}
 
 	@Override
-	public int getHierarchicalColumn()
-	{
+	public int getHierarchicalColumn() {
 		return 0;
 	}
 
 	@Override
-	public Object getValueAt(Object node, int column)
-	{
+	public Object getValueAt(Object node, int column) {
 		ParameterNode n = (ParameterNode) node;
 
-		if(column==-1)
+		if (column == -1)
 			return n.getName();
-		if(column==0)
-		{
-			if(n.getPayload()==null)
+		if (column == 0) {
+			if (n.getPayload() == null)
 				return n.getName();
 			else
 				return n.getPayload().getKey();
 		}
-		if(column==1)
-		{
-			if(n.getPayload()==null)
+		if (column == 1) {
+			if (n.getPayload() == null)
 				return "";
 			else
 				return n.getPayload();
 		}
-		if(column==2)
-		{
-			if(n.getPayload()==null)
+		if (column == 2) {
+			if (n.getPayload() == null)
 				return "";
-			else
-			{
+			else {
 				return n.getPayload().getMnemonic();
 			}
-		}	
+		}
 		return null;
 	}
 
 	@Override
-	public boolean isCellEditable(Object value, int column)
-	{
+	public boolean isCellEditable(Object value, int column) {
 		ParameterNode n = (ParameterNode) value;
-		if(column==1)
-		{
-			if(n.isLeaf())
+		if (column == 1) {
+			if (n.isLeaf())
 				return true;
 			else
 				return false;
 		}
-			
+
 		return false;
 	}
 
 	@Override
-	public void setValueAt(Object value, Object node, int column)
-	{
+	public void setValueAt(Object value, Object node, int column) {
 		ParameterNode n = (ParameterNode) node;
 		n.setPayload((Parameter<?>) value);
 	}
-	
-	public TableCellEditor getCellEditor()
-	{
+
+	public TableCellEditor getCellEditor() {
 		return new CE();
 	}
 
-	public class CE extends AbstractCellEditor  implements TableCellEditor
-	{
-		private JComboBox  box;
-		private JTextField field; 
-		private JLabel     label = new JLabel("");
-		
+	public class CE extends AbstractCellEditor implements TableCellEditor {
+		private static final long serialVersionUID = -4994391905477312605L;
+		private JComboBox box;
+		private JTextField field;
+		private JLabel label = new JLabel("");
+
 		@Override
-		public Object getCellEditorValue()
-		{	
-			if(param instanceof StringParameter||param instanceof DoubleParameter||param instanceof IntegerParameter)
-			{
-				try
-				{
+		public Object getCellEditorValue() {
+			if (param instanceof StringParameter
+					|| param instanceof DoubleParameter
+					|| param instanceof IntegerParameter) {
+				try {
 					param.fillFromString(field.getText());
-				}
-				catch (InvalidParameterValueException e)
-				{
+				} catch (InvalidParameterValueException e) {
 					e.printStackTrace();
 				}
 			}
-			if(param instanceof StringChoiceParameter)
-			{
+			if (param instanceof StringChoiceParameter) {
 				StringChoiceParameter scp = (StringChoiceParameter) param;
 				int idx = box.getSelectedIndex();
 				scp.setValue(scp.getAllowedValues().get(idx));
 			}
-			if(param instanceof BoolParameter)
-			{
-				try
-				{
+			if (param instanceof BoolParameter) {
+				try {
 					param.fillFromString(box.getSelectedItem().toString());
-				}
-				catch (InvalidParameterValueException e)
-				{
+				} catch (InvalidParameterValueException e) {
 					e.printStackTrace();
 				}
 			}
-			if(param instanceof ListParameter)
-			{
-				ListParameter lp = (ListParameter) param;
-				try
-				{
+			if (param instanceof ListParameter) {
+				try {
 					param.fillFromString(rep);
-				} 
-				catch (InvalidParameterValueException e)
-				{
+				} catch (InvalidParameterValueException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			
+
 			return param;
 		}
 
 		private Parameter<?> param;
 		private String rep;
-		
+
 		@Override
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)
-		{
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
 			param = (Parameter<?>) value;
-			
-			if(value instanceof StringChoiceParameter)
-			{
+
+			if (value instanceof StringChoiceParameter) {
 				StringChoiceParameter scp = (StringChoiceParameter) value;
 				String[] values = new String[scp.getLabels().size()];
 				int i = 0;
-				for(String s: scp.getLabels())
+				for (String s : scp.getLabels())
 					values[i++] = s;
 				box = new JComboBox(values);
 				return box;
 			}
-			if(value instanceof StringParameter || value instanceof DoubleParameter || value instanceof IntegerParameter)
-			{
+			if (value instanceof StringParameter
+					|| value instanceof DoubleParameter
+					|| value instanceof IntegerParameter) {
 				field = new JTextField(value.toString());
-				return field;	
+				return field;
 			}
-			if(value instanceof BoolParameter)
-			{
-				String[] values = new String[]{"true","false"};
+			if (value instanceof BoolParameter) {
+				String[] values = new String[] { "true", "false" };
 				box = new JComboBox(values);
 				return box;
 			}
-			if(value instanceof ListParameter)
-			{
-				ListParameterModel   mpm = new ListParameterModel(param);
+			if (value instanceof ListParameter) {
+				ListParameterModel mpm = new ListParameterModel(param);
 				mpm.setSetLike(true);
-				ItemListFillerDialog sd  = new ItemListFillerDialog(mpm);
-            	sd.setVisible(true);
-            	String[] sel = mpm.getSelectedItems();
-            	ListParameter lp = (ListParameter) param;
-            	lp.fillFromStrings(sel);
-            	rep = param.getStringRep();
-            	return label;
+				ItemListFillerDialog sd = new ItemListFillerDialog(mpm);
+				sd.setVisible(true);
+				String[] sel = mpm.getSelectedItems();
+				ListParameter lp = (ListParameter) param;
+				lp.fillFromStrings(sel);
+				rep = param.getStringRep();
+				return label;
 			}
 			return null;
 		}

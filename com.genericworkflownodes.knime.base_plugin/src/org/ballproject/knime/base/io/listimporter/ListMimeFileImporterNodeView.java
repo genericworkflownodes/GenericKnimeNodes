@@ -19,11 +19,6 @@
 
 package org.ballproject.knime.base.io.listimporter;
 
-import java.awt.Font;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
 import org.knime.core.node.NodeView;
 
 /**
@@ -32,8 +27,8 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class ListMimeFileImporterNodeView extends NodeView<ListMimeFileImporterNodeModel>
-{
+public class ListMimeFileImporterNodeView extends
+		NodeView<ListMimeFileImporterNodeModel> {
 
 	/**
 	 * Creates a new view.
@@ -41,19 +36,16 @@ public class ListMimeFileImporterNodeView extends NodeView<ListMimeFileImporterN
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected ListMimeFileImporterNodeView(final ListMimeFileImporterNodeModel nodeModel)
-	{
+	protected ListMimeFileImporterNodeView(
+			final ListMimeFileImporterNodeModel nodeModel) {
 		super(nodeModel);
 	}
-	
-	
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void modelChanged()
-	{
+	protected void modelChanged() {
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
@@ -69,8 +61,7 @@ public class ListMimeFileImporterNodeView extends NodeView<ListMimeFileImporterN
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onClose()
-	{
+	protected void onClose() {
 
 		// TODO things to do when closing the view
 	}
@@ -79,8 +70,7 @@ public class ListMimeFileImporterNodeView extends NodeView<ListMimeFileImporterN
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onOpen()
-	{
+	protected void onOpen() {
 
 		// TODO things to do when opening the view
 	}
