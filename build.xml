@@ -6,7 +6,7 @@
 
 	<property name="base.plugin.name" value="org.ballproject.knime" />
 	<property name="base.plugin.version.major" value="0" />
-	<property name="base.plugin.version.minor" value="5" />
+	<property name="base.plugin.version.minor" value="6" />
 	<property name="base.plugin.version.patch" value="0" />
 	
 	<!-- do not edit below this line -->
