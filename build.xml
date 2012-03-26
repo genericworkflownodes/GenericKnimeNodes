@@ -26,7 +26,7 @@
   <property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" /> 
 	<property name="custom.plugin.build.src" value="${tmp}/customPlugin-sources" />
 	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
-	<property name="custom.plugin.build.jar" value="${plugin.dir}/../build/${custom.plugin.name}_${custom.plugin.version}.jar" />
+	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
 	<property name="src" value="src" />
   
   <!-- the classpath for the base plugin (KNIME and jars in lib/) -->

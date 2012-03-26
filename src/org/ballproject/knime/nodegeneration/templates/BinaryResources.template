@@ -13,9 +13,9 @@ public class BinaryResources
 	public static String BINARIES_WIN_x64   = "binaries_win_x64.zip";
 	public static String BINARIES_MAC_x64   = "binaries_mac_x64.zip";
 	
-	public static void decompressTo(String path, InputStream in)
+	public static void decompressTo(String targetPath, InputStream in)
 	{
-		new File(path).mkdirs();
+		new File(targetPath).mkdirs();
 		try
 		{
 			ZipInputStream zin = new ZipInputStream(in);
@@ -25,14 +25,17 @@ public class BinaryResources
 
 			while ((ze = zin.getNextEntry()) != null)
 			{
-				String filename = path+System.getProperty("file.separator")+ ze.getName();
+				File targetFile = new File(targetPath, ze.getName());
+
 				if (ze.isDirectory())
 				{
-					new File(filename).mkdirs();
+					targetFile.mkdirs();
 				}
 				else
 				{
-					FileOutputStream fout = new FileOutputStream(filename);
+					targetFile.getParentFile().mkdirs();
+				
+					FileOutputStream fout = new FileOutputStream(targetFile);
 
 					int size;
 					while ((size = zin.read(buffer, 0, 2048)) != -1)
