@@ -1,0 +1,33 @@
+package __BASE__.knime.nodes.__NODENAME__;
+
+import org.ballproject.knime.base.node.*;
+import org.ballproject.knime.base.config.*;
+
+public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
+{
+	
+	public __NODENAME__NodeFactory() 
+	{
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader(); 
+		try
+		{
+			config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}	
+	
+	@Override
+	public __NODENAME__NodeModel createNodeModel()
+	{
+		return new __NODENAME__NodeModel(config);
+	}	
+	
+	@Override
+	public GenericKnimeNodeDialog createNodeDialogPane()
+	{
+		return new __NODENAME__NodeDialog(config);
+	}
+}

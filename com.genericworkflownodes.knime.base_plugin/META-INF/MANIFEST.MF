@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GenericKnimeNodes
 Bundle-SymbolicName: org.ballproject.knime;singleton:=true
-Bundle-Version: @@pluginVersion@@
+Bundle-Version: 0.6.0
 Bundle-ClassPath: ., 
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
@@ -111,3 +111,4 @@ Export-Package: org.ballproject.knime.base.config,
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.ballproject.knime.GenericNodesPlugin
 Eclipse-RegisterBuddy: org.knime.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

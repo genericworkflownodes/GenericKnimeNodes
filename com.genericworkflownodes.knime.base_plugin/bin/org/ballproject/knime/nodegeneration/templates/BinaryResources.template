@@ -1,0 +1,58 @@
+package __BASE__.knime.nodes.binres;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+public class BinaryResources
+{
+	public static String BINPACKNAME        = "__BINPACKNAME__";
+	public static String BINARIES_LNX_x64   = "binaries_lnx_x64.zip";
+	public static String BINARIES_WIN_x64   = "binaries_win_x64.zip";
+	public static String BINARIES_MAC_x64   = "binaries_mac_x64.zip";
+	
+	public static void decompressTo(String targetPath, InputStream in)
+	{
+		new File(targetPath).mkdirs();
+		try
+		{
+			ZipInputStream zin = new ZipInputStream(in);
+			ZipEntry ze = null;
+
+			byte[] buffer = new byte[2048];
+
+			while ((ze = zin.getNextEntry()) != null)
+			{
+				File targetFile = new File(targetPath, ze.getName());
+
+				if (ze.isDirectory())
+				{
+					targetFile.mkdirs();
+				}
+				else
+				{
+					targetFile.getParentFile().mkdirs();
+				
+					FileOutputStream fout = new FileOutputStream(targetFile);
+
+					int size;
+					while ((size = zin.read(buffer, 0, 2048)) != -1)
+					{
+						fout.write(buffer, 0, size);
+					}
+					
+					zin.closeEntry();
+					fout.flush();
+					fout.close();
+				}
+			}
+			zin.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

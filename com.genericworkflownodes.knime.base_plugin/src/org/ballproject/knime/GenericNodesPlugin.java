@@ -19,8 +19,6 @@
 
 package org.ballproject.knime;
 
-import java.util.Properties;
-
 import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
@@ -50,6 +48,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 	private static final NodeLogger logger = NodeLogger
 			.getLogger(GenericNodesPlugin.class);
 
+	// TODO check if removable
 	public static boolean DEBUG = false;
 	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
 
@@ -98,12 +97,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 
-		Properties props = new Properties();
-		props.load(GenericNodesPlugin.class
-				.getResourceAsStream("baseplugin.properties"));
-
-		DEBUG = (props.getProperty("debug", "false").toLowerCase()
-				.equals("true") ? true : false);
 		log("starting plugin: GenericNodesPlugin");
 
 		IConfigurationElement[] config = Platform
