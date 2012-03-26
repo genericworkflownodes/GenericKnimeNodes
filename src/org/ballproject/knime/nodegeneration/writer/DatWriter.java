@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import org.ballproject.knime.nodegeneration.model.files.CTDFileX;
+import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.util.Utils;
 
 public class DatWriter {
@@ -16,9 +16,9 @@ public class DatWriter {
 		this.datFile = dateFile;
 	}
 
-	public void write(List<CTDFileX> ctdFiles) throws IOException {
+	public void write(List<CTDFile> ctdFiles) throws IOException {
 		FileWriter fileWriter = new FileWriter(this.datFile);
-		for (CTDFileX ctdFile : ctdFiles) {
+		for (CTDFile ctdFile : ctdFiles) {
 			String fixedNodeName = Utils.fixKNIMENodeName(ctdFile
 					.getNodeConfiguration().getName());
 			fileWriter.write(fixedNodeName + "\n");
