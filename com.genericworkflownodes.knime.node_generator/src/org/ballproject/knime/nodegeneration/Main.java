@@ -9,8 +9,6 @@ public class Main {
 	private static Logger logger = Logger.getLogger(NodeGenerator.class
 			.getCanonicalName());
 
-	// TODO Generate .project and .classpath for direct usage in eclipse
-
 	/**
 	 * 
 	 * @param args
@@ -24,10 +22,8 @@ public class Main {
 		if (buildDir != null)
 			buildDir.mkdirs();
 
-		NodeGenerator nodeGenerator;
 		try {
-			nodeGenerator = new NodeGenerator(pluginDir, buildDir);
-			// NodePackager.zip(nodeGenerator);
+			new NodeGenerator(pluginDir, buildDir);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
