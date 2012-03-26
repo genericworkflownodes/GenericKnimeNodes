@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="external">
+	<name>Copy FASTA File</name>
+	<version>0.1</version>
+	<description><![CDATA[copyfasta.]]></description>
+	<manual><![CDATA[copyfasta.]]></manual>
+	<docurl></docurl>
+	<category>Test</category>
+	<mapping><![CDATA[
+<mapparam CLISwitch="-if" name="copyfasta.if"/>
+<mapparam CLISwitch="-of" name="copyfasta.of"/>
+]]></mapping>
+	<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<NODE name="copyfasta" description="???">
+			<ITEM name="if" value="" type="string" description="Input file." tags="input file" restrictions="*.fasta,*.txt"/>
+			<ITEM name="of" value="" type="string" description="Output file." tags="output file" restrictions="*.fasta,*.txt"/>
+		</NODE>
+	</PARAMETERS>
+</tool>

@@ -39,7 +39,7 @@ import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildIc
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.IconsDirectory;
-import org.ballproject.knime.nodegeneration.model.files.CTDFile;
+import org.ballproject.knime.nodegeneration.model.files.CTDFileX;
 import org.ballproject.knime.nodegeneration.templates.BinaryResourcesTemplate;
 import org.ballproject.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import org.ballproject.knime.nodegeneration.templates.ManifestMFTemplate;
@@ -135,7 +135,7 @@ public class NodeGenerator {
 		PluginXMLTemplate pluginXML = new PluginXMLTemplate();
 
 		// src/[PACKAGE]/knime/nodes/*/*
-		for (CTDFile ctdFile : descriptorsDirectory.getCTDFiles()) {
+		for (CTDFileX ctdFile : descriptorsDirectory.getCTDFiles()) {
 			LOGGER.info("Start processing ctd file: " + ctdFile.getName());
 			String factoryClass = copyNodeSources(ctdFile,
 					srcDir.getIconsDirectory(),
@@ -207,7 +207,7 @@ public class NodeGenerator {
 
 	/**
 	 * Copies the java sources needed to invoke a tool (described by a
-	 * {@link CTDFile}) to the specified {@link NodesBuildKnimeNodesDirectory}.
+	 * {@link CTDFileX}) to the specified {@link NodesBuildKnimeNodesDirectory}.
 	 * 
 	 * @param ctdFile
 	 *            which described the wrapped tool
@@ -223,7 +223,7 @@ public class NodeGenerator {
 	 * @throws IOException
 	 * @throws UnknownMimeTypeException
 	 */
-	public static String copyNodeSources(CTDFile ctdFile,
+	public static String copyNodeSources(CTDFileX ctdFile,
 			IconsDirectory iconsDir, NodesBuildKnimeNodesDirectory nodesDir,
 			KNIMEPluginMeta pluginMeta) throws IOException,
 			UnknownMimeTypeException {
