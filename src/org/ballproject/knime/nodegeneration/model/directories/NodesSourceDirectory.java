@@ -13,7 +13,7 @@ import org.ballproject.knime.nodegeneration.model.directories.source.Descriptors
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.IconsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.PayloadDirectory;
-import org.ballproject.knime.nodegeneration.model.files.CTDFile;
+import org.ballproject.knime.nodegeneration.model.files.CTDFileX;
 import org.ballproject.knime.nodegeneration.model.mime.MimeType;
 import org.dom4j.DocumentException;
 
@@ -99,7 +99,7 @@ public class NodesSourceDirectory extends Directory {
 		return properties.getProperty(key, defaultValue);
 	}
 
-	public List<CTDFile> getCtdFiles() {
+	public List<CTDFileX> getCtdFiles() {
 		return this.descriptorsDirectory.getCTDFiles();
 	}
 
