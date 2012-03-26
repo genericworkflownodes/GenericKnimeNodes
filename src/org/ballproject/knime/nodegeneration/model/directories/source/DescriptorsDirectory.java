@@ -9,7 +9,7 @@ import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.model.directories.Directory;
-import org.ballproject.knime.nodegeneration.model.files.CTDFileX;
+import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.model.files.MimeTypesFile;
 import org.ballproject.knime.nodegeneration.util.Utils;
 import org.dom4j.DocumentException;
@@ -19,9 +19,9 @@ public class DescriptorsDirectory extends Directory {
 
 	private static final long serialVersionUID = -3535393317046918930L;
 
-	private List<CTDFileX> ctdFiles;
-	private List<CTDFileX> internalCtdFiles;
-	private List<CTDFileX> externalCtdFiles;
+	private List<CTDFile> ctdFiles;
+	private List<CTDFile> internalCtdFiles;
+	private List<CTDFile> externalCtdFiles;
 	private MimeTypesFile mimeTypesFile;
 
 	public DescriptorsDirectory(File sourcesDirectory) throws IOException,
@@ -39,13 +39,13 @@ public class DescriptorsDirectory extends Directory {
 					+ mimeTypeFile.getPath(), e);
 		}
 
-		this.ctdFiles = new LinkedList<CTDFileX>();
-		this.internalCtdFiles = new LinkedList<CTDFileX>();
-		this.externalCtdFiles = new LinkedList<CTDFileX>();
+		this.ctdFiles = new LinkedList<CTDFile>();
+		this.internalCtdFiles = new LinkedList<CTDFile>();
+		this.externalCtdFiles = new LinkedList<CTDFile>();
 		for (File file : this.listFiles()) {
 			if (file.getName().endsWith(".ctd"))
 				try {
-					CTDFileX ctdFile = new CTDFileX(file);
+					CTDFile ctdFile = new CTDFile(file);
 					String nodeName = ctdFile.getNodeConfiguration().getName();
 
 					if (!Utils.checkKNIMENodeName(nodeName))
@@ -70,15 +70,15 @@ public class DescriptorsDirectory extends Directory {
 		}
 	}
 
-	public List<CTDFileX> getCTDFiles() {
+	public List<CTDFile> getCTDFiles() {
 		return ctdFiles;
 	}
 
-	public List<CTDFileX> getInternalCtdFiles() {
+	public List<CTDFile> getInternalCtdFiles() {
 		return internalCtdFiles;
 	}
 
-	public List<CTDFileX> getExternalCtdFiles() {
+	public List<CTDFile> getExternalCtdFiles() {
 		return externalCtdFiles;
 	}
 
