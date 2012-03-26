@@ -21,7 +21,7 @@ package org.ballproject.knime.base.node;
 
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.treetabledialog.MimeTypeChooserDialog;
@@ -35,11 +35,11 @@ import org.knime.core.node.port.PortObjectSpec;
 
 public class GenericKnimeNodeDialog extends NodeDialogPane
 {
-	private NodeConfiguration config;
+	private INodeConfiguration config;
 	private ParameterDialog   dialog;
 	private MimeTypeChooserDialog mtc;
 	
-	public GenericKnimeNodeDialog(NodeConfiguration config)
+	public GenericKnimeNodeDialog(INodeConfiguration config)
 	{
 		this.config = config;
 		try

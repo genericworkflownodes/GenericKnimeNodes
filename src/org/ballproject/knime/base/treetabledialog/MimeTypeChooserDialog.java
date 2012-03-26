@@ -29,19 +29,19 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.jdesktop.swingx.VerticalLayout;
 
 public class MimeTypeChooserDialog extends JPanel implements ActionListener
 {
-	private NodeConfiguration config;
+	private INodeConfiguration config;
 	
 	private JComboBox[] cbs;
 	private int[]       sel_ports;
 	
-	public MimeTypeChooserDialog(NodeConfiguration config)
+	public MimeTypeChooserDialog(INodeConfiguration config)
 	{
 		this.config = config;
 		

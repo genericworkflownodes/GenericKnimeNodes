@@ -28,40 +28,32 @@ import java.util.Map;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
-import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.nodegeneration.TemplateFiller;
-import org.ballproject.knime.test.data.TestDataSource;
+import org.ballproject.knime.nodegeneration.templates.Template;
 
-public class GenericToolWrapper extends Project
-{
-	private Map<String,String> switches = new HashMap<String,String>();
-	
-	public void addSwitch(String name, String value)
-	{
-		switches.put(name,value);
+public class GenericToolWrapper extends Project {
+	private Map<String, String> switches = new HashMap<String, String>();
+
+	public void addSwitch(String name, String value) {
+		switches.put(name, value);
 	}
-	
-	public Map<String,String> getSwitches()
-	{
+
+	public Map<String, String> getSwitches() {
 		return switches;
 	}
-	
-	public GenericToolWrapper(NodeConfiguration config, NodeConfigurationStore store)
-	{
+
+	public GenericToolWrapper(INodeConfiguration config,
+			NodeConfigurationStore store) throws IOException {
 		File buildFile = prepareFile(config.getMapping());
 		setUserProperty("ant.file", buildFile.getAbsolutePath());
-		
-		for(String key: store.getParameterKeys())
-		{
+
+		for (String key : store.getParameterKeys()) {
 			String value = store.getParameterValue(key);
-			setProperty(key,value);
+			setProperty(key, value);
 		}
-		
-		
+
 		// ANT stuff
 		init();
 		ProjectHelper helper = ProjectHelper.getProjectHelper();
@@ -69,39 +61,21 @@ public class GenericToolWrapper extends Project
 		helper.parse(this, buildFile);
 		executeTarget(getDefaultTarget());
 	}
-	
-	private File prepareFile(String commands)
-	{
-		String filename = null;
-		TemplateFiller tf = new TemplateFiller();
-		try
-		{
-			filename = Helper.getTemporaryFilename("buildxml", true);
-			tf.read(this.getClass().getResourceAsStream("build.xml"));
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+
+	private File prepareFile(String commands) throws IOException {
+		Template tf = new Template(this.getClass().getResourceAsStream(
+				"build.xml"));
+		File file = new File(Helper.getTemporaryFilename("buildxml", true));
 		tf.replace("<!-- __TASKS__ -->", commands);
-		try
-		{
-			tf.write(filename);
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return new File(filename);
+		tf.write(file);
+		return file;
 	}
-	
-	public List<String> getSwitchesList()
-	{
+
+	public List<String> getSwitchesList() {
 		List<String> ret = new ArrayList<String>();
-		for(String key : switches.keySet())
-		{
-			if(!key.startsWith("-"))
-				ret.add("-"+key);
+		for (String key : switches.keySet()) {
+			if (!key.startsWith("-"))
+				ret.add("-" + key);
 			else
 				ret.add(key);
 			ret.add(switches.get(key));

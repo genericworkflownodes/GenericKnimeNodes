@@ -40,13 +40,13 @@ import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-public class GalaxyNodeConfigurationReader implements NodeConfigurationReader
+public class GalaxyNodeConfigurationReader implements INodeConfigurationReader
 {
 	protected Document doc;
-	protected DefaultNodeConfiguration config = new DefaultNodeConfiguration();
+	protected NodeConfiguration config = new NodeConfiguration();
 	
 	@Override
-	public NodeConfiguration read(InputStream in) throws Exception
+	public INodeConfiguration read(InputStream in) throws Exception
 	{
 		SAXParserFactory factory       = SAXParserFactory.newInstance();
 		SchemaFactory    schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");

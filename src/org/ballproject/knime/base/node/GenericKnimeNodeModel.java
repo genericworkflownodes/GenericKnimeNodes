@@ -28,7 +28,7 @@ import java.net.URI;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
@@ -70,7 +70,7 @@ import org.knime.core.node.port.PortType;
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within the GenericKnimeNodes system.
  * 
- * The base class is configured using a {@link NodeConfiguration} object, holding information about:
+ * The base class is configured using a {@link INodeConfiguration} object, holding information about:
  * <ul>
  *  <li>number of input and output ports</li>
  *  <li> {@link MIMEtype}s of these ports</li>
@@ -90,7 +90,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	/*
 	 * stores the node configuration (i.e. parameters, ports, ..) 
 	 */
-	protected NodeConfiguration config;
+	protected INodeConfiguration config;
 	
 	/*
 	 * stores general properties 
@@ -105,7 +105,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel
 	/**
 	 * Constructor for the node model.
 	 */
-	protected GenericKnimeNodeModel(NodeConfiguration config)
+	protected GenericKnimeNodeModel(INodeConfiguration config)
 	{
 		super(createOPOs(config.getInputPorts()),createOPOs(config.getOutputPorts()));
 		this.config = config;

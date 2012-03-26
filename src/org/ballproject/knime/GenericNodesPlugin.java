@@ -20,11 +20,11 @@
 package org.ballproject.knime;
 
 import java.util.Properties;
+
 import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.ballproject.knime.base.mime.demangler.DemanglerProvider;
-import org.ballproject.knime.base.node.GenericKnimeNodeModel;
 import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.core.runtime.CoreException;
@@ -43,53 +43,45 @@ import org.osgi.framework.BundleContext;
  * 
  * @author roettig
  */
-public class GenericNodesPlugin extends AbstractUIPlugin
-{
+public class GenericNodesPlugin extends AbstractUIPlugin {
 	// The shared instance.
 	private static GenericNodesPlugin plugin;
 
-	private static final NodeLogger logger = NodeLogger.getLogger(GenericNodesPlugin.class);
-	
-	public  static boolean DEBUG = false;
+	private static final NodeLogger logger = NodeLogger
+			.getLogger(GenericNodesPlugin.class);
+
+	public static boolean DEBUG = false;
 	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
-	
-	public static void log(String message)
-	{
-		if(GenericNodesPlugin.DEBUG)
-		{
+
+	public static void log(String message) {
+		if (GenericNodesPlugin.DEBUG) {
 			System.out.println(message);
 			logger.info(message);
 		}
 	}
-	
-	public static boolean isDebug()
-	{
+
+	public static boolean isDebug() {
 		return GenericNodesPlugin.DEBUG;
 	}
-	
-	public static void toggleDebug()
-	{
+
+	public static void toggleDebug() {
 		GenericNodesPlugin.DEBUG = !GenericNodesPlugin.DEBUG;
 		System.out.println("toggling Debug Mode");
 	}
-	
-	public static void setDebug(boolean flag)
-	{
+
+	public static void setDebug(boolean flag) {
 		GenericNodesPlugin.DEBUG = flag;
-		System.out.println("setting Debug Mode :"+flag);
+		System.out.println("setting Debug Mode :" + flag);
 	}
-	 
-	
-	public static MIMEtypeRegistry getMIMEtypeRegistry()
-	{
+
+	public static MIMEtypeRegistry getMIMEtypeRegistry() {
 		return registry;
 	}
-	
+
 	/**
 	 * The constructor.
 	 */
-	public GenericNodesPlugin()
-	{
+	public GenericNodesPlugin() {
 		super();
 		plugin = this;
 	}
@@ -103,43 +95,45 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	 *             If this plugin could not be started
 	 */
 	@Override
-	public void start(final BundleContext context) throws Exception
-	{
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-		
-		
+
 		Properties props = new Properties();
-		props.load(GenericNodesPlugin.class.getResourceAsStream("baseplugin.properties"));
-		
-		DEBUG = (props.getProperty("debug","false").toLowerCase().equals("true") ? true : false);
+		props.load(GenericNodesPlugin.class
+				.getResourceAsStream("baseplugin.properties"));
+
+		DEBUG = (props.getProperty("debug", "false").toLowerCase()
+				.equals("true") ? true : false);
 		log("starting plugin: GenericNodesPlugin");
-        
-		IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.ballproject.knime.base.mime.demangler.DemanglerProvider");
-		try 
-		{
-			for (IConfigurationElement e : config) 
-			{
+
+		IConfigurationElement[] config = Platform
+				.getExtensionRegistry()
+				.getConfigurationElementsFor(
+						"org.ballproject.knime.base.mime.demangler.DemanglerProvider");
+		try {
+			for (IConfigurationElement e : config) {
 				final Object o = e.createExecutableExtension("class");
-				if (o instanceof DemanglerProvider) 
-				{
+				if (o instanceof DemanglerProvider) {
 					DemanglerProvider dp = (DemanglerProvider) o;
-					for(Demangler dm : dp.getDemanglers())
-					{
-						log("registering Demangler for data type "+dm.getMIMEType().toString());
+					for (Demangler dm : dp.getDemanglers()) {
+						log("registering Demangler for data type "
+								+ dm.getMIMEType().toString());
 						registry.addDemangler(dm);
 					}
 				}
 			}
-		} 
-		catch (CoreException e) 
-		{
+		} catch (CoreException e) {
 			e.printStackTrace();
 			throw new Exception(e);
 		}
-		
-		IPreferenceStore store = GenericNodesPlugin.getDefault().getPreferenceStore();
-		FileStash.getInstance().setStashDirectory(store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
-		
+
+		IPreferenceStore store = GenericNodesPlugin.getDefault()
+				.getPreferenceStore();
+		FileStash
+				.getInstance()
+				.setStashDirectory(
+						store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
+
 	}
 
 	/**
@@ -151,8 +145,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	 *             If this plugin could not be stopped
 	 */
 	@Override
-	public void stop(final BundleContext context) throws Exception
-	{
+	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
 	}
@@ -162,8 +155,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin
 	 * 
 	 * @return Singleton instance of the Plugin
 	 */
-	public static GenericNodesPlugin getDefault()
-	{
+	public static GenericNodesPlugin getDefault() {
 		return plugin;
 	}
 

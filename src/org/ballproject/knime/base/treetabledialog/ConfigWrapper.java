@@ -24,14 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.Parameter;
 
 public class ConfigWrapper 
 {
-	private NodeConfiguration config;
+	private INodeConfiguration config;
 	
-	public ConfigWrapper(NodeConfiguration config)
+	public ConfigWrapper(INodeConfiguration config)
 	{
 		this.config = config;
 		init();

@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
-import org.ballproject.knime.base.config.CTDNodeConfigurationReader;
-import org.ballproject.knime.base.config.NodeConfiguration;
+import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
+import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
@@ -71,8 +71,8 @@ public class IDBExporter
 
 	public static void processCTD(String filename) throws FileNotFoundException, Exception
 	{
-		NodeConfiguration config = null;
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
+		INodeConfiguration config = null;
+		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
 		config = reader.read(new FileInputStream(filename));
 		
 		Element root_ = root.addElement( "idb:IDBApplication" );
