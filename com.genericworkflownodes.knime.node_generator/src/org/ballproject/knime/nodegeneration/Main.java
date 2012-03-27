@@ -1,6 +1,7 @@
 package org.ballproject.knime.nodegeneration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public class Main {
@@ -14,11 +15,11 @@ public class Main {
 	 * @param args
 	 *            #1: plugin directory; #2: build directory
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		File pluginDir = new File((args.length > 0) ? args[0] : ".")
-				.getAbsoluteFile();
+				.getAbsoluteFile().getCanonicalFile();
 		File buildDir = (args.length > 1) ? new File(args[1]).getAbsoluteFile()
-				: null;
+				.getCanonicalFile() : null;
 		if (buildDir != null)
 			buildDir.mkdirs();
 
