@@ -2,7 +2,7 @@
 
 	<property name="debug" value="true" />
 	
-	<property name="plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
+	<property name="plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample-ball" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
 
 	<property name="base.plugin.name" value="org.ballproject.knime" />
 	<property name="base.plugin.version.major" value="0" />
