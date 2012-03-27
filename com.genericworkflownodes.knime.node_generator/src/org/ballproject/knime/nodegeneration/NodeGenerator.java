@@ -54,6 +54,7 @@ import org.ballproject.knime.nodegeneration.templates.NodeModelTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeViewTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginXMLTemplate;
+import org.ballproject.knime.nodegeneration.templates.ProjectTemplate;
 import org.ballproject.knime.nodegeneration.util.FailedExecutionException;
 import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
 import org.ballproject.knime.nodegeneration.util.Utils;
@@ -157,6 +158,9 @@ public class NodeGenerator {
 		// plugin.xml
 		pluginXML.saveTo(buildDir.getPluginXml());
 
+		// .project
+		new ProjectTemplate(meta).write(buildDir.getProjectFile());
+
 		// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
 		new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
 				this.buildDir.getBinaryResourcesDirectory(),
@@ -169,7 +173,6 @@ public class NodeGenerator {
 
 		// copy assets
 		copyAsset(".classpath");
-		copyAsset(".project");
 
 		LOGGER.info("KNIME plugin sources successfully created in:\n\t"
 				+ this.buildDir);

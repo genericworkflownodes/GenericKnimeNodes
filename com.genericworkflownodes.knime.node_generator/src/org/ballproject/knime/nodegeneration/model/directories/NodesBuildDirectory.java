@@ -28,6 +28,7 @@ public class NodesBuildDirectory extends Directory {
 	private File buildProperties;
 	private File pluginXml;
 	private File manifestMf;
+	private File projectFile;
 
 	public NodesBuildDirectory(File buildDir, String packageRoot)
 			throws FileNotFoundException {
@@ -70,6 +71,8 @@ public class NodesBuildDirectory extends Directory {
 		this.pluginXml = new File(this, "plugin.xml");
 		this.manifestMf = new File(this, "META-INF" + File.separator
 				+ "MANIFEST.MF");
+
+		this.projectFile = new File(this, ".project");
 	}
 
 	/**
@@ -149,5 +152,9 @@ public class NodesBuildDirectory extends Directory {
 
 	public File getManifestMf() {
 		return manifestMf;
+	}
+
+	public File getProjectFile() {
+		return projectFile;
 	}
 }
