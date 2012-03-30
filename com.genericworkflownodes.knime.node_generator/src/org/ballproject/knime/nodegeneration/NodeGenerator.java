@@ -26,6 +26,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -106,14 +108,11 @@ public class NodeGenerator {
 		// META-INF/MANIFEST.MF
 		new ManifestMFTemplate(meta).write(buildDir.getManifestMf());
 
-		// src/[PACKAGE]/knime/PluginActivator.java
-		new PluginActivatorTemplate(meta.getPackageRoot()).write(new File(
-				this.buildDir.getKnimeDirectory(), "PluginActivator.java"));
-
 		// src/[PACKAGE]/knime/plugin.properties
 		new PropertiesWriter(new File(this.buildDir.getKnimeDirectory(),
 				"plugin.properties")).write(new HashMap<String, String>() {
 			{
+				put("use_cli", srcDir.getProperty("use_cli", "true"));
 				put("use_ini", srcDir.getProperty("use_ini", "true"));
 				put("ini_switch", srcDir.getProperty("ini_switch", "-ini"));
 			}
@@ -136,10 +135,14 @@ public class NodeGenerator {
 				+ "MimeFileCellFactory.java"));
 
 		PluginXMLTemplate pluginXML = new PluginXMLTemplate();
+		List<String> nodeNames = new LinkedList<String>();
 
 		// src/[PACKAGE]/knime/nodes/*/*
 		for (CTDFile ctdFile : descriptorsDirectory.getCTDFiles()) {
 			LOGGER.info("Start processing ctd file: " + ctdFile.getName());
+
+			nodeNames.add(ctdFile.getNodeConfiguration().getName());
+
 			String factoryClass = copyNodeSources(ctdFile,
 					srcDir.getIconsDirectory(),
 					buildDir.getKnimeNodesDirectory(), meta);
@@ -149,6 +152,11 @@ public class NodeGenerator {
 					+ ctdFile.getNodeConfiguration().getCategory();
 			pluginXML.registerNode(factoryClass, absoluteCategory);
 		}
+
+		// src/[PACKAGE]/knime/PluginActivator.java
+		new PluginActivatorTemplate(meta.getPackageRoot(), nodeNames)
+				.write(new File(this.buildDir.getKnimeDirectory(),
+						"PluginActivator.java"));
 
 		// icons/*
 		copyFolderIcon(srcDir.getIconsDirectory(), buildDir.getIconsDirectory());

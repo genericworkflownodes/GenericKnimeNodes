@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Generic Workflow Nodes - KNIME plugin @@pluginname@@
+Bundle-Name: Generic Workflow Nodes - KNIME plugin @@pluginName@@
 Bundle-SymbolicName: @@packageName@@;singleton:=true
 Bundle-Version: @@pluginVersion@@
 Bundle-Activator: @@packageName@@.knime.PluginActivator

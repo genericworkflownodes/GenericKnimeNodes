@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.ballproject.knime.base.config.INodeConfiguration;
+import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
-import org.ballproject.knime.nodegeneration.model.directories.Directory;
 
 public class IconsDirectory extends Directory {
 

@@ -3,7 +3,7 @@ package org.ballproject.knime.nodegeneration.model.directories.source;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.nodegeneration.model.directories.Directory;
+import org.ballproject.knime.base.model.Directory;
 
 public class ExecutablesDirectory extends Directory {
 

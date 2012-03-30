@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import org.ballproject.knime.nodegeneration.model.directories.source.DescriptorsDirectory;

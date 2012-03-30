@@ -25,6 +25,6 @@ public interface NodeConfigurationWriter
 {
 	void setParameterValue(String name, String value);
 	void setMultiParameterValue(String name, String value);
-	void write(String filename) throws IOException;
-	void writeINI(String filename) throws IOException;
+	void writeCTD(String filename) throws IOException;
+	void writeParametersOnly(String filename) throws IOException;
 }

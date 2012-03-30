@@ -3,6 +3,7 @@ package org.ballproject.knime.nodegeneration.model.directories;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildBinaryResourcesDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildIconsDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildKnimeDirectory;

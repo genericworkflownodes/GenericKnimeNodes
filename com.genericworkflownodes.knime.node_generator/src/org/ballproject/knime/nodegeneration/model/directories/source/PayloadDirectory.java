@@ -6,7 +6,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.ballproject.knime.nodegeneration.model.directories.Directory;
+import org.ballproject.knime.base.model.Directory;
 
 public class PayloadDirectory extends Directory {
 

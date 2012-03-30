@@ -100,7 +100,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter
 		item.addAttribute("value", value);
 	}
 	
-	public void write(String filename) throws IOException
+	public void writeCTD(String filename) throws IOException
 	{
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		
@@ -110,7 +110,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter
 		writer.close();
 	}
 	
-	public void writeINI(String filename) throws IOException
+	public void writeParametersOnly(String filename) throws IOException
 	{
 		OutputFormat format = OutputFormat.createPrettyPrint();
 		

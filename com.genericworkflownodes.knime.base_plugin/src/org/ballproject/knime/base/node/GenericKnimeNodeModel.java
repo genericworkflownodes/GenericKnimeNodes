@@ -154,60 +154,55 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	private void prepareExecute(final File jobdir, final ExecutionContext exec)
 			throws Exception {
-		String nodeName = config.getName();
+		File exepath = ExtToolDB.getInstance().getToolPath(
+				new ExternalTool(pluginname, config.getName()));
 
-		if (config.getStatus().equals("internal")) {
-			InternalToolRunner tr_ = new InternalToolRunner();
+		boolean useShipped = (exepath == null || !exepath.exists());
+		boolean useCLI = this.props.getProperty("use_cli").equals("true");
 
-			// fill params.xml
-			CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(
-					config.getXML());
-			writer.init(store);
+		if (useShipped) {
+			logger.info("The path of the binary to invoke \"" + exepath
+					+ "\" could not be found.\n"
+					+ "Using shipped binaries instead.");
+			exepath = Helper.getExecutableName(new File(binpath, "bin"),
+					config.getName());
+		}
 
-			if (this.props.getProperty("use_ini").equals("true")) {
-				tr_.setParamSwitch("-ini");
-				writer.writeINI(jobdir + FILESEP + "params.xml");
-			} else {
-				tr_.setParamSwitch("-par");
-				writer.write(jobdir + FILESEP + "params.xml");
-			}
+		if (exepath == null) {
+			throw new Exception(
+					"Neither externally configured nor shipped binaries exist. Aborting execution.");
+		}
 
-			// get executable name
-			String exepath = Helper.getExecutableName(nodeName, binpath
-					+ FILESEP + "bin");
-
-			if (exepath == null) {
-				throw new Exception(
-						"execution of internal tool failed: due to missing executable file");
-			}
-
-			tr_.setExecutablePath(exepath);
-
-			tr = tr_;
-		} else {
-			ExternalToolRunner tr_ = new ExternalToolRunner();
-
+		// TODO use_cli for each node and not for the whole plugin
+		if (useCLI) {
 			PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
 			store.setParameterValue("jobdir", jobdir.getAbsolutePath());
 			writer.init(store);
 			writer.write(jobdir + File.separator + "params.ini");
 
-			GenericToolWrapper wrapper = new GenericToolWrapper(config, store);
-			List<String> switches = wrapper.getSwitchesList();
-			tr_.setSwitches(switches);
+			ExternalToolRunner externalToolRunner = new ExternalToolRunner();
+			externalToolRunner
+					.setSwitches(new GenericToolWrapper(config, store)
+							.getSwitchesList());
+			externalToolRunner.setExecutablePath(exepath);
+			tr = externalToolRunner;
+		} else {
+			boolean useCompleteCTD = this.props.getProperty("use_ini").equals(
+					"true");
+			String paramSwitch = this.props.getProperty("ini_switch");
 
-			String exepath = ExtToolDB.getInstance().getToolPath(
-					new ExternalTool(pluginname, nodeName));
-
-			if (exepath == null || !(new File(exepath).exists())) {
-				throw new Exception(
-						"execution of external tool failed: due to missing executable file '"
-								+ exepath + "'");
-			}
-
-			tr_.setExecutablePath(exepath);
-
-			tr = tr_;
+			InternalToolRunner internalToolRunner = new InternalToolRunner();
+			// fill params.xml
+			CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(
+					config.getXML());
+			writer.init(store);
+			internalToolRunner.setParamSwitch(paramSwitch);
+			if (useCompleteCTD)
+				writer.writeCTD(jobdir + FILESEP + "params.xml");
+			else
+				writer.writeParametersOnly(jobdir + FILESEP + "params.xml");
+			internalToolRunner.setExecutablePath(exepath);
+			tr = internalToolRunner;
 		}
 
 		executeTool(jobdir, exec);
@@ -220,7 +215,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 		AsyncToolRunner t = new AsyncToolRunner(tr);
 		t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
-
+		// FIXME env always equal props?
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
 		for (String key : env.keySet()) {
