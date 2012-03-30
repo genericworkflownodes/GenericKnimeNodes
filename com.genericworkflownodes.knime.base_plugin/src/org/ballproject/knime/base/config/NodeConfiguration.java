@@ -48,7 +48,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	protected String name;
 	protected String version;
-	protected String status = "";
 	protected String command = "";
 	protected String docurl = "";
 	protected String shortdescription = "";
@@ -117,11 +116,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	@Override
 	public String getCategory() {
 		return category;
-	}
-
-	@Override
-	public String getStatus() {
-		return this.status;
 	}
 
 	@Override
@@ -197,10 +191,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	public void setVersion(String version) {
 		this.version = version;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	public void setCommand(String command) {

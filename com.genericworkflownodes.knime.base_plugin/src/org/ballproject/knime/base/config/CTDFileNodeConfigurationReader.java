@@ -269,8 +269,6 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 		if (lstatus != null && lstatus.equals(""))
 			throw new Exception("CTD has no status");
 
-		this.config.setStatus(lstatus);
-
 		node = this.doc.selectSingleNode("/tool/name");
 		if (node == null)
 			throw new Exception("CTD has no tool name");
@@ -645,9 +643,6 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 
 	private void readMapping() throws Exception {
 		Node node = this.doc.selectSingleNode("/tool/mapping");
-		if (node == null && this.config.getStatus().equals("external"))
-			throw new Exception(
-					"CTD has no mapping tag and is an external tool");
 		if (node == null)
 			return;
 

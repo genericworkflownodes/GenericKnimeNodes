@@ -60,7 +60,6 @@ import org.ballproject.knime.nodegeneration.templates.ProjectTemplate;
 import org.ballproject.knime.nodegeneration.util.FailedExecutionException;
 import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
 import org.ballproject.knime.nodegeneration.util.Utils;
-import org.ballproject.knime.nodegeneration.writer.DatWriter;
 import org.ballproject.knime.nodegeneration.writer.PropertiesWriter;
 import org.dom4j.DocumentException;
 
@@ -117,16 +116,6 @@ public class NodeGenerator {
 				put("ini_switch", srcDir.getProperty("ini_switch", "-ini"));
 			}
 		});
-
-		// src/[PACKAGE]/knime/InternalTools.dat
-		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
-				"InternalTools.dat")).write(descriptorsDirectory
-				.getInternalCtdFiles());
-
-		// src/[PACKAGE]/knime/ExternalTools.dat
-		new DatWriter(new File(this.buildDir.getKnimeDirectory(),
-				"ExternalTools.dat")).write(descriptorsDirectory
-				.getExternalCtdFiles());
 
 		// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
 		new MimeFileCellFactoryTemplate(meta.getPackageRoot(),
