@@ -141,11 +141,13 @@
 	</target>
 
 	<target name="custom.plugin.generate_sources" description="run node generator">
-		<java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
-      <classpath refid="custom.plugin.classpath"/>
+    <java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
+      <!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
+      <!-- handle the to long classpath -->
+      <env key="CLASSPATH" path="${env.CLASSPATH}:${toString:custom.plugin.classpath}"/>
 			<arg value="${plugin.dir}" />
-			<arg value="${custom.plugin.build.src}" />
-		</java>
+		  <arg value="${custom.plugin.build.src}" />
+    </java>
 	</target>
 
 	<target name="custom.plugin.classes.build">
