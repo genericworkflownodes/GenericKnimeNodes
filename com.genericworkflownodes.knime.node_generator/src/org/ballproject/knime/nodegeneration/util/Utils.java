@@ -22,22 +22,37 @@ public class Utils {
 			.getCanonicalName());
 
 	/**
-	 * returns all prefix paths of a given path.
+	 * returns all prefix paths of a given path. This are only abstract,
+	 * non-system paths. Therefore they always need to have the forward slash as
+	 * separator.
 	 * 
 	 * /foo/bar/baz --> [/foo/bar, /foo, /]
 	 * 
+	 * @note The path needs to start with a "/" (forward slash) otherwise the
+	 *       method method will
 	 * @param path
-	 * @return
+	 * @return A list of all valid path prefixes
 	 */
 	public static List<String> getPathPrefixes(String path) {
-		List<String> ret = new ArrayList<String>();
-		File pth = new File(path);
-		ret.add(path);
-		while (pth.getParent() != null) {
-			ret.add(pth.getParent());
-			pth = pth.getParentFile();
+		// otherwise it is not a path
+		if (!path.startsWith("/")) {
+			throw new IllegalArgumentException("Path needs to start with \"/\"");
 		}
-		return ret;
+
+		List<String> prefixList = new ArrayList<String>();
+
+		String prefix = path;
+		// will abort as soon as prefix == "/"
+		while (prefix.length() > 1) {
+			prefixList.add(prefix);
+			int lastIndexOfFS = prefix.lastIndexOf("/");
+			prefix = prefix.substring(0, lastIndexOfFS);
+		}
+
+		// "/" is a special prefix, therefore we add it separatly
+		prefixList.add("/");
+
+		return prefixList;
 	}
 
 	/**
@@ -49,8 +64,12 @@ public class Utils {
 	 * @return
 	 */
 	public static String getPathPrefix(String path) {
-		File pth = new File(path);
-		return pth.getParent();
+		// otherwise it is not a path
+		if (!path.startsWith("/")) {
+			throw new IllegalArgumentException("Path needs to start with \"/\"");
+		}
+
+		return path.substring(0, path.lastIndexOf("/"));
 	}
 
 	/**
@@ -62,8 +81,12 @@ public class Utils {
 	 * @return
 	 */
 	public static String getPathSuffix(String path) {
-		File pth = new File(path);
-		return pth.getName();
+		// otherwise it is not a path
+		if (!path.startsWith("/")) {
+			throw new IllegalArgumentException("Path needs to start with \"/\"");
+		}
+
+		return path.substring(path.lastIndexOf("/") + 1);
 	}
 
 	public static void zipDirectory(File directory, File zipFile)

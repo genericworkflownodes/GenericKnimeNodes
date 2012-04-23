@@ -7,7 +7,7 @@
 	<property name="base.plugin.name" value="org.ballproject.knime" />
 	<property name="base.plugin.version.major" value="0" />
 	<property name="base.plugin.version.minor" value="6" />
-	<property name="base.plugin.version.patch" value="0" />
+	<property name="base.plugin.version.patch" value="1" />
 
 	<property name="nodegenerator.name" value="org.ballproject.knime.node_generator" />
 	
@@ -182,10 +182,12 @@
 	<target name="custom.plugin.generate_sources" description="run node generator">
 		<echo message="${toString:nodegenerator.exec.classpath}" />
 		<java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
-      <classpath refid="nodegenerator.exec.classpath"/>
+      <!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
+      <!-- handle the to long classpath -->
+      <env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}"/>
 			<arg value="${plugin.dir}" />
-			<arg value="${custom.plugin.build.src}" />
-		</java>
+		  <arg value="${custom.plugin.build.src}" />
+    </java>
 	</target>
 
 	<target name="custom.plugin.classes.build">
