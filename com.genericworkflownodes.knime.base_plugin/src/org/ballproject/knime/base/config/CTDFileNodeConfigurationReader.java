@@ -642,7 +642,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	}
 
 	private void readMapping() throws Exception {
-		Node node = this.doc.selectSingleNode("/tool/mapping");
+		Node node = this.doc.selectSingleNode("/tool/cli");
 		if (node == null)
 			return;
 

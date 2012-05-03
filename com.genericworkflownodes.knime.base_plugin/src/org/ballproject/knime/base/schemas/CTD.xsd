@@ -1,82 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:include schemaLocation="Param_1_3.xsd" />
+	<xs:include schemaLocation="Param_1_3.xsd"/>
 
 	<xs:element name="tool">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="name" type="xs:string" minOccurs="1">
+				<xs:element minOccurs="1" name="name" type="xs:string">
 					<xs:annotation>
-							<xs:documentation>Name of the tool.</xs:documentation>
+						<xs:documentation>
+							Name of the tool.
+						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="version" type="xs:string" minOccurs="1">
+				<xs:element minOccurs="1" name="version" type="xs:string">
 					<xs:annotation>
-							<xs:documentation>Version string of the tool.</xs:documentation>
+						<xs:documentation>
+							Version string of the tool.
+						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="description" type="xs:string" minOccurs="0">
+				<xs:element minOccurs="0" name="description" type="xs:string">
 					<xs:annotation>
-							<xs:documentation>One line description of the tool.</xs:documentation>
-					</xs:annotation>	
-				</xs:element>
-				<xs:element name="manual" type="xs:string" minOccurs="0">
-					<xs:annotation>
-							<xs:documentation>More detailed description of the tool (about 10 lines).</xs:documentation>
-					</xs:annotation>	
-				</xs:element>
-				<xs:element name="docurl" type="xs:string" minOccurs="0">
-					<xs:annotation>
-							<xs:documentation>URL to further documentation (WWW).</xs:documentation>
-					</xs:annotation>	
-				</xs:element>				
-				<xs:element name="category" type="xs:string" minOccurs="0">
-					<xs:annotation>
-							<xs:documentation>Whats this (FIX-ME!).</xs:documentation>
-					</xs:annotation>	
-				</xs:element>
-				<xs:element name="mapping" type="xs:string" minOccurs="0">
-					<xs:annotation>
-							<xs:documentation>ANT based mapping instructions  of the tool.</xs:documentation>
+						<xs:documentation>
+							One line description of the tool.
+						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="cloptions" type="clExprType" minOccurs="0">
+				<xs:element minOccurs="0" name="manual" type="xs:string">
 					<xs:annotation>
-							<xs:documentation>Command-line options with placeholders.</xs:documentation>
-					</xs:annotation>	
+						<xs:documentation>
+							More detailed description of the tool (about
+							10 lines).
+						</xs:documentation>
+					</xs:annotation>
 				</xs:element>
-				<xs:element name="path" type="xs:string" minOccurs="0">
+				<xs:element minOccurs="0" name="docurl" type="xs:string">
 					<xs:annotation>
-							<xs:documentation>Whats this exactly (FIX-ME!).</xs:documentation>
-					</xs:annotation>	
+						<xs:documentation>
+							URL to further documentation (WWW).
+						</xs:documentation>
+					</xs:annotation>
 				</xs:element>
-				<xs:element name="type" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+				<xs:element minOccurs="0" name="category" type="xs:string">
 					<xs:annotation>
-							<xs:documentation>Whats this (FIX-ME!).</xs:documentation>
-					</xs:annotation>	
+						<xs:documentation>
+							Whats this (FIX-ME!).
+						</xs:documentation>
+					</xs:annotation>
 				</xs:element>
-				<xs:element name="mappings" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="mapping" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:attribute name="id" type="xs:nonNegativeInteger" use="required"/>
-									<xs:attribute name="cl" type="xs:string" use="required"/>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="file">
-								<xs:complexType>
-									<xs:attribute name="location" type="xs:string" use="required"/>
-									<xs:attribute name="target" type="xs:string" use="required"/>
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="type" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+							Whats this (FIX-ME!).
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				
+				<xs:element maxOccurs="1" minOccurs="0" name="cli" type="cliType">
 				</xs:element>
 
 				<!-- reference PARAMETERS schema instead of redefinition -->
-				<xs:element name="PARAMETERS" minOccurs="0"/>
-
+				<xs:element minOccurs="0" name="PARAMETERS"/>
 			</xs:sequence>
 			<xs:attribute name="status" type="StatusType" use="required"/>
 		</xs:complexType>
@@ -114,4 +99,34 @@
 			<xs:pattern value=".*([^%]|%TMP|[%%S+]|%BASENAME\[%+S+\])"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="cliType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="1" name="clielement" type="cliElementType">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mappingType">
+		<xs:attribute name="ref_name" type="xs:string">
+			<xs:annotation/>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="cliElementType">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="mapping" type="mappingType">
+				<xs:annotation/>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="optional">
+			<xs:annotation/>
+		</xs:attribute>
+		<xs:attribute name="text" type="xs:string" use="optional">
+			<xs:annotation/>
+		</xs:attribute>
+		<xs:attribute name="isList" type="xs:boolean" use="optional">
+			<xs:annotation/>
+		</xs:attribute>
+		<xs:attribute name="required" type="xs:boolean" use="optional">
+			<xs:annotation/>
+		</xs:attribute>
+	</xs:complexType>
 </xs:schema>
