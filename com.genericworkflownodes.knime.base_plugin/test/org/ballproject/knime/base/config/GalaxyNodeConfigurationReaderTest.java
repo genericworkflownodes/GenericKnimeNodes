@@ -19,10 +19,10 @@
 
 package org.ballproject.knime.base.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.ballproject.knime.base.config.GalaxyNodeConfigurationReader;
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.DoubleParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.parameter.StringChoiceParameter;
@@ -30,41 +30,41 @@ import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
-public class GalaxyNodeConfigurationReaderTest
-{
+public class GalaxyNodeConfigurationReaderTest {
 
 	@Test
-	public void testReader() throws Exception
-	{
+	public void testReader() throws Exception {
 		INodeConfiguration config = null;
 		GalaxyNodeConfigurationReader reader = new GalaxyNodeConfigurationReader();
-		config = reader.read(TestDataSource.class.getResourceAsStream("emboss_water.xml"));
-		
-		assertEquals("Smith-Waterman local alignment",config.getDescription());
-		assertEquals("water",config.getName());
-		assertEquals("5.0.0",config.getVersion());
-		assertEquals("help text",config.getManual());
-		
-		assertEquals(2,config.getNumberOfInputPorts());
-		assertEquals(1,config.getNumberOfOutputPorts());
-		
+		config = reader.read(TestDataSource.class
+				.getResourceAsStream("emboss_water.xml"));
+
+		assertEquals("Smith-Waterman local alignment", config.getDescription());
+		assertEquals("water", config.getName());
+		assertEquals("5.0.0", config.getVersion());
+		assertEquals("help text", config.getManual());
+
+		assertEquals(2, config.getNumberOfInputPorts());
+		assertEquals(1, config.getNumberOfOutputPorts());
+
 		assertNotNull(config.getParameter("gapopen"));
 		assertNotNull(config.getParameter("gapextend"));
-		
+
 		Parameter<?> p1 = config.getParameter("gapopen");
 		Parameter<?> p2 = config.getParameter("gapextend");
-		StringChoiceParameter p3 = (StringChoiceParameter) config.getParameter("menu");
-		
-		assertTrue( p1 instanceof StringParameter);
-		assertTrue( p2 instanceof DoubleParameter);
-		assertTrue( p3 instanceof StringChoiceParameter);
-		
-		assertEquals(p1.getValue(),"10.0");
-		assertEquals(p2.getValue(),0.5);
-		assertEquals("1",p3.getValue());
-		
-		assertEquals("A",p3.getLabels().get(0));
-		assertEquals("B",p3.getLabels().get(1));
-		assertEquals("C",p3.getLabels().get(2));
+		StringChoiceParameter p3 = (StringChoiceParameter) config
+				.getParameter("menu");
+
+		assertTrue(p1 instanceof StringParameter);
+		assertTrue(p2 instanceof DoubleParameter);
+		assertTrue(p3 instanceof StringChoiceParameter);
+
+		assertEquals(p1.getValue(), "10.0");
+		assertEquals(p2.getValue(), 0.5);
+		assertEquals("1", p3.getValue());
+
+		assertEquals("A", p3.getLabels().get(0));
+		assertEquals("B", p3.getLabels().get(1));
+		assertEquals("C", p3.getLabels().get(2));
 	}
 }

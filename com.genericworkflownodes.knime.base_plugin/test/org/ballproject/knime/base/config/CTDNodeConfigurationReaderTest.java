@@ -26,8 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.parameter.BoolParameter;
 import org.ballproject.knime.base.parameter.DoubleListParameter;
@@ -47,6 +45,7 @@ public class CTDNodeConfigurationReaderTest {
 	@Test
 	public void testReader() throws Exception {
 		INodeConfiguration config = null;
+
 		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test.ctd"));

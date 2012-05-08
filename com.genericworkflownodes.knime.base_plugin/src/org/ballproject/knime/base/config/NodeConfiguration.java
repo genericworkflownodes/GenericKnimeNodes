@@ -28,6 +28,8 @@ import java.util.Map;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 
+import com.genericworkflownodes.knime.cliwrapper.CLI;
+
 /**
  * Default implementation of {@link INodeConfiguration}
  * <p>
@@ -54,9 +56,11 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	protected String longdescription = "";
 	protected String xml = "";
 	protected String category = "";
-	protected String mapping = "";
+
+	protected CLI cli;
 
 	public NodeConfiguration() {
+		cli = new CLI();
 	}
 
 	public NodeConfiguration(INodeConfiguration config) {
@@ -109,6 +113,11 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	}
 
 	@Override
+	public CLI getCLI() {
+		return cli;
+	}
+
+	@Override
 	public String getXML() {
 		return xml;
 	}
@@ -121,11 +130,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	@Override
 	public String getCommand() {
 		return command;
-	}
-
-	@Override
-	public String getMapping() {
-		return this.mapping;
 	}
 
 	// / protected setters
@@ -197,8 +201,8 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		this.command = command;
 	}
 
-	public void setMapping(String mapping) {
-		this.mapping = mapping;
+	public void setCLI(CLI cli) {
+		this.cli = cli;
 	}
 
 	@Override

@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.util.Helper;
@@ -48,20 +47,18 @@ public class GenericToolWrapper extends Project {
 
 	public GenericToolWrapper(INodeConfiguration config,
 			NodeConfigurationStore store) throws IOException {
-		File buildFile = prepareFile(config.getMapping());
-		setUserProperty("ant.file", buildFile.getAbsolutePath());
-
-		for (String key : store.getParameterKeys()) {
-			String value = store.getParameterValue(key);
-			setProperty(key, value);
-		}
-
-		// ANT stuff
-		init();
-		ProjectHelper helper = ProjectHelper.getProjectHelper();
-		addReference("ant.projectHelper", helper);
-		helper.parse(this, buildFile);
-		executeTarget(getDefaultTarget());
+		/*
+		 * File buildFile = prepareFile(config.getMapping());
+		 * setUserProperty("ant.file", buildFile.getAbsolutePath());
+		 * 
+		 * for (String key : store.getParameterKeys()) { String value =
+		 * store.getParameterValue(key); setProperty(key, value); }
+		 * 
+		 * // ANT stuff init(); ProjectHelper helper =
+		 * ProjectHelper.getProjectHelper(); addReference("ant.projectHelper",
+		 * helper); helper.parse(this, buildFile);
+		 * executeTarget(getDefaultTarget());
+		 */
 	}
 
 	private File prepareFile(String commands) throws IOException {
