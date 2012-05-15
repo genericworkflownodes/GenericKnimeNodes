@@ -183,9 +183,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			writer.init(store);
 			internalToolRunner.setParamSwitch(paramSwitch);
 			if (useCompleteCTD)
-				writer.writeCTD(jobdir + FILESEP + "params.xml");
+				writer.writeCTD(new File(jobdir, "params.xml"));
 			else
-				writer.writeParametersOnly(jobdir + FILESEP + "params.xml");
+				writer.writeParametersOnly(new File(jobdir, "params.xml"));
 			internalToolRunner.setExecutablePath(exepath);
 			toolRunner = internalToolRunner;
 		}

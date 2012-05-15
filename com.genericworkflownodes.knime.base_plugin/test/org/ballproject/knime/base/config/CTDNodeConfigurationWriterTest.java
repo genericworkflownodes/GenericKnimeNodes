@@ -29,7 +29,7 @@ public class CTDNodeConfigurationWriterTest {
 		File out = File.createTempFile("CTDWriter", "TEST");
 		out.deleteOnExit();
 
-		writer.writeCTD(out.getAbsolutePath());
+		writer.writeCTD(new File(out.getAbsolutePath()));
 
 		SAXReader rd = new SAXReader();
 
@@ -66,7 +66,7 @@ public class CTDNodeConfigurationWriterTest {
 		File out = File.createTempFile("CTDWriter", "TEST");
 		// out.deleteOnExit();
 
-		writer.writeCTD(out.getAbsolutePath());
+		writer.writeCTD(new File(out.getAbsolutePath()));
 
 		SAXReader rd = new SAXReader();
 

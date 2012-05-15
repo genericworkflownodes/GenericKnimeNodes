@@ -19,6 +19,7 @@
 
 package org.ballproject.knime.base.config;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
@@ -88,19 +89,19 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		item.addAttribute("value", value);
 	}
 
-	public void writeCTD(String filename) throws IOException {
+	public void writeCTD(File file) throws IOException {
 		OutputFormat format = OutputFormat.createPrettyPrint();
 
-		XMLWriter writer = new XMLWriter(new FileWriter(filename), format);
+		XMLWriter writer = new XMLWriter(new FileWriter(file), format);
 		writer.write(doc);
 
 		writer.close();
 	}
 
-	public void writeParametersOnly(String filename) throws IOException {
+	public void writeParametersOnly(File file) throws IOException {
 		OutputFormat format = OutputFormat.createPrettyPrint();
 
-		XMLWriter writer = new XMLWriter(new FileWriter(filename), format);
+		XMLWriter writer = new XMLWriter(new FileWriter(file), format);
 		writer.write(doc.selectSingleNode("//PARAMETERS"));
 
 		writer.close();

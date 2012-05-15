@@ -3,6 +3,7 @@
  */
 package com.genericworkflownodes.knime.config;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
@@ -33,6 +34,18 @@ public class PluginConfiguration implements IPluginConfiguration {
 		this.binariesPath = binPath;
 		this.props = props;
 		this.env = env;
+
+		// fix environment variables
+		fixEnvironmentVariables();
+	}
+
+	private void fixEnvironmentVariables() {
+		for (String envName : this.env.keySet()) {
+			if (env.get(envName).contains("$ROOT")) {
+				env.get(envName).replace("$ROOT",
+						getBinariesPath() + File.separator);
+			}
+		}
 	}
 
 	/**

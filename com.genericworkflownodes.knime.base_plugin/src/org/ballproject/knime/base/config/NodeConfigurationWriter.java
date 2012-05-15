@@ -19,12 +19,15 @@
 
 package org.ballproject.knime.base.config;
 
+import java.io.File;
 import java.io.IOException;
 
-public interface NodeConfigurationWriter
-{
+public interface NodeConfigurationWriter {
 	void setParameterValue(String name, String value);
+
 	void setMultiParameterValue(String name, String value);
-	void writeCTD(String filename) throws IOException;
-	void writeParametersOnly(String filename) throws IOException;
+
+	void writeCTD(File file) throws IOException;
+
+	void writeParametersOnly(File file) throws IOException;
 }
