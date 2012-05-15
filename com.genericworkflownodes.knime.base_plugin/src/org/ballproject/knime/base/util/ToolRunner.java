@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 
 public class ToolRunner
@@ -123,41 +122,6 @@ public class ToolRunner
 	public void kill()
 	{
 		p.destroy();
-	}
-	
-	
-	public static class AsyncToolRunner implements Callable<Integer>
-	{
-		private ToolRunner tr;
-		
-		public ToolRunner getToolRunner()
-		{
-			return tr;
-		}
-		
-		public AsyncToolRunner(ToolRunner tr)
-		{
-			this.tr = tr;
-		}
-		
-		@Override
-		public Integer call() throws Exception
-		{
-			try
-			{
-				tr.run();
-			} 
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-			return tr.getReturnCode();
-		}
-		
-		public void kill()
-		{
-			tr.kill();
-		}
 	}
 }
 

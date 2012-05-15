@@ -9,7 +9,6 @@
 <cli>
 	<clielement text="-i" isList="true">
 		<mapping ref_name="blastall.i" />
-		<mapping ref_name="blastall.E" />
 	</clielement>
 	<clielement text="-d">
 		<mapping ref_name="blastall.d"/>

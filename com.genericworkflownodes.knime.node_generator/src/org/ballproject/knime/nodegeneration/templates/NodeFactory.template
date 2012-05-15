@@ -1,13 +1,21 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.node.*;
-import org.ballproject.knime.base.config.*;
+import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
+import org.ballproject.knime.base.node.GenericKnimeNodeDialog;
+import org.ballproject.knime.base.node.GenericKnimeNodeFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
+
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.PluginConfiguration;
+
+import __BASE__.knime.PluginActivator;
 
 public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 {
 	
 	public __NODENAME__NodeFactory() 
 	{
+		// read NodeConfig from CTD
 		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader(); 
 		try
 		{
@@ -17,12 +25,24 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 		{
 			e.printStackTrace();
 		}
+		
+		// create plugin config
+		pluginConfig = createPluginConfig();
 	}	
+	
+	private IPluginConfiguration createPluginConfig()
+	{
+		// create pluginConfig
+		final IPreferenceStore pStore = PluginActivator.getDefault().getPreferenceStore();
+	
+		return new PluginConfiguration("__BASE__", pStore.getString("binaries_path"),
+			PluginActivator.getDefault().getProperties(), PluginActivator.getDefault().getEnvironment());
+	}
 	
 	@Override
 	public __NODENAME__NodeModel createNodeModel()
 	{
-		return new __NODENAME__NodeModel(config);
+		return new __NODENAME__NodeModel(config, pluginConfig);
 	}	
 	
 	@Override

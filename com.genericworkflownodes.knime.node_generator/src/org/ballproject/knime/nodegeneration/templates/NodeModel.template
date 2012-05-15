@@ -2,23 +2,16 @@ package __BASE__.knime.nodes.__NODENAME__;
 
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.node.GenericKnimeNodeModel;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.data.url.MIMEType;
 
-import __BASE__.knime.PluginActivator;
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 public class __NODENAME__NodeModel extends GenericKnimeNodeModel {	
-	protected __NODENAME__NodeModel(INodeConfiguration config) {
-		super(config);
+	protected CopyFASTAFileNodeModel(INodeConfiguration config,
+			IPluginConfiguration pluginConfig) {
+		super(config, pluginConfig);
 		
 		this.mimetypes_in  = new MIMEType[][]{__INCLAZZEZ__};
 		this.mimetypes_out = new MIMEType[][]{__OUTCLAZZEZ__};
-		
-		final IPreferenceStore pStore = PluginActivator.getDefault().getPreferenceStore();
-		
-		binpath    = pStore.getString("binaries_path");
-		props = PluginActivator.getDefault().getProperties();
-		env = PluginActivator.getDefault().getEnvironment();
-		pluginname = "__BASE__";
 	}
 }
