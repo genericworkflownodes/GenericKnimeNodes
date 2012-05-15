@@ -7,7 +7,7 @@ import org.knime.core.data.url.MIMEType;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 public class __NODENAME__NodeModel extends GenericKnimeNodeModel {	
-	protected CopyFASTAFileNodeModel(INodeConfiguration config,
+	protected __NODENAME__NodeModel(INodeConfiguration config,
 			IPluginConfiguration pluginConfig) {
 		super(config, pluginConfig);
 		
