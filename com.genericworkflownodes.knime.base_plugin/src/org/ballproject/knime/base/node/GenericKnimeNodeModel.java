@@ -33,13 +33,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
-import org.ballproject.knime.base.external.ExtToolDB;
-import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.FileListParameter;
@@ -47,15 +43,9 @@ import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
-import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
-import org.ballproject.knime.base.util.AsyncToolRunner;
-import org.ballproject.knime.base.util.ExternalToolRunner;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.base.util.InternalToolRunner;
 import org.ballproject.knime.base.util.ToolRunner;
-import org.ballproject.knime.base.wrapper.GenericToolWrapper;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -73,6 +63,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
+import com.genericworkflownodes.knime.execution.IToolExecutor;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -94,11 +86,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected int[] selected_output_type;
 	public String output = "";
 
-	private static String PATHSEP = System.getProperty("path.separator");
-
 	protected MIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
-	private static String FILESEP = File.separator;
 
 	/**
 	 * stores the node configuration (i.e. parameters, ports, ..)
@@ -113,6 +102,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
 
 	protected ToolRunner toolRunner;
+	protected IToolExecutor executor;
 
 	/**
 	 * Constructor for the node model.
@@ -154,101 +144,76 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	private void prepareExecute(final File jobdir, final ExecutionContext exec)
 			throws Exception {
 
-		File exepath = findExecutablePath();
-		boolean useCLI = this.pluginConfig.getPluginProperties()
-				.getProperty("use_cli").equals("true");
+		// get the specified executor
+		executor = (IToolExecutor) Class.forName(
+				pluginConfig.getPluginProperties().getProperty("executor"))
+				.newInstance();
 
-		// TODO use_cli for each node and not for the whole plugin
-		if (useCLI) {
-			PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
-			store.setParameterValue("jobdir", jobdir.getAbsolutePath());
-			writer.init(store);
-			writer.write(jobdir + File.separator + "params.ini");
+		executor.setWorkingDirectory(jobdir);
+		executor.prepareExecution(nodeConfig, store, pluginConfig);
 
-			ExternalToolRunner externalToolRunner = new ExternalToolRunner();
-			externalToolRunner.setSwitches(new GenericToolWrapper(nodeConfig,
-					store).getSwitchesList());
-			externalToolRunner.setExecutablePath(exepath);
-			toolRunner = externalToolRunner;
-		} else {
-			boolean useCompleteCTD = this.pluginConfig.getPluginProperties()
-					.getProperty("use_ini").equals("true");
-			String paramSwitch = this.pluginConfig.getPluginProperties()
-					.getProperty("ini_switch");
-
-			InternalToolRunner internalToolRunner = new InternalToolRunner();
-			// fill params.xml
-			CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(
-					nodeConfig.getXML());
-			writer.init(store);
-			internalToolRunner.setParamSwitch(paramSwitch);
-			if (useCompleteCTD)
-				writer.writeCTD(new File(jobdir, "params.xml"));
-			else
-				writer.writeParametersOnly(new File(jobdir, "params.xml"));
-			internalToolRunner.setExecutablePath(exepath);
-			toolRunner = internalToolRunner;
-		}
-
+		// if (pluginConfig.getPluginProperties().getProperty("executor"))
+		// ;
+		/*
+		 * File exepath = findExecutablePath(); boolean useCLI =
+		 * this.pluginConfig.getPluginProperties()
+		 * .getProperty("use_cli").equals("true");
+		 * 
+		 * // TODO use_cli for each node and not for the whole plugin if
+		 * (useCLI) { PlainNodeConfigurationWriter writer = new
+		 * PlainNodeConfigurationWriter(); store.setParameterValue("jobdir",
+		 * jobdir.getAbsolutePath()); writer.init(store); writer.write(jobdir +
+		 * File.separator + "params.ini");
+		 * 
+		 * ExternalToolRunner externalToolRunner = new ExternalToolRunner();
+		 * externalToolRunner.setSwitches(new GenericToolWrapper(nodeConfig,
+		 * store).getSwitchesList());
+		 * externalToolRunner.setExecutablePath(exepath); toolRunner =
+		 * externalToolRunner; } else { boolean useCompleteCTD =
+		 * this.pluginConfig.getPluginProperties()
+		 * .getProperty("use_ini").equals("true"); String paramSwitch =
+		 * this.pluginConfig.getPluginProperties() .getProperty("ini_switch");
+		 * 
+		 * InternalToolRunner internalToolRunner = new InternalToolRunner(); //
+		 * fill params.xml CTDNodeConfigurationWriter writer = new
+		 * CTDNodeConfigurationWriter( nodeConfig.getXML()); writer.init(store);
+		 * internalToolRunner.setParamSwitch(paramSwitch); if (useCompleteCTD)
+		 * writer.writeCTD(new File(jobdir, "params.xml")); else
+		 * writer.writeParametersOnly(new File(jobdir, "params.xml"));
+		 * internalToolRunner.setExecutablePath(exepath); toolRunner =
+		 * internalToolRunner; }
+		 */
 		executeTool(jobdir, exec);
-	}
-
-	/**
-	 * @return
-	 * @throws Exception
-	 */
-	private File findExecutablePath() throws Exception {
-		File exepath = ExtToolDB.getInstance().getToolPath(
-				new ExternalTool(pluginConfig.getPluginName(), nodeConfig
-						.getName()));
-
-		boolean useShipped = (exepath == null || !exepath.exists());
-
-		if (useShipped) {
-			logger.info("The path of the binary to invoke \"" + exepath
-					+ "\" could not be found.\n"
-					+ "Using shipped binaries instead.");
-			exepath = Helper.getExecutableName(
-					new File(pluginConfig.getBinariesPath(), "bin"),
-					nodeConfig.getName());
-		}
-
-		if (exepath == null) {
-			throw new Exception(
-					"Neither externally configured nor shipped binaries exist. Aborting execution.");
-		}
-		return exepath;
 	}
 
 	private void executeTool(final File jobdir, final ExecutionContext exec)
 			throws Exception {
 
-		AsyncToolRunner asyncToolRunner = new AsyncToolRunner(toolRunner);
-		asyncToolRunner.getToolRunner().setJobDir(jobdir.getAbsolutePath());
-		// FIXME env always equal props?
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		for (String key : pluginConfig.getEnvironmentVariables().keySet()) {
-			String value = "";
+		/*
+		 * AsyncToolRunner asyncToolRunner = new AsyncToolRunner(toolRunner);
+		 * asyncToolRunner.getToolRunner().setJobDir(jobdir.getAbsolutePath());
+		 * // FIXME env always equal props? IPreferenceStore store =
+		 * GenericNodesPlugin.getDefault() .getPreferenceStore(); for (String
+		 * key : pluginConfig.getEnvironmentVariables().keySet()) { String value
+		 * = "";
+		 * 
+		 * String addPathes = store
+		 * .getString(GKNPreferenceInitializer.PREF_PATHES); value =
+		 * pluginConfig.getEnvironmentVariables().get(key) .replace("$ROOT",
+		 * pluginConfig.getBinariesPath() + FILESEP); if (key.equals("PATH")) {
+		 * if (!addPathes.equals("")) value += PATHSEP + addPathes; value +=
+		 * PATHSEP + System.getenv("PATH"); }
+		 * 
+		 * asyncToolRunner.getToolRunner().addEnvironmentEntry(key, value);
+		 * GenericNodesPlugin.log(key + "->" + value); }
+		 */
+		AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
+				executor);
 
-			String addPathes = store
-					.getString(GKNPreferenceInitializer.PREF_PATHES);
-			value = pluginConfig.getEnvironmentVariables().get(key)
-					.replace("$ROOT", pluginConfig.getBinariesPath() + FILESEP);
-			if (key.equals("PATH")) {
-				if (!addPathes.equals(""))
-					value += PATHSEP + addPathes;
-				value += PATHSEP + System.getenv("PATH");
-			}
+		FutureTask<Integer> future = new FutureTask<Integer>(asyncExecutor);
 
-			asyncToolRunner.getToolRunner().addEnvironmentEntry(key, value);
-			GenericNodesPlugin.log(key + "->" + value);
-		}
-
-		FutureTask<Integer> future = new FutureTask<Integer>(asyncToolRunner);
-
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		executor.execute(future);
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
+		executorService.execute(future);
 
 		while (!future.isDone()) {
 			try {
@@ -259,8 +224,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			try {
 				exec.checkCanceled();
 			} catch (CanceledExecutionException e) {
-				asyncToolRunner.kill();
-				executor.shutdown();
+				asyncExecutor.kill();
+				executorService.shutdown();
 				throw e;
 			}
 		}
@@ -272,9 +237,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			ex.printStackTrace();
 		}
 
-		executor.shutdown();
+		executorService.shutdown();
 
-		output = asyncToolRunner.getToolRunner().getOutput();
+		output = executor.getToolOutput();
 
 		GenericNodesPlugin.log(output);
 		GenericNodesPlugin.log("retcode=" + retcode);

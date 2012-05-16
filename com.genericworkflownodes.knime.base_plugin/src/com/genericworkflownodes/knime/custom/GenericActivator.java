@@ -81,34 +81,40 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 					+ "; falling back to 32 bit");
 
 		boolean use64 = false;
+		boolean use32 = false;
 		if (data_model.equals("64")) {
-			if (binaryLocation
-					.getResourceAsStream("binaries_" + OS + "_64.zip") != null) {
-				ZipUtils.decompressTo(
-						nodeBinariesDir,
-						binaryLocation.getResourceAsStream("binaries_" + OS
-								+ "_64.zip"));
-				props.load(binaryLocation.getResourceAsStream("binaries_" + OS
-						+ "_64.ini"));
-				use64 = true;
-			}
+			use64 = tryExtractPayloadZIP(binaryLocation, nodeBinariesDir, OS,
+					"64");
 		}
 		if (!use64) {
-			if (binaryLocation
-					.getResourceAsStream("binaries_" + OS + "_32.zip") != null) {
-				ZipUtils.decompressTo(
-						nodeBinariesDir,
-						binaryLocation.getResourceAsStream("binaries_" + OS
-								+ "_32.zip"));
-				props.load(binaryLocation.getResourceAsStream("binaries_" + OS
-						+ "_32.ini"));
-			} else {
-				LOGGER.info("No binaries could be found. "
-						+ "In order to execute the containing nodes you need "
-						+ "to configure their binary locations in the Eclipse configuration.");
-			}
+			use32 = tryExtractPayloadZIP(binaryLocation, nodeBinariesDir, OS,
+					"32");
 		}
 
+		if (use32 || use64) {
+			makeExtractedBinariesExecutable(nodeBinariesDir);
+		} else {
+			LOGGER.info("No binaries could be found. "
+					+ "In order to execute the containing nodes you need "
+					+ "to configure their binary locations in the Eclipse configuration.");
+		}
+
+		final IPreferenceStore pStore = this.getPreferenceStore();
+		pStore.setValue("binaries_path", nodeBinariesDir.getCanonicalPath());
+
+		for (Object key : props.keySet()) {
+			String k = key.toString();
+			String v = props.getProperty(k);
+			env.put(k, v);
+		}
+	}
+
+	/**
+	 * @param nodeBinariesDir
+	 * @throws FileNotFoundException
+	 */
+	private void makeExtractedBinariesExecutable(TempDirectory nodeBinariesDir)
+			throws FileNotFoundException {
 		try {
 			for (File execFile : new File(nodeBinariesDir, "bin").listFiles()) {
 				execFile.setExecutable(true);
@@ -119,14 +125,36 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 							+ "Please make sure your binary zip file contains a \"bin\" directory.\n"
 							+ "See payload.README for further instructions.");
 		}
+	}
 
-		final IPreferenceStore pStore = this.getPreferenceStore();
-		pStore.setValue("binaries_path", nodeBinariesDir.getCanonicalPath());
-
-		for (Object key : props.keySet()) {
-			String k = key.toString();
-			String v = props.getProperty(k);
-			env.put(k, v);
+	/**
+	 * Tests if a zip file with the name binaries_{@p OS}_{@p data_model}.zip is
+	 * available and extracts it.
+	 * 
+	 * @param binaryLocation
+	 *            Class which is needed to find the binaries inside the jar
+	 * @param nodeBinariesDir
+	 *            Target directory where it should be extracted to
+	 * @param OS
+	 *            Identifier of the operating system to extract the appropriate
+	 *            zip file
+	 * @return true if the specified zip file was found and extracted correctly.
+	 * @throws IOException
+	 */
+	private boolean tryExtractPayloadZIP(Class<?> binaryLocation,
+			TempDirectory nodeBinariesDir, String OS, String data_model)
+			throws IOException {
+		if (binaryLocation.getResourceAsStream("binaries_" + OS + "_"
+				+ data_model + ".zip") != null) {
+			ZipUtils.decompressTo(
+					nodeBinariesDir,
+					binaryLocation.getResourceAsStream("binaries_" + OS + "_"
+							+ data_model + ".zip"));
+			props.load(binaryLocation.getResourceAsStream("binaries_" + OS
+					+ "_" + data_model + ".ini"));
+			return true;
+		} else {
+			return false;
 		}
 	}
 

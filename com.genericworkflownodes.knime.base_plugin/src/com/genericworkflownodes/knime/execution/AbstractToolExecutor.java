@@ -25,11 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.external.ExtToolDB;
 import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
+import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.ballproject.knime.base.util.Helper;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
@@ -40,7 +43,7 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
  * 
  * @author aiche
  */
-public abstract class AbstractToolExecutor {
+public abstract class AbstractToolExecutor implements IToolExecutor {
 	protected static final NodeLogger logger = NodeLogger
 			.getLogger(AbstractToolExecutor.class);
 
@@ -66,16 +69,16 @@ public abstract class AbstractToolExecutor {
 	 * exist or the @p path does not point to a directory (but a file), an
 	 * exception will be thrown.
 	 * 
-	 * @param path
+	 * @param directory
 	 *            The new working directory.
 	 * @throws Exception
 	 *             If the path does not exist or points to a file (and not a
 	 *             directory).
 	 */
-	public void setWorkingDirectory(String path) throws Exception {
-		workingDirectory = new File(path);
+	public void setWorkingDirectory(File directory) throws Exception {
+		workingDirectory = directory;
 		if (!workingDirectory.isDirectory() || !workingDirectory.exists()) {
-			throw new Exception(path + " is not a directory!");
+			throw new Exception(directory + " is not a directory!");
 		}
 	}
 
@@ -93,7 +96,7 @@ public abstract class AbstractToolExecutor {
 	 * @param newEnvironmentVariables
 	 *            The environment variables that will be added.
 	 */
-	public void addEnvironmentVariables(
+	private void addEnvironmentVariables(
 			Map<String, String> newEnvironmentVariables) {
 		environmentVariables.putAll(newEnvironmentVariables);
 	}
@@ -203,13 +206,15 @@ public abstract class AbstractToolExecutor {
 	 * @param builder
 	 */
 	private void setupProcessEnvironment(ProcessBuilder builder) {
-		// TODO(Stephan): add GKN extra path
 		for (String key : environmentVariables.keySet()) {
 
 			String value = environmentVariables.get(key);
 
-			// extend paths instead of replacing them
-			if (key.contains("PATH")) {
+			// extend paths instead of replacing them, if it was already set by
+			// the system and was requested by the value, e.g.,
+			// PATH=/usr/bin:$PATH .. will be extended by the system variable
+			// PATH=/usr/bin .. not
+			if (value.contains("$" + key) && System.getenv(key) != null) {
 				value = value + PATHSEP + System.getenv(key);
 			}
 
@@ -238,8 +243,26 @@ public abstract class AbstractToolExecutor {
 			NodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		findExecutable(nodeConfiguration, pluginConfiguration);
+		addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
+		updatePATH();
 		localPrepareExecution(nodeConfiguration, configStore,
 				pluginConfiguration);
+	}
+
+	/**
+	 * TODO: Re-think this concept. AbstractToolExecutor shouldn't need to know
+	 * something about this.
+	 */
+	private void updatePATH() {
+		IPreferenceStore store = GenericNodesPlugin.getDefault()
+				.getPreferenceStore();
+		String PATH_extension = store
+				.getString(GKNPreferenceInitializer.PREF_PATHES);
+		if (environmentVariables.containsKey("PATH")) {
+			PATH_extension = PATH_extension + PATHSEP
+					+ environmentVariables.get("PATH");
+		}
+		environmentVariables.put("PATH", PATH_extension);
 	}
 
 	/**
@@ -249,7 +272,7 @@ public abstract class AbstractToolExecutor {
 	 */
 	private void findExecutable(INodeConfiguration nodeConfiguration,
 			IPluginConfiguration pluginConfiguration) throws Exception {
-		File executable = ExtToolDB.getInstance().getToolPath(
+		executable = ExtToolDB.getInstance().getToolPath(
 				new ExternalTool(pluginConfiguration.getPluginName(),
 						nodeConfiguration.getName()));
 

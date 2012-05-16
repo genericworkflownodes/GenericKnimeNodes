@@ -42,8 +42,10 @@ public class PluginConfiguration implements IPluginConfiguration {
 	private void fixEnvironmentVariables() {
 		for (String envName : this.env.keySet()) {
 			if (env.get(envName).contains("$ROOT")) {
-				env.get(envName).replace("$ROOT",
-						getBinariesPath() + File.separator);
+				// update the map entry with the correct path
+				env.put(envName,
+						env.get(envName).replace("$ROOT",
+								getBinariesPath() + File.separator));
 			}
 		}
 	}
