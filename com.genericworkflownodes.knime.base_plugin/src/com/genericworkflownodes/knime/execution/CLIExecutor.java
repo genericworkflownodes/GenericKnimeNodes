@@ -65,8 +65,8 @@ public class CLIExecutor extends AbstractToolExecutor {
 				List<List<String>> extractedParameterValues = extractParamterValues(cliElement);
 				validateExtractedParameters(extractedParameterValues);
 
-				// we only add those paramters to the command line if they
-				// contain any values, this removes optional paramters if they
+				// we only add those parameters to the command line if they
+				// contain any values, this removes optional parameters if they
 				// were not set
 				if (extractedParameterValues.size() != 0) {
 					expandParameters(extractedParameterValues, cliElement,
@@ -194,6 +194,8 @@ public class CLIExecutor extends AbstractToolExecutor {
 	}
 
 	/**
+	 * Exports all configuration settings to the working directory.
+	 * 
 	 * @param configStore
 	 * @throws IOException
 	 */
