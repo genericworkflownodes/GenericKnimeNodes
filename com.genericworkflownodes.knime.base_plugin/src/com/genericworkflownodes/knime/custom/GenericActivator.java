@@ -10,8 +10,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.external.ExternalToolDB;
 import org.ballproject.knime.base.external.ExternalTool;
+import org.ballproject.knime.base.external.ExternalToolDB;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.model.TempDirectory;
 import org.ballproject.knime.base.util.ZipUtils;
@@ -164,7 +164,15 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		for (MIMEType mimeType : mimeTypes) {
 			registry.registerMIMEtype(mimeType);
 		}
+	}
 
+	/**
+	 * Registers all nodes included in the plugin as external tools in the
+	 * ExternalToolDB.
+	 * 
+	 * @see org.ballproject.knime.base.external.ExternalToolDB
+	 */
+	public void registerNodes() {
 		ExternalToolDB toolDB = ExternalToolDB.getInstance();
 		String packageName = this.getClass().getPackage().getName();
 		String knimelessPackageName = packageName.substring(0,
