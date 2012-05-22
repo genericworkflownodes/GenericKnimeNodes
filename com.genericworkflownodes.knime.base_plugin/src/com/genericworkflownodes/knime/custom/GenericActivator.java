@@ -10,8 +10,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.external.ExtToolDB;
-import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
+import org.ballproject.knime.base.external.ExternalTool;
+import org.ballproject.knime.base.external.ExternalToolDB;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.model.TempDirectory;
 import org.ballproject.knime.base.util.ZipUtils;
@@ -81,43 +81,22 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 					+ "; falling back to 32 bit");
 
 		boolean use64 = false;
+		boolean use32 = false;
 		if (data_model.equals("64")) {
-			if (binaryLocation
-					.getResourceAsStream("binaries_" + OS + "_64.zip") != null) {
-				ZipUtils.decompressTo(
-						nodeBinariesDir,
-						binaryLocation.getResourceAsStream("binaries_" + OS
-								+ "_64.zip"));
-				props.load(binaryLocation.getResourceAsStream("binaries_" + OS
-						+ "_64.ini"));
-				use64 = true;
-			}
+			use64 = tryExtractPayloadZIP(binaryLocation, nodeBinariesDir, OS,
+					"64");
 		}
 		if (!use64) {
-			if (binaryLocation
-					.getResourceAsStream("binaries_" + OS + "_32.zip") != null) {
-				ZipUtils.decompressTo(
-						nodeBinariesDir,
-						binaryLocation.getResourceAsStream("binaries_" + OS
-								+ "_32.zip"));
-				props.load(binaryLocation.getResourceAsStream("binaries_" + OS
-						+ "_32.ini"));
-			} else {
-				LOGGER.info("No binaries could be found. "
-						+ "In order to execute the containing nodes you need "
-						+ "to configure their binary locations in the Eclipse configuration.");
-			}
+			use32 = tryExtractPayloadZIP(binaryLocation, nodeBinariesDir, OS,
+					"32");
 		}
 
-		try {
-			for (File execFile : new File(nodeBinariesDir, "bin").listFiles()) {
-				execFile.setExecutable(true);
-			}
-		} catch (NullPointerException e) {
-			throw new FileNotFoundException(
-					"No \"bin\" directory was found in the shipped binaries. "
-							+ "Please make sure your binary zip file contains a \"bin\" directory.\n"
-							+ "See payload.README for further instructions.");
+		if (use32 || use64) {
+			makeExtractedBinariesExecutable(nodeBinariesDir);
+		} else {
+			LOGGER.info("No binaries could be found. "
+					+ "In order to execute the containing nodes you need "
+					+ "to configure their binary locations in the Eclipse configuration.");
 		}
 
 		final IPreferenceStore pStore = this.getPreferenceStore();
@@ -130,14 +109,71 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		}
 	}
 
+	/**
+	 * @param nodeBinariesDir
+	 * @throws FileNotFoundException
+	 */
+	private void makeExtractedBinariesExecutable(TempDirectory nodeBinariesDir)
+			throws FileNotFoundException {
+		try {
+			for (File execFile : new File(nodeBinariesDir, "bin").listFiles()) {
+				execFile.setExecutable(true);
+			}
+		} catch (NullPointerException e) {
+			throw new FileNotFoundException(
+					"No \"bin\" directory was found in the shipped binaries. "
+							+ "Please make sure your binary zip file contains a \"bin\" directory.\n"
+							+ "See payload.README for further instructions.");
+		}
+	}
+
+	/**
+	 * Tests if a zip file with the name binaries_{@p OS}_{@p data_model}.zip is
+	 * available and extracts it.
+	 * 
+	 * @param binaryLocation
+	 *            Class which is needed to find the binaries inside the jar
+	 * @param nodeBinariesDir
+	 *            Target directory where it should be extracted to
+	 * @param OS
+	 *            Identifier of the operating system to extract the appropriate
+	 *            zip file
+	 * @return true if the specified zip file was found and extracted correctly.
+	 * @throws IOException
+	 */
+	private boolean tryExtractPayloadZIP(Class<?> binaryLocation,
+			TempDirectory nodeBinariesDir, String OS, String data_model)
+			throws IOException {
+		if (binaryLocation.getResourceAsStream("binaries_" + OS + "_"
+				+ data_model + ".zip") != null) {
+			ZipUtils.decompressTo(
+					nodeBinariesDir,
+					binaryLocation.getResourceAsStream("binaries_" + OS + "_"
+							+ data_model + ".zip"));
+			props.load(binaryLocation.getResourceAsStream("binaries_" + OS
+					+ "_" + data_model + ".ini"));
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public void registerMimeTypes(List<MIMEType> mimeTypes) {
 		MIMEtypeRegistry registry = GenericNodesPlugin.getMIMEtypeRegistry();
 
 		for (MIMEType mimeType : mimeTypes) {
 			registry.registerMIMEtype(mimeType);
 		}
+	}
 
-		ExtToolDB toolDB = ExtToolDB.getInstance();
+	/**
+	 * Registers all nodes included in the plugin as external tools in the
+	 * ExternalToolDB.
+	 * 
+	 * @see org.ballproject.knime.base.external.ExternalToolDB
+	 */
+	public void registerNodes() {
+		ExternalToolDB toolDB = ExternalToolDB.getInstance();
 		String packageName = this.getClass().getPackage().getName();
 		String knimelessPackageName = packageName.substring(0,
 				packageName.lastIndexOf(".knime"));
@@ -146,7 +182,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		}
 
 		IPreferenceStore store = this.getPreferenceStore();
-		ExtToolDB.getInstance().init(store);
+		ExternalToolDB.getInstance().init(store);
 	}
 
 	public Properties getProperties() {

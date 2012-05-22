@@ -27,20 +27,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
 import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
-import org.ballproject.knime.base.external.ExtToolDB;
-import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.parameter.FileListParameter;
@@ -48,15 +43,9 @@ import org.ballproject.knime.base.parameter.InvalidParameterValueException;
 import org.ballproject.knime.base.parameter.ListParameter;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
-import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
-import org.ballproject.knime.base.util.ExternalToolRunner;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.base.util.InternalToolRunner;
 import org.ballproject.knime.base.util.ToolRunner;
-import org.ballproject.knime.base.util.ToolRunner.AsyncToolRunner;
-import org.ballproject.knime.base.wrapper.GenericToolWrapper;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -72,6 +61,10 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
+import com.genericworkflownodes.knime.execution.IToolExecutor;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -91,51 +84,51 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			.getLogger(GenericKnimeNodeModel.class);
 
 	protected int[] selected_output_type;
-	protected String binpath;
-	protected String pluginname;
 	public String output = "";
 
-	/*
+	protected MIMEtypeRegistry resolver = GenericNodesPlugin
+			.getMIMEtypeRegistry();
+
+	/**
 	 * stores the node configuration (i.e. parameters, ports, ..)
 	 */
-	protected INodeConfiguration config;
+	protected INodeConfiguration nodeConfig;
 
-	/*
-	 * stores general properties
-	 */
-	protected Properties props;
+	private IPluginConfiguration pluginConfig;
 
-	/*
-	 * stores environment variables needed for program execution
-	 */
-	protected Map<String, String> env;
+	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
+			MIMEURIPortObject.class, true);
+
+	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
+
+	protected ToolRunner toolRunner;
+	protected IToolExecutor executor;
 
 	/**
 	 * Constructor for the node model.
 	 */
-	protected GenericKnimeNodeModel(INodeConfiguration config) {
+	protected GenericKnimeNodeModel(INodeConfiguration config,
+			IPluginConfiguration pluginConfig) {
 		super(createOPOs(config.getInputPorts()), createOPOs(config
 				.getOutputPorts()));
-		this.config = config;
+		this.nodeConfig = config;
+		this.pluginConfig = pluginConfig;
 		init();
 	}
 
 	protected void init() {
 		// init with [0,0,....,0]
-		selected_output_type = new int[this.config.getNumberOfOutputPorts()];
+		selected_output_type = new int[this.nodeConfig.getNumberOfOutputPorts()];
 	}
 
 	protected MIMEtype getOutputType(int idx) {
-		return this.config.getOutputPorts()[idx].getMimeTypes().get(
+		return this.nodeConfig.getOutputPorts()[idx].getMimeTypes().get(
 				selected_output_type[idx]);
 	}
 
 	protected int getOutputTypeIndex(int idx) {
 		return selected_output_type[idx];
 	}
-
-	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-			MIMEURIPortObject.class, true);
 
 	private static PortType[] createOPOs(Port[] ports) {
 		PortType[] portTypes = new PortType[ports.length];
@@ -148,96 +141,77 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		return portTypes;
 	}
 
-	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
-
-	protected ToolRunner tr;
-
 	private void prepareExecute(final File jobdir, final ExecutionContext exec)
 			throws Exception {
-		File exepath = ExtToolDB.getInstance().getToolPath(
-				new ExternalTool(pluginname, config.getName()));
 
-		boolean useShipped = (exepath == null || !exepath.exists());
-		boolean useCLI = this.props.getProperty("use_cli").equals("true");
+		instantiateToolExecutor();
 
-		if (useShipped) {
-			logger.info("The path of the binary to invoke \"" + exepath
-					+ "\" could not be found.\n"
-					+ "Using shipped binaries instead.");
-			exepath = Helper.getExecutableName(new File(binpath, "bin"),
-					config.getName());
-		}
-
-		if (exepath == null) {
-			throw new Exception(
-					"Neither externally configured nor shipped binaries exist. Aborting execution.");
-		}
-
-		// TODO use_cli for each node and not for the whole plugin
-		if (useCLI) {
-			PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
-			store.setParameterValue("jobdir", jobdir.getAbsolutePath());
-			writer.init(store);
-			writer.write(jobdir + File.separator + "params.ini");
-
-			ExternalToolRunner externalToolRunner = new ExternalToolRunner();
-			externalToolRunner
-					.setSwitches(new GenericToolWrapper(config, store)
-							.getSwitchesList());
-			externalToolRunner.setExecutablePath(exepath);
-			tr = externalToolRunner;
-		} else {
-			boolean useCompleteCTD = this.props.getProperty("use_ini").equals(
-					"true");
-			String paramSwitch = this.props.getProperty("ini_switch");
-
-			InternalToolRunner internalToolRunner = new InternalToolRunner();
-			// fill params.xml
-			CTDNodeConfigurationWriter writer = new CTDNodeConfigurationWriter(
-					config.getXML());
-			writer.init(store);
-			internalToolRunner.setParamSwitch(paramSwitch);
-			if (useCompleteCTD)
-				writer.writeCTD(jobdir + FILESEP + "params.xml");
-			else
-				writer.writeParametersOnly(jobdir + FILESEP + "params.xml");
-			internalToolRunner.setExecutablePath(exepath);
-			tr = internalToolRunner;
-		}
+		executor.setWorkingDirectory(jobdir);
+		executor.prepareExecution(nodeConfig, store, pluginConfig);
 
 		executeTool(jobdir, exec);
 	}
 
-	private static String PATHSEP = System.getProperty("path.separator");
+	/**
+	 * Try to instantiate the IToolExecutor specified by the plugin.
+	 * 
+	 * @throws Exception
+	 */
+	private void instantiateToolExecutor() throws Exception {
+
+		String executorClassName = "";
+		try {
+			executorClassName = pluginConfig.getPluginProperties().getProperty(
+					"executor");
+			if (executorClassName == null || "".equals(executorClassName)) {
+				throw new Exception("No executor was specified by the plugin.");
+			}
+
+			executor = (IToolExecutor) Class.forName(executorClassName)
+					.newInstance();
+		} catch (IllegalAccessException ex) {
+			throw new Exception(
+					"Could not instantiate executor (IllegalAccessException): "
+							+ executorClassName);
+		} catch (ClassNotFoundException ex) {
+			throw new Exception(
+					"Could not instantiate executor (ClassNotFoundException): "
+							+ executorClassName);
+		} catch (InstantiationException ex) {
+			throw new Exception(
+					"Could not instantiate executor (InstantiationException): "
+							+ executorClassName);
+		}
+	}
 
 	private void executeTool(final File jobdir, final ExecutionContext exec)
 			throws Exception {
 
-		AsyncToolRunner t = new AsyncToolRunner(tr);
-		t.getToolRunner().setJobDir(jobdir.getAbsolutePath());
-		// FIXME env always equal props?
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		for (String key : env.keySet()) {
-			String value = "";
+		/*
+		 * AsyncToolRunner asyncToolRunner = new AsyncToolRunner(toolRunner);
+		 * asyncToolRunner.getToolRunner().setJobDir(jobdir.getAbsolutePath());
+		 * // FIXME env always equal props? IPreferenceStore store =
+		 * GenericNodesPlugin.getDefault() .getPreferenceStore(); for (String
+		 * key : pluginConfig.getEnvironmentVariables().keySet()) { String value
+		 * = "";
+		 * 
+		 * String addPathes = store
+		 * .getString(GKNPreferenceInitializer.PREF_PATHES); value =
+		 * pluginConfig.getEnvironmentVariables().get(key) .replace("$ROOT",
+		 * pluginConfig.getBinariesPath() + FILESEP); if (key.equals("PATH")) {
+		 * if (!addPathes.equals("")) value += PATHSEP + addPathes; value +=
+		 * PATHSEP + System.getenv("PATH"); }
+		 * 
+		 * asyncToolRunner.getToolRunner().addEnvironmentEntry(key, value);
+		 * GenericNodesPlugin.log(key + "->" + value); }
+		 */
+		AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
+				executor);
 
-			String addPathes = store
-					.getString(GKNPreferenceInitializer.PREF_PATHES);
-			value = env.get(key).replace("$ROOT", binpath + FILESEP);
-			if (key.equals("PATH")) {
-				if (!addPathes.equals(""))
-					value += PATHSEP + addPathes;
-				value += PATHSEP + System.getenv("PATH");
-			}
+		FutureTask<Integer> future = new FutureTask<Integer>(asyncExecutor);
 
-			t.getToolRunner().addEnvironmentEntry(key, value);
-			GenericNodesPlugin.log(key + "->" + value);
-		}
-
-		FutureTask<Integer> future = new FutureTask<Integer>(t);
-
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		executor.execute(future);
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
+		executorService.execute(future);
 
 		while (!future.isDone()) {
 			try {
@@ -248,8 +222,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			try {
 				exec.checkCanceled();
 			} catch (CanceledExecutionException e) {
-				t.kill();
-				executor.shutdown();
+				asyncExecutor.kill();
+				executorService.shutdown();
 				throw e;
 			}
 		}
@@ -261,9 +235,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			ex.printStackTrace();
 		}
 
-		executor.shutdown();
+		executorService.shutdown();
 
-		output = t.getToolRunner().getOutput();
+		output = executor.getToolOutput();
 
 		GenericNodesPlugin.log(output);
 		GenericNodesPlugin.log("retcode=" + retcode);
@@ -274,10 +248,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		}
 
 	}
-
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
-	private static String FILESEP = File.separator;
 
 	/**
 	 * {@inheritDoc}
@@ -298,11 +268,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		for (String key : this.config.getParameterKeys()) {
-			settings.addString(key, this.config.getParameter(key)
+		for (String key : this.nodeConfig.getParameterKeys()) {
+			settings.addString(key, this.nodeConfig.getParameter(key)
 					.getStringRep());
 		}
-		for (int i = 0; i < this.config.getNumberOfOutputPorts(); i++) {
+		for (int i = 0; i < this.nodeConfig.getNumberOfOutputPorts(); i++) {
 			settings.addInt("GENERIC_KNIME_NODES_outtype#" + i,
 					this.getOutputTypeIndex(i));
 		}
@@ -316,16 +286,16 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
-		for (String key : this.config.getParameterKeys()) {
+		for (String key : this.nodeConfig.getParameterKeys()) {
 			String value = settings.getString(key);
 			try {
-				this.config.getParameter(key).fillFromString(value);
+				this.nodeConfig.getParameter(key).fillFromString(value);
 			} catch (InvalidParameterValueException e) {
 				e.printStackTrace();
 			}
 		}
 
-		for (int i = 0; i < this.config.getNumberOfOutputPorts(); i++) {
+		for (int i = 0; i < this.nodeConfig.getNumberOfOutputPorts(); i++) {
 			int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
 			this.selected_output_type[i] = idx;
 		}
@@ -341,8 +311,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// - we do not xfer values to member variables
 		// - we throw an exception if something is invalid
 
-		for (String key : this.config.getParameterKeys()) {
-			Parameter<?> param = config.getParameter(key);
+		for (String key : this.nodeConfig.getParameterKeys()) {
+			Parameter<?> param = nodeConfig.getParameter(key);
 			if (!param.getIsOptional()) {
 				if (!settings.containsKey(key)) {
 					GenericNodesPlugin
@@ -397,7 +367,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		for (Parameter<?> param : this.config.getParameters()) {
+		for (Parameter<?> param : this.nodeConfig.getParameters()) {
 			// System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
 			if (!param.getIsOptional() && param.getStringRep().equals("")) {
 				// throw new
@@ -413,7 +383,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			// not connected input ports have nulls in inSpec
 			if (inSpecs[i] == null) {
 				// .. if port is optional everything is fine
-				if (config.getInputPorts()[i].isOptional()) {
+				if (nodeConfig.getInputPorts()[i].isOptional()) {
 					continue;
 				} else
 					throw new InvalidSettingsException(
@@ -468,7 +438,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
 		// fetch node descriptors
-		String nodeName = config.getName();
+		String nodeName = nodeConfig.getName();
 
 		// create job directory
 		File jobdir = new File(Helper.getTemporaryDirectory(nodeName,
@@ -500,7 +470,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			if (inData[i] == null)
 				continue;
 
-			Port port = config.getInputPorts()[i];
+			Port port = nodeConfig.getInputPorts()[i];
 
 			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
 			List<URIContent> uris = po.getURIContents();
@@ -528,9 +498,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		Map<Port, Integer> port2slot = new HashMap<Port, Integer>();
 
 		// .. output files
-		int nOut = config.getOutputPorts().length;
+		int nOut = nodeConfig.getOutputPorts().length;
 		for (int i = 0; i < nOut; i++) {
-			Port port = config.getOutputPorts()[i];
+			Port port = nodeConfig.getOutputPorts()[i];
 			String name = port.getName();
 
 			String ext = this.getOutputType(i).getExt();
@@ -553,8 +523,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		}
 
 		// .. node parameters
-		for (String key : config.getParameterKeys()) {
-			Parameter<?> param = config.getParameter(key);
+		for (String key : nodeConfig.getParameterKeys()) {
+			Parameter<?> param = nodeConfig.getParameter(key);
 			if (param.isNull()) {
 				if (param.getIsOptional())
 					continue;
@@ -604,7 +574,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	private PortObject[] processOutput(List<List<URI>> my_outnames,
 			ExecutionContext exec) throws Exception {
-		int nOut = config.getOutputPorts().length;
+		int nOut = nodeConfig.getOutputPorts().length;
 
 		// create output tables
 		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];

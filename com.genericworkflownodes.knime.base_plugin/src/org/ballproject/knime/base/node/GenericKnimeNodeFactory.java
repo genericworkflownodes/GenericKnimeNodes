@@ -19,11 +19,12 @@
 
 package org.ballproject.knime.base.node;
 
-
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**
  * <code>NodeFactory</code> for the "GenericKnimeNode" Node.
@@ -31,28 +32,26 @@ import org.knime.core.node.NodeView;
  * 
  * @author
  */
-public abstract class GenericKnimeNodeFactory extends NodeFactory<GenericKnimeNodeModel>
-{
+public abstract class GenericKnimeNodeFactory extends
+		NodeFactory<GenericKnimeNodeModel> {
 
 	protected INodeConfiguration config;
-	
-	public GenericKnimeNodeFactory() 
-	{
+	protected IPluginConfiguration pluginConfig;
+
+	public GenericKnimeNodeFactory() {
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public abstract GenericKnimeNodeModel createNodeModel();
-	
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getNrNodeViews()
-	{
+	public int getNrNodeViews() {
 		return 1;
 	}
 
@@ -60,8 +59,8 @@ public abstract class GenericKnimeNodeFactory extends NodeFactory<GenericKnimeNo
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<GenericKnimeNodeModel> createNodeView(final int viewIndex, final GenericKnimeNodeModel nodeModel)
-	{
+	public NodeView<GenericKnimeNodeModel> createNodeView(final int viewIndex,
+			final GenericKnimeNodeModel nodeModel) {
 		return new GenericKnimeNodeView(nodeModel);
 	}
 
@@ -69,8 +68,7 @@ public abstract class GenericKnimeNodeFactory extends NodeFactory<GenericKnimeNo
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean hasDialog()
-	{
+	public boolean hasDialog() {
 		return true;
 	}
 

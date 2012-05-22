@@ -114,6 +114,7 @@ public class NodeGenerator {
 				put("use_cli", srcDir.getProperty("use_cli", "true"));
 				put("use_ini", srcDir.getProperty("use_ini", "true"));
 				put("ini_switch", srcDir.getProperty("ini_switch", "-ini"));
+				put("executor", srcDir.getProperty("executor", "CLIExecutor"));
 			}
 		});
 

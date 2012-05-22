@@ -6,10 +6,14 @@
 	<manual><![CDATA[copyfasta.]]></manual>
 	<docurl></docurl>
 	<category>Test Nodes</category>
-	<mapping><![CDATA[
-<mapparam CLISwitch="-if" name="copyfasta.if"/>
-<mapparam CLISwitch="-of" name="copyfasta.of"/>
-]]></mapping>
+	<cli>
+		<clielement optionIdentifier="-if">
+			<mapping ref_name="copyfasta.if" />
+		</clielement>
+		<clielement optionIdentifier="-of">
+			<mapping ref_name="copyfasta.of" />
+		</clielement>
+	</cli>
 	<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<NODE name="copyfasta" description="???">
 			<ITEM name="if" value="" type="string" description="Input file." tags="input file" restrictions="*.fasta,*.txt"/>

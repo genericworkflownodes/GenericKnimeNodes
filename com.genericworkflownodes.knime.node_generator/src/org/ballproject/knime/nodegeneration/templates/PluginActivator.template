@@ -16,6 +16,7 @@ public class PluginActivator extends GenericActivator {
 		super.start(context);
 		extractBinaries(BinaryResources.class);
 		registerMimeTypes(MimeFileCellFactory.getInstance().getMimeTypes());
+		registerNodes();
 	}
 
 	public List<String> getNodeNames() {

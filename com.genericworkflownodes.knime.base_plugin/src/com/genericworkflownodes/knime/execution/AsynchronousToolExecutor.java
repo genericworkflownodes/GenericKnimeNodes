@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,18 +16,38 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.genericworkflownodes.knime.execution;
 
-package org.ballproject.knime.base.config;
+import java.util.concurrent.Callable;
 
-import java.io.File;
-import java.io.IOException;
+/**
+ * Handles asynchronous execution of IToolExecutor
+ * 
+ * @note AsynchronousToolExecutor is based on the AsyncToolRunner implemented by
+ *       Marc Röttig.
+ * 
+ * @author aiche
+ */
+public class AsynchronousToolExecutor implements Callable<Integer> {
 
-public interface NodeConfigurationWriter {
-	void setParameterValue(String name, String value);
+	private IToolExecutor executor;
 
-	void setMultiParameterValue(String name, String value);
+	public AsynchronousToolExecutor(IToolExecutor executor) {
+		this.executor = executor;
+	}
 
-	void writeCTD(File file) throws IOException;
+	@Override
+	public Integer call() throws Exception {
+		try {
+			executor.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return executor.getReturnCode();
+	}
 
-	void writeParametersOnly(File file) throws IOException;
+	public void kill() {
+		executor.kill();
+	}
+
 }

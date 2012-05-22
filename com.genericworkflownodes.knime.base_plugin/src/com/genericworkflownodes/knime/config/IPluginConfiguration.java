@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,18 +16,44 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.genericworkflownodes.knime.config;
 
-package org.ballproject.knime.base.config;
+import java.util.Map;
+import java.util.Properties;
 
-import java.io.File;
-import java.io.IOException;
+/**
+ * Provides all plugin specific configuration settings.
+ * 
+ * @author aiche
+ */
+public interface IPluginConfiguration {
 
-public interface NodeConfigurationWriter {
-	void setParameterValue(String name, String value);
+	/**
+	 * The name of the plugin.
+	 * 
+	 * @return
+	 */
+	public String getPluginName();
 
-	void setMultiParameterValue(String name, String value);
+	/**
+	 * The path where all binaries are located.
+	 * 
+	 * @return
+	 */
+	public String getBinariesPath();
 
-	void writeCTD(File file) throws IOException;
+	/**
+	 * General properties of the plugin.
+	 * 
+	 * @return
+	 */
+	public Properties getPluginProperties();
 
-	void writeParametersOnly(File file) throws IOException;
+	/**
+	 * Environment variables which need to be set, to execute the tools.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getEnvironmentVariables();
+
 }

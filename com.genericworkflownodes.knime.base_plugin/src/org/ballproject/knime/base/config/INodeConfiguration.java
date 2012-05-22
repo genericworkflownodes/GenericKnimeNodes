@@ -24,6 +24,8 @@ import java.util.List;
 import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 
+import com.genericworkflownodes.knime.cliwrapper.CLI;
+
 public interface INodeConfiguration {
 	public String getName();
 
@@ -41,7 +43,7 @@ public interface INodeConfiguration {
 
 	public String getCategory();
 
-	public String getMapping();
+	public CLI getCLI();
 
 	public int getNumberOfOutputPorts();
 

@@ -52,6 +52,9 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import com.genericworkflownodes.knime.cliwrapper.CLIElement;
+import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+
 public class CTDFileNodeConfigurationReader implements INodeConfigurationReader {
 
 	@SuppressWarnings("unused")
@@ -632,7 +635,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 			this.readPorts();
 			this.readParameters();
 			this.readDescription();
-			this.readMapping();
+			this.readCLI();
 			this.config.setXml(this.doc.asXML());
 
 			return this.config;
@@ -641,14 +644,112 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 		}
 	}
 
-	private void readMapping() throws Exception {
-		Node node = this.doc.selectSingleNode("/tool/mapping");
-		if (node == null)
+	private void readCLI() throws Exception {
+
+		Node cliRoot = this.doc.selectSingleNode("/tool/cli");
+
+		// check if this CTD contains a cli part
+		if (cliRoot == null)
 			return;
 
-		String mapping = node.valueOf("text()");
-		if (mapping.equals(""))
-			throw new Exception("CTD has an empty mapping tag");
-		this.config.setMapping(mapping);
+		@SuppressWarnings("unchecked")
+		List<Node> cliElements = cliRoot.selectNodes("//clielement");
+		for (Node elem : cliElements) {
+			this.processCLIElement(elem);
+		}
+	}
+
+	private void processCLIElement(Node elem) throws Exception {
+		CLIElement cliElement = new CLIElement();
+		// set attributes based on xml values
+		cliElement.setName(elem.valueOf("@name"));
+		cliElement.setOptionIdentifier(elem.valueOf("@optionIdentifier"));
+		cliElement.setIsList(elem.valueOf("@isList") == "true");
+		cliElement.setRequired(elem.valueOf("@required") == "true");
+
+		// set mapping
+		@SuppressWarnings("unchecked")
+		List<Node> mappingElements = elem.selectNodes("./mapping");
+		for (Node mapping : mappingElements) {
+			cliElement.getMapping().add(processMappingElement(mapping));
+		}
+
+		validateCLIElement(cliElement);
+
+		// add to the config
+		this.config.getCLI().getCLIElement().add(cliElement);
+	}
+
+	/**
+	 * Checks if the given cli-element is semantically correct. If not an
+	 * exception is thrown.
+	 * 
+	 * @param cliElement
+	 * @throws Exception
+	 */
+	private void validateCLIElement(CLIElement cliElement) throws Exception {
+		// if we have more then one mapped parameter they cannot be boolean
+		// parameters
+		if (cliElement.getMapping().size() > 1) {
+			for (CLIMapping mapping : cliElement.getMapping()) {
+				// find mapped parameter
+				if (config.getParameter(mapping.getRefName()) != null) {
+					// check that it is not boolean
+					if (config.getParameter(mapping.getRefName()) instanceof BoolParameter)
+						throw new Exception();
+				}
+			}
+		}
+	}
+
+	private CLIMapping processMappingElement(Node mappingElement)
+			throws Exception {
+		CLIMapping cliMapping = new CLIMapping();
+		String mappingRefName = mappingElement.valueOf("@ref_name");
+		cliMapping.setRefName(mappingRefName);
+
+		// check if a parameter with the given name was registered
+		checkIfMappedParameterExists(cliMapping);
+		return cliMapping;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param cliMapping
+	 * @param mappingRefName
+	 * @throws Exception
+	 */
+	private void checkIfMappedParameterExists(CLIMapping cliMapping)
+			throws Exception {
+		if (config.getParameter(cliMapping.getRefName()) == null
+				&& !portWithRefNameExists(cliMapping.getRefName())) {
+			throw new Exception("Unknown Parameter " + cliMapping.getRefName());
+		}
+	}
+
+	/**
+	 * Checks whether a port with the specified name was registered.
+	 * 
+	 * @param mappingRefName
+	 * @return
+	 */
+	private boolean portWithRefNameExists(String mappingRefName) {
+		boolean hasPortWithMappingName = false;
+
+		// check inPorts
+		hasPortWithMappingName |= findInPortList(mappingRefName, in_ports);
+		hasPortWithMappingName |= findInPortList(mappingRefName, out_ports);
+
+		return hasPortWithMappingName;
+	}
+
+	private boolean findInPortList(String mappingRefName, List<Port> ports) {
+		for (Port p : ports) {
+			if (p.getName().equals(mappingRefName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
