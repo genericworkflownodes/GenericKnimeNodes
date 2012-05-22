@@ -663,7 +663,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 		CLIElement cliElement = new CLIElement();
 		// set attributes based on xml values
 		cliElement.setName(elem.valueOf("@name"));
-		cliElement.setText(elem.valueOf("@text"));
+		cliElement.setOptionIdentifier(elem.valueOf("@optionIdentifier"));
 		cliElement.setIsList(elem.valueOf("@isList") == "true");
 		cliElement.setRequired(elem.valueOf("@required") == "true");
 

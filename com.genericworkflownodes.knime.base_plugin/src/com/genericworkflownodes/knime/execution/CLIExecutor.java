@@ -52,13 +52,13 @@ public class CLIExecutor extends AbstractToolExecutor {
 		commands.add(getExecutable().getCanonicalPath());
 
 		for (CLIElement cliElement : nodeConfig.getCLI().getCLIElement()) {
-			logger.info("CLIElement: " + cliElement.getText());
+			logger.info("CLIElement: " + cliElement.getOptionIdentifier());
 
-			if (!"".equals(cliElement.getText())
+			if (!"".equals(cliElement.getOptionIdentifier())
 					&& cliElement.getMapping().size() == 0) {
 				// simple fixed argument for the command line, no mapping to
 				// params given
-				commands.add(cliElement.getText());
+				commands.add(cliElement.getOptionIdentifier());
 			} else if (isMappedToBooleanParameter(cliElement)) {
 				// it is mapped to bool
 				handleBooleanParameter(commands, cliElement);
@@ -85,8 +85,8 @@ public class CLIExecutor extends AbstractToolExecutor {
 						.size(); ++currentIdx) {
 
 					// add the command prefix in each iteration
-					if (!"".equals(cliElement.getText())) {
-						commands.add(cliElement.getText());
+					if (!"".equals(cliElement.getOptionIdentifier())) {
+						commands.add(cliElement.getOptionIdentifier());
 					}
 
 					// expand all available mappings to their current value
@@ -218,7 +218,7 @@ public class CLIExecutor extends AbstractToolExecutor {
 			CLIElement cliElement) {
 		if (((BoolParameter) nodeConfig.getParameter(cliElement.getMapping()
 				.get(0).getRefName())).getValue()) {
-			commands.add(cliElement.getText());
+			commands.add(cliElement.getOptionIdentifier());
 		}
 	}
 

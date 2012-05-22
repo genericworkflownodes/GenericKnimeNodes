@@ -7,10 +7,10 @@
 	<docurl></docurl>
 	<category>Test Nodes</category>
 	<cli>
-		<clielement text="-if">
+		<clielement optionIdentifier="-if">
 			<mapping ref_name="copyfasta.if" />
 		</clielement>
-		<clielement text="-of">
+		<clielement optionIdentifier="-of">
 			<mapping ref_name="copyfasta.of" />
 		</clielement>
 	</cli>

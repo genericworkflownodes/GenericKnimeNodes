@@ -22,19 +22,17 @@ public class GenericToolWrapperTest {
 		CLIElement firstCLIElement = config.getCLI().getCLIElement().get(0);
 
 		assertEquals("", firstCLIElement.getName());
-		assertEquals("-i", firstCLIElement.getText());
+		assertEquals("-i", firstCLIElement.getOptionIdentifier());
 		assertEquals(false, firstCLIElement.isList());
 		assertEquals(false, firstCLIElement.isRequired());
 
-		assertEquals(2, firstCLIElement.getMapping().size());
+		assertEquals(1, firstCLIElement.getMapping().size());
 		assertEquals("blastall.i", firstCLIElement.getMapping().get(0)
-				.getRefName());
-		assertEquals("blastall.E", firstCLIElement.getMapping().get(1)
 				.getRefName());
 
 		CLIElement secondCLIElement = config.getCLI().getCLIElement().get(1);
 		assertEquals("", secondCLIElement.getName());
-		assertEquals("-d", secondCLIElement.getText());
+		assertEquals("-d", secondCLIElement.getOptionIdentifier());
 		assertEquals(false, secondCLIElement.isList());
 		assertEquals(false, secondCLIElement.isRequired());
 

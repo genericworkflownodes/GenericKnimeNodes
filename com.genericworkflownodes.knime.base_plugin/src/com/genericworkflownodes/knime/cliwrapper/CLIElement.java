@@ -45,7 +45,7 @@ import java.util.List;
  *         &lt;element name="mapping" type="{}mappingType" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="text" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="optionIdentifier" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="isList" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/restriction>
@@ -59,7 +59,7 @@ public class CLIElement {
 
 	protected List<CLIMapping> mapping;
 	protected String name;
-	protected String text;
+	protected String optionIdentifier;
 	protected Boolean isList;
 	protected Boolean required;
 
@@ -107,24 +107,24 @@ public class CLIElement {
 	}
 
 	/**
-	 * Gets the value of the text property.
+	 * Gets the value of the optionIdentifier property.
 	 * 
 	 * @return possible object is {@link String }
 	 * 
 	 */
-	public String getText() {
-		return text;
+	public String getOptionIdentifier() {
+		return optionIdentifier;
 	}
 
 	/**
-	 * Sets the value of the text property.
+	 * Sets the value of the optionIdentifier property.
 	 * 
 	 * @param value
 	 *            allowed object is {@link String }
 	 * 
 	 */
-	public void setText(String value) {
-		this.text = value;
+	public void setOptionIdentifier(String value) {
+		this.optionIdentifier = value;
 	}
 
 	/**

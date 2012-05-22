@@ -119,10 +119,10 @@
 		<xs:attribute name="name" type="xs:string" use="optional">
 			<xs:annotation/>
 		</xs:attribute>
-		<xs:attribute name="text" type="xs:string" use="optional">
-			<xs:annotation/>
+        <xs:attribute name="optionIdentifier" type="xs:string" use="optional">
+			<xs:annotation />
 		</xs:attribute>
-		<xs:attribute name="isList" type="xs:boolean" use="optional">
+        <xs:attribute name="isList" type="xs:boolean" use="optional">
 			<xs:annotation/>
 		</xs:attribute>
 		<xs:attribute name="required" type="xs:boolean" use="optional">
