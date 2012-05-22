@@ -674,23 +674,58 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 			cliElement.getMapping().add(processMappingElement(mapping));
 		}
 
+		validateCLIElement(cliElement);
+
 		// add to the config
 		this.config.getCLI().getCLIElement().add(cliElement);
+	}
+
+	/**
+	 * Checks if the given cli-element is semantically correct. If not an
+	 * exception is thrown.
+	 * 
+	 * @param cliElement
+	 * @throws Exception
+	 */
+	private void validateCLIElement(CLIElement cliElement) throws Exception {
+		// if we have more then one mapped parameter they cannot be boolean
+		// parameters
+		if (cliElement.getMapping().size() > 1) {
+			for (CLIMapping mapping : cliElement.getMapping()) {
+				// find mapped parameter
+				if (config.getParameter(mapping.getRefName()) != null) {
+					// check that it is not boolean
+					if (config.getParameter(mapping.getRefName()) instanceof BoolParameter)
+						throw new Exception();
+				}
+			}
+		}
 	}
 
 	private CLIMapping processMappingElement(Node mappingElement)
 			throws Exception {
 		CLIMapping cliMapping = new CLIMapping();
 		String mappingRefName = mappingElement.valueOf("@ref_name");
+		cliMapping.setRefName(mappingRefName);
 
 		// check if a parameter with the given name was registered
-		if (config.getParameter(mappingRefName) != null
-				|| portWithRefNameExists(mappingRefName)) {
-			cliMapping.setRefName(mappingRefName);
-		} else {
-			throw new Exception("Unknown Parameter " + mappingRefName);
-		}
+		checkIfMappedParameterExists(cliMapping);
 		return cliMapping;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param cliMapping
+	 * @param mappingRefName
+	 * @throws Exception
+	 */
+	private void checkIfMappedParameterExists(CLIMapping cliMapping)
+			throws Exception {
+		if (config.getParameter(cliMapping.getRefName()) == null
+				&& !portWithRefNameExists(cliMapping.getRefName())) {
+			throw new Exception("Unknown Parameter " + cliMapping.getRefName());
+		}
 	}
 
 	/**

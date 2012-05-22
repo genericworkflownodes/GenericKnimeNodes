@@ -28,8 +28,8 @@ import java.util.TreeMap;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.external.ExtToolDB;
-import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
+import org.ballproject.knime.base.external.ExternalTool;
+import org.ballproject.knime.base.external.ExternalToolDB;
 import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.ballproject.knime.base.util.Helper;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -250,8 +250,8 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	}
 
 	/**
-	 * TODO: Re-think this concept. AbstractToolExecutor shouldn't need to know
-	 * something about this.
+	 * TODO(Stephan): Re-think this concept. AbstractToolExecutor shouldn't need
+	 * to know something about this.
 	 */
 	private void updatePATH() {
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
@@ -266,13 +266,15 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	}
 
 	/**
+	 * Tries to find the needed tool by searching in the ExternalToolDB and the
+	 * plugin package.
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
 	private void findExecutable(INodeConfiguration nodeConfiguration,
 			IPluginConfiguration pluginConfiguration) throws Exception {
-		executable = ExtToolDB.getInstance().getToolPath(
+		executable = ExternalToolDB.getInstance().getToolPath(
 				new ExternalTool(pluginConfiguration.getPluginName(),
 						nodeConfiguration.getName()));
 

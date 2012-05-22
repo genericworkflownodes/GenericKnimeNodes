@@ -144,46 +144,44 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	private void prepareExecute(final File jobdir, final ExecutionContext exec)
 			throws Exception {
 
-		// get the specified executor
-		executor = (IToolExecutor) Class.forName(
-				pluginConfig.getPluginProperties().getProperty("executor"))
-				.newInstance();
+		instantiateToolExecutor();
 
 		executor.setWorkingDirectory(jobdir);
 		executor.prepareExecution(nodeConfig, store, pluginConfig);
 
-		// if (pluginConfig.getPluginProperties().getProperty("executor"))
-		// ;
-		/*
-		 * File exepath = findExecutablePath(); boolean useCLI =
-		 * this.pluginConfig.getPluginProperties()
-		 * .getProperty("use_cli").equals("true");
-		 * 
-		 * // TODO use_cli for each node and not for the whole plugin if
-		 * (useCLI) { PlainNodeConfigurationWriter writer = new
-		 * PlainNodeConfigurationWriter(); store.setParameterValue("jobdir",
-		 * jobdir.getAbsolutePath()); writer.init(store); writer.write(jobdir +
-		 * File.separator + "params.ini");
-		 * 
-		 * ExternalToolRunner externalToolRunner = new ExternalToolRunner();
-		 * externalToolRunner.setSwitches(new GenericToolWrapper(nodeConfig,
-		 * store).getSwitchesList());
-		 * externalToolRunner.setExecutablePath(exepath); toolRunner =
-		 * externalToolRunner; } else { boolean useCompleteCTD =
-		 * this.pluginConfig.getPluginProperties()
-		 * .getProperty("use_ini").equals("true"); String paramSwitch =
-		 * this.pluginConfig.getPluginProperties() .getProperty("ini_switch");
-		 * 
-		 * InternalToolRunner internalToolRunner = new InternalToolRunner(); //
-		 * fill params.xml CTDNodeConfigurationWriter writer = new
-		 * CTDNodeConfigurationWriter( nodeConfig.getXML()); writer.init(store);
-		 * internalToolRunner.setParamSwitch(paramSwitch); if (useCompleteCTD)
-		 * writer.writeCTD(new File(jobdir, "params.xml")); else
-		 * writer.writeParametersOnly(new File(jobdir, "params.xml"));
-		 * internalToolRunner.setExecutablePath(exepath); toolRunner =
-		 * internalToolRunner; }
-		 */
 		executeTool(jobdir, exec);
+	}
+
+	/**
+	 * Try to instantiate the IToolExecutor specified by the plugin.
+	 * 
+	 * @throws Exception
+	 */
+	private void instantiateToolExecutor() throws Exception {
+
+		String executorClassName = "";
+		try {
+			executorClassName = pluginConfig.getPluginProperties().getProperty(
+					"executor");
+			if (executorClassName == null || "".equals(executorClassName)) {
+				throw new Exception("No executor was specified by the plugin.");
+			}
+
+			executor = (IToolExecutor) Class.forName(executorClassName)
+					.newInstance();
+		} catch (IllegalAccessException ex) {
+			throw new Exception(
+					"Could not instantiate executor (IllegalAccessException): "
+							+ executorClassName);
+		} catch (ClassNotFoundException ex) {
+			throw new Exception(
+					"Could not instantiate executor (ClassNotFoundException): "
+							+ executorClassName);
+		} catch (InstantiationException ex) {
+			throw new Exception(
+					"Could not instantiate executor (InstantiationException): "
+							+ executorClassName);
+		}
 	}
 
 	private void executeTool(final File jobdir, final ExecutionContext exec)

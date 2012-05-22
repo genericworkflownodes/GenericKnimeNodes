@@ -10,8 +10,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.external.ExtToolDB;
-import org.ballproject.knime.base.external.ExtToolDB.ExternalTool;
+import org.ballproject.knime.base.external.ExternalToolDB;
+import org.ballproject.knime.base.external.ExternalTool;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.model.TempDirectory;
 import org.ballproject.knime.base.util.ZipUtils;
@@ -165,7 +165,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 			registry.registerMIMEtype(mimeType);
 		}
 
-		ExtToolDB toolDB = ExtToolDB.getInstance();
+		ExternalToolDB toolDB = ExternalToolDB.getInstance();
 		String packageName = this.getClass().getPackage().getName();
 		String knimelessPackageName = packageName.substring(0,
 				packageName.lastIndexOf(".knime"));
@@ -174,7 +174,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		}
 
 		IPreferenceStore store = this.getPreferenceStore();
-		ExtToolDB.getInstance().init(store);
+		ExternalToolDB.getInstance().init(store);
 	}
 
 	public Properties getProperties() {
