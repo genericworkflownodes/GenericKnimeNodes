@@ -27,8 +27,6 @@ import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
 import org.ballproject.knime.base.parameter.BoolParameter;
-import org.ballproject.knime.base.parameter.ListParameter;
-import org.ballproject.knime.base.parameter.Parameter;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
@@ -63,37 +61,16 @@ public class CLIExecutor extends AbstractToolExecutor {
 				// it is mapped to bool
 				handleBooleanParameter(commands, cliElement);
 			} else {
-				// TODO: handle optional parameters correctly -> if not set, do
-				// not add to command line
 
-				// extract mapped parameters
-				List<Parameter<?>> mappedParameters = getMappedParameters(cliElement);
+				List<List<String>> extractedParameterValues = extractParamterValues(cliElement);
+				validateExtractedParameters(extractedParameterValues);
 
-				// check if the mapped parameters fulfill all constraints
-				validateParamters(mappedParameters);
-
-				// it could be possible that we need to add multiple instances
-				// of the parameters to the cli, therefore we are counting in
-				// which iteration we are to always add the correct parameter
-
-				// we know that we have at least one mapping element and that
-				// (if multiple mappings are available) all have the same amount
-				// of values
-				for (int currentIdx = 0; currentIdx < configStore
-						.getMultiParameterValue(
-								cliElement.getMapping().get(0).getRefName())
-						.size(); ++currentIdx) {
-
-					// add the command prefix in each iteration
-					if (!"".equals(cliElement.getOptionIdentifier())) {
-						commands.add(cliElement.getOptionIdentifier());
-					}
-
-					// expand all available mappings to their current value
-					for (CLIMapping cliMapping : cliElement.getMapping()) {
-						commands.add(configStore.getMultiParameterValue(
-								cliMapping.getRefName()).get(currentIdx));
-					}
+				// we only add those paramters to the command line if they
+				// contain any values, this removes optional paramters if they
+				// were not set
+				if (extractedParameterValues.size() != 0) {
+					expandParameters(extractedParameterValues, cliElement,
+							commands);
 				}
 			}
 		}
@@ -102,95 +79,78 @@ public class CLIExecutor extends AbstractToolExecutor {
 	}
 
 	/**
-	 * Checks the following constraints that should be met by the
-	 * mappedParamters.
+	 * Add the extracted parameter values to the command line.
 	 * 
-	 * <ul>
-	 * <li>all or no list parameters</li>
-	 * <li>equal size of multiple list parameters</li>
-	 * </ul>
+	 * @note This method requires, that all contained lists have the same size.
 	 * 
-	 * @param mappedParameters
-	 *            The parameters that will be checked.
-	 * @throws Exception
-	 *             If one of the constrains is violated.
+	 * @param extractedParameterValues
+	 * @param cliElement
+	 * @param commands
 	 */
-	private void validateParamters(List<Parameter<?>> mappedParameters)
-			throws Exception {
-		// we only impose constraints if we have more then one parameter
-		if (mappedParameters.size() > 1) {
-			checkAllOrNoneListParamters(mappedParameters);
-			checkListSizes(mappedParameters);
-		}
-	}
+	private void expandParameters(List<List<String>> extractedParameterValues,
+			CLIElement cliElement, List<String> commands) {
+		// since we assume that the outer list is not empty this will always
+		// work
+		int listSize = extractedParameterValues.get(0).size();
 
-	/**
-	 * Checks if all list parameters have the same amount of values, stored. The
-	 * method will abort if a non-list value is in the list of mapped
-	 * parameters.
-	 * 
-	 * @param mappedParameters
-	 *            The parameters that will be checked.
-	 * @throws Exception
-	 *             If the list parameters have different sizes.
-	 */
-	private void checkListSizes(List<Parameter<?>> mappedParameters)
-			throws Exception {
-		int size = -1;
+		// in each iteration we expand the i-th element of each internal list to
+		// the command line prefixed with the cliElement optionIdentifier (if it
+		// has one)
+		for (int i = 0; i < listSize; ++i) {
+			// add the command prefix in each iteration
+			if (!"".equals(cliElement.getOptionIdentifier())) {
+				commands.add(cliElement.getOptionIdentifier());
+			}
 
-		for (Parameter<?> p : mappedParameters) {
-			if (p instanceof ListParameter) {
-				ListParameter lp = (ListParameter) p;
-				if (size != -1 && lp.getStrings().size() != size) {
-					throw new Exception(
-							"All list paramters need to have the same size, to correctly expand on the command line.");
-				}
-			} else {
-				// we previously checked if all or none parameters are list
-				// parameters, so we can assume here, that if we see at least
-				// one non list, the rest is also non-list paramters
-				break;
+			// add the actual values
+			for (List<String> innerList : extractedParameterValues) {
+				commands.add(innerList.get(i));
 			}
 		}
 	}
 
 	/**
-	 * @param mappedParameters
+	 * Given the provided list of parameter values this method should ensure
+	 * that all mapped lists have the same length.
+	 * 
+	 * @param extractedParameterValues
 	 * @throws Exception
+	 *             If not all contained lists have the same size.
 	 */
-	private void checkAllOrNoneListParamters(List<Parameter<?>> mappedParameters)
-			throws Exception {
-		boolean allList = false;
-		boolean hasList = false;
-		for (Parameter<?> p : mappedParameters) {
-			if (p instanceof ListParameter) {
-				allList &= true;
-				hasList |= true;
-			}
-		}
+	private void validateExtractedParameters(
+			List<List<String>> extractedParameterValues) throws Exception {
 
-		if (hasList && !allList) {
-			throw new Exception(
-					"If the mapping contains a list parameter, all parameter need to be list parameters.");
+		int currentSize = -1;
+		for (List<String> currentList : extractedParameterValues) {
+			if (currentSize != -1 && currentSize != currentList.size()) {
+				throw new Exception(
+						"All mapped value lists must have the same size.");
+			}
+			currentSize = currentList.size();
 		}
 	}
 
 	/**
-	 * Extracts all mapped parameters from the given CLIElement.
-	 * 
-	 * @note We do not support mixing of mapped parameters and ports in a single
-	 *       element.
+	 * Given the cliElement create a list containing for each mapped parameter a
+	 * list with the mapped values.
 	 * 
 	 * @param cliElement
+	 *            The current cliElement.
 	 * @return
 	 */
-	private List<Parameter<?>> getMappedParameters(CLIElement cliElement) {
-		List<Parameter<?>> mappedParameters = new ArrayList<Parameter<?>>();
+	private List<List<String>> extractParamterValues(CLIElement cliElement) {
 
-		for (CLIMapping mapping : cliElement.getMapping()) {
-			mappedParameters.add(nodeConfig.getParameter(mapping.getRefName()));
+		List<List<String>> extractedParameterValues = new ArrayList<List<String>>();
+
+		for (CLIMapping cliMapping : cliElement.getMapping()) {
+			if (configStore.getParameterKeys()
+					.contains(cliMapping.getRefName())) {
+				extractedParameterValues.add(configStore
+						.getMultiParameterValue(cliMapping.getRefName()));
+			}
 		}
-		return mappedParameters;
+
+		return extractedParameterValues;
 	}
 
 	/**
