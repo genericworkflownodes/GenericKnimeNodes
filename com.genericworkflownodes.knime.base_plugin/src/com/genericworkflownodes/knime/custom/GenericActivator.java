@@ -10,8 +10,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.external.ExternalTool;
-import org.ballproject.knime.base.external.ExternalToolDB;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.model.TempDirectory;
 import org.ballproject.knime.base.util.ZipUtils;
@@ -19,6 +17,11 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
+
+import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import com.genericworkflownodes.knime.toolfinderservice.IToolFinderService;
+import com.genericworkflownodes.knime.toolfinderservice.IToolFinderService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder;
 
 public abstract class GenericActivator extends AbstractUIPlugin {
 	private static final Logger LOGGER = Logger
@@ -168,21 +171,97 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 	/**
 	 * Registers all nodes included in the plugin as external tools in the
-	 * ExternalToolDB.
+	 * PluginPreferenceToolFinder.
 	 * 
-	 * @see org.ballproject.knime.base.external.ExternalToolDB
+	 * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder
 	 */
 	public void registerNodes() {
-		ExternalToolDB toolDB = ExternalToolDB.getInstance();
+		// TODO: get reference from service API
+		PluginPreferenceToolFinder toolFinder = PluginPreferenceToolFinder
+				.getInstance();
+
+		IPreferenceStore store = GenericNodesPlugin.getDefault()
+				.getPreferenceStore();
+		PluginPreferenceToolFinder.getInstance().init(store);
+
+		String knimelessPackageName = getKNIMELessPackageName();
+
+		for (String nodeName : this.getNodeNames()) {
+			toolFinder.registerTool(new ExternalTool(knimelessPackageName,
+					nodeName));
+		}
+
+		// registerExtractedBinaries
+		registerExtractedBinaries();
+	}
+
+	/**
+	 * Extracts the package name from the plugin data.
+	 * 
+	 * @return
+	 */
+	private String getKNIMELessPackageName() {
 		String packageName = this.getClass().getPackage().getName();
 		String knimelessPackageName = packageName.substring(0,
 				packageName.lastIndexOf(".knime"));
-		for (String nodeName : this.getNodeNames()) {
-			toolDB.registerTool(new ExternalTool(knimelessPackageName, nodeName));
+		return knimelessPackageName;
+	}
+
+	/**
+	 * Adds all extracted binaries to the tool registry.
+	 */
+	private void registerExtractedBinaries() {
+
+		IToolFinderService toolFinder = PluginPreferenceToolFinder
+				.getInstance();
+
+		// get binary path
+		String binaryPath = this.getPreferenceStore()
+				.getString("binaries_path");
+		// we manually add the "bin" here since the binaries_path is pointing to
+		// the top-level directory where all content of the payload zip was
+		// extracted
+		File binaryDirectory = new File(binaryPath, "bin");
+
+		// abort execution if we do not have a valid binary directory
+		if (!binaryDirectory.exists())
+			return;
+
+		// get package name
+		String knimelessPackageName = getKNIMELessPackageName();
+
+		// for each node find the executable
+		for (String node : getNodeNames()) {
+			File executable = getExecutableName(binaryDirectory, node);
+			if (executable != null) {
+				ExternalTool currentNode = new ExternalTool(
+						knimelessPackageName, node);
+				// register executalbe in the ToolFinder
+				toolFinder.setToolPath(currentNode, executable,
+						ToolPathType.SHIPPED);
+
+				try {
+					// check if we need to adjust the type
+					if (toolFinder.getConfiguredToolPathType(currentNode) == ToolPathType.UNKNOWN) {
+						toolFinder.updateToolPathType(currentNode,
+								ToolPathType.SHIPPED);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
 		}
 
-		IPreferenceStore store = this.getPreferenceStore();
-		ExternalToolDB.getInstance().init(store);
+	}
+
+	private File getExecutableName(File binDir, String nodename) {
+		for (String extension : new String[] { "", ".bin", ".exe" }) {
+			File binFile = new File(binDir, nodename + extension);
+			if (binFile.canExecute())
+				return binFile;
+		}
+		return null;
 	}
 
 	public Properties getProperties() {

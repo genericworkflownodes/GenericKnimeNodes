@@ -32,6 +32,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
+
+import com.genericworkflownodes.knime.toolfinderservice.IToolFinderService;
 
 /**
  * This is the eclipse bundle activator. Note: KNIME node developers probably
@@ -51,6 +54,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 	// TODO check if removable
 	public static boolean DEBUG = false;
 	private static DefaultMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
+	private ServiceTracker toolResolveTracker;
 
 	public static void log(String message) {
 		if (GenericNodesPlugin.DEBUG) {
@@ -99,6 +103,8 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 
 		log("starting plugin: GenericNodesPlugin");
 
+		initServiceTracker(context);
+
 		IConfigurationElement[] config = Platform
 				.getExtensionRegistry()
 				.getConfigurationElementsFor(
@@ -127,6 +133,15 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 				.setStashDirectory(
 						store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
 
+	}
+
+	private void initServiceTracker(final BundleContext context) {
+		toolResolveTracker = new ServiceTracker(context,
+				IToolFinderService.class.getName(), null);
+	}
+
+	public IToolFinderService getToolFinderService() {
+		return (IToolFinderService) toolResolveTracker.getService();
 	}
 
 	/**

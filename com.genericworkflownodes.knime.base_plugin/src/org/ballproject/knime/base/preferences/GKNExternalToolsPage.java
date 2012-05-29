@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.external.ExternalTool;
-import org.ballproject.knime.base.external.ExternalToolDB;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -36,6 +34,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+
+import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder;
 
 public class GKNExternalToolsPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -71,7 +72,7 @@ public class GKNExternalToolsPage extends PreferencePage implements
 
 		IPreferenceStore preferenceStore = getPreferenceStore();
 
-		Map<String, List<ExternalTool>> plugin2tools = ExternalToolDB
+		Map<String, List<ExternalTool>> plugin2tools = PluginPreferenceToolFinder
 				.getInstance().getToolsByPlugin();
 
 		for (String pluginname : plugin2tools.keySet()) {
