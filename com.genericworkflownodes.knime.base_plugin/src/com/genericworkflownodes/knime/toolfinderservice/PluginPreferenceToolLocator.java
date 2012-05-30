@@ -30,12 +30,12 @@ import java.util.Set;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
- * Implements the {@link IToolFinderService} interface. The tool paths are
+ * Implements the {@link IToolLocatorService} interface. The tool paths are
  * stored using the {@link IPreferenceStore} of the base plugin.
  * 
  * @author aiche
  */
-public class PluginPreferenceToolFinder implements IToolFinderService {
+class PluginPreferenceToolLocator implements IToolLocatorService {
 	IPreferenceStore pluginPreferenceStore;
 
 	/**
@@ -49,16 +49,7 @@ public class PluginPreferenceToolFinder implements IToolFinderService {
 
 	private Set<ExternalTool> tools;
 
-	private static PluginPreferenceToolFinder instance = null;
-
-	public static PluginPreferenceToolFinder getInstance() {
-		if (instance == null) {
-			instance = new PluginPreferenceToolFinder();
-		}
-		return instance;
-	}
-
-	private PluginPreferenceToolFinder() {
+	public PluginPreferenceToolLocator() {
 		tools = new HashSet<ExternalTool>();
 	}
 

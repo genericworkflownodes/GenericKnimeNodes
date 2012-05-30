@@ -34,9 +34,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 public class GKNExternalToolsPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -72,30 +73,36 @@ public class GKNExternalToolsPage extends PreferencePage implements
 
 		IPreferenceStore preferenceStore = getPreferenceStore();
 
-		Map<String, List<ExternalTool>> plugin2tools = PluginPreferenceToolFinder
-				.getInstance().getToolsByPlugin();
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
 
-		for (String pluginname : plugin2tools.keySet()) {
-			for (ExternalTool tool : plugin2tools.get(pluginname)) {
-				String[] toks = pluginname.split("\\.");
+		if (toolLocator != null) {
 
-				String name = tool.getToolName();
-				if (toks != null)
-					name = toks[toks.length - 1] + " - " + tool.getToolName();
+			Map<String, List<ExternalTool>> plugin2tools = toolLocator
+					.getToolsByPlugin();
 
-				FileFieldEditor toolpath = new FileFieldEditor(tool.getKey(),
-						name, c);
+			for (String pluginname : plugin2tools.keySet()) {
+				for (ExternalTool tool : plugin2tools.get(pluginname)) {
+					String[] toks = pluginname.split("\\.");
 
-				toolpath.setPreferenceStore(getPreferenceStore());
-				toolpath.load();
-				String val = preferenceStore.getString(toolpath
-						.getPreferenceName());
-				toolpath.setStringValue((val == null ? "" : val));
-				toolPathes.add(toolpath);
-				externalTools.add(tool);
+					String name = tool.getToolName();
+					if (toks != null)
+						name = toks[toks.length - 1] + " - "
+								+ tool.getToolName();
+
+					FileFieldEditor toolpath = new FileFieldEditor(
+							tool.getKey(), name, c);
+
+					toolpath.setPreferenceStore(getPreferenceStore());
+					toolpath.load();
+					String val = preferenceStore.getString(toolpath
+							.getPreferenceName());
+					toolpath.setStringValue((val == null ? "" : val));
+					toolPathes.add(toolpath);
+					externalTools.add(tool);
+				}
 			}
 		}
-
 		return sc;
 	}
 

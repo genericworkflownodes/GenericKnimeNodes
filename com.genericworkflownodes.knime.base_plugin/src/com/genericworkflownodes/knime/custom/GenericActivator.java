@@ -14,14 +14,14 @@ import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.model.TempDirectory;
 import org.ballproject.knime.base.util.ZipUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolFinderService;
-import com.genericworkflownodes.knime.toolfinderservice.IToolFinderService.ToolPathType;
-import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
 
 public abstract class GenericActivator extends AbstractUIPlugin {
 	private static final Logger LOGGER = Logger
@@ -171,28 +171,27 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 	/**
 	 * Registers all nodes included in the plugin as external tools in the
-	 * PluginPreferenceToolFinder.
+	 * PluginPreferenceToolLocator.
 	 * 
-	 * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder
+	 * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator
 	 */
 	public void registerNodes() {
-		// TODO: get reference from service API
-		PluginPreferenceToolFinder toolFinder = PluginPreferenceToolFinder
-				.getInstance();
 
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		PluginPreferenceToolFinder.getInstance().init(store);
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
 
-		String knimelessPackageName = getKNIMELessPackageName();
+		if (toolLocator != null) {
+			String knimelessPackageName = getKNIMELessPackageName();
 
-		for (String nodeName : this.getNodeNames()) {
-			toolFinder.registerTool(new ExternalTool(knimelessPackageName,
-					nodeName));
+			for (String nodeName : this.getNodeNames()) {
+				toolLocator.registerTool(new ExternalTool(knimelessPackageName,
+						nodeName));
+			}
+
+			// registerExtractedBinaries
+			registerExtractedBinaries(toolLocator);
+
 		}
-
-		// registerExtractedBinaries
-		registerExtractedBinaries();
 	}
 
 	/**
@@ -210,10 +209,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	/**
 	 * Adds all extracted binaries to the tool registry.
 	 */
-	private void registerExtractedBinaries() {
-
-		IToolFinderService toolFinder = PluginPreferenceToolFinder
-				.getInstance();
+	private void registerExtractedBinaries(IToolLocatorService toolLocator) {
 
 		// get binary path
 		String binaryPath = this.getPreferenceStore()
@@ -237,13 +233,13 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				ExternalTool currentNode = new ExternalTool(
 						knimelessPackageName, node);
 				// register executalbe in the ToolFinder
-				toolFinder.setToolPath(currentNode, executable,
+				toolLocator.setToolPath(currentNode, executable,
 						ToolPathType.SHIPPED);
 
 				try {
 					// check if we need to adjust the type
-					if (toolFinder.getConfiguredToolPathType(currentNode) == ToolPathType.UNKNOWN) {
-						toolFinder.updateToolPathType(currentNode,
+					if (toolLocator.getConfiguredToolPathType(currentNode) == ToolPathType.UNKNOWN) {
+						toolLocator.updateToolPathType(currentNode,
 								ToolPathType.SHIPPED);
 					}
 				} catch (Exception e) {

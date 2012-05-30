@@ -30,12 +30,12 @@ import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolFinderService;
-import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolFinder;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 /**
  * The AbstractToolExecutor handles the basic tasks associated with the
@@ -267,7 +267,7 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 
 	/**
 	 * Tries to find the needed tool by searching in the
-	 * PluginPreferenceToolFinder and the plugin package.
+	 * PluginPreferenceToolLocator and the plugin package.
 	 * 
 	 * @return
 	 * @throws Exception
@@ -275,25 +275,17 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	private void findExecutable(INodeConfiguration nodeConfiguration,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 
-		IToolFinderService toolFinder = PluginPreferenceToolFinder
-				.getInstance();
-		executable = toolFinder.getToolPath(new ExternalTool(
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
+
+		if (toolLocator == null) {
+			throw new Exception("Could not find matching ToolLocatorService.");
+		}
+
+		executable = toolLocator.getToolPath(new ExternalTool(
 				pluginConfiguration.getPluginName(), nodeConfiguration
 						.getName()));
-		/*
-		 * executable = PluginPreferenceToolFinder.getInstance().getToolPath(
-		 * new ExternalTool(pluginConfiguration.getPluginName(),
-		 * nodeConfiguration.getName()));
-		 * 
-		 * boolean useShipped = (executable == null || !executable.exists());
-		 * 
-		 * if (useShipped) { logger.info("The path of the binary to invoke \"" +
-		 * executable + "\" could not be found.\n" +
-		 * "Using shipped binaries instead."); executable =
-		 * Helper.getExecutableName( new
-		 * File(pluginConfiguration.getBinariesPath(), "bin"),
-		 * nodeConfiguration.getName()); }
-		 */
+
 		if (executable == null) {
 			throw new Exception("Neither externally configured nor shipped "
 					+ "binaries exist for this node. Aborting execution.");

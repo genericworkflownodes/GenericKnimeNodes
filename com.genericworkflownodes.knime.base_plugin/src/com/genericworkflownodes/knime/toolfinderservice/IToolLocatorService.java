@@ -28,7 +28,7 @@ import java.util.Map;
  * 
  * @author aiche
  */
-public interface IToolFinderService {
+public interface IToolLocatorService {
 
 	/**
 	 * Defines if the referenced binary is part of the distributed node (i.e.,
