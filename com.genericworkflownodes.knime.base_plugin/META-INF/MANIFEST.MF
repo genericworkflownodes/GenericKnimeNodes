@@ -9,7 +9,7 @@ Bundle-ClassPath: .,
  lib/swingx-core-1.6.2.jar,
  lib/bsh-2.0b4.jar,
  lib/org.knime.core.data.urltype.jar
-Bundle-Vendor: roettig
+Bundle-Vendor: The GenericWorkflowNodes Project
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,

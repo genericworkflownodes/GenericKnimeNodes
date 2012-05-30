@@ -23,7 +23,6 @@ import org.ballproject.knime.base.mime.DefaultMIMEtypeRegistry;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.ballproject.knime.base.mime.demangler.DemanglerProvider;
-import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -32,6 +31,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
+
+import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
 
 /**
  * This is the eclipse bundle activator. Note: KNIME node developers probably
@@ -125,7 +126,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 		FileStash
 				.getInstance()
 				.setStashDirectory(
-						store.getString(GKNPreferenceInitializer.PREF_FILE_STASH_LOCATION));
+						store.getString(PreferenceInitializer.PREF_FILE_STASH_LOCATION));
 
 	}
 

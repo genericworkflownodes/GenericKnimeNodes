@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ballproject.knime.base.preferences;
+package com.genericworkflownodes.knime.preferences;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -32,6 +31,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -39,18 +39,16 @@ import org.eclipse.ui.PlatformUI;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
-public class GKNExternalToolsPage extends PreferencePage implements
+public class ExternalToolsPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
-	private List<FileFieldEditor> toolPathes = new ArrayList<FileFieldEditor>();
-	private List<ExternalTool> externalTools = new ArrayList<ExternalTool>();
+	private List<ToolFieldEditor> toolPathes = new ArrayList<ToolFieldEditor>();
 
-	public GKNExternalToolsPage() {
+	public ExternalToolsPage() {
 		super();
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
 		setPreferenceStore(store);
-		setDescription("KNIME GKN external tools DB");
 	}
 
 	@Override
@@ -71,8 +69,6 @@ public class GKNExternalToolsPage extends PreferencePage implements
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 
-		IPreferenceStore preferenceStore = getPreferenceStore();
-
 		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
 				.getWorkbench().getService(IToolLocatorService.class);
 
@@ -82,27 +78,19 @@ public class GKNExternalToolsPage extends PreferencePage implements
 					.getToolsByPlugin();
 
 			for (String pluginname : plugin2tools.keySet()) {
+
+				Group group = new Group(c, SWT.SHADOW_ETCHED_IN);
+				group.setText(pluginname);
+
 				for (ExternalTool tool : plugin2tools.get(pluginname)) {
-					String[] toks = pluginname.split("\\.");
-
-					String name = tool.getToolName();
-					if (toks != null)
-						name = toks[toks.length - 1] + " - "
-								+ tool.getToolName();
-
-					FileFieldEditor toolpath = new FileFieldEditor(
-							tool.getKey(), name, c);
-
-					toolpath.setPreferenceStore(getPreferenceStore());
-					toolpath.load();
-					String val = preferenceStore.getString(toolpath
-							.getPreferenceName());
-					toolpath.setStringValue((val == null ? "" : val));
-					toolPathes.add(toolpath);
-					externalTools.add(tool);
+					ToolFieldEditor gToolEditor = new ToolFieldEditor(tool,
+							group);
+					gToolEditor.load();
+					toolPathes.add(gToolEditor);
 				}
 			}
 		}
+
 		return sc;
 	}
 
@@ -120,23 +108,11 @@ public class GKNExternalToolsPage extends PreferencePage implements
 	}
 
 	/**
-	 * Saves the entries of the FileFieldEditor to the associated
-	 * PreferenceStore.
+	 * Saves the entries of the FileFieldEditor.
 	 */
 	private void saveToPreferenceStore() {
-		// Get the preference store
-		IPreferenceStore preferenceStore = getPreferenceStore();
-
-		int idx = 0;
-		for (FileFieldEditor fe : toolPathes) {
-			GenericNodesPlugin
-					.log("[saveToPreferenceStore] setting toolpath to "
-							+ fe.getStringValue() + " for tool "
-							+ externalTools.get(idx));
-			preferenceStore.setValue(fe.getPreferenceName(),
-					fe.getStringValue());
-			idx++;
+		for (ToolFieldEditor gFieldEditor : toolPathes) {
+			gFieldEditor.store();
 		}
 	}
-
 }

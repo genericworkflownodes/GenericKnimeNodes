@@ -28,12 +28,12 @@ import java.util.TreeMap;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
@@ -257,7 +257,7 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
 		String PATH_extension = store
-				.getString(GKNPreferenceInitializer.PREF_PATHES);
+				.getString(PreferenceInitializer.PREF_PATHES);
 		if (environmentVariables.containsKey("PATH")) {
 			PATH_extension = PATH_extension + PATHSEP
 					+ environmentVariables.get("PATH");

@@ -29,12 +29,12 @@
    </extension>
    
    <extension point="org.eclipse.equinox.preferences.preferences">
-      <initializer class="org.ballproject.knime.base.preferences.GKNPreferenceInitializer"/>
+      <initializer class="com.genericworkflownodes.knime.preferences.PreferenceInitializer"/>
    </extension>
    
    <extension point="org.eclipse.ui.preferencePages">
-      <page category="org.knime.workbench.ui.preferences" class="org.ballproject.knime.base.preferences.GKNPreferencePage" id="org.ballproject.knime.base.preferences.GKNPreferences" name="GKN Preferences"/>
-      <page class="org.ballproject.knime.base.preferences.GKNExternalToolsPage" id="org.ballproject.knime.base.preferences.GKNExternalTools" name="GKN Tools DB" category="org.ballproject.knime.base.preferences.GKNPreferences"/>
+      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="org.ballproject.knime.base.preferences.GKNPreferences" name="Generic KNIME Nodes"/>
+      <page class="com.genericworkflownodes.knime.preferences.ExternalToolsPage" id="org.ballproject.knime.base.preferences.GKNExternalTools" name="Tool DB" category="org.ballproject.knime.base.preferences.GKNPreferences"/>
    </extension>
    <extension
          point="org.eclipse.ui.services">

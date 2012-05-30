@@ -70,24 +70,14 @@ class PluginPreferenceToolLocator implements IToolLocatorService {
 	public File getToolPath(ExternalTool tool) throws Exception {
 		if (tools.contains(tool)) {
 			// determine which tool to use
-			return getToolPathByType(tool, getConfiguredToolPathType(tool));
+			return getToolPath(tool, getConfiguredToolPathType(tool));
 		} else {
 			return null;
 		}
 	}
 
-	/**
-	 * 
-	 * @param tool
-	 *            The external tool which we want to get a path for.
-	 * @param toolPathType
-	 *            The tool path type (shipped or user-defined).
-	 * @return A {@link File} pointing to the executable of the tool.
-	 * @throws Exception
-	 *             An exception is thrown if there is no executable for the
-	 *             tool.
-	 */
-	private File getToolPathByType(ExternalTool tool, ToolPathType toolPathType)
+	@Override
+	public File getToolPath(ExternalTool tool, ToolPathType toolPathType)
 			throws Exception {
 		if (toolPathType == ToolPathType.UNKNOWN) {
 			throw new Exception(
@@ -153,5 +143,16 @@ class PluginPreferenceToolLocator implements IToolLocatorService {
 	public void updateToolPathType(ExternalTool tool, ToolPathType type) {
 		pluginPreferenceStore.setValue(tool.getKey() + CHOICE_SUFFIX,
 				type.toString());
+	}
+
+	@Override
+	public boolean hasValidToolPath(ExternalTool tool, ToolPathType type) {
+		try {
+			File executable = getToolPath(tool, type);
+			return (executable != null && executable.exists() && executable
+					.canExecute());
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

@@ -196,7 +196,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		 * = "";
 		 * 
 		 * String addPathes = store
-		 * .getString(GKNPreferenceInitializer.PREF_PATHES); value =
+		 * .getString(PreferenceInitializer.PREF_PATHES); value =
 		 * pluginConfig.getEnvironmentVariables().get(key) .replace("$ROOT",
 		 * pluginConfig.getBinariesPath() + FILESEP); if (key.equals("PATH")) {
 		 * if (!addPathes.equals("")) value += PATHSEP + addPathes; value +=

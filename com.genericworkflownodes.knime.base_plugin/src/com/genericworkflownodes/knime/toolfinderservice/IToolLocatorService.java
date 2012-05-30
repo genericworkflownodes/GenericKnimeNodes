@@ -86,6 +86,20 @@ public interface IToolLocatorService {
 	public File getToolPath(ExternalTool tool) throws Exception;
 
 	/**
+	 * 
+	 * @param tool
+	 *            The external tool which we want to get a path for.
+	 * @param toolPathType
+	 *            The tool path type (shipped or user-defined).
+	 * @return A {@link File} pointing to the executable of the tool.
+	 * @throws Exception
+	 *             An exception is thrown if there is no executable for the
+	 *             tool.
+	 */
+	public File getToolPath(ExternalTool tool, ToolPathType toolPathType)
+			throws Exception;
+
+	/**
 	 * Sets the tool path for the tool @p tool to the path specified by @p path.
 	 * 
 	 * @param tool
@@ -139,4 +153,16 @@ public interface IToolLocatorService {
 	 */
 	public Map<String, List<ExternalTool>> getToolsByPlugin();
 
+	/**
+	 * Checks if the given tool has a valid path for the given
+	 * {@link ToolPathType}.
+	 * 
+	 * @param tool
+	 *            The tool to check.
+	 * @param type
+	 *            The {@link ToolPathType} to check.
+	 * @return True if a valid executable is stored for the given tool and
+	 *         {@link ToolPathType}, false otherwise.
+	 */
+	public boolean hasValidToolPath(ExternalTool tool, ToolPathType type);
 }
