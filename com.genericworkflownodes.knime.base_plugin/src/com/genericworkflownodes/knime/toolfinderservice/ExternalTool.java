@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ballproject.knime.base.external;
+package com.genericworkflownodes.knime.toolfinderservice;
 
 /**
- * ExternalTool holds the information for each individual tool
+ * ExternalTool holds the information for each individual tool that is
+ * encapsulated into the generic KNIME nodes.
  * 
  * @author aiche
  */

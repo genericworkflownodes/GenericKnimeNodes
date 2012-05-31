@@ -50,15 +50,6 @@ public class Helper {
 		return OS.WIN;
 	}
 
-	public static File getExecutableName(File binDir, String nodename) {
-		for (String extension : new String[] { "", ".bin", ".exe" }) {
-			File binFile = new File(binDir, nodename + extension);
-			if (binFile.canExecute())
-				return binFile;
-		}
-		return null;
-	}
-
 	static public boolean deleteDirectory(File path) {
 		if (path.exists()) {
 			File[] files = path.listFiles();

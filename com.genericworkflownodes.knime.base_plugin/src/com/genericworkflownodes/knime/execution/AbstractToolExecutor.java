@@ -28,14 +28,14 @@ import java.util.TreeMap;
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.external.ExternalTool;
-import org.ballproject.knime.base.external.ExternalToolDB;
-import org.ballproject.knime.base.preferences.GKNPreferenceInitializer;
-import org.ballproject.knime.base.util.Helper;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
+import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 /**
  * The AbstractToolExecutor handles the basic tasks associated with the
@@ -257,7 +257,7 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
 		String PATH_extension = store
-				.getString(GKNPreferenceInitializer.PREF_PATHES);
+				.getString(PreferenceInitializer.PREF_PATHES);
 		if (environmentVariables.containsKey("PATH")) {
 			PATH_extension = PATH_extension + PATHSEP
 					+ environmentVariables.get("PATH");
@@ -266,28 +266,25 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	}
 
 	/**
-	 * Tries to find the needed tool by searching in the ExternalToolDB and the
-	 * plugin package.
+	 * Tries to find the needed tool by searching in the
+	 * PluginPreferenceToolLocator and the plugin package.
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
 	private void findExecutable(INodeConfiguration nodeConfiguration,
 			IPluginConfiguration pluginConfiguration) throws Exception {
-		executable = ExternalToolDB.getInstance().getToolPath(
-				new ExternalTool(pluginConfiguration.getPluginName(),
-						nodeConfiguration.getName()));
 
-		boolean useShipped = (executable == null || !executable.exists());
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
 
-		if (useShipped) {
-			logger.info("The path of the binary to invoke \"" + executable
-					+ "\" could not be found.\n"
-					+ "Using shipped binaries instead.");
-			executable = Helper.getExecutableName(
-					new File(pluginConfiguration.getBinariesPath(), "bin"),
-					nodeConfiguration.getName());
+		if (toolLocator == null) {
+			throw new Exception("Could not find matching ToolLocatorService.");
 		}
+
+		executable = toolLocator.getToolPath(new ExternalTool(
+				pluginConfiguration.getPluginName(), nodeConfiguration
+						.getName()));
 
 		if (executable == null) {
 			throw new Exception("Neither externally configured nor shipped "

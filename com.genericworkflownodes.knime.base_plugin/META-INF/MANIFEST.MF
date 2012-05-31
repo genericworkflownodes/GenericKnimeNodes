@@ -8,20 +8,17 @@ Bundle-ClassPath: .,
  lib/jaxen-1.1-beta-6.jar,
  lib/swingx-core-1.6.2.jar,
  lib/bsh-2.0b4.jar,
- lib/ant-contrib.jar,
- lib/ant-launcher.jar,
- lib/ant.jar,
  lib/org.knime.core.data.urltype.jar
-Bundle-Vendor: roettig
+Bundle-Vendor: The GenericWorkflowNodes Project
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
  org.knime.base
 Export-Package: com.genericworkflownodes.knime.config,
  com.genericworkflownodes.knime.custom,
+ com.genericworkflownodes.knime.toolfinderservice,
  org.ballproject.knime,
  org.ballproject.knime.base.config,
- org.ballproject.knime.base.external,
  org.ballproject.knime.base.mime,
  org.ballproject.knime.base.mime.demangler,
  org.ballproject.knime.base.model,

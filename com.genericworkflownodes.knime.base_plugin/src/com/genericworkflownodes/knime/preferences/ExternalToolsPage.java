@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,16 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ballproject.knime.base.preferences;
+package com.genericworkflownodes.knime.preferences;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.external.ExternalTool;
-import org.ballproject.knime.base.external.ExternalToolDB;
-import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -34,21 +31,27 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 
-public class GKNExternalToolsPage extends PreferencePage implements
+import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+
+public class ExternalToolsPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
-	private List<FileFieldEditor> toolPathes = new ArrayList<FileFieldEditor>();
-	private List<ExternalTool> externalTools = new ArrayList<ExternalTool>();
+	private List<ToolFieldEditor> toolPathes = new ArrayList<ToolFieldEditor>();
 
-	public GKNExternalToolsPage() {
+	public ExternalToolsPage() {
 		super();
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
 		setPreferenceStore(store);
-		setDescription("KNIME GKN external tools DB");
+		// we do not need the apply key and do not support the restore default
+		// key
+		this.noDefaultAndApplyButton();
 	}
 
 	@Override
@@ -69,29 +72,27 @@ public class GKNExternalToolsPage extends PreferencePage implements
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 
-		IPreferenceStore preferenceStore = getPreferenceStore();
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
 
-		Map<String, List<ExternalTool>> plugin2tools = ExternalToolDB
-				.getInstance().getToolsByPlugin();
+		if (toolLocator != null) {
 
-		for (String pluginname : plugin2tools.keySet()) {
-			for (ExternalTool tool : plugin2tools.get(pluginname)) {
-				String[] toks = pluginname.split("\\.");
+			Map<String, List<ExternalTool>> plugin2tools = toolLocator
+					.getToolsByPlugin();
 
-				String name = tool.getToolName();
-				if (toks != null)
-					name = toks[toks.length - 1] + " - " + tool.getToolName();
+			for (String pluginname : plugin2tools.keySet()) {
+				// create a new group for each plugin
+				Group group = new Group(c, SWT.SHADOW_ETCHED_IN);
+				group.setText(pluginname);
 
-				FileFieldEditor toolpath = new FileFieldEditor(tool.getKey(),
-						name, c);
-
-				toolpath.setPreferenceStore(getPreferenceStore());
-				toolpath.load();
-				String val = preferenceStore.getString(toolpath
-						.getPreferenceName());
-				toolpath.setStringValue((val == null ? "" : val));
-				toolPathes.add(toolpath);
-				externalTools.add(tool);
+				// add each tool shipped with the current plugin to the GUI
+				// group
+				for (ExternalTool tool : plugin2tools.get(pluginname)) {
+					ToolFieldEditor gToolEditor = new ToolFieldEditor(tool,
+							group);
+					gToolEditor.load();
+					toolPathes.add(gToolEditor);
+				}
 			}
 		}
 
@@ -112,23 +113,11 @@ public class GKNExternalToolsPage extends PreferencePage implements
 	}
 
 	/**
-	 * Saves the entries of the FileFieldEditor to the associated
-	 * PreferenceStore.
+	 * Saves the entries of the FileFieldEditor.
 	 */
 	private void saveToPreferenceStore() {
-		// Get the preference store
-		IPreferenceStore preferenceStore = getPreferenceStore();
-
-		int idx = 0;
-		for (FileFieldEditor fe : toolPathes) {
-			GenericNodesPlugin
-					.log("[saveToPreferenceStore] setting toolpath to "
-							+ fe.getStringValue() + " for tool "
-							+ externalTools.get(idx));
-			preferenceStore.setValue(fe.getPreferenceName(),
-					fe.getStringValue());
-			idx++;
+		for (ToolFieldEditor gFieldEditor : toolPathes) {
+			gFieldEditor.store();
 		}
 	}
-
 }
