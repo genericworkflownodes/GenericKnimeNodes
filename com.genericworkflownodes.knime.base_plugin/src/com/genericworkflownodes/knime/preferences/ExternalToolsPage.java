@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -49,6 +49,9 @@ public class ExternalToolsPage extends PreferencePage implements
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
 		setPreferenceStore(store);
+		// we do not need the apply key and do not support the restore default
+		// key
+		this.noDefaultAndApplyButton();
 	}
 
 	@Override
@@ -78,10 +81,12 @@ public class ExternalToolsPage extends PreferencePage implements
 					.getToolsByPlugin();
 
 			for (String pluginname : plugin2tools.keySet()) {
-
+				// create a new group for each plugin
 				Group group = new Group(c, SWT.SHADOW_ETCHED_IN);
 				group.setText(pluginname);
 
+				// add each tool shipped with the current plugin to the GUI
+				// group
 				for (ExternalTool tool : plugin2tools.get(pluginname)) {
 					ToolFieldEditor gToolEditor = new ToolFieldEditor(tool,
 							group);
