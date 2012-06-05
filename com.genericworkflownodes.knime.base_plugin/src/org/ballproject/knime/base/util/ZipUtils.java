@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
+ *
+ * This file is part of GenericKnimeNodes.
+ * 
+ * GenericKnimeNodes is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.ballproject.knime.base.util;
 
 import java.io.File;
@@ -6,11 +24,25 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Utility class that provides convenience functions to handle zip files.
+ * 
+ * @author roettig, aiche
+ */
 public class ZipUtils {
-	public static void decompressTo(File targetDir, InputStream in) {
+
+	/**
+	 * Decompress the content of @p zipStream to the directory @p targetDir.
+	 * 
+	 * @param targetDir
+	 *            The directory where the zip should be extracted.
+	 * @param zipStream
+	 *            The zip file stream.
+	 */
+	public static void decompressTo(File targetDir, InputStream zipStream) {
 		targetDir.mkdirs();
 		try {
-			ZipInputStream zin = new ZipInputStream(in);
+			ZipInputStream zin = new ZipInputStream(zipStream);
 			ZipEntry ze = null;
 
 			byte[] buffer = new byte[2048];
