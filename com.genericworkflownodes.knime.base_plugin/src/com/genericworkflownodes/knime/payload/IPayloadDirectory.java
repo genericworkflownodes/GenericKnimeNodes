@@ -20,22 +20,16 @@ package com.genericworkflownodes.knime.payload;
 
 import java.io.File;
 
-import org.osgi.framework.Version;
-
 /**
  * Abstraction of the payload storage directory. Provides information on the
  * location and the version of the included binaries.
  * 
+ * By definition the referred directories exist after constructing this object,
+ * so no {@link File#exists()} checks need to be performed.
+ * 
  * @author aiche
  */
 public interface IPayloadDirectory {
-
-	/**
-	 * Provides the version of the included binaries.
-	 * 
-	 * @return
-	 */
-	public Version getVersion();
 
 	/**
 	 * Returns the file system location of the payload directory.
@@ -51,5 +45,12 @@ public interface IPayloadDirectory {
 	 * @return
 	 */
 	public File getExecutableDirectory();
+
+	/**
+	 * Returns true if no payload is contained in the referenced directories.
+	 * 
+	 * @return $true$ if no payload exists, $false$ otherwise.
+	 */
+	public boolean isEmpty();
 
 }

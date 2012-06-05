@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.ballproject.knime.base.model.TempDirectory;
-import org.osgi.framework.Version;
 
 /**
  * Represents a payload directory that stores the payload data only temporarily
@@ -45,14 +44,6 @@ public class TemporaryPayloadDirectory extends AbstractPayloadDirectory
 			// TODO: how do we log inside of such a plugin
 			e.printStackTrace();
 		}
-
-	}
-
-	@Override
-	public Version getVersion() {
-		// as the binaries get deleted in each run they are more or less
-		// unversioned
-		return Version.emptyVersion;
 	}
 
 	@Override

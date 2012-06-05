@@ -36,7 +36,7 @@ import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
-import com.genericworkflownodes.knime.payload.TemporaryPayloadDirectory;
+import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
@@ -52,6 +52,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	private Map<String, String> environmentVariables = new HashMap<String, String>();
 
 	private IPayloadDirectory payloadDirectory;
+	private BundleContext bundleContext;
 
 	public GenericActivator() {
 		super();
@@ -65,12 +66,14 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
+		bundleContext = context;
 	}
 
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+		bundleContext = null;
 	}
 
 	/**
@@ -88,8 +91,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		registerNodes();
 
 		// initialize the payload directory
-		payloadDirectory = new TemporaryPayloadDirectory(this.getBundle()
-				.getSymbolicName());
+		payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
 
 		final IPreferenceStore pStore = this.getPreferenceStore();
 		pStore.setValue("binaries_path", payloadDirectory.getPath()
@@ -97,10 +99,14 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 		loadPluginProperties();
 
-		extractBinaries();
-		makeExtractedBinariesExecutable();
-		registerExtractedBinaries();
-
+		// We extract the payload only if we can find nothing inside the
+		// referenced directory. If the directory is not empty we assume that
+		// the payload was already extracted and registered in a previous run.
+		if (payloadDirectory.isEmpty()) {
+			extractBinaries();
+			makeExtractedBinariesExecutable();
+			registerExtractedBinaries();
+		}
 		registerMimeTypes();
 	}
 
@@ -146,16 +152,11 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * Tries to make all binaries contained in the extracted payload executable.
 	 */
 	private void makeExtractedBinariesExecutable() {
-		if (payloadDirectory.getExecutableDirectory() != null
-				&& payloadDirectory.getExecutableDirectory().exists()) {
+		if (payloadDirectory.getExecutableDirectory() != null) {
 			for (File execFile : payloadDirectory.getExecutableDirectory()
 					.listFiles()) {
 				execFile.setExecutable(true);
 			}
-		} else {
-			LOGGER.info("No binaries could be found. "
-					+ "In order to execute the containing nodes you need "
-					+ "to configure their binary locations in the Eclipse configuration.");
 		}
 	}
 
@@ -284,10 +285,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 			// get binary path
 			File binaryDirectory = payloadDirectory.getExecutableDirectory();
 
-			// abort execution if we do not have a valid binary directory
-			if (!binaryDirectory.exists())
-				return;
-
 			// get package name
 			String knimelessPackageName = getKNIMELessPackageName();
 
@@ -311,6 +308,9 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 						e.printStackTrace();
 					}
 
+				} else {
+					// TODO: handle non existent binaries, check if we have a
+					// configured one, otherwise warn
 				}
 			}
 		}

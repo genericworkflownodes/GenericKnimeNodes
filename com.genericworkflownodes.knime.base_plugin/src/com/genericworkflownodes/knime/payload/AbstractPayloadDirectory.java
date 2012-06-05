@@ -32,7 +32,13 @@ abstract class AbstractPayloadDirectory implements IPayloadDirectory {
 
 	@Override
 	public File getExecutableDirectory() {
-		return new File(getPath(), BIN_EXT);
+		File executablePath = new File(getPath(), BIN_EXT);
+		executablePath.mkdirs();
+		return executablePath;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return (getPath().list().length == 0);
+	}
 }

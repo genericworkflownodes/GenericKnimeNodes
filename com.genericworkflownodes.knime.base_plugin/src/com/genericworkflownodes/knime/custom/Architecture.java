@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Björn Kahlert, Stephan Aiche.
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
