@@ -1,7 +1,24 @@
+/**
+ * Copyright (c) 2012, Björn Kahlert, Stephan Aiche.
+ *
+ * This file is part of GenericKnimeNodes.
+ * 
+ * GenericKnimeNodes is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.genericworkflownodes.knime.custom;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +28,6 @@ import java.util.logging.Logger;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.model.TempDirectory;
 import org.ballproject.knime.base.util.ZipUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
@@ -19,18 +35,23 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
 
+import com.genericworkflownodes.knime.payload.IPayloadDirectory;
+import com.genericworkflownodes.knime.payload.TemporaryPayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
 
 public abstract class GenericActivator extends AbstractUIPlugin {
+
 	private static final Logger LOGGER = Logger
 			.getLogger(GenericActivator.class.getCanonicalName());
 
 	private static GenericActivator plugin;
 
 	private Properties props = new Properties();
-	private Map<String, String> env = new HashMap<String, String>();
+	private Map<String, String> environmentVariables = new HashMap<String, String>();
+
+	private IPayloadDirectory payloadDirectory;
 
 	public GenericActivator() {
 		super();
@@ -52,11 +73,65 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		plugin = null;
 	}
 
-	public void extractBinaries(Class<?> binaryLocation) throws IOException {
-		TempDirectory nodeBinariesDir = new TempDirectory(this.getBundle()
-				.getSymbolicName());
-		String os = System.getProperty("os.name");
+	/**
+	 * This method carries out all tasks needed to initialize a plugin:
+	 * 
+	 * <ul>
+	 * <li>registerNodes contained in the plugin</li>
+	 * <li>extract contained binaries</li>
+	 * <li>register extracted binaries in the run time</li>
+	 * </ul>
+	 * 
+	 * @throws IOException
+	 */
+	public void initializePlugin() throws IOException {
+		registerNodes();
 
+		// initialize the payload directory
+		payloadDirectory = new TemporaryPayloadDirectory(this.getBundle()
+				.getSymbolicName());
+
+		final IPreferenceStore pStore = this.getPreferenceStore();
+		pStore.setValue("binaries_path", payloadDirectory.getPath()
+				.getCanonicalPath());
+
+		loadPluginProperties();
+
+		extractBinaries();
+		makeExtractedBinariesExecutable();
+		registerExtractedBinaries();
+
+		registerMimeTypes();
+	}
+
+	private void extractBinaries() throws IOException {
+
+		// get platform and architecture identifiers
+		OperatingSystem os = OperatingSystem.getOS();
+		Architecture arch = Architecture.getArchitecture();
+
+		if (arch == Architecture.UNKNOWN) {
+			LOGGER.warning("Unexpected architecure detected: falling back to 32 bit");
+			arch = Architecture.X86;
+		}
+
+		boolean extracted64bitVersion = false;
+		if (arch == Architecture.X86_64) {
+			extracted64bitVersion = tryExtractPayloadZIP(
+					payloadDirectory.getPath(), os, arch.toString());
+		}
+
+		// check if previous attempt worked or the OS is 32bit only
+		if (!extracted64bitVersion) {
+			tryExtractPayloadZIP(payloadDirectory.getPath(), os,
+					Architecture.X86.toString());
+		}
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	private void loadPluginProperties() throws IOException {
 		props.load(this.getClass().getResourceAsStream("plugin.properties"));
 		if (GenericNodesPlugin.isDebug()) {
 			GenericNodesPlugin
@@ -65,106 +140,100 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				GenericNodesPlugin.log(key + " -> " + props.get(key));
 			}
 		}
+	}
 
-		// default platform
-		String OS = "win";
-
-		if (os.toLowerCase().contains("nux")
-				|| os.toLowerCase().contains("nix")) {
-			OS = "lnx";
-		}
-		if (os.toLowerCase().contains("mac")) {
-			OS = "mac";
-		}
-
-		// get word size of JVM as a proxy for native word size of OS
-		String data_model = System.getProperty("sun.arch.data.model");
-		if (!data_model.equals("64") && !data_model.equals("32"))
-			LOGGER.warning("Unexpected architecure detected: " + data_model
-					+ "; falling back to 32 bit");
-
-		boolean use64 = false;
-		boolean use32 = false;
-		if (data_model.equals("64")) {
-			use64 = tryExtractPayloadZIP(binaryLocation, nodeBinariesDir, OS,
-					"64");
-		}
-		if (!use64) {
-			use32 = tryExtractPayloadZIP(binaryLocation, nodeBinariesDir, OS,
-					"32");
-		}
-
-		if (use32 || use64) {
-			makeExtractedBinariesExecutable(nodeBinariesDir);
+	/**
+	 * Tries to make all binaries contained in the extracted payload executable.
+	 */
+	private void makeExtractedBinariesExecutable() {
+		if (payloadDirectory.getExecutableDirectory() != null
+				&& payloadDirectory.getExecutableDirectory().exists()) {
+			for (File execFile : payloadDirectory.getExecutableDirectory()
+					.listFiles()) {
+				execFile.setExecutable(true);
+			}
 		} else {
 			LOGGER.info("No binaries could be found. "
 					+ "In order to execute the containing nodes you need "
 					+ "to configure their binary locations in the Eclipse configuration.");
 		}
-
-		final IPreferenceStore pStore = this.getPreferenceStore();
-		pStore.setValue("binaries_path", nodeBinariesDir.getCanonicalPath());
-
-		for (Object key : props.keySet()) {
-			String k = key.toString();
-			String v = props.getProperty(k);
-			env.put(k, v);
-		}
 	}
 
 	/**
-	 * @param nodeBinariesDir
-	 * @throws FileNotFoundException
-	 */
-	private void makeExtractedBinariesExecutable(TempDirectory nodeBinariesDir)
-			throws FileNotFoundException {
-		try {
-			for (File execFile : new File(nodeBinariesDir, "bin").listFiles()) {
-				execFile.setExecutable(true);
-			}
-		} catch (NullPointerException e) {
-			throw new FileNotFoundException(
-					"No \"bin\" directory was found in the shipped binaries. "
-							+ "Please make sure your binary zip file contains a \"bin\" directory.\n"
-							+ "See payload.README for further instructions.");
-		}
-	}
-
-	/**
-	 * Tests if a zip file with the name binaries_{@p OS}_{@p data_model}.zip is
-	 * available and extracts it.
+	 * Tests if a zip file with the name binaries_{@p OperatingSystem}_{@p
+	 * data_model}.zip is available and extracts it.
 	 * 
-	 * @param binaryLocation
-	 *            Class which is needed to find the binaries inside the jar
 	 * @param nodeBinariesDir
 	 *            Target directory where it should be extracted to
-	 * @param OS
+	 * @param OperatingSystem
 	 *            Identifier of the operating system to extract the appropriate
 	 *            zip file
+	 * @param data_model
+	 *            Identifier for the datamodel that should be extracted.
 	 * @return true if the specified zip file was found and extracted correctly.
 	 * @throws IOException
 	 */
-	private boolean tryExtractPayloadZIP(Class<?> binaryLocation,
-			TempDirectory nodeBinariesDir, String OS, String data_model)
-			throws IOException {
-		if (binaryLocation.getResourceAsStream("binaries_" + OS + "_"
-				+ data_model + ".zip") != null) {
-			ZipUtils.decompressTo(
-					nodeBinariesDir,
-					binaryLocation.getResourceAsStream("binaries_" + OS + "_"
-							+ data_model + ".zip"));
-			props.load(binaryLocation.getResourceAsStream("binaries_" + OS
-					+ "_" + data_model + ".ini"));
+	private boolean tryExtractPayloadZIP(File nodeBinariesDir,
+			OperatingSystem os, String data_model) throws IOException {
+		// check if a zip file for that combination of OS and data model exists
+		if (getBinaryLocation().getResourceAsStream(
+				getZipFileName(os, data_model)) != null) {
+			// extract it
+			ZipUtils.decompressTo(nodeBinariesDir, getBinaryLocation()
+					.getResourceAsStream(getZipFileName(os, data_model)));
+
+			// load the associated properties and store them as environment
+			// variable
+			loadEnvironmentVariables(os, data_model);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void registerMimeTypes(List<MIMEType> mimeTypes) {
+	/**
+	 * @param os
+	 * @param data_model
+	 * @throws IOException
+	 */
+	private void loadEnvironmentVariables(OperatingSystem os, String data_model)
+			throws IOException {
+		Properties envProperites = new Properties();
+		envProperites.load(getBinaryLocation().getResourceAsStream(
+				getINIFileName(os, data_model)));
+		for (Object key : envProperites.keySet()) {
+			String k = key.toString();
+			String v = envProperites.getProperty(k);
+			environmentVariables.put(k, v);
+		}
+	}
+
+	/**
+	 * @param os
+	 * @param data_model
+	 * @return
+	 */
+	private String getINIFileName(OperatingSystem os, String data_model) {
+		return "binaries_" + os + "_" + data_model + ".ini";
+	}
+
+	/**
+	 * @param os
+	 * @param data_model
+	 * @return
+	 */
+	private String getZipFileName(OperatingSystem os, String data_model) {
+		return "binaries_" + os + "_" + data_model + ".zip";
+	}
+
+	/**
+	 * Reads the list of {@link MIMEType}s associated with the plugin and
+	 * registers them in the central {@link MIMEtypeRegistry}.
+	 */
+	private void registerMimeTypes() {
 		MIMEtypeRegistry registry = GenericNodesPlugin.getMIMEtypeRegistry();
 
-		for (MIMEType mimeType : mimeTypes) {
+		for (MIMEType mimeType : getMIMETypes()) {
 			registry.registerMIMEtype(mimeType);
 		}
 	}
@@ -175,7 +244,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * 
 	 * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator
 	 */
-	public void registerNodes() {
+	private void registerNodes() {
 
 		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
 				.getWorkbench().getService(IToolLocatorService.class);
@@ -187,10 +256,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				toolLocator.registerTool(new ExternalTool(knimelessPackageName,
 						nodeName));
 			}
-
-			// registerExtractedBinaries
-			registerExtractedBinaries(toolLocator);
-
 		}
 	}
 
@@ -209,48 +274,60 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	/**
 	 * Adds all extracted binaries to the tool registry.
 	 */
-	private void registerExtractedBinaries(IToolLocatorService toolLocator) {
+	private void registerExtractedBinaries() {
 
-		// get binary path
-		String binaryPath = this.getPreferenceStore()
-				.getString("binaries_path");
-		// we manually add the "bin" here since the binaries_path is pointing to
-		// the top-level directory where all content of the payload zip was
-		// extracted
-		File binaryDirectory = new File(binaryPath, "bin");
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
 
-		// abort execution if we do not have a valid binary directory
-		if (!binaryDirectory.exists())
-			return;
+		if (toolLocator != null) {
 
-		// get package name
-		String knimelessPackageName = getKNIMELessPackageName();
+			// get binary path
+			File binaryDirectory = payloadDirectory.getExecutableDirectory();
 
-		// for each node find the executable
-		for (String node : getNodeNames()) {
-			File executable = getExecutableName(binaryDirectory, node);
-			if (executable != null) {
-				ExternalTool currentNode = new ExternalTool(
-						knimelessPackageName, node);
-				// register executalbe in the ToolFinder
-				toolLocator.setToolPath(currentNode, executable,
-						ToolPathType.SHIPPED);
+			// abort execution if we do not have a valid binary directory
+			if (!binaryDirectory.exists())
+				return;
 
-				try {
-					// check if we need to adjust the type
-					if (toolLocator.getConfiguredToolPathType(currentNode) == ToolPathType.UNKNOWN) {
-						toolLocator.updateToolPathType(currentNode,
-								ToolPathType.SHIPPED);
+			// get package name
+			String knimelessPackageName = getKNIMELessPackageName();
+
+			// for each node find the executable
+			for (String node : getNodeNames()) {
+				File executable = getExecutableName(binaryDirectory, node);
+				if (executable != null) {
+					ExternalTool currentNode = new ExternalTool(
+							knimelessPackageName, node);
+					// register executalbe in the ToolFinder
+					toolLocator.setToolPath(currentNode, executable,
+							ToolPathType.SHIPPED);
+
+					try {
+						// check if we need to adjust the type
+						if (toolLocator.getConfiguredToolPathType(currentNode) == ToolPathType.UNKNOWN) {
+							toolLocator.updateToolPathType(currentNode,
+									ToolPathType.SHIPPED);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 
+				}
 			}
 		}
 
 	}
 
+	/**
+	 * Helper function to find an executable based on a node name and the
+	 * directory where the binaries are located.
+	 * 
+	 * @param binDir
+	 *            Directory containing all binaries associated to the plugin.
+	 * @param nodename
+	 *            The name of the node for which the executable should be found.
+	 * @return A {@link File} pointing to the executable (if one was found) or
+	 *         null (if no executable was found).
+	 */
 	private File getExecutableName(File binDir, String nodename) {
 		for (String extension : new String[] { "", ".bin", ".exe" }) {
 			File binFile = new File(binDir, nodename + extension);
@@ -260,13 +337,43 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		return null;
 	}
 
+	/**
+	 * Get the plugin specific proberties stored in the plugin.properties file.
+	 * 
+	 * @return
+	 */
 	public Properties getProperties() {
 		return this.props;
 	}
 
+	/**
+	 * Get the environment variable customizations stored in the payload config
+	 * file (e.g., binaries_mac_64.ini)
+	 * 
+	 * @return
+	 */
 	public Map<String, String> getEnvironment() {
-		return this.env;
+		return environmentVariables;
 	}
 
+	/**
+	 * Returns the list of nodes that the plugin provides.
+	 * 
+	 * @return
+	 */
 	public abstract List<String> getNodeNames();
+
+	/**
+	 * Returns the list of {@link MIMEType}s provided by the plugin.
+	 * 
+	 * @return
+	 */
+	public abstract List<MIMEType> getMIMETypes();
+
+	/**
+	 * Returns the {@link Class} where the binaries are located.
+	 * 
+	 * @return
+	 */
+	public abstract Class<?> getBinaryLocation();
 }

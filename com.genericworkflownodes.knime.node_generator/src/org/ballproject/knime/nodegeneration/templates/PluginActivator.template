@@ -3,6 +3,7 @@ package __BASE__.knime;
 import java.util.Arrays;
 import java.util.List;
 
+import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.custom.GenericActivator;
@@ -14,13 +15,21 @@ public class PluginActivator extends GenericActivator {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-		extractBinaries(BinaryResources.class);
-		registerMimeTypes(MimeFileCellFactory.getInstance().getMimeTypes());
-		registerNodes();
+		initializePlugin();
 	}
 
+	@Override
 	public List<String> getNodeNames() {
 		return Arrays.asList(__NODENAMES__);
 	}
 
+	@Override
+	public List<MIMEType> getMIMETypes() {
+		return MimeFileCellFactory.getInstance().getMimeTypes();
+	}
+
+	@Override
+	public Class<?> getBinaryLocation() {
+		return BinaryResources.class;
+	}
 }
