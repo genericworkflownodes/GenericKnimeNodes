@@ -8,51 +8,42 @@
 			<xs:sequence>
 				<xs:element minOccurs="1" name="name" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							Name of the tool.
+						<xs:documentation>Name of the tool.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element minOccurs="1" name="version" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							Version string of the tool.
+						<xs:documentation>Version string of the tool.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element minOccurs="0" name="description" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							One line description of the tool.
+						<xs:documentation>One line description of the tool.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element minOccurs="0" name="manual" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							More detailed description of the tool (about
-							10 lines).
+						<xs:documentation>More detailed description of the tool (about 10 lines).
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element minOccurs="0" name="docurl" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							URL to further documentation (WWW).
+						<xs:documentation>URL to further documentation (WWW).
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element minOccurs="0" name="category" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							Whats this (FIX-ME!).
-						</xs:documentation>
+						<xs:documentation>The category gives information on the task the associated tool performs. It can be used to categorize different tools in a GUI.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element maxOccurs="unbounded" minOccurs="0" name="type" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							Whats this (FIX-ME!).
+						<xs:documentation>Whats this (FIX-ME!).
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
@@ -100,33 +91,54 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="cliType">
-		<xs:sequence>
+        <xs:annotation>
+        	<xs:documentation>Wraps the information necessary to construct a command line call for the tool.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
 			<xs:element maxOccurs="unbounded" minOccurs="1" name="clielement" type="cliElementType">
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="mappingType">
-		<xs:attribute name="ref_name" type="xs:string">
+        <xs:annotation>
+        	<xs:documentation>Defines which ITEM from the parameter part is associated to cliElement.</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="ref_name" type="xs:string">
 			<xs:annotation/>
 		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="cliElementType">
-		<xs:sequence>
+        <xs:annotation>
+        	<xs:documentation>Wraps a single element of a command line call (e.g., the -v flag for verbosity) and it's associated arguments. To model a non-option argument just leave the optionIdentifier empty.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
 			<xs:element maxOccurs="unbounded" minOccurs="0" name="mapping" type="mappingType">
-				<xs:annotation/>
+				<xs:annotation>
+					<xs:documentation>The mapping defines the association between the cliElement and the PARAM part. 
+
+Note: If the mapped paramter is boolean, the optionIdentifier will be added to the CLI only if the mapped value is true.</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="optional">
-			<xs:annotation/>
+			<xs:annotation>
+				<xs:documentation>Optional value to improve the readability of the xml file (currently not used for anything else).</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
         <xs:attribute name="optionIdentifier" type="xs:string" use="optional">
-			<xs:annotation />
-		</xs:attribute>
+			<xs:annotation>
+				<xs:documentation>A string used to prefix any associated values (e.g., "-v" for a boolean flag to turn on verbosity).</xs:documentation>
+			</xs:annotation>
+        </xs:attribute>
         <xs:attribute name="isList" type="xs:boolean" use="optional">
-			<xs:annotation/>
-		</xs:attribute>
+			<xs:annotation>
+				<xs:documentation>A boolean attribute indicating whether or not the given cliElement can be expended to occur more then once on the command line.</xs:documentation>
+			</xs:annotation>
+        </xs:attribute>
 		<xs:attribute name="required" type="xs:boolean" use="optional">
-			<xs:annotation/>
+			<xs:annotation>
+				<xs:documentation>Defines if the cliElement is required to build the full command line, i.e., if required is set to false and the mapped parameter was not set the complete element will not be used on the final cli.</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
 </xs:schema>

@@ -111,10 +111,9 @@ public class NodeGenerator {
 		new PropertiesWriter(new File(this.buildDir.getKnimeDirectory(),
 				"plugin.properties")).write(new HashMap<String, String>() {
 			{
-				put("use_cli", srcDir.getProperty("use_cli", "true"));
-				put("use_ini", srcDir.getProperty("use_ini", "true"));
-				put("ini_switch", srcDir.getProperty("ini_switch", "-ini"));
 				put("executor", srcDir.getProperty("executor", "CLIExecutor"));
+				put("commandGenerator",
+						srcDir.getProperty("commandGenerator", ""));
 			}
 		});
 

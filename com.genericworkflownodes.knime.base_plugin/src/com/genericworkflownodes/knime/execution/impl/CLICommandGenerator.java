@@ -1,22 +1,4 @@
-/**
- * Copyright (c) 2012, Stephan Aiche.
- *
- * This file is part of GenericKnimeNodes.
- * 
- * GenericKnimeNodes is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-package com.genericworkflownodes.knime.execution;
+package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,27 +9,55 @@ import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
 import org.ballproject.knime.base.parameter.BoolParameter;
+import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.execution.ICommandGenerator;
 
-/**
- * The CLIExecutor handles the execution of command line tools that cannot
- * handle configuration files on their own and therefore must be called with a
- * fully configured command line.
- * 
- * @author aiche
- */
-public class CLIExecutor extends AbstractToolExecutor {
+public class CLICommandGenerator implements ICommandGenerator {
+
+	protected static final NodeLogger logger = NodeLogger
+			.getLogger(CLICommandGenerator.class);
 
 	private INodeConfiguration nodeConfig;
 	private NodeConfigurationStore configStore;
 
 	@Override
-	protected List<String> prepareCall() throws Exception {
+	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+			NodeConfigurationStore configStore,
+			IPluginConfiguration pluginConfiguration, File workingDirectory)
+			throws Exception {
+
+		// export the node configuration as plain text, for debugging and
+		// logging
+		exportPlainConfiguration(configStore, workingDirectory);
+
+		// ease the passing around of variables
+		this.nodeConfig = nodeConfiguration;
+		this.configStore = configStore;
+
+		List<String> commands;
+
+		try {
+			commands = processCLI();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			this.nodeConfig = null;
+			this.configStore = null;
+		}
+
+		return commands;
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	private List<String> processCLI() throws Exception {
 		List<String> commands = new ArrayList<String>();
-		commands.add(getExecutable().getCanonicalPath());
 
 		for (CLIElement cliElement : nodeConfig.getCLI().getCLIElement()) {
 			logger.info("CLIElement: " + cliElement.getOptionIdentifier());
@@ -74,7 +84,6 @@ public class CLIExecutor extends AbstractToolExecutor {
 				}
 			}
 		}
-
 		return commands;
 	}
 
@@ -182,31 +191,19 @@ public class CLIExecutor extends AbstractToolExecutor {
 		}
 	}
 
-	@Override
-	protected void localPrepareExecution(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
-			IPluginConfiguration pluginConfiguration) throws Exception {
-
-		this.nodeConfig = nodeConfiguration;
-		this.configStore = configStore;
-
-		exportPlainConfiguration(configStore);
-	}
-
 	/**
 	 * Exports all configuration settings to the working directory.
 	 * 
 	 * @param configStore
 	 * @throws IOException
 	 */
-	private void exportPlainConfiguration(NodeConfigurationStore configStore)
-			throws IOException {
+	private void exportPlainConfiguration(NodeConfigurationStore configStore,
+			File workingDirectory) throws IOException {
 		PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
-		configStore.setParameterValue("jobdir", getWorkingDirectory()
-				.getAbsolutePath());
+		configStore.setParameterValue("jobdir",
+				workingDirectory.getCanonicalPath());
 		writer.init(configStore);
-		writer.write(getWorkingDirectory().getAbsolutePath() + File.separator
+		writer.write(workingDirectory.getAbsolutePath() + File.separator
 				+ "params.ini");
 	}
-
 }

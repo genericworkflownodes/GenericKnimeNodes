@@ -64,6 +64,7 @@ import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
+import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 
 /**
@@ -160,51 +161,45 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	private void instantiateToolExecutor() throws Exception {
 
 		String executorClassName = "";
+		String commandGeneratorClassName = "";
 		try {
 			executorClassName = pluginConfig.getPluginProperties().getProperty(
 					"executor");
+			commandGeneratorClassName = pluginConfig.getPluginProperties()
+					.getProperty("commandGenerator");
 			if (executorClassName == null || "".equals(executorClassName)) {
 				throw new Exception("No executor was specified by the plugin.");
 			}
 
 			executor = (IToolExecutor) Class.forName(executorClassName)
 					.newInstance();
+
+			// configure the executor
+			ICommandGenerator generator = (ICommandGenerator) Class.forName(
+					commandGeneratorClassName).newInstance();
+			executor.setCommandGenerator(generator);
+
 		} catch (IllegalAccessException ex) {
 			throw new Exception(
-					"Could not instantiate executor (IllegalAccessException): "
-							+ executorClassName);
+					"Could not instantiate executor/generator (IllegalAccessException): "
+							+ executorClassName + "/"
+							+ commandGeneratorClassName);
 		} catch (ClassNotFoundException ex) {
 			throw new Exception(
-					"Could not instantiate executor (ClassNotFoundException): "
-							+ executorClassName);
+					"Could not instantiate executor/generator (ClassNotFoundException): "
+							+ executorClassName + "/"
+							+ commandGeneratorClassName);
 		} catch (InstantiationException ex) {
 			throw new Exception(
-					"Could not instantiate executor (InstantiationException): "
-							+ executorClassName);
+					"Could not instantiate executor/generator (InstantiationException): "
+							+ executorClassName + "/"
+							+ commandGeneratorClassName);
 		}
 	}
 
 	private void executeTool(final File jobdir, final ExecutionContext exec)
 			throws Exception {
 
-		/*
-		 * AsyncToolRunner asyncToolRunner = new AsyncToolRunner(toolRunner);
-		 * asyncToolRunner.getToolRunner().setJobDir(jobdir.getAbsolutePath());
-		 * // FIXME env always equal props? IPreferenceStore store =
-		 * GenericNodesPlugin.getDefault() .getPreferenceStore(); for (String
-		 * key : pluginConfig.getEnvironmentVariables().keySet()) { String value
-		 * = "";
-		 * 
-		 * String addPathes = store
-		 * .getString(PreferenceInitializer.PREF_PATHES); value =
-		 * pluginConfig.getEnvironmentVariables().get(key) .replace("$ROOT",
-		 * pluginConfig.getBinariesPath() + FILESEP); if (key.equals("PATH")) {
-		 * if (!addPathes.equals("")) value += PATHSEP + addPathes; value +=
-		 * PATHSEP + System.getenv("PATH"); }
-		 * 
-		 * asyncToolRunner.getToolRunner().addEnvironmentEntry(key, value);
-		 * GenericNodesPlugin.log(key + "->" + value); }
-		 */
 		AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
 				executor);
 
