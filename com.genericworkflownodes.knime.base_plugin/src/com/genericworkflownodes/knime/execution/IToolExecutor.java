@@ -28,6 +28,14 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 public interface IToolExecutor {
 
 	/**
+	 * Defines which command generator should be used to create the command line
+	 * call for the execution.
+	 * 
+	 * @param generator
+	 */
+	public void setCommandGenerator(ICommandGenerator generator);
+
+	/**
 	 * The execute method used by derived classes to execute their command.
 	 * 
 	 * @param command

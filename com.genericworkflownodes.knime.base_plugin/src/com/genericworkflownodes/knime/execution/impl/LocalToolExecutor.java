@@ -16,11 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.execution;
+package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,19 +34,21 @@ import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.execution.ICommandGenerator;
+import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 /**
- * The AbstractToolExecutor handles the basic tasks associated with the
- * execution of a tool on the command line.
+ * The LocalToolExecutor handles the basic tasks associated with the execution
+ * of a tool on the command line.
  * 
  * @author aiche
  */
-public abstract class AbstractToolExecutor implements IToolExecutor {
+public class LocalToolExecutor implements IToolExecutor {
 	protected static final NodeLogger logger = NodeLogger
-			.getLogger(AbstractToolExecutor.class);
+			.getLogger(LocalToolExecutor.class);
 
 	private File workingDirectory;
 	private Map<String, String> environmentVariables;
@@ -53,11 +56,15 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	private String toolOutput;
 	private Process process;
 
+	private ICommandGenerator generator;
+
 	private File executable;
+
+	private List<String> commands;
 
 	private static String PATHSEP = System.getProperty("path.separator");
 
-	public AbstractToolExecutor() {
+	public LocalToolExecutor() {
 		environmentVariables = new TreeMap<String, String>();
 		returnCode = -1;
 		executable = null;
@@ -137,31 +144,16 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	public File getExecutable() {
-		return this.executable;
-	}
-
-	/**
-	 * Prepare the specific command line call.
-	 * 
-	 * @return
-	 */
-	protected abstract List<String> prepareCall() throws Exception;
-
-	/**
 	 * The execute method used by derived classes to execute their command.
 	 * 
-	 * @param command
-	 *            The command line of the tool as list of strings.
 	 * @return The return value of the executed process.
 	 * @throws Exception
 	 */
 	public int execute() throws Exception {
 
-		List<String> command = prepareCall();
+		List<String> command = new ArrayList<String>();
+		command.add(executable.getCanonicalPath());
+		command.addAll(commands);
 
 		try {
 			// build process
@@ -223,17 +215,6 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 	}
 
 	/**
-	 * Internal initialization method called after global initialization.
-	 * 
-	 * @param nodeConfiguration
-	 * @param pluginConfiguration
-	 */
-	protected abstract void localPrepareExecution(
-			INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
-			IPluginConfiguration pluginConfiguration) throws Exception;
-
-	/**
 	 * Initialization method of the executor.
 	 * 
 	 * @param nodeConfiguration
@@ -244,14 +225,16 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		findExecutable(nodeConfiguration, pluginConfiguration);
 		addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
+
+		commands = generator.generateCommands(nodeConfiguration, configStore,
+				pluginConfiguration, workingDirectory);
+
 		updatePATH();
-		localPrepareExecution(nodeConfiguration, configStore,
-				pluginConfiguration);
 	}
 
 	/**
-	 * TODO(Stephan): Re-think this concept. AbstractToolExecutor shouldn't need
-	 * to know something about this.
+	 * TODO(Stephan): Re-think this concept. LocalToolExecutor shouldn't need to
+	 * know something about this.
 	 */
 	private void updatePATH() {
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
@@ -290,5 +273,10 @@ public abstract class AbstractToolExecutor implements IToolExecutor {
 			throw new Exception("Neither externally configured nor shipped "
 					+ "binaries exist for this node. Aborting execution.");
 		}
+	}
+
+	@Override
+	public void setCommandGenerator(ICommandGenerator generator) {
+		this.generator = generator;
 	}
 }
