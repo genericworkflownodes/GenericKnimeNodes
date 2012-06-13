@@ -21,9 +21,8 @@ package org.ballproject.knime.base.port;
 
 import org.ballproject.knime.base.mime.MIMEFileDelegate;
 
-
-public interface MimeMarker
-{
+public interface MimeMarker {
 	MIMEFileDelegate getDelegate();
+
 	String getExtension();
 }

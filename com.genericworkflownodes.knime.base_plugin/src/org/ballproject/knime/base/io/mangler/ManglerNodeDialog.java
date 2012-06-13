@@ -25,42 +25,30 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
 /**
  * <code>NodeDialog</code> for the "Mangler" Node.
  * 
- * 
- * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more
- * complex dialog please derive directly from
- * {@link org.knime.core.node.NodeDialogPane}.
- * 
  * @author roettig
  */
-public class ManglerNodeDialog extends NodeDialogPane
-{
-	
+public class ManglerNodeDialog extends NodeDialogPane {
+
 	/**
-	 * New pane for configuring Mangler node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
+	 * New pane for configuring Mangler node dialog. This is just a suggestion
+	 * to demonstrate possible default dialog components.
 	 */
-	protected ManglerNodeDialog(Object obj)
-	{
+	protected ManglerNodeDialog(Object obj) {
 		super();
 	}
 
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings)
-			throws InvalidSettingsException
-	{
+			throws InvalidSettingsException {
 
-		
 	}
 
 	@Override
 	protected void loadSettingsFrom(NodeSettingsRO settings,
-			DataTableSpec[] specs) throws NotConfigurableException
-	{
+			DataTableSpec[] specs) throws NotConfigurableException {
 	}
 }

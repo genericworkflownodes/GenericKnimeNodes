@@ -33,88 +33,67 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
-public class GenericKnimeNodeDialog extends NodeDialogPane
-{
+public class GenericKnimeNodeDialog extends NodeDialogPane {
 	private INodeConfiguration config;
-	private ParameterDialog   dialog;
+	private ParameterDialog dialog;
 	private MimeTypeChooserDialog mtc;
-	
-	public GenericKnimeNodeDialog(INodeConfiguration config)
-	{
+
+	public GenericKnimeNodeDialog(INodeConfiguration config) {
 		this.config = config;
-		try
-		{
+		try {
 			dialog = new ParameterDialog(config);
 			this.addTab("Parameters", dialog);
 			mtc = new MimeTypeChooserDialog(config);
 			this.addTab("OutputTypes", mtc);
-		}
-		catch (FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	}
-		
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings) throws InvalidSettingsException
-	{	
-		for(String key: this.config.getParameterKeys())
-		{
-			Parameter<?> param = config.getParameter(key);
-			settings.addString(key, param.getStringRep());
-		}
-		
-		
-		int[] sel_ports = mtc.getSelectedTypes();
-		
-		for(int i=0;i<this.config.getNumberOfOutputPorts();i++)
-		{
-			settings.addInt("GENERIC_KNIME_NODES_outtype#"+i, sel_ports[i]);
 		}
 	}
 
 	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings, PortObjectSpec[] specs) throws NotConfigurableException
-	{
-		for(String key: this.config.getParameterKeys())
-		{
+	protected void saveSettingsTo(NodeSettingsWO settings)
+			throws InvalidSettingsException {
+		for (String key : this.config.getParameterKeys()) {
+			Parameter<?> param = config.getParameter(key);
+			settings.addString(key, param.getStringRep());
+		}
+
+		int[] sel_ports = mtc.getSelectedTypes();
+
+		for (int i = 0; i < this.config.getNumberOfOutputPorts(); i++) {
+			settings.addInt("GENERIC_KNIME_NODES_outtype#" + i, sel_ports[i]);
+		}
+	}
+
+	@Override
+	protected void loadSettingsFrom(NodeSettingsRO settings,
+			PortObjectSpec[] specs) throws NotConfigurableException {
+		for (String key : this.config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);
 			String value = null;
-			try
-			{
-				 value = settings.getString(key);
-			}
-			catch (InvalidSettingsException e)
-			{
+			try {
+				value = settings.getString(key);
+			} catch (InvalidSettingsException e) {
 				e.printStackTrace();
 			}
-			try
-			{
+			try {
 				param.fillFromString(value);
-			}
-			catch (InvalidParameterValueException e)
-			{
+			} catch (InvalidParameterValueException e) {
 				e.printStackTrace();
 				throw new NotConfigurableException(e.getMessage());
 			}
 		}
-		
+
 		int nP = this.config.getNumberOfOutputPorts();
 		int[] sel_ports = new int[nP];
-		
-		for(int i=0;i<nP;i++)
-		{
-			try
-			{
-				int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#"+i);
+
+		for (int i = 0; i < nP; i++) {
+			try {
+				int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
 				sel_ports[i] = idx;
-			} 
-			catch (InvalidSettingsException e)
-			{
+			} catch (InvalidSettingsException e) {
 				e.printStackTrace();
 				throw new NotConfigurableException(e.getMessage());
 			}

@@ -38,8 +38,8 @@ import com.genericworkflownodes.knime.execution.ICommandGenerator;
  */
 public class OpenMSCommandGenerator implements ICommandGenerator {
 
-	private final static String INI_SWITCH = "-ini";
-	private final static String INI_FILE_NAME = "params.ini";
+	private static final String INI_SWITCH = "-ini";
+	private static final String INI_FILE_NAME = "params.ini";
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,

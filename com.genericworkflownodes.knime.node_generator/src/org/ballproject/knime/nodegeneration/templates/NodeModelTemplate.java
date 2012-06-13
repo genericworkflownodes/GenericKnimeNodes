@@ -29,8 +29,9 @@ public class NodeModelTemplate extends Template {
 			String tmp = "{";
 			for (MIMEtype type : port.getMimeTypes()) {
 				String ext = type.getExt().toLowerCase();
-				if (ext == null)
+				if (ext == null) {
 					throw new UnknownMimeTypeException(type);
+				}
 				/*
 				 * if(port.isMultiFile()) tmp +=
 				 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
@@ -56,8 +57,9 @@ public class NodeModelTemplate extends Template {
 			String tmp = "{";
 			for (MIMEtype type : port.getMimeTypes()) {
 				String ext = type.getExt().toLowerCase();
-				if (ext == null)
+				if (ext == null) {
 					throw new UnknownMimeTypeException(type);
+				}
 				/*
 				 * if(port.isMultiFile()) tmp +=
 				 * "DataType.getType(ListCell.class, DataType.getType(" + ext +

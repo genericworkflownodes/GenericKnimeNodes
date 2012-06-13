@@ -19,7 +19,6 @@
 
 package org.ballproject.knime.nodegeneration.templates;
 
-public class TemplateResources
-{
+public class TemplateResources {
 
 }

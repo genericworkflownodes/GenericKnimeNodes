@@ -36,23 +36,23 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeDialog extends DefaultNodeSettingsPane
-{
+public class MimeFileExporterNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
 	 * New pane for configuring MimeFileExporter node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
 	 */
-	protected MimeFileExporterNodeDialog()
-	{
+	protected MimeFileExporterNodeDialog() {
 		super();
-		DialogComponentFileChooser dfc = new DialogComponentFileChooser(MimeFileExporterNodeDialog.createFileChooserModel(), "MimeFileExporterNodeDialog", JFileChooser.SAVE_DIALOG);
+		DialogComponentFileChooser dfc = new DialogComponentFileChooser(
+				MimeFileExporterNodeDialog.createFileChooserModel(),
+				"MimeFileExporterNodeDialog", JFileChooser.SAVE_DIALOG);
 		dfc.setBorderTitle("");
 		addDialogComponent(dfc);
 	}
-		
-	static SettingsModelString createFileChooserModel()
-	{
-		return new SettingsModelString(MimeFileExporterNodeModel.CFG_FILENAME, "");
+
+	static SettingsModelString createFileChooserModel() {
+		return new SettingsModelString(MimeFileExporterNodeModel.CFG_FILENAME,
+				"");
 	}
 }

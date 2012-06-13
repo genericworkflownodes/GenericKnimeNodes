@@ -15,7 +15,18 @@ import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-public class Utils {
+/**
+ * Utility class for the KNIME node generation.
+ * 
+ * @author bkahlert, aiche
+ */
+public final class Utils {
+
+	/**
+	 * Private c'tor to avoid instantiation of util class.
+	 */
+	private Utils() {
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(Utils.class
@@ -120,6 +131,7 @@ public class Utils {
 
 	/**
 	 * Formats a {@link Document} as XML and writes it to the given {@link File}
+	 * .
 	 * 
 	 * @param doc
 	 * @param dest
@@ -134,8 +146,9 @@ public class Utils {
 	}
 
 	public static boolean checkKNIMENodeName(String name) {
-		if (!name.matches("[[A-Z]|[a-z]][[0-9]|[A-Z]|[a-z]]+"))
+		if (!name.matches("[[A-Z]|[a-z]][[0-9]|[A-Z]|[a-z]]+")) {
 			return false;
+		}
 		return true;
 	}
 

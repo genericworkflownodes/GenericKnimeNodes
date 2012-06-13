@@ -115,22 +115,27 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 	private void processParameter(Node n) throws Exception {
 		Parameter<?> ret = null;
 		String type = n.valueOf("@type");
-		if (type.equals(""))
+		if (type.equals("")) {
 			throw new Exception("type information for parameter not set");
+		}
 
 		String key = n.valueOf("@name");
 		String val = n.valueOf("@value");
 
 		System.out.println("processing param " + key + " type:" + type);
 
-		if (type.equals("integer"))
+		if (type.equals("integer")) {
 			ret = new IntegerParameter(key, val);
-		if (type.equals("float"))
+		}
+		if (type.equals("float")) {
 			ret = new DoubleParameter(key, val);
-		if (type.equals("boolean"))
+		}
+		if (type.equals("boolean")) {
 			ret = new BoolParameter(key, val);
-		if (type.equals("text"))
+		}
+		if (type.equals("text")) {
 			ret = new StringParameter(key, val);
+		}
 		if (type.equals("select")) {
 			List<Node> options = DOMHelper.selectNodes(n, "option");
 			List<String> opts = new ArrayList<String>();
@@ -192,8 +197,9 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		port.setName(portname);
 
 		String optional = DOMHelper.valueOf(portnode, "@optional");
-		if (optional.equals("false"))
+		if (optional.equals("false")) {
 			port.setOptional(false);
+		}
 
 		return port;
 	}

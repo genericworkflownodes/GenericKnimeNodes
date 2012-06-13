@@ -69,8 +69,9 @@ public class PluginXMLTemplate {
 	 */
 	public void registerSplashIcon(KNIMEPluginMeta meta, File splashIcon)
 			throws IOException {
-		if (splashIcon == null)
+		if (splashIcon == null) {
 			return;
+		}
 		Node node = this.doc
 				.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
 		Element elem = (Element) node;
@@ -91,11 +92,13 @@ public class PluginXMLTemplate {
 	private void registerPathPrefix(String path) {
 		// do not register any top level or root path
 		// TODO: why?
-		if (path.equals("/") || new File(path).getParent().equals("/"))
+		if (path.equals("/") || new File(path).getParent().equals("/")) {
 			return;
+		}
 
-		if (this.registeredPrefixed.contains(path))
+		if (this.registeredPrefixed.contains(path)) {
 			return;
+		}
 
 		LOGGER.info("Registering path prefix: " + path);
 

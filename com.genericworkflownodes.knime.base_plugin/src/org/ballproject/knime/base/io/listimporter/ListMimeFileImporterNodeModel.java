@@ -134,14 +134,15 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 
 		for (String filename : filenames) {
 			mt = resolver.getMIMEtype(filename);
-			if (mt == null)
+			if (mt == null) {
 				throw new InvalidSettingsException(
 						"could not resolve MIMEType of file " + filename);
+			}
 			mts.add(mt);
 		}
 
-		for (MIMEType mt_ : mts) {
-			if (!mt_.equals(mt)) {
+		for (MIMEType mimeType : mts) {
+			if (!mimeType.equals(mt)) {
 				throw new InvalidSettingsException(
 						"files with mixed MIMEType loaded");
 			}
@@ -159,9 +160,10 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 		for (String filename : filenames) {
 			File in = new File(filename);
 
-			if (!in.canRead())
+			if (!in.canRead()) {
 				throw new Exception("cannot read from input file: "
 						+ in.getAbsolutePath());
+			}
 
 			uris.add(new URIContent(new File(filename).toURI()));
 		}

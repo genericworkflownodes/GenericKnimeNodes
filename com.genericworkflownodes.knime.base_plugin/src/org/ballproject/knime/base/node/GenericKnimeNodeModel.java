@@ -380,9 +380,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				// .. if port is optional everything is fine
 				if (nodeConfig.getInputPorts()[i].isOptional()) {
 					continue;
-				} else
+				} else {
 					throw new InvalidSettingsException(
 							"non-optional input port not connected");
+				}
 			}
 
 			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
@@ -402,10 +403,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 							Arrays.toString(mimetypes_in[i]));
 				}
 			}
-			if (!ok)
+			if (!ok) {
 				throw new InvalidSettingsException(
 						"invalid MIMEtype at port number " + i + " : "
 								+ mismatch);
+			}
 		}
 
 		// create output spec
@@ -451,8 +453,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// process result files
 		PortObject[] outports = processOutput(output_files, exec);
 
-		if (!GenericNodesPlugin.isDebug())
+		if (!GenericNodesPlugin.isDebug()) {
 			Helper.deleteDirectory(jobdir);
+		}
 
 		return outports;
 	}
@@ -462,8 +465,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// .. input files
 		for (int i = 0; i < inData.length; i++) {
 			// skip optional and unconnected inport ports
-			if (inData[i] == null)
+			if (inData[i] == null) {
 				continue;
+			}
 
 			Port port = nodeConfig.getInputPorts()[i];
 
@@ -521,8 +525,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		for (String key : nodeConfig.getParameterKeys()) {
 			Parameter<?> param = nodeConfig.getParameter(key);
 			if (param.isNull()) {
-				if (param.getIsOptional())
+				if (param.getIsOptional()) {
 					continue;
+				}
 			}
 			if (param instanceof ListParameter) {
 				ListParameter lp = (ListParameter) param;

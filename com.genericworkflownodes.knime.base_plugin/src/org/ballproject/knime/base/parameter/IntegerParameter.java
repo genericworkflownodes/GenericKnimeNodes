@@ -42,8 +42,9 @@ public class IntegerParameter extends NumberParameter<Integer> {
 
 	@Override
 	public String toString() {
-		if (value == null)
+		if (value == null) {
 			return "";
+		}
 		return String.format("%d", value);
 	}
 
@@ -67,10 +68,12 @@ public class IntegerParameter extends NumberParameter<Integer> {
 
 	@Override
 	public boolean validate(Integer val) {
-		if (isNull())
+		if (isNull()) {
 			return true;
-		if (val >= this.lowerBound && val <= this.upperBound)
+		}
+		if (val >= this.lowerBound && val <= this.upperBound) {
 			return true;
+		}
 		return false;
 	}
 

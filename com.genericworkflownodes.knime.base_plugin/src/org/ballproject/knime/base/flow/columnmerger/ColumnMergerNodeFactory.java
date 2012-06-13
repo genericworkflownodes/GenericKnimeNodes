@@ -26,55 +26,50 @@ import org.knime.core.node.NodeView;
 /**
  * <code>NodeFactory</code> for the "Demangler" Node.
  * 
- *
+ * 
  * @author roettig
  */
-public class ColumnMergerNodeFactory extends NodeFactory<ColumnMergerNodeModel> 
-{
+public class ColumnMergerNodeFactory extends NodeFactory<ColumnMergerNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ColumnMergerNodeModel createNodeModel() 
-    {
-        return new ColumnMergerNodeModel();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ColumnMergerNodeModel createNodeModel() {
+		return new ColumnMergerNodeModel();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() 
-    {
-        return 0;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getNrNodeViews() {
+		return 0;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ColumnMergerNodeModel> createNodeView(final int viewIndex, final ColumnMergerNodeModel nodeModel) 
-    {
-        return new ColumnMergerNodeView(nodeModel);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeView<ColumnMergerNodeModel> createNodeView(final int viewIndex,
+			final ColumnMergerNodeModel nodeModel) {
+		return new ColumnMergerNodeView(nodeModel);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() 
-    {
-        return false;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasDialog() {
+		return false;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() 
-    {
-        return new ColumnMergerNodeDialog(new Object());
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeDialogPane createNodeDialogPane() {
+		return new ColumnMergerNodeDialog(new Object());
+	}
 
 }

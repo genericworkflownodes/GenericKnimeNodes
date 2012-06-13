@@ -27,101 +27,86 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-public class ToolRunner
-{
-	private File   jobdir;
-	private int    retcode;
+public class ToolRunner {
+	private File jobdir;
+	private int retcode;
 	private Process p;
-	
-	private Map<String,String> env = new HashMap<String,String>();
-	
+
+	private Map<String, String> env = new HashMap<String, String>();
+
 	private String output;
-	
-	public ToolRunner()
-	{
+
+	public ToolRunner() {
 	}
-	
-	public void addEnvironmentEntry(String key, String value)
-	{
+
+	public void addEnvironmentEntry(String key, String value) {
 		this.env.put(key, value);
 	}
-	
-	public void setEnvironment(Map<String,String> env)
-	{
+
+	public void setEnvironment(Map<String, String> env) {
 		this.env = env;
 	}
-	
-	public void setJobDir(String path)
-	{
+
+	public void setJobDir(String path) {
 		jobdir = new File(path);
 	}
-	
-	public int getReturnCode()
-	{
+
+	public int getReturnCode() {
 		return retcode;
 	}
-	
-	public String getOutput()
-	{
+
+	public String getOutput() {
 		return output;
 	}
-	
-	public int run(String... cmds) throws Exception
-	{
+
+	public int run(String... cmds) throws Exception {
 		List<String> opts = new ArrayList<String>();
 
-		for(String cmd: cmds)
+		for (String cmd : cmds) {
 			opts.add(cmd);
+		}
 
-		try
-		{
+		try {
 			// build process
 			ProcessBuilder builder = new ProcessBuilder(opts);
 
-			for(String key: env.keySet())
-			{
+			for (String key : env.keySet()) {
 				builder.environment().put(key, env.get(key));
 			}
 
 			builder.redirectErrorStream(true);
 
-			if(jobdir!=null)
-				builder.directory( jobdir );
+			if (jobdir != null) {
+				builder.directory(jobdir);
+			}
 
 			// execute
 			p = builder.start();
 
-
 			// fetch output data (stdio+stderr)
 			InputStreamReader isr = new InputStreamReader(p.getInputStream());
-			BufferedReader    br  = new BufferedReader(isr);
+			BufferedReader br = new BufferedReader(isr);
 
 			String line = null;
 			StringBuffer out = new StringBuffer();
 
-			while ( (line = br.readLine()) != null)
-			{
-				out.append(line+System.getProperty("line.separator"));
+			while ((line = br.readLine()) != null) {
+				out.append(line + System.getProperty("line.separator"));
 			}
 
 			output = out.toString();
 
 			// fetch return code
 			retcode = p.waitFor();
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception(e);
 		}
-		
+
 		return retcode;
 	}
-	
-	public void kill()
-	{
+
+	public void kill() {
 		p.destroy();
 	}
 }
-

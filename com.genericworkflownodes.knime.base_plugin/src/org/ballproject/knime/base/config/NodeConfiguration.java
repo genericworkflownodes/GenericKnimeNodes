@@ -169,40 +169,40 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		out_ports = ports;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String newName) {
+		this.name = newName;
 	}
 
-	public void setDocUrl(String docurl) {
-		this.docurl = docurl;
+	public void setDocUrl(String newDocurl) {
+		this.docurl = newDocurl;
 	}
 
-	public void setDescription(String shortdescription) {
-		this.shortdescription = shortdescription;
+	public void setDescription(String newShortdescription) {
+		this.shortdescription = newShortdescription;
 	}
 
-	public void setManual(String longdescription) {
-		this.longdescription = longdescription;
+	public void setManual(String newLongdescription) {
+		this.longdescription = newLongdescription;
 	}
 
-	public void setXml(String xml) {
-		this.xml = xml;
+	public void setXml(String newXml) {
+		this.xml = newXml;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCategory(String newCategory) {
+		this.category = newCategory;
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
+	public void setVersion(String newVersion) {
+		this.version = newVersion;
 	}
 
-	public void setCommand(String command) {
-		this.command = command;
+	public void setCommand(String newCommand) {
+		this.command = newCommand;
 	}
 
-	public void setCLI(CLI cli) {
-		this.cli = cli;
+	public void setCLI(CLI newCli) {
+		this.cli = newCli;
 	}
 
 	@Override
@@ -215,18 +215,23 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		NodeConfiguration other = (NodeConfiguration) obj;
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!name.equals(other.name)) {
 			return false;
+		}
 		return true;
 	}
 

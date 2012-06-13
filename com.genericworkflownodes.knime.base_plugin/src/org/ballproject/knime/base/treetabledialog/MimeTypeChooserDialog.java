@@ -59,8 +59,9 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 			String[] strs = new String[types.size()];
 
 			int idx = 0;
-			for (MIMEtype type : types)
+			for (MIMEtype type : types) {
 				strs[idx++] = type.getExt();
+			}
 
 			JComboBox cb = new JComboBox(strs);
 			cbs[i] = cb;

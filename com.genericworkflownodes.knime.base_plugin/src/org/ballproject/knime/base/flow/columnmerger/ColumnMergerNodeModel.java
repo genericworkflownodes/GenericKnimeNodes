@@ -180,13 +180,15 @@ public class ColumnMergerNodeModel extends NodeModel {
 
 		inTypes = new ArrayList<DataType>();
 		for (int i = 0; i < N; i++) {
-			if (inSpecs[i] == null)
+			if (inSpecs[i] == null) {
 				continue;
+			}
 
 			DataType inType_ = inSpecs[i].getColumnSpec(0).getType();
 
-			if (inType_.isCollectionType())
+			if (inType_.isCollectionType()) {
 				inType_ = inType_.getCollectionElementType();
+			}
 
 			if (!(mfct.isASuperTypeOf(inType_))) {
 				throw new InvalidSettingsException(
@@ -225,10 +227,11 @@ public class ColumnMergerNodeModel extends NodeModel {
 		DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
 
 		// save this internally
-		if (collection)
+		if (collection) {
 			outspec1 = outputSpec;
-		else
+		} else {
 			outspec2 = outputSpec;
+		}
 
 		return outputSpec;
 	}

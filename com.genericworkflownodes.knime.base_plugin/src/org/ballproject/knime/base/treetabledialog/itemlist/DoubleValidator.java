@@ -20,74 +20,66 @@
 package org.ballproject.knime.base.treetabledialog.itemlist;
 
 /**
- * The DoubleValidator class checks whether supplied string values are valid doubles.
+ * The DoubleValidator class checks whether supplied string values are valid
+ * doubles.
  * 
  * @author roettig
- *
+ * 
  */
-public class DoubleValidator implements Validator
-{
+public class DoubleValidator implements Validator {
 	private Double UB = Double.POSITIVE_INFINITY;
 	private Double LB = Double.NEGATIVE_INFINITY;
-	private String reason="N/A";
-	
+	private String reason = "N/A";
+
 	@Override
-	public boolean validate(String s)
-	{
+	public boolean validate(final String s) {
 		Double d = null;
-		try
-		{
-			d = Double.parseDouble(s);	
-		}
-		catch(NumberFormatException e)
-		{
+		try {
+			d = Double.parseDouble(s);
+		} catch (NumberFormatException e) {
 			reason = "invalid number format";
-			return false;	
+			return false;
 		}
-		
-		if(d>UB)
-		{
+
+		if (d > UB) {
 			reason = "higher than upper bound";
 			return false;
 		}
-		if(d<LB)
-		{
+		if (d < LB) {
 			reason = "lower than lower bound";
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return "double";
 	}
-	
+
 	/**
 	 * set the lower bound for any range validation.
 	 * 
-	 * @param d lower bound
+	 * @param d
+	 *            lower bound
 	 */
-	public void setLowerBound(Double d)
-	{
+	public void setLowerBound(final Double d) {
 		LB = d;
 	}
-	
+
 	/**
 	 * sets the upper bound for any range validation.
 	 * 
-	 * @param d upper bound
+	 * @param d
+	 *            upper bound
 	 */
-	public void setUpperBound(Double d)
-	{
+	public void setUpperBound(final Double d) {
 		UB = d;
 	}
 
 	@Override
-	public String getReason()
-	{
+	public String getReason() {
 		return reason;
 	}
 }

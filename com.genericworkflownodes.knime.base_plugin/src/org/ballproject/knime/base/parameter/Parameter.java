@@ -133,8 +133,9 @@ public abstract class Parameter<T> implements Serializable {
 	 * @return is the parameter initialized
 	 */
 	public boolean isNull() {
-		if (value == null)
+		if (value == null) {
 			return true;
+		}
 		return false;
 	}
 
@@ -191,8 +192,8 @@ public abstract class Parameter<T> implements Serializable {
 		return advanced;
 	}
 
-	public void setAdvanced(boolean advanced) {
-		this.advanced = advanced;
+	public void setAdvanced(boolean newAdvanced) {
+		this.advanced = newAdvanced;
 	}
 
 	/**

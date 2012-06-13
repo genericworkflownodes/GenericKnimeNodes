@@ -20,74 +20,66 @@
 package org.ballproject.knime.base.treetabledialog.itemlist;
 
 /**
- * The IntegerValidator class checks whether supplied string values are valid ints.
+ * The IntegerValidator class checks whether supplied string values are valid
+ * ints.
  * 
  * @author roettig
- *
+ * 
  */
-public class IntegerValidator implements Validator
-{
+public class IntegerValidator implements Validator {
 	private String reason = "N/A";
 	private Integer UB = Integer.MAX_VALUE;
 	private Integer LB = Integer.MIN_VALUE;
-	
+
 	@Override
-	public boolean validate(String s)
-	{
+	public boolean validate(String s) {
 		Integer i = null;
-		try
-		{
-			i = Integer.parseInt(s);	
-		}
-		catch(NumberFormatException e)
-		{
+		try {
+			i = Integer.parseInt(s);
+		} catch (NumberFormatException e) {
 			reason = "invalid number format";
-			return false;	
+			return false;
 		}
-		
-		if(i>UB)
-		{
+
+		if (i > UB) {
 			reason = "higher than upper bound";
 			return false;
 		}
-		if(i<LB)
-		{
+		if (i < LB) {
 			reason = "lower than lower bound";
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return "integer";
 	}
-	
+
 	/**
 	 * set the lower bound for any range validation.
 	 * 
-	 * @param i lower bound
+	 * @param i
+	 *            lower bound
 	 */
-	public void setLowerBound(int i)
-	{
+	public void setLowerBound(int i) {
 		LB = i;
 	}
-	
+
 	/**
 	 * set the upper bound for any range validation.
 	 * 
-	 * @param i upper bound
+	 * @param i
+	 *            upper bound
 	 */
-	public void setUpperBound(int i)
-	{
+	public void setUpperBound(int i) {
 		UB = i;
 	}
 
 	@Override
-	public String getReason()
-	{
+	public String getReason() {
 		return reason;
 	}
 }

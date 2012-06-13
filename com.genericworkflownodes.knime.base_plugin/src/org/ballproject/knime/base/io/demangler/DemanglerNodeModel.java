@@ -157,8 +157,9 @@ public class DemanglerNodeModel extends NodeModel {
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 		idx = settings.getInt("selected_index");
-		if (demanglers.size() != 0)
+		if (demanglers.size() != 0) {
 			demangler = demanglers.get(idx);
+		}
 	}
 
 	/**

@@ -23,83 +23,72 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Node class represents any nodes within a tree-like structure to be displayed by tree table widgets.
+ * The Node class represents any nodes within a tree-like structure to be
+ * displayed by tree table widgets.
  * 
  * @author roettig
- *
+ * 
  * @param <T>
  */
-public class Node<T>
-{
+public class Node<T> {
 	protected Node<T> parent;
-	protected T       payload;
-	
+	protected T payload;
+
 	protected List<Node<T>> children = new ArrayList<Node<T>>();
-	
+
 	protected String name;
-	
-	public Node()
-	{
+
+	public Node() {
 		parent = null;
-		name   = "root";
+		name = "root";
 	}
-	
-	public Node(Node<T> p, T payload, String name)
-	{
+
+	public Node(Node<T> p, T payload, String name) {
 		parent = p;
 		this.payload = payload;
 		this.name = name;
 	}
-	
-	public void addChild(Node<T> child)
-	{
+
+	public void addChild(Node<T> child) {
 		children.add(child);
 	}
-	
-	public Node<T> getChild(int idx)
-	{
+
+	public Node<T> getChild(int idx) {
 		return children.get(idx);
 	}
-	
-	public int getNumChildren()
-	{
+
+	public int getNumChildren() {
 		return children.size();
 	}
-	
-	public int getChildIndex(Node<T> child)
-	{
+
+	public int getChildIndex(Node<T> child) {
 		int idx = 0;
-		for(Node<T> c: children)
-		{
-			if(child.equals(c))
+		for (Node<T> c : children) {
+			if (child.equals(c)) {
 				return idx;
+			}
 			idx++;
 		}
 		return -1;
 	}
-	
-	public boolean isLeaf()
-	{
-		return (children.size()==0);
+
+	public boolean isLeaf() {
+		return (children.size() == 0);
 	}
-	
-	public T getPayload()
-	{
+
+	public T getPayload() {
 		return payload;
 	}
-	
-	public void setPayload(T payload)
-	{
+
+	public void setPayload(T payload) {
 		this.payload = payload;
 	}
-	
-	public String getName()
-	{
+
+	public String getName() {
 		return name;
 	}
-	
-	public String toString()
-	{
+
+	public String toString() {
 		return name;
 	}
 }

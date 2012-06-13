@@ -104,17 +104,19 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 			String filename = file.getAbsolutePath();
 			filenames[idx] = filename;
 			mts[idx] = resolver.getMIMEtype(filename);
-			if (mts[idx] == null)
+			if (mts[idx] == null) {
 				throw new InvalidSettingsException(
 						"file of unknown MIMEtype selected " + filename);
+			}
 			idx++;
 		}
 
 		MIMEType first = mts[0];
 		for (int i = 1; i < mts.length; i++) {
-			if (!first.equals(mts[i]))
+			if (!first.equals(mts[i])) {
 				throw new InvalidSettingsException(
 						"mixed set of MIMEtype files selected");
+			}
 		}
 
 		((SettingsModelStringArray) getModel()).setStringArrayValue(filenames);

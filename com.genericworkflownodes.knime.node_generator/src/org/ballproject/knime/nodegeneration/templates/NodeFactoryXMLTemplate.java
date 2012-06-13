@@ -14,12 +14,14 @@ import org.ballproject.knime.nodegeneration.NodeGenerator;
 public class NodeFactoryXMLTemplate extends Template {
 
 	private static String join(List<String> mts, String delimiter) {
-		if (mts.isEmpty())
+		if (mts.isEmpty()) {
 			return "";
+		}
 		Iterator<String> iter = mts.iterator();
 		StringBuffer buffer = new StringBuffer(iter.next());
-		while (iter.hasNext())
+		while (iter.hasNext()) {
 			buffer.append(delimiter).append(iter.next());
+		}
 		return buffer.toString();
 	}
 
@@ -78,8 +80,9 @@ public class NodeFactoryXMLTemplate extends Template {
 	}
 
 	private static String prettyPrint(String manual) {
-		if (manual.equals(""))
+		if (manual.equals("")) {
 			return "";
+		}
 		StringBuffer sb = new StringBuffer();
 		String[] toks = manual.split("\\n");
 		for (String tok : toks) {

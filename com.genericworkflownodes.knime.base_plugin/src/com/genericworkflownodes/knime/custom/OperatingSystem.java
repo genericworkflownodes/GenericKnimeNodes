@@ -25,6 +25,9 @@ package com.genericworkflownodes.knime.custom;
  * @author aiche
  */
 enum OperatingSystem {
+	/**
+	 * The enum values.
+	 */
 	WIN, UNIX, MAC;
 
 	/**
@@ -58,6 +61,8 @@ enum OperatingSystem {
 			break;
 		case MAC:
 			osAsString = "mac";
+			break;
+		default:
 			break;
 		}
 		return osAsString;

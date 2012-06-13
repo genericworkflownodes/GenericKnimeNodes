@@ -27,14 +27,24 @@ package com.genericworkflownodes.knime.custom;
  * 
  */
 enum Architecture {
+	/**
+	 * The enum values.
+	 */
 	X86, X86_64, UNKNOWN;
 
+	/**
+	 * Construct an {@link Architecture} value based on the
+	 * System.getProperty("sun.arch.data.model") property.
+	 * 
+	 * @return A new {@link Architecture} for the platform where the code is
+	 *         executed.
+	 */
 	public static Architecture getArchitecture() {
-		String data_model = System.getProperty("sun.arch.data.model");
+		String dataModel = System.getProperty("sun.arch.data.model");
 		Architecture thisArch = UNKNOWN;
-		if ("64".equals(data_model)) {
+		if ("64".equals(dataModel)) {
 			thisArch = X86_64;
-		} else if ("32".equals(data_model)) {
+		} else if ("32".equals(dataModel)) {
 			thisArch = X86;
 		}
 
@@ -51,6 +61,8 @@ enum Architecture {
 			break;
 		case X86_64:
 			archAsString = "64";
+			break;
+		default:
 			break;
 		}
 

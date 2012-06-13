@@ -41,130 +41,114 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.LoopStartNodeTerminator;
 
-public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNodeTerminator
-{
+public class ListZipLoopStartNodeModel extends NodeModel implements
+		LoopStartNodeTerminator {
 	private int m_iteration;
 
-	
 	private static int NinPorts = 4;
-	
+
 	/**
 	 * Creates a new model.
 	 */
-	public ListZipLoopStartNodeModel()
-	{
+	public ListZipLoopStartNodeModel() {
 		super(createIPOs(), createOPOs());
 	}
 
-	public static final PortType OPTIONAL_PORT_TYPE = new PortType(MIMEURIPortObject.class, true);
-	
-	private static PortType[] createIPOs()
-	{
+	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
+			MIMEURIPortObject.class, true);
+
+	private static PortType[] createIPOs() {
 		PortType[] portTypes = new PortType[NinPorts];
-	    Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
-	    portTypes[1] = OPTIONAL_PORT_TYPE;
-	    portTypes[2] = OPTIONAL_PORT_TYPE;
-	    portTypes[3] = OPTIONAL_PORT_TYPE;
-	    return portTypes;
+		Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
+		portTypes[1] = OPTIONAL_PORT_TYPE;
+		portTypes[2] = OPTIONAL_PORT_TYPE;
+		portTypes[3] = OPTIONAL_PORT_TYPE;
+		return portTypes;
 	}
-	
-	private static PortType[] createOPOs()
-	{
+
+	private static PortType[] createOPOs() {
 		PortType[] portTypes = new PortType[NinPorts];
-	    Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
-	    portTypes[1] = OPTIONAL_PORT_TYPE;
-	    portTypes[2] = OPTIONAL_PORT_TYPE;
-	    portTypes[3] = OPTIONAL_PORT_TYPE;
-	    return portTypes;
+		Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
+		portTypes[1] = OPTIONAL_PORT_TYPE;
+		portTypes[2] = OPTIONAL_PORT_TYPE;
+		portTypes[3] = OPTIONAL_PORT_TYPE;
+		return portTypes;
 	}
-	
+
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException
-	{
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		assert m_iteration == 0;
 		pushFlowVariableInt("currentIteration", m_iteration);
 		pushFlowVariableInt("maxIterations", 0);
-		
+
 		List<MIMEURIPortObjectSpec> specs = new ArrayList<MIMEURIPortObjectSpec>();
-		
-		for(int i=0;i<NinPorts;i++)
-		{
-			if(inSpecs[i]==null)
+
+		for (int i = 0; i < NinPorts; i++) {
+			if (inSpecs[i] == null) {
 				break;
+			}
 			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
 			specs.add(spec);
 		}
-		
+
 		outspec = getOutSpec(specs);
-		
+
 		return outspec;
 	}
 
 	private PortObjectSpec[] outspec;
-	
+
 	private int K;
-	
-	private PortObjectSpec[] getOutSpec(List<MIMEURIPortObjectSpec> specs)
-	{
+
+	private PortObjectSpec[] getOutSpec(List<MIMEURIPortObjectSpec> specs) {
 		K = specs.size();
-		
+
 		PortObjectSpec[] ret = new PortObjectSpec[NinPorts];
-		
-		for(int i=0;i<NinPorts;i++)
-		{
-			if(i<K)
-			{
+
+		for (int i = 0; i < NinPorts; i++) {
+			if (i < K) {
 				ret[i] = specs.get(i);
-			}
-			else
-			{
-				ret[i] = null;				
+			} else {
+				ret[i] = null;
 			}
 		}
-		
+
 		return ret;
 	}
-	
-	private int rowCount=0;
-	
+
+	private int rowCount = 0;
+
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception
-	{
-		if (m_iteration == 0)
-		{
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
+			throws Exception {
+		if (m_iteration == 0) {
 			assert getLoopEndNode() == null : "1st iteration but end node set";
-		} 
-		else
-		{
+		} else {
 			assert getLoopEndNode() != null : "No end node set";
 		}
 
-		
 		MIMEURIPortObject[] out = new MIMEURIPortObject[NinPorts];
-		
+
 		rowCount = ((MIMEURIPortObject) inObjects[0]).getURIContents().size();
-				
-		for(int i=0;i<NinPorts;i++)
-		{
+
+		for (int i = 0; i < NinPorts; i++) {
 			MIMEURIPortObject in = (MIMEURIPortObject) inObjects[i];
-			if(i<K)
-			{
-				URIContent  uri = in.getURIContents().get(m_iteration);
+			if (i < K) {
+				URIContent uri = in.getURIContents().get(m_iteration);
 				List<URIContent> uriC = new ArrayList<URIContent>();
 				uriC.add(uri);
 				out[i] = new MIMEURIPortObject(uriC, in.getSpec().getMIMEType());
-			}
-			else
-			{
+			} else {
 				List<URIContent> uriC = new ArrayList<URIContent>();
 				out[i] = new MIMEURIPortObject(uriC, MIMEType.getType(""));
 			}
 		}
-		
+
 		pushFlowVariableInt("currentIteration", m_iteration);
 		pushFlowVariableInt("maxIterations", rowCount);
 		m_iteration++;
-		
+
 		return out;
 	}
 
@@ -172,16 +156,14 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void reset()
-	{
+	protected void reset() {
 		m_iteration = 0;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public boolean terminateLoop()
-	{
-		boolean continueLoop = (m_iteration!=rowCount);
+	public boolean terminateLoop() {
+		boolean continueLoop = (m_iteration != rowCount);
 		return !continueLoop;
 	}
 
@@ -189,8 +171,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings)
-	{
+	protected void saveSettingsTo(final NodeSettingsWO settings) {
 
 	}
 
@@ -199,8 +180,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	 */
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException
-	{
+			throws InvalidSettingsException {
 
 	}
 
@@ -209,8 +189,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	 */
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException
-	{
+			throws InvalidSettingsException {
 
 	}
 
@@ -220,8 +199,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	@Override
 	protected void loadInternals(final File nodeInternDir,
 			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException
-	{
+			CanceledExecutionException {
 		// no internals to load
 	}
 
@@ -231,8 +209,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements LoopStartNod
 	@Override
 	protected void saveInternals(final File nodeInternDir,
 			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException
-	{
+			CanceledExecutionException {
 		// no internals to save
 	}
 }

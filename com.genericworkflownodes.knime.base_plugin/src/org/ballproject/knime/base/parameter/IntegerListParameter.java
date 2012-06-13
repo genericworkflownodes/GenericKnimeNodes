@@ -62,14 +62,15 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 
 	@Override
 	public boolean validate(List<Integer> val) {
-		if (isNull())
+		if (isNull()) {
 			return true;
-
+		}
 		boolean ok = true;
 
 		for (Integer v : val) {
-			if (v < this.lowerBound || v > this.upperBound)
+			if (v < this.lowerBound || v > this.upperBound) {
 				ok = false;
+			}
 		}
 		return ok;
 	}
@@ -96,12 +97,14 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 	}
 
 	public String toString() {
-		if (value == null)
+		if (value == null) {
 			return "";
+		}
 		String[] ret = new String[this.value.size()];
 		int idx = 0;
-		for (Integer i : value)
+		for (Integer i : value) {
 			ret[idx++] = i.toString();
+		}
 		return Arrays.toString(ret);
 	}
 

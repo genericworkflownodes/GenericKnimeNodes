@@ -57,11 +57,31 @@ import java.util.List;
  */
 public class CLIElement {
 
-	protected List<CLIMapping> mapping;
-	protected String name;
-	protected String optionIdentifier;
-	protected Boolean isList;
-	protected Boolean required;
+	/**
+	 * The mappings for this element.
+	 */
+	private List<CLIMapping> mapping;
+
+	/**
+	 * The name of this element.
+	 */
+	private String name;
+
+	/**
+	 * The identifier of this option. Can be an empty string if the
+	 * {@link CLIElement} is an argument.
+	 */
+	private String optionIdentifier;
+
+	/**
+	 * Indicates if the CLIElement is mapped to a list.
+	 */
+	private Boolean isList;
+
+	/**
+	 * Indicates whether the {@link CLIElement} is required for the cmd or not.
+	 */
+	private Boolean required;
 
 	/**
 	 * Gets the value of the mapping property.
@@ -77,8 +97,10 @@ public class CLIElement {
 	 * Objects of the following type(s) are allowed in the list
 	 * {@link CLIMapping }
 	 * 
+	 * @return The list of available mappings for the current element.
+	 * 
 	 */
-	public List<CLIMapping> getMapping() {
+	public final List<CLIMapping> getMapping() {
 		if (mapping == null) {
 			mapping = new ArrayList<CLIMapping>();
 		}
@@ -91,7 +113,7 @@ public class CLIElement {
 	 * @return possible object is {@link String }
 	 * 
 	 */
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
@@ -102,7 +124,7 @@ public class CLIElement {
 	 *            allowed object is {@link String }
 	 * 
 	 */
-	public void setName(String value) {
+	public final void setName(final String value) {
 		this.name = value;
 	}
 
@@ -112,7 +134,7 @@ public class CLIElement {
 	 * @return possible object is {@link String }
 	 * 
 	 */
-	public String getOptionIdentifier() {
+	public final String getOptionIdentifier() {
 		return optionIdentifier;
 	}
 
@@ -123,7 +145,7 @@ public class CLIElement {
 	 *            allowed object is {@link String }
 	 * 
 	 */
-	public void setOptionIdentifier(String value) {
+	public final void setOptionIdentifier(final String value) {
 		this.optionIdentifier = value;
 	}
 
@@ -133,7 +155,7 @@ public class CLIElement {
 	 * @return possible object is {@link Boolean }
 	 * 
 	 */
-	public Boolean isList() {
+	public final Boolean isList() {
 		return isList;
 	}
 
@@ -144,7 +166,7 @@ public class CLIElement {
 	 *            allowed object is {@link Boolean }
 	 * 
 	 */
-	public void setIsList(Boolean value) {
+	public final void setIsList(final Boolean value) {
 		this.isList = value;
 	}
 
@@ -154,7 +176,7 @@ public class CLIElement {
 	 * @return possible object is {@link Boolean }
 	 * 
 	 */
-	public Boolean isRequired() {
+	public final Boolean isRequired() {
 		return required;
 	}
 
@@ -165,7 +187,7 @@ public class CLIElement {
 	 *            allowed object is {@link Boolean }
 	 * 
 	 */
-	public void setRequired(Boolean value) {
+	public final void setRequired(final Boolean value) {
 		this.required = value;
 	}
 

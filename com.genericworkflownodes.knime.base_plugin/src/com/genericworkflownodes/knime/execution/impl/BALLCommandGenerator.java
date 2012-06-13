@@ -37,8 +37,8 @@ import com.genericworkflownodes.knime.execution.ICommandGenerator;
  */
 public class BALLCommandGenerator implements ICommandGenerator {
 
-	private final static String PAR_SWITCH = "-par";
-	private final static String PAR_FILE_NAME = "params.xml";
+	private static final String PAR_SWITCH = "-par";
+	private static final String PAR_FILE_NAME = "params.xml";
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,

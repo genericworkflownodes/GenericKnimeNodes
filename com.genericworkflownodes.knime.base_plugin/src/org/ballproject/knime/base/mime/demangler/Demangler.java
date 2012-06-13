@@ -9,10 +9,12 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.url.MIMEType;
 
-public interface Demangler extends Serializable
-{
+public interface Demangler extends Serializable {
 	MIMEType getMIMEType();
+
 	DataType getTargetType();
+
 	Iterator<DataCell> demangle(URI file);
+
 	MIMEFileCell mangle(Iterator<DataCell> iter);
 }

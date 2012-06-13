@@ -15,15 +15,45 @@ import org.ballproject.knime.nodegeneration.util.Utils;
 import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
 
+/**
+ * Directory containing the node descriptors and the mimetypes.xml file.
+ * 
+ * @author bkahlert, aiche
+ */
 public class DescriptorsDirectory extends Directory {
 
+	/**
+	 * serialVersionUID.
+	 */
 	private static final long serialVersionUID = -3535393317046918930L;
 
+	/**
+	 * The list of all {@link CTDFile}s contained in this directory.
+	 */
 	private List<CTDFile> ctdFiles;
+
+	/**
+	 * The {@link MimeTypesFile} contained in the directory.
+	 */
 	private MimeTypesFile mimeTypesFile;
 
-	public DescriptorsDirectory(File sourcesDirectory) throws IOException,
-			InvalidNodeNameException, DuplicateNodeNameException {
+	/**
+	 * Constructor based on a {@link File} representing the location of the
+	 * descriptor directory.
+	 * 
+	 * @param sourcesDirectory
+	 *            The directory where the descriptors are stored.
+	 * @throws IOException
+	 *             In case of IO problems.
+	 * @throws InvalidNodeNameException
+	 *             If one of the contained nodes as an invalid node name.
+	 * @throws DuplicateNodeNameException
+	 *             If there are duplicate ctd files inside the descriptors
+	 *             directory.
+	 */
+	public DescriptorsDirectory(final File sourcesDirectory)
+			throws IOException, InvalidNodeNameException,
+			DuplicateNodeNameException {
 		super(sourcesDirectory);
 
 		File mimeTypeFile = new File(this, "mimetypes.xml");
@@ -39,23 +69,26 @@ public class DescriptorsDirectory extends Directory {
 
 		this.ctdFiles = new LinkedList<CTDFile>();
 		for (File file : this.listFiles()) {
-			if (file.getName().endsWith(".ctd"))
+			if (file.getName().endsWith(".ctd")) {
 				try {
 					CTDFile ctdFile = new CTDFile(file);
 					String nodeName = ctdFile.getNodeConfiguration().getName();
 
-					if (!Utils.checkKNIMENodeName(nodeName))
+					if (!Utils.checkKNIMENodeName(nodeName)) {
 						throw new InvalidNodeNameException("The node name \""
 								+ nodeName + "\" in file \"" + file
 								+ "\" is invalid.");
+					}
 
-					if (this.ctdFiles.contains(ctdFile))
+					if (this.ctdFiles.contains(ctdFile)) {
 						throw new DuplicateNodeNameException(nodeName);
+					}
 
 					this.ctdFiles.add(ctdFile);
 				} catch (CTDNodeConfigurationReaderException e) {
 					throw new IOException("Error reading " + file.getPath(), e);
 				}
+			}
 		}
 	}
 

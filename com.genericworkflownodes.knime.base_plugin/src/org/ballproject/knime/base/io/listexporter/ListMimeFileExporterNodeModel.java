@@ -138,9 +138,10 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 		int idx = 1;
 		for (URIContent uri : uris) {
 			File in = new File(uri.getURI());
-			if (!in.canWrite())
+			if (!in.canWrite()) {
 				throw new Exception("cannot read file to export: "
 						+ in.getAbsolutePath());
+			}
 
 			String outfilename = insertIndex(m_filename.getStringValue(), obj
 					.getSpec().getMIMEType().getExtension(), idx++);
@@ -157,16 +158,18 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 	}
 
 	private static String insertIndex(String filename, String extension, int idx) {
-		if (filename.equals("") || filename.length() == 0)
+		if (filename.equals("") || filename.length() == 0) {
 			return filename;
+		}
 
 		String filename_ = filename.toLowerCase();
 		String ext = extension.toLowerCase();
 
 		int idx1 = filename_.lastIndexOf(ext);
 
-		if (idx == -1)
+		if (idx == -1) {
 			return filename;
+		}
 
 		String s1 = filename.substring(0, idx1);
 		return s1 + idx + "." + extension;

@@ -27,8 +27,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class ColumnMergerNodeView extends NodeView<ColumnMergerNodeModel>
-{
+public class ColumnMergerNodeView extends NodeView<ColumnMergerNodeModel> {
 
 	/**
 	 * Creates a new view.
@@ -36,19 +35,15 @@ public class ColumnMergerNodeView extends NodeView<ColumnMergerNodeModel>
 	 * @param nodeModel
 	 *            The model (class: {@link ColumnMergerNodeModel})
 	 */
-	protected ColumnMergerNodeView(final ColumnMergerNodeModel nodeModel)
-	{
+	protected ColumnMergerNodeView(final ColumnMergerNodeModel nodeModel) {
 		super(nodeModel);
 	}
-	
-	
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void modelChanged()
-	{
+	protected void modelChanged() {
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
@@ -64,8 +59,7 @@ public class ColumnMergerNodeView extends NodeView<ColumnMergerNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onClose()
-	{
+	protected void onClose() {
 
 		// TODO things to do when closing the view
 	}
@@ -74,8 +68,7 @@ public class ColumnMergerNodeView extends NodeView<ColumnMergerNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onOpen()
-	{
+	protected void onOpen() {
 
 		// TODO things to do when opening the view
 	}

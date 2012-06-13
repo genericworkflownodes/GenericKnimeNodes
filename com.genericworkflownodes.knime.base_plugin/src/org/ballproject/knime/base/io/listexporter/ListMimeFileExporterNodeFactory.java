@@ -26,55 +26,51 @@ import org.knime.core.node.NodeView;
 /**
  * <code>NodeFactory</code> for the "MimeFileExporter" Node.
  * 
- *
+ * 
  * @author roettig
  */
-public class ListMimeFileExporterNodeFactory extends NodeFactory<ListMimeFileExporterNodeModel> 
-{
+public class ListMimeFileExporterNodeFactory extends
+		NodeFactory<ListMimeFileExporterNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ListMimeFileExporterNodeModel createNodeModel() 
-    {
-        return new ListMimeFileExporterNodeModel();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ListMimeFileExporterNodeModel createNodeModel() {
+		return new ListMimeFileExporterNodeModel();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() 
-    {
-        return 0;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getNrNodeViews() {
+		return 0;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<ListMimeFileExporterNodeModel> createNodeView(final int viewIndex, final ListMimeFileExporterNodeModel nodeModel) 
-    {
-        return null;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeView<ListMimeFileExporterNodeModel> createNodeView(
+			final int viewIndex, final ListMimeFileExporterNodeModel nodeModel) {
+		return null;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() 
-    {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasDialog() {
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() 
-    {
-        return new ListMimeFileExporterNodeDialog();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeDialogPane createNodeDialogPane() {
+		return new ListMimeFileExporterNodeDialog();
+	}
 
 }
