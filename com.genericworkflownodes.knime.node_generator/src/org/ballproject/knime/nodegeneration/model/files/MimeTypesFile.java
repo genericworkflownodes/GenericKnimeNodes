@@ -29,9 +29,10 @@ public class MimeTypesFile extends File {
 	private static void validate(File file) throws DocumentException {
 		SchemaValidator val = new SchemaValidator();
 		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
-		if (!val.validates(file.getPath()))
+		if (!val.validates(file.getPath())) {
 			throw new DocumentException("Supplied \"" + file.getPath()
 					+ "\" does not conform to schema " + val.getErrorReport());
+		}
 	}
 
 	private static Document createDocument(File file)
@@ -65,8 +66,9 @@ public class MimeTypesFile extends File {
 			JaxenException {
 		super(file.getPath());
 
-		if (file == null || !file.canRead())
+		if (file == null || !file.canRead()) {
 			throw new IOException("Invalid MIME types file: " + file.getPath());
+		}
 
 		validate(file);
 
@@ -74,7 +76,13 @@ public class MimeTypesFile extends File {
 		this.mimeTypes = readMimeTypes(doc);
 	}
 
-	public List<MimeType> getMimeTypes() {
+	/**
+	 * A list of {@link MimeType}s contained in the given {@link MimeTypesFile}.
+	 * 
+	 * @return A list of {@link MimeType}s contained in the given
+	 *         {@link MimeTypesFile}.
+	 */
+	public final List<MimeType> getMimeTypes() {
 		return mimeTypes;
 	}
 

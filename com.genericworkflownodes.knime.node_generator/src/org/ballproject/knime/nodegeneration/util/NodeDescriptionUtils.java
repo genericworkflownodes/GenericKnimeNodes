@@ -3,7 +3,6 @@ package org.ballproject.knime.nodegeneration.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,8 +11,24 @@ import org.ballproject.knime.base.util.ToolRunner;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 
-public class NodeDescriptionUtils {
+/**
+ * Utilities to create node descriptors if they are not available.
+ * 
+ * @author aiche
+ * 
+ */
+public final class NodeDescriptionUtils {
 
+	/**
+	 * Private c'tor to avoid instantiation of util class.
+	 */
+	private NodeDescriptionUtils() {
+
+	}
+
+	/**
+	 * The logger.
+	 */
 	private static Logger logger = Logger.getLogger(NodeDescriptionUtils.class
 			.getCanonicalName());
 
@@ -31,7 +46,6 @@ public class NodeDescriptionUtils {
 	 * @return true if ctd files where generated; false otherwise
 	 * @throws FileNotFoundException
 	 * @throws IOException
-	 * @throws ExecutionException
 	 */
 	public static boolean createCTDsIfNecessary(NodesSourceDirectory srcDir)
 			throws FileNotFoundException, IOException, FailedExecutionException {
@@ -48,12 +62,13 @@ public class NodeDescriptionUtils {
 				return false;
 			}
 		} else {
-			if (srcDir.getExecutablesDirectory() == null)
+			if (srcDir.getExecutablesDirectory() == null) {
 				throw new FileNotFoundException("Neither the directory \""
 						+ srcDir.getDescriptorsDirectory().getPath()
 						+ "\" nor \""
 						+ srcDir.getExecutablesDirectory().getPath()
 						+ "\" exists.");
+			}
 
 			generateDescriptors(srcDir.getExecutablesDirectory(),
 					srcDir.getProperty("parswitch", "-write_par"));
@@ -70,7 +85,6 @@ public class NodeDescriptionUtils {
 	 * @param executablesDirectory
 	 * @param ctdWriteSwitch
 	 * @throws IOException
-	 * @throws ExecutionException
 	 */
 	public static void generateDescriptors(
 			ExecutablesDirectory executablesDirectory, String ctdWriteSwitch)
@@ -78,9 +92,10 @@ public class NodeDescriptionUtils {
 
 		String[] exes = executablesDirectory.getBin().list();
 
-		if (exes.length == 0)
+		if (exes.length == 0) {
 			throw new FileNotFoundException(
 					"Could not find any executables in " + executablesDirectory);
+		}
 
 		for (String exe : exes) {
 			ToolRunner tr = new ToolRunner();
@@ -101,9 +116,10 @@ public class NodeDescriptionUtils {
 				if (tr.getReturnCode() != 0) {
 					Helper.copyFile(outfile,
 							executablesDirectory.getCTD(outfile.getName()));
-				} else
+				} else {
 					throw new FailedExecutionException("Tool \"" + cmd
 							+ "\" returned with " + tr.getReturnCode());
+				}
 			} catch (Exception e) {
 				throw new FailedExecutionException("Could not execute tool: "
 						+ cmd, e);

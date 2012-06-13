@@ -27,8 +27,9 @@ public class PayloadDirectory extends Directory {
 		for (String filename : this.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String filename) {
-				if (filename.endsWith(".ini"))
+				if (filename.endsWith(".ini")) {
 					return true;
+				}
 				if (filename.endsWith(".zip")) {
 					// verifyZip(destinationFQNNodeDirectory + pathsep +
 					// "binres"

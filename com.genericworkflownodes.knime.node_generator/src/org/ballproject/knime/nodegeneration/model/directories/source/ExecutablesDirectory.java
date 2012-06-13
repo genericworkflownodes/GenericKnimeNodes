@@ -5,8 +5,16 @@ import java.io.FileNotFoundException;
 
 import org.ballproject.knime.base.model.Directory;
 
+/**
+ * The directory containing all executables.
+ * 
+ * @author bkahlert, aiche
+ */
 public class ExecutablesDirectory extends Directory {
 
+	/**
+	 * serialVersionUID.
+	 */
 	private static final long serialVersionUID = -1007613562337029689L;
 	private File bin;
 
@@ -15,9 +23,10 @@ public class ExecutablesDirectory extends Directory {
 		super(executablesDirectory);
 
 		this.bin = new File(this, "bin");
-		if (!this.bin.isDirectory())
+		if (!this.bin.isDirectory()) {
 			throw new FileNotFoundException("Could no find bin directory in "
 					+ this);
+		}
 	}
 
 	public File getBin() {

@@ -95,10 +95,11 @@ public class NodeGenerator {
 				srcDir.getExecutablesDirectory()) : srcDir
 				.getDescriptorsDirectory();
 
-		if (dynamicCTDs)
+		if (dynamicCTDs) {
 			LOGGER.info("Using dynamically created ctd files");
-		else
+		} else {
 			LOGGER.info("Using static ctd files");
+		}
 
 		// build.properties - only useful if you re-import the generated node in
 		// Eclipse
@@ -164,9 +165,10 @@ public class NodeGenerator {
 				"BinaryResources.java"));
 
 		// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
-		if (srcDir.getPayloadDirectory() != null)
+		if (srcDir.getPayloadDirectory() != null) {
 			srcDir.getPayloadDirectory().copyPayloadTo(
 					buildDir.getBinaryResourcesDirectory());
+		}
 
 		// copy assets
 		copyAsset(".classpath");
@@ -251,8 +253,9 @@ public class NodeGenerator {
 		nodeSourceDir.mkdirs();
 
 		File nodeIcon = iconsDir.getNodeIcon(nodeConfiguration);
-		if (nodeIcon != null)
+		if (nodeIcon != null) {
 			FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
+		}
 
 		/*
 		 * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]

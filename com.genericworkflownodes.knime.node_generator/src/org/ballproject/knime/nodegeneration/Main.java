@@ -20,8 +20,9 @@ public class Main {
 				.getAbsoluteFile().getCanonicalFile();
 		File buildDir = (args.length > 1) ? new File(args[1]).getAbsoluteFile()
 				.getCanonicalFile() : null;
-		if (buildDir != null)
+		if (buildDir != null) {
 			buildDir.mkdirs();
+		}
 
 		try {
 			new NodeGenerator(pluginDir, buildDir);
