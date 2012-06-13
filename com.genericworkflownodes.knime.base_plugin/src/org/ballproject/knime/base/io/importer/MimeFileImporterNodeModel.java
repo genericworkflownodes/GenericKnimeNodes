@@ -116,9 +116,10 @@ public class MimeFileImporterNodeModel extends NodeModel {
 		m_filename.validateSettings(settings);
 		String filename = settings.getString(CFG_FILENAME);
 		File in = new File(filename);
-		if (!in.canRead())
+		if (!in.canRead()) {
 			throw new InvalidSettingsException("input file cannot be read: "
 					+ filename);
+		}
 		if (resolver.getMIMEtype(filename) == null) {
 			throw new InvalidSettingsException(
 					"file of unknown MIMEtype selected: " + filename);
@@ -186,8 +187,9 @@ public class MimeFileImporterNodeModel extends NodeModel {
 					"could not resolve MIME type of file");
 		}
 
-		if (mt == null)
+		if (mt == null) {
 			return new DataTableSpec[] { null };
+		}
 
 		return new PortObjectSpec[] { new MIMEURIPortObjectSpec(mt) };
 	}
@@ -199,9 +201,10 @@ public class MimeFileImporterNodeModel extends NodeModel {
 
 		File file = new File(m_filename.getStringValue());
 
-		if (!file.exists())
+		if (!file.exists()) {
 			throw new Exception("file does not exist: "
 					+ file.getAbsolutePath());
+		}
 
 		uris.add(new URIContent(file.toURI()));
 

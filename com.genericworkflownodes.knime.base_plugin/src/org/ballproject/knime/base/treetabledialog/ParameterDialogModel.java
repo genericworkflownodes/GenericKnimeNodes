@@ -115,7 +115,7 @@ public class ParameterDialogModel implements
 
 	}
 
-	static protected Class<?>[] cTypes = { TreeTableModel.class, String.class,
+	protected static Class<?>[] cTypes = { TreeTableModel.class, String.class,
 			String.class };
 
 	@Override
@@ -144,24 +144,27 @@ public class ParameterDialogModel implements
 	public Object getValueAt(Object node, int column) {
 		ParameterNode n = (ParameterNode) node;
 
-		if (column == -1)
+		if (column == -1) {
 			return n.getName();
+		}
 		if (column == 0) {
-			if (n.getPayload() == null)
+			if (n.getPayload() == null) {
 				return n.getName();
-			else
+			} else {
 				return n.getPayload().getKey();
+			}
 		}
 		if (column == 1) {
-			if (n.getPayload() == null)
+			if (n.getPayload() == null) {
 				return "";
-			else
+			} else {
 				return n.getPayload();
+			}
 		}
 		if (column == 2) {
-			if (n.getPayload() == null)
+			if (n.getPayload() == null) {
 				return "";
-			else {
+			} else {
 				return n.getPayload().getMnemonic();
 			}
 		}
@@ -172,12 +175,10 @@ public class ParameterDialogModel implements
 	public boolean isCellEditable(Object value, int column) {
 		ParameterNode n = (ParameterNode) value;
 		if (column == 1) {
-			if (n.isLeaf())
+			if (n.isLeaf()) {
 				return true;
-			else
-				return false;
+			}
 		}
-
 		return false;
 	}
 
@@ -244,8 +245,9 @@ public class ParameterDialogModel implements
 				StringChoiceParameter scp = (StringChoiceParameter) value;
 				String[] values = new String[scp.getLabels().size()];
 				int i = 0;
-				for (String s : scp.getLabels())
+				for (String s : scp.getLabels()) {
 					values[i++] = s;
+				}
 				box = new JComboBox(values);
 				return box;
 			}

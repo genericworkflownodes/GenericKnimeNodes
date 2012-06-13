@@ -40,7 +40,10 @@ public abstract class MIMEFileCell extends BlobDataCell implements
 	public transient DataType TYPE;
 	protected MIMEFileDelegate data_delegate;
 
-	private long SIZELIMIT = 20000000;
+	/**
+	 * Size limit for read operation.
+	 */
+	private static final long SIZELIMIT = 20000000;
 
 	public DataType getDataType() {
 		return TYPE;

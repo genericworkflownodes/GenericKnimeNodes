@@ -17,8 +17,9 @@ public final class ReferenceMIMEFileDelegate implements MIMEFileDelegate {
 
 	@Override
 	public boolean isEqual(MIMEFileDelegate del) {
-		if (del instanceof ReferenceMIMEFileDelegate)
+		if (del instanceof ReferenceMIMEFileDelegate) {
 			return false;
+		}
 		ReferenceMIMEFileDelegate del_ = (ReferenceMIMEFileDelegate) del;
 		return del_.filename.equals(filename);
 	}

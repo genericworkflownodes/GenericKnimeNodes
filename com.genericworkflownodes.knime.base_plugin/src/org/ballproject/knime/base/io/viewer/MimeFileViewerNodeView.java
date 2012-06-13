@@ -24,6 +24,7 @@ import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeModel;
 import org.knime.core.node.NodeView;
 
 /**
@@ -32,8 +33,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
-{
+public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel> {
 
 	/**
 	 * Creates a new view.
@@ -41,23 +41,21 @@ public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected MimeFileViewerNodeView(final MimeFileViewerNodeModel nodeModel)
-	{
+	protected MimeFileViewerNodeView(final MimeFileViewerNodeModel nodeModel) {
 		super(nodeModel);
-		
+
 		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
 		JScrollPane scrollpane = new JScrollPane(text);
 		text.setFont(new Font("Monospaced", Font.BOLD, 12));
 		setComponent(scrollpane);
-		
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void modelChanged()
-	{
+	protected void modelChanged() {
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
@@ -73,8 +71,7 @@ public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onClose()
-	{
+	protected void onClose() {
 
 		// TODO things to do when closing the view
 	}
@@ -83,8 +80,7 @@ public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onOpen()
-	{
+	protected void onOpen() {
 
 		// TODO things to do when opening the view
 	}

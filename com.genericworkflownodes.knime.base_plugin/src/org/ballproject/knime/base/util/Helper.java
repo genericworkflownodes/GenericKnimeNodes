@@ -50,7 +50,7 @@ public class Helper {
 		return OS.WIN;
 	}
 
-	static public boolean deleteDirectory(File path) {
+	public static boolean deleteDirectory(File path) {
 		if (path.exists()) {
 			File[] files = path.listFiles();
 			for (int i = 0; i < files.length; i++) {
@@ -84,80 +84,85 @@ public class Helper {
 		} catch (IOException e) {
 			throw e;
 		} finally {
-			if (inChannel != null)
+			if (inChannel != null) {
 				inChannel.close();
-			if (outChannel != null)
+			}
+			if (outChannel != null) {
 				outChannel.close();
+			}
 		}
 	}
 
-	static private Random rng = new Random();
+	private static Random RANDOM_NUMBER_GENERATOR = new Random();
 
-	static synchronized public String getTemporaryFilename(String directory,
+	public static synchronized String getTemporaryFilename(String directory,
 			String suffix, boolean autodelete) throws IOException {
 
-		int num = Math.abs(rng.nextInt());
+		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 		File f = new File(directory + File.separator
 				+ String.format("%06d.%s", num, suffix));
 		while (f.exists()) {
-			num = Math.abs(rng.nextInt());
+			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 			f = new File(directory + File.separator
 					+ String.format("%06d.%s", num, suffix));
 		}
 		f.createNewFile();
 
-		if (autodelete)
+		if (autodelete) {
 			f.deleteOnExit();
+		}
 
 		return f.getAbsolutePath();
 	}
 
-	static synchronized public String getRelativeTemporaryFilename(
+	public static synchronized String getRelativeTemporaryFilename(
 			String directory, String suffix, boolean autodelete)
 			throws IOException {
 
-		int num = Math.abs(rng.nextInt());
+		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 		File f = new File(directory + File.separator
 				+ String.format("%06d.%s", num, suffix));
 		while (f.exists()) {
-			num = Math.abs(rng.nextInt());
+			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 			f = new File(directory + File.separator
 					+ String.format("%06d.%s", num, suffix));
 		}
 		f.createNewFile();
 
-		if (autodelete)
+		if (autodelete) {
 			f.deleteOnExit();
+		}
 
 		return f.getName();
 	}
 
-	static synchronized public String getTemporaryFilename(String suffix,
+	public static synchronized String getTemporaryFilename(String suffix,
 			boolean autodelete) throws IOException {
 		return getTemporaryFilename(System.getProperty("java.io.tmpdir"),
 				suffix, autodelete);
 	}
 
-	static synchronized public String getTemporaryDirectory(String directory,
+	public static synchronized String getTemporaryDirectory(String directory,
 			String prefix, boolean autodelete) throws IOException {
 
-		int num = Math.abs(rng.nextInt());
+		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 		File f = new File(directory + File.separator
 				+ String.format("%s%06d", prefix, num));
 		while (f.exists()) {
-			num = Math.abs(rng.nextInt());
+			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 			f = new File(directory + File.separator
 					+ String.format("%s%06d", prefix, num));
 		}
 		f.mkdirs();
 
-		if (autodelete)
+		if (autodelete) {
 			f.deleteOnExit();
+		}
 
 		return f.getAbsolutePath();
 	}
 
-	static synchronized public String getTemporaryDirectory(String prefix,
+	public static synchronized String getTemporaryDirectory(String prefix,
 			boolean autodelete) throws IOException {
 		return getTemporaryDirectory(System.getProperty("java.io.tmpdir"),
 				prefix, autodelete);

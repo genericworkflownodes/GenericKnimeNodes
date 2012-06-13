@@ -9,39 +9,34 @@ import org.knime.core.node.NodeView;
 
 /**
  * @author roettig
- *
+ * 
  */
-public class ListZipLoopEndNodeFactory extends NodeFactory<ListZipLoopEndNodeModel>
-{
+public class ListZipLoopEndNodeFactory extends
+		NodeFactory<ListZipLoopEndNodeModel> {
 
 	@Override
-	protected NodeDialogPane createNodeDialogPane()
-	{
+	protected NodeDialogPane createNodeDialogPane() {
 		return null;
 	}
 
 	@Override
-	public ListZipLoopEndNodeModel createNodeModel()
-	{
+	public ListZipLoopEndNodeModel createNodeModel() {
 		return new ListZipLoopEndNodeModel();
 	}
 
 	@Override
 	public NodeView<ListZipLoopEndNodeModel> createNodeView(int arg0,
-			ListZipLoopEndNodeModel arg1)
-	{
+			ListZipLoopEndNodeModel arg1) {
 		return null;
 	}
 
 	@Override
-	protected int getNrNodeViews()
-	{
+	protected int getNrNodeViews() {
 		return 0;
 	}
 
 	@Override
-	protected boolean hasDialog()
-	{
+	protected boolean hasDialog() {
 		return false;
 	}
 

@@ -24,28 +24,28 @@ package org.ballproject.knime.base.treetabledialog.itemlist;
  * user supplied string for validity (i.e. float or int value-ness).
  * 
  * @author roettig
- *
+ * 
  */
-public interface Validator
-{
+public interface Validator {
 	/**
 	 * tries to validate the supplied string value.
 	 * 
-	 * @param s string to validate
+	 * @param s
+	 *            string to validate
 	 * @return is string valid
 	 */
 	boolean validate(String s);
-	
+
 	/**
 	 * returns the name of the validator (i.e. float validator).
 	 * 
 	 * @return name of validator
 	 */
 	String getName();
-	
+
 	/**
 	 * returns the last reason of failure from the validator.
-	 *  
+	 * 
 	 * @return reason of validation failure
 	 */
 	String getReason();

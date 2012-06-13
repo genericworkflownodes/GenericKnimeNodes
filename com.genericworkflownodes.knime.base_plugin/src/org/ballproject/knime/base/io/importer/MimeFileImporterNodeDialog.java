@@ -34,21 +34,21 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * 
  * @author roettig
  */
-public class MimeFileImporterNodeDialog extends DefaultNodeSettingsPane
-{
+public class MimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
 	 * New pane for configuring MimeFileImporter node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
 	 */
-	protected MimeFileImporterNodeDialog(Object obj)
-	{
+	protected MimeFileImporterNodeDialog(Object obj) {
 		super();
-		addDialogComponent(new DialogComponentFileChooser(MimeFileImporterNodeDialog.createFileChooserModel(),"MimeFileImporterNodeDialog"));
+		addDialogComponent(new DialogComponentFileChooser(
+				MimeFileImporterNodeDialog.createFileChooserModel(),
+				"MimeFileImporterNodeDialog"));
 	}
-	
-	static SettingsModelString createFileChooserModel()
-	{
-		return new SettingsModelString(MimeFileImporterNodeModel.CFG_FILENAME, "");
+
+	static SettingsModelString createFileChooserModel() {
+		return new SettingsModelString(MimeFileImporterNodeModel.CFG_FILENAME,
+				"");
 	}
 }

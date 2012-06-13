@@ -25,7 +25,6 @@
 
 package com.genericworkflownodes.knime.cliwrapper;
 
-
 /**
  * <p>
  * Java class for mappingType complex type.
@@ -48,7 +47,10 @@ package com.genericworkflownodes.knime.cliwrapper;
  */
 public class CLIMapping {
 
-	protected String refName;
+	/**
+	 * Holds the name of the mapped PARAM entry.
+	 */
+	private String refName;
 
 	/**
 	 * Gets the value of the refName property.
@@ -56,7 +58,7 @@ public class CLIMapping {
 	 * @return possible object is {@link String }
 	 * 
 	 */
-	public String getRefName() {
+	public final String getRefName() {
 		return refName;
 	}
 
@@ -67,7 +69,7 @@ public class CLIMapping {
 	 *            allowed object is {@link String }
 	 * 
 	 */
-	public void setRefName(String value) {
+	public final void setRefName(final String value) {
 		this.refName = value;
 	}
 

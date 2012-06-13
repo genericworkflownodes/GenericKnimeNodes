@@ -109,12 +109,13 @@ public class ItemListFillerDialog extends JDialog implements ActionListener {
 
 				boolean valid = model.addItem(text);
 
-				if (!valid)
+				if (!valid) {
 					JOptionPane.showMessageDialog(
 							null,
 							"entered value is not a valid "
 									+ model.getValidatorName() + ". reason: "
 									+ model.getValidatorReason());
+				}
 			}
 		}
 		if (source == delButton) {

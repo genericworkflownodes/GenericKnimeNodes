@@ -27,74 +27,64 @@ import java.util.Map;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.parameter.Parameter;
 
-public class ConfigWrapper 
-{
+public class ConfigWrapper {
 	private INodeConfiguration config;
-	
-	public ConfigWrapper(INodeConfiguration config)
-	{
+
+	public ConfigWrapper(INodeConfiguration config) {
 		this.config = config;
 		init();
 	}
-	
-	private ParameterNode root = new ParameterNode(null,null,"root");
-	
-	public ParameterNode getRoot()
-	{
+
+	private ParameterNode root = new ParameterNode(null, null, "root");
+
+	public ParameterNode getRoot() {
 		return root;
 	}
-	
-	private static List<String> getPrefixes(String key)
-	{
+
+	private static List<String> getPrefixes(String key) {
 		List<String> ret = new ArrayList<String>();
 		String[] toks = key.split("\\.");
-		String pref="";
-		for(String tok: toks)
-		{
-			pref+=tok+".";
-			ret.add(pref.substring(0,pref.length()-1));
+		String pref = "";
+		for (String tok : toks) {
+			pref += tok + ".";
+			ret.add(pref.substring(0, pref.length() - 1));
 		}
 		return ret;
 	}
-	
-	public static String getSuffix(String s)
-	{
+
+	public static String getSuffix(String s) {
 		String[] toks = s.split("\\.");
-		return toks[toks.length-1];
+		return toks[toks.length - 1];
 	}
-	
-	private void init()
-	{
-		Map<String,ParameterNode> key2node = new HashMap<String,ParameterNode>();
-		
-		for(String key: config.getParameterKeys())
-		{
+
+	private void init() {
+		Map<String, ParameterNode> key2node = new HashMap<String, ParameterNode>();
+
+		for (String key : config.getParameterKeys()) {
 			List<String> prefixes = getPrefixes(key);
-			
+
 			// OpenMS/CADDSuite workaround for leading '1' NODE
-			if(prefixes.get(0).equals("1"))
+			if (prefixes.get(0).equals("1")) {
 				prefixes.remove(0);
-			
+			}
+
 			ParameterNode last = root;
-			for(int i=0;i<prefixes.size()-1;i++)
-			{
+			for (int i = 0; i < prefixes.size() - 1; i++) {
 				String prefix = prefixes.get(i);
-				
-				if(!key2node.containsKey(prefix))
-				{
-					
-					ParameterNode nn = new ParameterNode(last, null, getSuffix(prefix));
+
+				if (!key2node.containsKey(prefix)) {
+
+					ParameterNode nn = new ParameterNode(last, null,
+							getSuffix(prefix));
 					last.addChild(nn);
 					last = nn;
 					key2node.put(prefix, last);
-				}
-				else
-				{
+				} else {
 					last = key2node.get(prefix);
 				}
 			}
-			
-			Parameter<?>  p = config.getParameter(key);
+
+			Parameter<?> p = config.getParameter(key);
 			ParameterNode n = new ParameterNode(last, p, p.getKey());
 			last.addChild(n);
 		}

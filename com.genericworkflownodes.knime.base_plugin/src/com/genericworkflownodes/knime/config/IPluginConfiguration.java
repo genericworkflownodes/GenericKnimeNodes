@@ -31,29 +31,31 @@ public interface IPluginConfiguration {
 	/**
 	 * The name of the plugin.
 	 * 
-	 * @return
+	 * @return The name of the configured plugin.
 	 */
-	public String getPluginName();
+	String getPluginName();
 
 	/**
 	 * The path where all binaries are located.
 	 * 
-	 * @return
+	 * @return The path where all binaries are located.
 	 */
-	public String getBinariesPath();
+	String getBinariesPath();
 
 	/**
 	 * General properties of the plugin.
 	 * 
-	 * @return
+	 * @return A {@link Properties} object containing additional properties of
+	 *         the plugin.
 	 */
-	public Properties getPluginProperties();
+	Properties getPluginProperties();
 
 	/**
 	 * Environment variables which need to be set, to execute the tools.
 	 * 
-	 * @return
+	 * @return A {@link Map} of environment variables that need to be set, to
+	 *         execute the tools contained in the plugin.
 	 */
-	public Map<String, String> getEnvironmentVariables();
+	Map<String, String> getEnvironmentVariables();
 
 }

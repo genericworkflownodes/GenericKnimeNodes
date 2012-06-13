@@ -160,8 +160,9 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 		String tags = node.valueOf("@tags");
 
 		if (name.equals("write_ini") || name.equals("write_par")
-				|| name.equals("par") || name.equals("help"))
+				|| name.equals("par") || name.equals("help")) {
 			return;
+		}
 
 		Port port = new Port();
 
@@ -179,11 +180,12 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 						file_extensions[i] = file_extensions[i].replace("*.",
 								"");
 					}
-				} else
+				} else {
 					throw new Exception(
 							"i/o item '"
 									+ elem.attributeValue("name")
 									+ "' with missing attribute supported_formats detected");
+				}
 			} else {
 				String formats = node.valueOf("@supported_formats");
 				file_extensions = formats.split(",");
@@ -236,12 +238,14 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 
 		String path = this.getPath(elem);
 
-		if (this.captured_ports.contains(path))
+		if (this.captured_ports.contains(path)) {
 			return;
+		}
 
 		if (name.equals("write_ini") || name.equals("write_par")
-				|| name.equals("par") || name.equals("help"))
+				|| name.equals("par") || name.equals("help")) {
 			return;
+		}
 
 		Parameter<?> param = this.getParameterFromNode(elem);
 		this.config.addParameter(path, param);
@@ -252,12 +256,14 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 
 		String path = this.getPath(elem);
 
-		if (this.captured_ports.contains(path))
+		if (this.captured_ports.contains(path)) {
 			return;
+		}
 
 		if (name.equals("write_ini") || name.equals("write_par")
-				|| name.equals("par") || name.equals("help"))
+				|| name.equals("par") || name.equals("help")) {
 			return;
+		}
 
 		Parameter<?> param = this.getMultiParameterFromNode(elem);
 		this.config.addParameter(path, param);
@@ -265,19 +271,23 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 
 	private void readDescription() throws Exception {
 		Node node = this.doc.selectSingleNode("/tool");
-		if (node == null)
+		if (node == null) {
 			throw new Exception("CTD has no root named tool");
+		}
 
 		String lstatus = node.valueOf("@status");
-		if (lstatus != null && lstatus.equals(""))
+		if (lstatus != null && lstatus.equals("")) {
 			throw new Exception("CTD has no status");
+		}
 
 		node = this.doc.selectSingleNode("/tool/name");
-		if (node == null)
+		if (node == null) {
 			throw new Exception("CTD has no tool name");
+		}
 		String name = node.valueOf("text()");
-		if (name.equals(""))
+		if (name.equals("")) {
 			throw new Exception("CTD has no tool name");
+		}
 		this.config.setName(name);
 
 		node = this.doc.selectSingleNode("/tool/description");
@@ -649,8 +659,9 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 		Node cliRoot = this.doc.selectSingleNode("/tool/cli");
 
 		// check if this CTD contains a cli part
-		if (cliRoot == null)
+		if (cliRoot == null) {
 			return;
+		}
 
 		@SuppressWarnings("unchecked")
 		List<Node> cliElements = cliRoot.selectNodes("//clielement");
@@ -695,8 +706,9 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 				// find mapped parameter
 				if (config.getParameter(mapping.getRefName()) != null) {
 					// check that it is not boolean
-					if (config.getParameter(mapping.getRefName()) instanceof BoolParameter)
+					if (config.getParameter(mapping.getRefName()) instanceof BoolParameter) {
 						throw new Exception();
+					}
 				}
 			}
 		}

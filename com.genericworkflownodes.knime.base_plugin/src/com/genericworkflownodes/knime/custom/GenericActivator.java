@@ -41,24 +41,58 @@ import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
 
+/**
+ * This class is an abstract bundle activator which holds the code necessary to
+ * register a generated plugin.
+ * 
+ * @author aiche
+ */
 public abstract class GenericActivator extends AbstractUIPlugin {
 
+	/**
+	 * The logger.
+	 */
 	private static final Logger LOGGER = Logger
 			.getLogger(GenericActivator.class.getCanonicalName());
 
+	/**
+	 * Easy access for via {@link #getDefault()} method.
+	 */
 	private static GenericActivator plugin;
 
+	/**
+	 * Plugin properties.
+	 */
 	private Properties props = new Properties();
+
+	/**
+	 * Plugin specific environment variables.
+	 */
 	private Map<String, String> environmentVariables = new HashMap<String, String>();
 
+	/**
+	 * An abstraction of the payload directory.
+	 */
 	private IPayloadDirectory payloadDirectory;
+
+	/**
+	 * The bundle context for access inside the activator.
+	 */
 	private BundleContext bundleContext;
 
+	/**
+	 * Default c'tor.
+	 */
 	public GenericActivator() {
 		super();
 		plugin = this;
 	}
 
+	/**
+	 * Easy access to the static instance.
+	 * 
+	 * @return The plugin instance.
+	 */
 	public static GenericActivator getDefault() {
 		return plugin;
 	}
@@ -77,7 +111,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * This method carries out all tasks needed to initialize a plugin:
+	 * This method carries out all tasks needed to initialize a plugin.
 	 * 
 	 * <ul>
 	 * <li>registerNodes contained in the plugin</li>
@@ -86,8 +120,9 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * </ul>
 	 * 
 	 * @throws IOException
+	 *             In case of io errors.
 	 */
-	public void initializePlugin() throws IOException {
+	public final void initializePlugin() throws IOException {
 		registerNodes();
 
 		// initialize the payload directory
@@ -110,6 +145,12 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		registerMimeTypes();
 	}
 
+	/**
+	 * Tries to extract platform specific binaries from the plugin.jar.
+	 * 
+	 * @throws IOException
+	 *             In case of IO errors.
+	 */
 	private void extractBinaries() throws IOException {
 
 		// get platform and architecture identifiers
@@ -135,7 +176,10 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Loads the plugin.properties file from the plugin.jar.
+	 * 
 	 * @throws IOException
+	 *             In case of IO errors.
 	 */
 	private void loadPluginProperties() throws IOException {
 		props.load(this.getClass().getResourceAsStream("plugin.properties"));
@@ -166,26 +210,28 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * 
 	 * @param nodeBinariesDir
 	 *            Target directory where it should be extracted to
-	 * @param OperatingSystem
+	 * @param os
 	 *            Identifier of the operating system to extract the appropriate
 	 *            zip file
-	 * @param data_model
+	 * @param dataModel
 	 *            Identifier for the datamodel that should be extracted.
 	 * @return true if the specified zip file was found and extracted correctly.
 	 * @throws IOException
+	 *             Exception is thrown in case of io problems.
 	 */
-	private boolean tryExtractPayloadZIP(File nodeBinariesDir,
-			OperatingSystem os, String data_model) throws IOException {
+	private boolean tryExtractPayloadZIP(final File nodeBinariesDir,
+			final OperatingSystem os, final String dataModel)
+			throws IOException {
 		// check if a zip file for that combination of OS and data model exists
 		if (getBinaryLocation().getResourceAsStream(
-				getZipFileName(os, data_model)) != null) {
+				getZipFileName(os, dataModel)) != null) {
 			// extract it
 			ZipUtils.decompressTo(nodeBinariesDir, getBinaryLocation()
-					.getResourceAsStream(getZipFileName(os, data_model)));
+					.getResourceAsStream(getZipFileName(os, dataModel)));
 
 			// load the associated properties and store them as environment
 			// variable
-			loadEnvironmentVariables(os, data_model);
+			loadEnvironmentVariables(os, dataModel);
 			return true;
 		} else {
 			return false;
@@ -193,15 +239,21 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Tries to load data from the platform specific ini file, contained in the
+	 * plugin.jar.
+	 * 
 	 * @param os
-	 * @param data_model
+	 *            The operating system.
+	 * @param dataModel
+	 *            The data model (32 or 64 bit).
 	 * @throws IOException
+	 *             I thrown in case of IO errors.
 	 */
-	private void loadEnvironmentVariables(OperatingSystem os, String data_model)
-			throws IOException {
+	private void loadEnvironmentVariables(final OperatingSystem os,
+			final String dataModel) throws IOException {
 		Properties envProperites = new Properties();
 		envProperites.load(getBinaryLocation().getResourceAsStream(
-				getINIFileName(os, data_model)));
+				getINIFileName(os, dataModel)));
 		for (Object key : envProperites.keySet()) {
 			String k = key.toString();
 			String v = envProperites.getProperty(k);
@@ -210,21 +262,33 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Returns a correctly formated ini file name for the given combination of
+	 * os and dataModel.
+	 * 
 	 * @param os
-	 * @param data_model
-	 * @return
+	 *            The operating system.
+	 * @param dataModel
+	 *            The data model (32 or 64 bit).
+	 * @return Returns a string like binaries_win_32.ini.
 	 */
-	private String getINIFileName(OperatingSystem os, String data_model) {
-		return "binaries_" + os + "_" + data_model + ".ini";
+	private String getINIFileName(final OperatingSystem os,
+			final String dataModel) {
+		return "binaries_" + os + "_" + dataModel + ".ini";
 	}
 
 	/**
+	 * Returns a correctly formated zip file name for the given combination of
+	 * os and dataModel.
+	 * 
 	 * @param os
-	 * @param data_model
-	 * @return
+	 *            The operating system.
+	 * @param dataModel
+	 *            The data model (32 or 64 bit).
+	 * @return Returns a string like binaries_win_32.zip.
 	 */
-	private String getZipFileName(OperatingSystem os, String data_model) {
-		return "binaries_" + os + "_" + data_model + ".zip";
+	private String getZipFileName(final OperatingSystem os,
+			final String dataModel) {
+		return "binaries_" + os + "_" + dataModel + ".zip";
 	}
 
 	/**
@@ -263,7 +327,8 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	/**
 	 * Extracts the package name from the plugin data.
 	 * 
-	 * @return
+	 * @return A string of the package name for the plugin classes, where the
+	 *         last index of knime was removed.
 	 */
 	private String getKNIMELessPackageName() {
 		String packageName = this.getClass().getPackage().getName();
@@ -311,6 +376,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				} else {
 					// TODO: handle non existent binaries, check if we have a
 					// configured one, otherwise warn
+					LOGGER.warning("Did not find any binaries for your platform.");
 				}
 			}
 		}
@@ -328,11 +394,12 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @return A {@link File} pointing to the executable (if one was found) or
 	 *         null (if no executable was found).
 	 */
-	private File getExecutableName(File binDir, String nodename) {
+	private File getExecutableName(final File binDir, final String nodename) {
 		for (String extension : new String[] { "", ".bin", ".exe" }) {
 			File binFile = new File(binDir, nodename + extension);
-			if (binFile.canExecute())
+			if (binFile.canExecute()) {
 				return binFile;
+			}
 		}
 		return null;
 	}
@@ -340,40 +407,41 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	/**
 	 * Get the plugin specific proberties stored in the plugin.properties file.
 	 * 
-	 * @return
+	 * @return The properties loaded for this plugin.
 	 */
-	public Properties getProperties() {
+	public final Properties getProperties() {
 		return this.props;
 	}
 
 	/**
 	 * Get the environment variable customizations stored in the payload config
-	 * file (e.g., binaries_mac_64.ini)
+	 * file (e.g., binaries_mac_64.ini).
 	 * 
-	 * @return
+	 * @return A {@link Map} containing environment variables and there
+	 *         respective value as set in the binaries_...ini file.
 	 */
-	public Map<String, String> getEnvironment() {
+	public final Map<String, String> getEnvironment() {
 		return environmentVariables;
 	}
 
 	/**
 	 * Returns the list of nodes that the plugin provides.
 	 * 
-	 * @return
+	 * @return Returns the list of nodes that the plugin provides.
 	 */
 	public abstract List<String> getNodeNames();
 
 	/**
 	 * Returns the list of {@link MIMEType}s provided by the plugin.
 	 * 
-	 * @return
+	 * @return Returns the list of {@link MIMEType}s provided by the plugin.
 	 */
 	public abstract List<MIMEType> getMIMETypes();
 
 	/**
 	 * Returns the {@link Class} where the binaries are located.
 	 * 
-	 * @return
+	 * @return Returns the {@link Class} where the binaries are located.
 	 */
 	public abstract Class<?> getBinaryLocation();
 }

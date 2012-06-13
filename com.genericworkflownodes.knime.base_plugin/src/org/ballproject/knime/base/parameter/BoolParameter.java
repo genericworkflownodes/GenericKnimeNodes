@@ -38,8 +38,9 @@ public class BoolParameter extends Parameter<Boolean> {
 
 	@Override
 	public String toString() {
-		if (value == null)
+		if (value == null) {
 			return null;
+		}
 		return (value ? "true" : "false");
 	}
 
@@ -49,8 +50,9 @@ public class BoolParameter extends Parameter<Boolean> {
 			value = null;
 			return;
 		}
-		if (!(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false")))
+		if (!(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false"))) {
 			throw new InvalidParameterValueException("");
+		}
 		value = Boolean.parseBoolean(s);
 	}
 

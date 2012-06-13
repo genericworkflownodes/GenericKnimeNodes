@@ -140,8 +140,9 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 
 	@Override
 	public void valueChanged(ListSelectionEvent evt) {
-		if (evt.getValueIsAdjusting())
+		if (evt.getValueIsAdjusting()) {
 			return;
+		}
 		if (evt.getSource() == table.getSelectionModel()) {
 			int row = table.getSelectedRow();
 			Object val = table.getModel().getValueAt(row, 1);

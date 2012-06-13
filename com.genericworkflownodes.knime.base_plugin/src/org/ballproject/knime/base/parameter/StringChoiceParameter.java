@@ -65,8 +65,9 @@ public class StringChoiceParameter extends Parameter<String> {
 
 	@Override
 	public void setValue(String value) {
-		if (values.contains(value))
+		if (values.contains(value)) {
 			super.setValue(value);
+		}
 	}
 
 	/**
@@ -100,9 +101,10 @@ public class StringChoiceParameter extends Parameter<String> {
 			value = null;
 			return;
 		}
-		if (!this.getAllowedValues().contains(s))
+		if (!this.getAllowedValues().contains(s)) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is invalid");
+		}
 		value = s;
 
 	}

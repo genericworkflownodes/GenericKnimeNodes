@@ -115,9 +115,10 @@ class PluginPreferenceToolLocator implements IToolLocatorService {
 	public Map<String, List<ExternalTool>> getToolsByPlugin() {
 		Map<String, List<ExternalTool>> plugin2tools = new HashMap<String, List<ExternalTool>>();
 		for (ExternalTool tool : tools) {
-			if (!plugin2tools.containsKey(tool.getPluginName()))
+			if (!plugin2tools.containsKey(tool.getPluginName())) {
 				plugin2tools.put(tool.getPluginName(),
 						new ArrayList<ExternalTool>());
+			}
 			plugin2tools.get(tool.getPluginName()).add(tool);
 		}
 		return plugin2tools;

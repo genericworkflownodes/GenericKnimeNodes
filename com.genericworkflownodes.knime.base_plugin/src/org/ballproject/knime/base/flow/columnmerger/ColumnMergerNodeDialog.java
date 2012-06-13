@@ -32,16 +32,14 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  * 
  * @author roettig
  */
-public class ColumnMergerNodeDialog extends DefaultNodeSettingsPane
-{
+public class ColumnMergerNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
-	 * New pane for configuring Demangler node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
+	 * New pane for configuring Demangler node dialog. This is just a suggestion
+	 * to demonstrate possible default dialog components.
 	 */
-	protected ColumnMergerNodeDialog(Object obj)
-	{
+	protected ColumnMergerNodeDialog(Object obj) {
 		super();
 	}
-	
+
 }

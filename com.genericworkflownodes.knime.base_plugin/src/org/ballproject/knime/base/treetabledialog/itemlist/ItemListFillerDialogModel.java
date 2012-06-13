@@ -65,8 +65,9 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 
 	public void restrictValues(String... values) {
 		this.values = new String[values.length];
-		for (int i = 0; i < values.length; i++)
+		for (int i = 0; i < values.length; i++) {
 			this.values[i] = values[i];
+		}
 	}
 
 	public void setValidator(Validator validator) {
@@ -74,14 +75,16 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 	}
 
 	public String getValidatorName() {
-		if (validator == null)
+		if (validator == null) {
 			return "Null";
+		}
 		return validator.getName();
 	}
 
 	public String getValidatorReason() {
-		if (validator == null)
+		if (validator == null) {
 			return "N/A";
+		}
 		return validator.getReason();
 	}
 
@@ -97,14 +100,16 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 
 	public String[] getSelectedItems() {
 		String[] ret = new String[data.size()];
-		for (int i = 0; i < data.size(); i++)
+		for (int i = 0; i < data.size(); i++) {
 			ret[i] = data.get(i);
+		}
 		return ret;
 	}
 
 	private boolean isValid(String text) {
-		if (validator == null)
+		if (validator == null) {
 			return true;
+		}
 		return validator.validate(text);
 	}
 
@@ -112,8 +117,9 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 		boolean valid = isValid(item);
 		if (valid) {
 			if (setLike) {
-				if (data.contains(item))
+				if (data.contains(item)) {
 					return false;
+				}
 			}
 
 			data.add(item);

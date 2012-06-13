@@ -57,8 +57,9 @@ public class StringListParameter extends Parameter<List<String>> implements
 
 	@Override
 	public String getStringRep() {
-		if (value == null)
+		if (value == null) {
 			return "";
+		}
 		StringBuffer sb = new StringBuffer();
 		for (String s : this.value) {
 			sb.append(s + SEPERATORTOKEN);
@@ -73,8 +74,9 @@ public class StringListParameter extends Parameter<List<String>> implements
 
 	@Override
 	public String toString() {
-		if (value == null)
+		if (value == null) {
 			return "[]";
+		}
 		String[] values = value.toArray(new String[0]);
 		return Arrays.toString(values);
 	}

@@ -37,72 +37,57 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
 
-public class SchemaValidator
-{
-	
+public class SchemaValidator {
+
 	private List<InputStream> schemas = new ArrayList<InputStream>();
 	private String error_report = "";
-	
-	public void addSchema(InputStream in)
-	{
+
+	public void addSchema(InputStream in) {
 		schemas.add(in);
 	}
-	
-	private Source[] getSchemaSources()
-	{
+
+	private Source[] getSchemaSources() {
 		Source[] ret = new Source[schemas.size()];
 		int idx = 0;
-		for(InputStream in: schemas)
-		{
+		for (InputStream in : schemas) {
 			ret[idx++] = new StreamSource(in);
 		}
 		return ret;
 	}
 
-	public boolean validates(String filename)
-	{
-		boolean         ret = true;
+	public boolean validates(String filename) {
+		boolean ret = true;
 		FileInputStream fin = null;
-		
-		try
-		{
+
+		try {
 			fin = new FileInputStream(filename);
 			ret = validates(fin);
 			fin.close();
-		}
-		catch(FileNotFoundException e)
-		{
+		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
-		} 
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-		finally
-		{
-			try
-			{
-				if(fin!=null)
+		} finally {
+			try {
+				if (fin != null) {
 					fin.close();
-			} 
-			catch (IOException e)
-			{
+				}
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return ret;
 	}
-	
-	public boolean validates(InputStream xmlstream)
-	{
-		SAXParserFactory factory       = SAXParserFactory.newInstance();
-		SchemaFactory    schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+
+	public boolean validates(InputStream xmlstream) {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
 
 		SimpleErrorHandler errorHandler = new SimpleErrorHandler();
-		
-		try
-		{
+
+		try {
 			factory.setSchema(schemaFactory.newSchema(getSchemaSources()));
 
 			SAXParser parser = factory.newSAXParser();
@@ -113,31 +98,23 @@ public class SchemaValidator
 			reader.setErrorHandler(errorHandler);
 
 			reader.read(xmlstream);
-		}
-		catch(SAXException e)
-		{
+		} catch (SAXException e) {
 			throw new RuntimeException(e);
-		} 
-		catch (DocumentException e)
-		{
+		} catch (DocumentException e) {
 			throw new RuntimeException(e);
-		} 
-		catch (ParserConfigurationException e)
-		{
+		} catch (ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		}
-		
-		if (!errorHandler.isValid())
-		{
+
+		if (!errorHandler.isValid()) {
 			error_report = errorHandler.getErrorReport();
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	public String getErrorReport()
-	{
+
+	public String getErrorReport() {
 		return error_report;
 	}
 }

@@ -2,7 +2,6 @@ package org.ballproject.knime.base.mime.demangler;
 
 import java.util.List;
 
-public interface DemanglerProvider
-{
+public interface DemanglerProvider {
 	List<Demangler> getDemanglers();
 }

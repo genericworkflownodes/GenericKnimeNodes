@@ -60,9 +60,12 @@ public class MIMEtype implements Serializable {
 	 * constructs a new MIMEtype object associated with supplied file extension
 	 * and binary flag.
 	 * 
+	 * @param clazz
 	 * @param extension
+	 * @param binary
 	 */
-	public MIMEtype(Class<?> clazz, String extension, boolean binary) {
+	public MIMEtype(final Class<?> clazz, final String extension,
+			final boolean binary) {
 		this.clazz = clazz;
 		this.file_extension = extension;
 		this.binary = binary;

@@ -102,8 +102,9 @@ public class BeanShellNodeModel extends NodeModel {
 			ip.eval(script_secondPass);
 			OutRow out = (OutRow) ip.get("OUTROW");
 
-			if (out.isNull())
+			if (out.isNull()) {
 				continue;
+			}
 
 			if (first) {
 				container1 = exec.createDataContainer(getDataTableSpec2(out));

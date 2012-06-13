@@ -26,7 +26,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
-
 /**
  * <code>NodeDialog</code> for the "Demangler" Node.
  * 
@@ -38,59 +37,49 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
  * 
  * @author roettig
  */
-public class BeanShellNodeDialog extends DefaultNodeSettingsPane
-{
+public class BeanShellNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
-	 * New pane for configuring Demangler node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
+	 * New pane for configuring Demangler node dialog. This is just a suggestion
+	 * to demonstrate possible default dialog components.
 	 */
-	protected BeanShellNodeDialog(Object obj)
-	{
+	protected BeanShellNodeDialog(Object obj) {
 		super();
 		editor = new EditorPanel();
-    	addTab("Java Snippet", editor);
+		addTab("Java Snippet", editor);
 	}
-	
+
 	private EditorPanel editor;
-	
-	
-	
+
 	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings, DataTableSpec[] specs) throws NotConfigurableException
-	{
-		try
-		{
+	protected void loadSettingsFrom(NodeSettingsRO settings,
+			DataTableSpec[] specs) throws NotConfigurableException {
+		try {
 			editor.setInitScript(settings.getString("script_init"));
 			editor.setFirstPassScript(settings.getString("script_firstPass"));
 			editor.setSecondPassScript(settings.getString("script_secondPass"));
-		}
-		catch (InvalidSettingsException e)
-		{
+		} catch (InvalidSettingsException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
-	public void saveAdditionalSettingsTo(NodeSettingsWO settings) throws InvalidSettingsException
-	{
+	public void saveAdditionalSettingsTo(NodeSettingsWO settings)
+			throws InvalidSettingsException {
 		settings.addString("script_init", editor.getInitScript());
 		settings.addString("script_firstPass", editor.getFirstPassScript());
 		settings.addString("script_secondPass", editor.getSecondPassScript());
 	}
 
 	@Override
-	public void loadAdditionalSettingsFrom(NodeSettingsRO settings, DataTableSpec[] specs) throws NotConfigurableException
-	{
-		try
-		{
+	public void loadAdditionalSettingsFrom(NodeSettingsRO settings,
+			DataTableSpec[] specs) throws NotConfigurableException {
+		try {
 			editor.setInitScript(settings.getString("script_init"));
 			editor.setFirstPassScript(settings.getString("script_firstPass"));
 			editor.setSecondPassScript(settings.getString("script_secondPass"));
-		} 
-		catch (InvalidSettingsException e)
-		{
+		} catch (InvalidSettingsException e) {
 			e.printStackTrace();
 		}
 	}

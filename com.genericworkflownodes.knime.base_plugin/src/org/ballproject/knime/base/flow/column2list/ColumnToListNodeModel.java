@@ -46,131 +46,133 @@ import org.knime.core.node.NodeSettingsWO;
 
 /**
  * @author roettig
- *
+ * 
  */
-public class ColumnToListNodeModel extends NodeModel
-{
+public class ColumnToListNodeModel extends NodeModel {
 
-	protected ColumnToListNodeModel()
-	{
+	protected ColumnToListNodeModel() {
 		super(1, 1);
 	}
-	
-	
 
 	@Override
 	protected DataTableSpec[] configure(DataTableSpec[] inSpecs)
-			throws InvalidSettingsException
-	{
+			throws InvalidSettingsException {
 		DataType type = inSpecs[0].iterator().next().getType();
-		if(type.isCollectionType())
-		{
-			throw new InvalidSettingsException("collection type at port 0 detected"); 
+		if (type.isCollectionType()) {
+			throw new InvalidSettingsException(
+					"collection type at port 0 detected");
 		}
-		
+
 		outspec = getOutSpec(type);
-		
+
 		return outspec;
 	}
 
 	private DataTableSpec[] outspec;
-	
-	private DataTableSpec[] getOutSpec(DataType type)
-	{
-		
+
+	private DataTableSpec[] getOutSpec(DataType type) {
+
 		DataTableSpec[] ret = new DataTableSpec[1];
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-		allColSpecs[0]   =  new DataColumnSpecCreator("column 0",  ListCell.getCollectionType(type)).createSpec();
+		allColSpecs[0] = new DataColumnSpecCreator("column 0",
+				ListCell.getCollectionType(type)).createSpec();
 		DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
 		ret[0] = outputSpec;
-		
+
 		return ret;
 	}
-	
 
 	@Override
 	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
-			ExecutionContext exec) throws Exception
-	{
+			ExecutionContext exec) throws Exception {
 		BufferedDataContainer cont = exec.createDataContainer(outspec[0]);
-		
+
 		List<DataCell> cells = new ArrayList<DataCell>();
 		CloseableRowIterator iter = inData[0].iterator();
-		while(iter.hasNext())
-		{
+		while (iter.hasNext()) {
 			cells.add(iter.next().getCell(0));
 		}
-		
+
 		ListCell lc = CollectionCellFactory.createListCell(cells);
 		DataRow row = new DefaultRow("Row 1", lc);
 		cont.addRowToTable(row);
 		cont.close();
-		
-		return new BufferedDataTable[]{cont.getTable()};
+
+		return new BufferedDataTable[] { cont.getTable() };
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeModel#loadInternals(java.io.File, org.knime.core.node.ExecutionMonitor)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeModel#loadInternals(java.io.File,
+	 * org.knime.core.node.ExecutionMonitor)
 	 */
 	@Override
 	protected void loadInternals(File arg0, ExecutionMonitor arg1)
-			throws IOException, CanceledExecutionException
-	{
+			throws IOException, CanceledExecutionException {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core.node.NodeSettingsRO)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
+	 * .node.NodeSettingsRO)
 	 */
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO arg0)
-			throws InvalidSettingsException
-	{
+			throws InvalidSettingsException {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeModel#reset()
 	 */
 	@Override
-	protected void reset()
-	{
+	protected void reset() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeModel#saveInternals(java.io.File, org.knime.core.node.ExecutionMonitor)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeModel#saveInternals(java.io.File,
+	 * org.knime.core.node.ExecutionMonitor)
 	 */
 	@Override
 	protected void saveInternals(File arg0, ExecutionMonitor arg1)
-			throws IOException, CanceledExecutionException
-	{
+			throws IOException, CanceledExecutionException {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeModel#saveSettingsTo(org.knime.core.node.NodeSettingsWO)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeModel#saveSettingsTo(org.knime.core.node.
+	 * NodeSettingsWO)
 	 */
 	@Override
-	protected void saveSettingsTo(NodeSettingsWO arg0)
-	{
+	protected void saveSettingsTo(NodeSettingsWO arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeModel#validateSettings(org.knime.core.node.NodeSettingsRO)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeModel#validateSettings(org.knime.core.node.
+	 * NodeSettingsRO)
 	 */
 	@Override
 	protected void validateSettings(NodeSettingsRO arg0)
-			throws InvalidSettingsException
-	{
+			throws InvalidSettingsException {
 		// TODO Auto-generated method stub
 
 	}

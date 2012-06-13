@@ -62,22 +62,25 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 
 	@Override
 	public boolean validate(List<Double> val) {
-		if (isNull())
+		if (isNull()) {
 			return true;
+		}
 
 		boolean ok = true;
 
 		for (Double v : val) {
-			if (v < this.lowerBound || v > this.upperBound)
+			if (v < this.lowerBound || v > this.upperBound) {
 				ok = false;
+			}
 		}
 		return ok;
 	}
 
 	@Override
 	public String getStringRep() {
-		if (value == null)
+		if (value == null) {
 			return "";
+		}
 		StringBuffer sb = new StringBuffer();
 		for (Double d : this.value) {
 			sb.append(String.format("%e", d) + SEPERATORTOKEN);
@@ -103,12 +106,14 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 	}
 
 	public String toString() {
-		if (value == null)
+		if (value == null) {
 			return "[]";
+		}
 		String[] ret = new String[this.value.size()];
 		int idx = 0;
-		for (Double i : value)
+		for (Double i : value) {
 			ret[idx++] = i.toString();
+		}
 		return Arrays.toString(ret);
 	}
 }

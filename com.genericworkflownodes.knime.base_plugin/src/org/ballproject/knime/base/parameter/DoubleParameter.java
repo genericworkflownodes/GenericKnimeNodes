@@ -43,8 +43,9 @@ public class DoubleParameter extends NumberParameter<Double> {
 
 	@Override
 	public String toString() {
-		if (value == null)
+		if (value == null) {
 			return null;
+		}
 		return String.format("%e", value);
 	}
 
@@ -68,10 +69,12 @@ public class DoubleParameter extends NumberParameter<Double> {
 
 	@Override
 	public boolean validate(Double val) {
-		if (isNull())
+		if (isNull()) {
 			return true;
-		if (val >= this.lowerBound && val <= this.upperBound)
+		}
+		if (val >= this.lowerBound && val <= this.upperBound) {
 			return true;
+		}
 		return false;
 	}
 

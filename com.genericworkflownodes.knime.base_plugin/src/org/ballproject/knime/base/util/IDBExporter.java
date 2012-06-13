@@ -46,8 +46,9 @@ public class IDBExporter {
 			File[] files = in.listFiles();
 
 			for (File file : files) {
-				if (!file.getAbsolutePath().endsWith(".ctd"))
+				if (!file.getAbsolutePath().endsWith(".ctd")) {
 					continue;
+				}
 				// CTD files and process those
 				processCTD(file.getAbsolutePath());
 			}

@@ -21,7 +21,6 @@ package org.ballproject.knime.base.mime;
 
 import org.knime.core.data.DataValue;
 
-public interface MIMEFileValue extends DataValue
-{
+public interface MIMEFileValue extends DataValue {
 	byte[] getData();
 }

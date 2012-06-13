@@ -32,8 +32,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author
  */
-public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel>
-{
+public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 
 	/**
 	 * Creates a new view.
@@ -41,8 +40,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel>
 	 * @param nodeModel
 	 *            The model (class: {@link GenericKnimeNodeModel})
 	 */
-	protected GenericKnimeNodeView(final GenericKnimeNodeModel nodeModel)
-	{
+	protected GenericKnimeNodeView(final GenericKnimeNodeModel nodeModel) {
 		super(nodeModel);
 
 		JTextArea text = new JTextArea(nodeModel.output, 40, 80);
@@ -55,8 +53,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void modelChanged()
-	{
+	protected void modelChanged() {
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
@@ -72,8 +69,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onClose()
-	{
+	protected void onClose() {
 
 		// TODO things to do when closing the view
 	}
@@ -82,8 +78,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onOpen()
-	{
+	protected void onOpen() {
 
 		// TODO things to do when opening the view
 	}

@@ -67,8 +67,9 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		query += "ITEM[@name='" + toks[toks.length - 1] + "']";
 
 		Node node = doc.selectSingleNode(query);
-		if (node == null)
+		if (node == null) {
 			return;
+		}
 		Element elem = (Element) node;
 		elem.addAttribute("value", value);
 	}
@@ -82,8 +83,9 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		query += "ITEMLIST[@name='" + toks[toks.length - 1] + "']";
 
 		Node node = doc.selectSingleNode(query);
-		if (node == null)
+		if (node == null) {
 			return;
+		}
 		Element elem = (Element) node;
 		Element item = elem.addElement("LISTITEM");
 		item.addAttribute("value", value);

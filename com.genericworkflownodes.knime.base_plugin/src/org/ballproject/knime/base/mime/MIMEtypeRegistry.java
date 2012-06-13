@@ -26,29 +26,30 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.url.MIMEType;
 
 /**
- * The interface MIMEtypeRegistry defines methods needed to build a (recursive) database or registry of MIME types known
- * to GenericKnimeNodes.
+ * The interface MIMEtypeRegistry defines methods needed to build a (recursive)
+ * database or registry of MIME types known to GenericKnimeNodes.
  * 
  * @author roettig
- *
+ * 
  */
-public interface MIMEtypeRegistry
-{
+public interface MIMEtypeRegistry {
 	/**
 	 * returns MIMEtype of a given filename.
 	 * 
-	 * @param filename name of the file
+	 * @param filename
+	 *            name of the file
 	 * 
 	 * @return MIMEtype
 	 */
 	MIMEType getMIMEtype(String filename);
-	
+
 	void registerMIMEtype(MIMEType mt);
-	
+
 	List<Demangler> getDemangler(MIMEType type);
+
 	List<Demangler> getMangler(DataType type);
-	
+
 	void addDemangler(Demangler demangler);
-	
+
 	boolean isCompatible(DataType dt1, DataType dt2);
 }
