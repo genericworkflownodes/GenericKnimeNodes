@@ -23,7 +23,7 @@
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
-   <node category-path="/" factory-class="com.genericworkflownodes.knime.nodes.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.FileMergerNodeFactory"/>
+   <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
 </extension>
    
    <extension point="org.knime.product.splashExtension">
