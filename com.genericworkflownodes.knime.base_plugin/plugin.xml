@@ -1,28 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.4"?>
+
 <plugin>
    <extension-point id="org.ballproject.knime.base.mime.demangler.DemanglerProvider" name="Demangler Provider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
    
    <extension point="org.knime.workbench.repository.categories">
-    <category description="/community/GenericKnimeNodes" icon="icons/category.png" path="/community" name="GenericKnimeNodes" level-id="GenericKnimeNodes"/>
-    <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" path="/community/GenericKnimeNodes" name="IO" level-id="IO"/>      
-    <category description="/community/GenericKnimeNodes/View" icon="icons/category.png" path="/community/GenericKnimeNodes" name="Util" level-id="Util"/>
-    <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" path="/community/GenericKnimeNodes" name="KNIMEConversion" level-id="KNIMEConversion"/>
-    <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" path="/community/GenericKnimeNodes" name="Flow" level-id="Flow"/>
+    <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
+    <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" level-id="IO" name="IO" path="/community/GenericKnimeNodes"/>      
+    <category description="/community/GenericKnimeNodes/View" icon="icons/category.png" level-id="Util" name="Util" path="/community/GenericKnimeNodes"/>
+    <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="KNIMEConversion" name="KNIMEConversion" path="/community/GenericKnimeNodes"/>
+    <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="Flow" name="Flow" path="/community/GenericKnimeNodes"/>
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
-    <node factory-class="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
-    <node factory-class="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
-    <node factory-class="org.ballproject.knime.base.io.viewer.MimeFileViewerNodeFactory" id="org.ballproject.knime.base.io.viewer.MimeFileViewerNodeFactory" category-path="/community/GenericKnimeNodes/Util"/>
-    <node factory-class="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
-    <node factory-class="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" category-path="/community/GenericKnimeNodes/IO"/>
-    <node factory-class="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" id="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
-    <node factory-class="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" id="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" category-path="/community/GenericKnimeNodes/KNIMEConversion"/>
-    <node factory-class="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" category-path="/community/GenericKnimeNodes/Util"/>    
-    <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" category-path="/community/GenericKnimeNodes/Flow"/>
-    <node factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" category-path="/community/GenericKnimeNodes/Flow"/>
-   </extension>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.importer.MimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.exporter.MimeFileExporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="org.ballproject.knime.base.io.viewer.MimeFileViewerNodeFactory" id="org.ballproject.knime.base.io.viewer.MimeFileViewerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory" id="org.ballproject.knime.base.io.listimporter.ListMimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory" id="org.ballproject.knime.base.io.listexporter.ListMimeFileExporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory" id="org.ballproject.knime.base.io.demangler.DemanglerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="org.ballproject.knime.base.io.mangler.ManglerNodeFactory" id="org.ballproject.knime.base.io.mangler.ManglerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
+   <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
+</extension>
    
    <extension point="org.knime.product.splashExtension">
         <splashExtension icon="icons/GKN.png" id="org.ballproject.knime.splashExtension"/>
@@ -34,14 +36,11 @@
    
    <extension point="org.eclipse.ui.preferencePages">
       <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="org.ballproject.knime.base.preferences.GKNPreferences" name="Generic KNIME Nodes"/>
-      <page class="com.genericworkflownodes.knime.preferences.ExternalToolsPage" id="org.ballproject.knime.base.preferences.GKNExternalTools" name="Tool DB" category="org.ballproject.knime.base.preferences.GKNPreferences"/>
+      <page category="org.ballproject.knime.base.preferences.GKNPreferences" class="com.genericworkflownodes.knime.preferences.ExternalToolsPage" id="org.ballproject.knime.base.preferences.GKNExternalTools" name="Tool DB"/>
    </extension>
-   <extension
-         point="org.eclipse.ui.services">
-      <serviceFactory
-            factoryClass="com.genericworkflownodes.knime.toolfinderservice.ToolLocatorServiceFactory">
-         <service
-               serviceClass="com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService">
+   <extension point="org.eclipse.ui.services">
+      <serviceFactory factoryClass="com.genericworkflownodes.knime.toolfinderservice.ToolLocatorServiceFactory">
+         <service serviceClass="com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService">
          </service>
       </serviceFactory>
    </extension>
