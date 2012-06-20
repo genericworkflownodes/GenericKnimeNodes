@@ -17,15 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
-public abstract class NumberParameter<T> extends Parameter<T> {
+import java.util.List;
 
-	private static final long serialVersionUID = 3529659248042850739L;
+/**
+ * The abstract NumberListParameter class is used to store lists of numeric
+ * values.
+ * 
+ * @author roettig
+ * 
+ */
+public abstract class NumberListParameter<T> extends Parameter<List<T>> {
+
+	private static final long serialVersionUID = -4722657913698964700L;
 	protected T lowerBound;
 	protected T upperBound;
 
-	public NumberParameter(String key, T value) {
+	public NumberListParameter(String key, List<T> value) {
 		super(key, value);
 	}
 
@@ -60,6 +69,7 @@ public abstract class NumberParameter<T> extends Parameter<T> {
 	 * sets the upper bound for constrained numeric parameters.
 	 * 
 	 * @param upperBound
+	 *            upper bound
 	 */
 	public void setUpperBound(T upperBound) {
 		this.upperBound = upperBound;

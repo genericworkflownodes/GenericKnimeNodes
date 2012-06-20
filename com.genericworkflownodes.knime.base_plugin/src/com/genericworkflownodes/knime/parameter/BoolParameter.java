@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 /**
  * The BoolParameter class is used to store boolean values.

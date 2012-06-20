@@ -3,7 +3,7 @@ package org.ballproject.knime.base.treetabledialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterNode extends Node<Parameter<?>> {
 	protected List<Node<Parameter<?>>> children2 = new ArrayList<Node<Parameter<?>>>();

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.Arrays;
 import java.util.List;

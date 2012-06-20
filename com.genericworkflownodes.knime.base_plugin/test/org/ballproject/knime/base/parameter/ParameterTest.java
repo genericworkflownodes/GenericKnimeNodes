@@ -8,6 +8,15 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.DoubleListParameter;
+import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
+import com.genericworkflownodes.knime.parameter.IntegerParameter;
+import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
+import com.genericworkflownodes.knime.parameter.StringListParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
+
 public class ParameterTest {
 
 	@Test

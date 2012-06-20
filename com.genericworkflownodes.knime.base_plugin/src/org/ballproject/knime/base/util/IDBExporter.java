@@ -7,7 +7,6 @@ import java.io.FileWriter;
 
 import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
 import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -15,6 +14,8 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 // TODO documentation
 // TODO alternative implementation?

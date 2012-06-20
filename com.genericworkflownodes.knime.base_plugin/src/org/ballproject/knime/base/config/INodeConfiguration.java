@@ -21,10 +21,10 @@ package org.ballproject.knime.base.config;
 
 import java.util.List;
 
-import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public interface INodeConfiguration {
 	public String getName();

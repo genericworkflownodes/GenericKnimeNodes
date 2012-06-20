@@ -23,12 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.ballproject.knime.base.parameter.DoubleParameter;
-import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.parameter.StringChoiceParameter;
-import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
+
+import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
 
 public class GalaxyNodeConfigurationReaderTest {
 

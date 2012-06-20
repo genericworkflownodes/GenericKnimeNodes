@@ -7,13 +7,31 @@ import java.util.List;
 
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.nodegeneration.NodeGenerator;
 
+import com.genericworkflownodes.knime.parameter.Parameter;
+
+/**
+ * Wrapper class for the NodeNameNodeFactory.xml file template.
+ * 
+ * @author bkahlert
+ */
 public class NodeFactoryXMLTemplate extends Template {
 
-	private static String join(List<String> mts, String delimiter) {
+	/**
+	 * Joins all {@link String}s contained in the list using the provided
+	 * delimiter.
+	 * 
+	 * @param mts
+	 *            {@link List} of {@link String}s to join.
+	 * @param delimiter
+	 *            The delimiter that should be used to separate the joined
+	 *            {@link String}s.
+	 * @return A {@link String} containing all elements of the provided
+	 *         {@link List} separated by the delimiter.
+	 */
+	private static String join(final List<String> mts, final String delimiter) {
 		if (mts.isEmpty()) {
 			return "";
 		}
@@ -25,7 +43,16 @@ public class NodeFactoryXMLTemplate extends Template {
 		return buffer.toString();
 	}
 
-	private static String getInPorts(INodeConfiguration nodeConfiguration) {
+	/**
+	 * Returns the xml representation of the input ports.
+	 * 
+	 * @param nodeConfiguration
+	 *            The {@link INodeConfiguration} containing the port
+	 *            information.
+	 * @return A {@link String} representing the input port part of the xml
+	 *         config file.
+	 */
+	private static String getInPorts(final INodeConfiguration nodeConfiguration) {
 		// ports
 		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inPorts = "";
@@ -51,7 +78,16 @@ public class NodeFactoryXMLTemplate extends Template {
 		return inPorts;
 	}
 
-	private static String getOutPorts(INodeConfiguration nodeConfiguration) {
+	/**
+	 * Returns the xml representation of the output ports.
+	 * 
+	 * @param nodeConfiguration
+	 *            The {@link INodeConfiguration} containing the port
+	 *            information.
+	 * @return A {@link String} representing the output port part of the xml
+	 *         config file.
+	 */
+	private static String getOutPorts(final INodeConfiguration nodeConfiguration) {
 		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outPorts = "";
 		int idx = 0;
@@ -70,7 +106,15 @@ public class NodeFactoryXMLTemplate extends Template {
 		return outPorts;
 	}
 
-	private static String getOptions(INodeConfiguration nodeConfiguration) {
+	/**
+	 * Creates the option information contained in the
+	 * {@link INodeConfiguration}.
+	 * 
+	 * @param nodeConfiguration
+	 *            The {@link INodeConfiguration}.
+	 * @return A {@link String} representing the options of this node.
+	 */
+	private static String getOptions(final INodeConfiguration nodeConfiguration) {
 		StringBuffer sb = new StringBuffer();
 		for (Parameter<?> p : nodeConfiguration.getParameters()) {
 			sb.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA["
@@ -79,7 +123,15 @@ public class NodeFactoryXMLTemplate extends Template {
 		return sb.toString();
 	}
 
-	private static String prettyPrint(String manual) {
+	/**
+	 * Converts the passed {@link String} to a xml representation (e.g.,
+	 * newlines will be converted to HTML paragraphs).
+	 * 
+	 * @param manual
+	 *            The {@link String} that should be converted.
+	 * @return The passed {@link String} in HTML like form.
+	 */
+	private static String prettyPrint(final String manual) {
 		if (manual.equals("")) {
 			return "";
 		}
@@ -91,8 +143,22 @@ public class NodeFactoryXMLTemplate extends Template {
 		return sb.toString();
 	}
 
-	public NodeFactoryXMLTemplate(String nodeName,
-			INodeConfiguration nodeConfiguration, String iconPath)
+	/**
+	 * Create a NodeNameNodeFactory.xml given the node name, node configuration,
+	 * and the path to the node icon.
+	 * 
+	 * @param nodeName
+	 *            Name of the node.
+	 * @param nodeConfiguration
+	 *            The node configuration.
+	 * @param iconPath
+	 *            The path to the icon of the node.
+	 * @throws IOException
+	 *             Throws an {@link IOException} if the associated template
+	 *             cannot be read.
+	 */
+	public NodeFactoryXMLTemplate(final String nodeName,
+			final INodeConfiguration nodeConfiguration, final String iconPath)
 			throws IOException {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/NodeXMLDescriptor.template"));

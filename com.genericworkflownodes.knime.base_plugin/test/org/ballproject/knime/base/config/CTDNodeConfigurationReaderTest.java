@@ -27,18 +27,19 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.parameter.BoolParameter;
-import org.ballproject.knime.base.parameter.DoubleListParameter;
-import org.ballproject.knime.base.parameter.DoubleParameter;
-import org.ballproject.knime.base.parameter.IntegerListParameter;
-import org.ballproject.knime.base.parameter.IntegerParameter;
-import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.parameter.StringChoiceParameter;
-import org.ballproject.knime.base.parameter.StringListParameter;
-import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
+
+import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.DoubleListParameter;
+import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
+import com.genericworkflownodes.knime.parameter.IntegerParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringListParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
 
 public class CTDNodeConfigurationReaderTest {
 

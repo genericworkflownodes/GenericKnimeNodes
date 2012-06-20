@@ -32,17 +32,18 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
 
 import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.parameter.BoolParameter;
-import org.ballproject.knime.base.parameter.DoubleParameter;
-import org.ballproject.knime.base.parameter.IntegerParameter;
-import org.ballproject.knime.base.parameter.InvalidParameterValueException;
-import org.ballproject.knime.base.parameter.ListParameter;
-import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.parameter.StringChoiceParameter;
-import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialog;
 import org.ballproject.knime.base.treetabledialog.itemlist.ListParameterModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
+
+import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.IntegerParameter;
+import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
+import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
 
 public class ParameterDialogModel implements
 		org.jdesktop.swingx.treetable.TreeTableModel {

@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.List;
 

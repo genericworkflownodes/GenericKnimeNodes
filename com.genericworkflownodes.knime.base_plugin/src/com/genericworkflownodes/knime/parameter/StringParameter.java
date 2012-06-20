@@ -17,23 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 /**
- * The InvalidParameterValueException is thrown when the supplied value for a
- * parameter could not be validated.
+ * The StringParameter class is used to store string values.
  * 
  * @author roettig
  * 
  */
-public class InvalidParameterValueException extends Exception {
-	private static final long serialVersionUID = 5408531919859345420L;
+public class StringParameter extends Parameter<String> {
 
-	public InvalidParameterValueException(String msg) {
-		super(msg);
+	private static final long serialVersionUID = 2757963248340525354L;
+
+	public StringParameter(String key, String value) {
+		super(key, value);
 	}
 
-	public InvalidParameterValueException(String msg, Throwable t) {
-		super(msg, t);
+	@Override
+	public String toString() {
+		return value;
+	}
+
+	@Override
+	public void fillFromString(String s) {
+		if (s == null) {
+			value = null;
+			return;
+		}
+		value = s;
+	}
+
+	@Override
+	public boolean validate(String val) {
+		return true;
+	}
+
+	@Override
+	public String getMnemonic() {
+		return "string";
 	}
 }

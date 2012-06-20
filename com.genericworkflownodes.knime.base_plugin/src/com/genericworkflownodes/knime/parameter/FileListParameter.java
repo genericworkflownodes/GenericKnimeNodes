@@ -17,43 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
+
+import java.util.List;
+
+import org.ballproject.knime.base.port.Port;
 
 /**
- * The StringParameter class is used to store string values.
+ * The FileListParameter class is used to store lists of filenames.
+ * 
+ * This is a convenience class to handle user supplied output filenames.
  * 
  * @author roettig
  * 
  */
-public class StringParameter extends Parameter<String> {
+public class FileListParameter extends StringListParameter {
+	private static final long serialVersionUID = 3010211738983269403L;
+	private Port port;
 
-	private static final long serialVersionUID = 2757963248340525354L;
-
-	public StringParameter(String key, String value) {
+	public FileListParameter(String key, List<String> value) {
 		super(key, value);
 	}
 
-	@Override
-	public String toString() {
-		return value;
+	public void setPort(Port port) {
+		this.port = port;
 	}
 
-	@Override
-	public void fillFromString(String s) {
-		if (s == null) {
-			value = null;
-			return;
-		}
-		value = s;
-	}
-
-	@Override
-	public boolean validate(String val) {
-		return true;
-	}
-
-	@Override
-	public String getMnemonic() {
-		return "string";
+	public Port getPort() {
+		return port;
 	}
 }

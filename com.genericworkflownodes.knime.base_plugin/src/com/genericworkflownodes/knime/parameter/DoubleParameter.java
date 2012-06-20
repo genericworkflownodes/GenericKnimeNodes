@@ -17,35 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 /**
- * The IntegerParameter class is used to store int values.
+ * The DoubleParameter class is used to store double values.
  * 
  * @author roettig
  * 
  */
-public class IntegerParameter extends NumberParameter<Integer> {
-	private static final long serialVersionUID = -2665635647061983296L;
+public class DoubleParameter extends NumberParameter<Double> {
 
-	public IntegerParameter(String key, Integer value) {
+	private static final long serialVersionUID = -8428868568959196082L;
+
+	public DoubleParameter(String key, Double value) {
 		super(key, value);
-		this.lowerBound = Integer.MIN_VALUE;
-		this.upperBound = Integer.MAX_VALUE;
+		this.lowerBound = Double.NEGATIVE_INFINITY;
+		this.upperBound = Double.POSITIVE_INFINITY;
 	}
 
-	public IntegerParameter(String key, String value) {
-		super(key, (value.equals("") ? null : Integer.parseInt(value)));
-		this.lowerBound = Integer.MIN_VALUE;
-		this.upperBound = Integer.MAX_VALUE;
+	public DoubleParameter(String key, String value) {
+		super(key, (value.equals("") ? null : Double.parseDouble(value)));
+		this.lowerBound = Double.NEGATIVE_INFINITY;
+		this.upperBound = Double.POSITIVE_INFINITY;
 	}
 
 	@Override
 	public String toString() {
 		if (value == null) {
-			return "";
+			return null;
 		}
-		return String.format("%d", value);
+		return String.format("%e", value);
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class IntegerParameter extends NumberParameter<Integer> {
 			return;
 		}
 		try {
-			value = Integer.parseInt(s);
+			value = Double.parseDouble(s);
 		} catch (NumberFormatException e) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is not a double", e);
@@ -67,7 +68,7 @@ public class IntegerParameter extends NumberParameter<Integer> {
 	}
 
 	@Override
-	public boolean validate(Integer val) {
+	public boolean validate(Double val) {
 		if (isNull()) {
 			return true;
 		}
@@ -79,10 +80,10 @@ public class IntegerParameter extends NumberParameter<Integer> {
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
-				.format("%d", this.lowerBound));
-		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
-				.format("%d", this.upperBound));
-		return String.format("integer [%s:%s]", lb, ub);
+		String lb = (this.lowerBound == Double.NEGATIVE_INFINITY ? "-inf"
+				: String.format("%e", this.lowerBound));
+		String ub = (this.upperBound == Double.POSITIVE_INFINITY ? "+inf"
+				: String.format("%e", this.upperBound));
+		return String.format("double [%s:%s]", lb, ub);
 	}
 }

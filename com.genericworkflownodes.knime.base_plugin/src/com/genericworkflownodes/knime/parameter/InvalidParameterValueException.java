@@ -17,33 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
-
-import java.util.List;
-
-import org.ballproject.knime.base.port.Port;
+package com.genericworkflownodes.knime.parameter;
 
 /**
- * The FileListParameter class is used to store lists of filenames.
- * 
- * This is a convenience class to handle user supplied output filenames.
+ * The InvalidParameterValueException is thrown when the supplied value for a
+ * parameter could not be validated.
  * 
  * @author roettig
  * 
  */
-public class FileListParameter extends StringListParameter {
-	private static final long serialVersionUID = 3010211738983269403L;
-	private Port port;
+public class InvalidParameterValueException extends Exception {
+	private static final long serialVersionUID = 5408531919859345420L;
 
-	public FileListParameter(String key, List<String> value) {
-		super(key, value);
+	public InvalidParameterValueException(String msg) {
+		super(msg);
 	}
 
-	public void setPort(Port port) {
-		this.port = port;
-	}
-
-	public Port getPort() {
-		return port;
+	public InvalidParameterValueException(String msg, Throwable t) {
+		super(msg, t);
 	}
 }

@@ -17,42 +17,62 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * The StringListParameter class is used to store lists of string values.
+ * The IntegerListParameter class is used to store lists of int values.
  * 
  * @author roettig
  * 
  */
-public class StringListParameter extends Parameter<List<String>> implements
-		ListParameter {
-	private static final long serialVersionUID = -3843594608327851669L;
+public class IntegerListParameter extends NumberListParameter<Integer>
+		implements ListParameter {
+	private static final long serialVersionUID = 3136376166293660419L;
 
-	public StringListParameter(String key, List<String> value) {
+	public IntegerListParameter(String key, List<Integer> value) {
 		super(key, value);
 	}
 
 	@Override
 	public String getMnemonic() {
-		return "string list";
+		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
+				.format("%d", this.lowerBound));
+		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
+				.format("%d", this.upperBound));
+		return String.format("integer list [%s:%s]", lb, ub);
 	}
 
 	@Override
 	public void fillFromString(String s) throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = new ArrayList<String>();
+			value = new ArrayList<Integer>();
 			return;
 		}
-		this.value = new ArrayList<String>();
+		this.value = new ArrayList<Integer>();
 		String[] toks = s.split(SEPERATORTOKEN);
+
 		for (int i = 0; i < toks.length; i++) {
-			this.value.add(toks[i]);
+			this.value.add(Integer.parseInt(toks[i]));
 		}
+	}
+
+	@Override
+	public boolean validate(List<Integer> val) {
+		if (isNull()) {
+			return true;
+		}
+		boolean ok = true;
+
+		for (Integer v : val) {
+			if (v < this.lowerBound || v > this.upperBound) {
+				ok = false;
+			}
+		}
+		return ok;
 	}
 
 	@Override
@@ -61,40 +81,38 @@ public class StringListParameter extends Parameter<List<String>> implements
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (String s : this.value) {
-			sb.append(s + SEPERATORTOKEN);
+		for (Integer d : this.value) {
+			sb.append(String.format("%d", d) + SEPERATORTOKEN);
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public boolean validate(List<String> val) {
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		if (value == null) {
-			return "[]";
-		}
-		String[] values = value.toArray(new String[0]);
-		return Arrays.toString(values);
-	}
-
-	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (String s : this.value) {
-			ret.add(s);
+		for (Integer i : this.value) {
+			ret.add(i.toString());
 		}
 		return ret;
 	}
 
+	public String toString() {
+		if (value == null) {
+			return "";
+		}
+		String[] ret = new String[this.value.size()];
+		int idx = 0;
+		for (Integer i : value) {
+			ret[idx++] = i.toString();
+		}
+		return Arrays.toString(ret);
+	}
+
 	@Override
 	public void fillFromStrings(String[] values) {
-		this.value = new ArrayList<String>();
+		this.value = new ArrayList<Integer>();
 		for (int i = 0; i < values.length; i++) {
-			this.value.add(values[i]);
+			this.value.add(Integer.parseInt(values[i]));
 		}
 	}
 }

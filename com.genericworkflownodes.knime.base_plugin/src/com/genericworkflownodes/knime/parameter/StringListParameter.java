@@ -17,63 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * The DoubleListParameter class is used to store lists of double values.
+ * The StringListParameter class is used to store lists of string values.
  * 
  * @author roettig
  * 
  */
-public class DoubleListParameter extends NumberListParameter<Double> implements
+public class StringListParameter extends Parameter<List<String>> implements
 		ListParameter {
-	private static final long serialVersionUID = -5162432579726548479L;
+	private static final long serialVersionUID = -3843594608327851669L;
 
-	public DoubleListParameter(String key, List<Double> value) {
+	public StringListParameter(String key, List<String> value) {
 		super(key, value);
 	}
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%e", this.lowerBound));
-		String ub = (this.upperBound == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%e", this.upperBound));
-		return String.format("double list [%s:%s]", lb, ub);
+		return "string list";
 	}
 
 	@Override
 	public void fillFromString(String s) throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = new ArrayList<Double>();
+			value = new ArrayList<String>();
 			return;
 		}
-		this.value = new ArrayList<Double>();
+		this.value = new ArrayList<String>();
 		String[] toks = s.split(SEPERATORTOKEN);
-
 		for (int i = 0; i < toks.length; i++) {
-			this.value.add(Double.parseDouble(toks[i]));
+			this.value.add(toks[i]);
 		}
-	}
-
-	@Override
-	public boolean validate(List<Double> val) {
-		if (isNull()) {
-			return true;
-		}
-
-		boolean ok = true;
-
-		for (Double v : val) {
-			if (v < this.lowerBound || v > this.upperBound) {
-				ok = false;
-			}
-		}
-		return ok;
 	}
 
 	@Override
@@ -82,38 +61,40 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (Double d : this.value) {
-			sb.append(String.format("%e", d) + SEPERATORTOKEN);
+		for (String s : this.value) {
+			sb.append(s + SEPERATORTOKEN);
 		}
 		return sb.toString();
 	}
 
 	@Override
+	public boolean validate(List<String> val) {
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		if (value == null) {
+			return "[]";
+		}
+		String[] values = value.toArray(new String[0]);
+		return Arrays.toString(values);
+	}
+
+	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (Double d : this.value) {
-			ret.add(d.toString());
+		for (String s : this.value) {
+			ret.add(s);
 		}
 		return ret;
 	}
 
 	@Override
 	public void fillFromStrings(String[] values) {
-		this.value = new ArrayList<Double>();
+		this.value = new ArrayList<String>();
 		for (int i = 0; i < values.length; i++) {
-			this.value.add(Double.parseDouble(values[i]));
+			this.value.add(values[i]);
 		}
-	}
-
-	public String toString() {
-		if (value == null) {
-			return "[]";
-		}
-		String[] ret = new String[this.value.size()];
-		int idx = 0;
-		for (Double i : value) {
-			ret[idx++] = i.toString();
-		}
-		return Arrays.toString(ret);
 	}
 }

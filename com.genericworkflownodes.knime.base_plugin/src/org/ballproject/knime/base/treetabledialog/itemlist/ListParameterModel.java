@@ -19,10 +19,10 @@
 
 package org.ballproject.knime.base.treetabledialog.itemlist;
 
-import org.ballproject.knime.base.parameter.DoubleListParameter;
-import org.ballproject.knime.base.parameter.IntegerListParameter;
-import org.ballproject.knime.base.parameter.ListParameter;
-import org.ballproject.knime.base.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.DoubleListParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
+import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ListParameterModel extends ItemListFillerDialogModel {
 	private static final long serialVersionUID = -7693134082619250857L;

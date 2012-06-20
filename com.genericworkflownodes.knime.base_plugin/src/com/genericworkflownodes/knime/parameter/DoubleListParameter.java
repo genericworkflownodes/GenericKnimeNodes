@@ -17,57 +17,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * The IntegerListParameter class is used to store lists of int values.
+ * The DoubleListParameter class is used to store lists of double values.
  * 
  * @author roettig
  * 
  */
-public class IntegerListParameter extends NumberListParameter<Integer>
-		implements ListParameter {
-	private static final long serialVersionUID = 3136376166293660419L;
+public class DoubleListParameter extends NumberListParameter<Double> implements
+		ListParameter {
+	private static final long serialVersionUID = -5162432579726548479L;
 
-	public IntegerListParameter(String key, List<Integer> value) {
+	public DoubleListParameter(String key, List<Double> value) {
 		super(key, value);
 	}
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
-				.format("%d", this.lowerBound));
-		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
-				.format("%d", this.upperBound));
-		return String.format("integer list [%s:%s]", lb, ub);
+		String lb = (this.lowerBound == Double.NEGATIVE_INFINITY ? "-inf"
+				: String.format("%e", this.lowerBound));
+		String ub = (this.upperBound == Double.POSITIVE_INFINITY ? "+inf"
+				: String.format("%e", this.upperBound));
+		return String.format("double list [%s:%s]", lb, ub);
 	}
 
 	@Override
 	public void fillFromString(String s) throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = new ArrayList<Integer>();
+			value = new ArrayList<Double>();
 			return;
 		}
-		this.value = new ArrayList<Integer>();
+		this.value = new ArrayList<Double>();
 		String[] toks = s.split(SEPERATORTOKEN);
 
 		for (int i = 0; i < toks.length; i++) {
-			this.value.add(Integer.parseInt(toks[i]));
+			this.value.add(Double.parseDouble(toks[i]));
 		}
 	}
 
 	@Override
-	public boolean validate(List<Integer> val) {
+	public boolean validate(List<Double> val) {
 		if (isNull()) {
 			return true;
 		}
+
 		boolean ok = true;
 
-		for (Integer v : val) {
+		for (Double v : val) {
 			if (v < this.lowerBound || v > this.upperBound) {
 				ok = false;
 			}
@@ -81,8 +82,8 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (Integer d : this.value) {
-			sb.append(String.format("%d", d) + SEPERATORTOKEN);
+		for (Double d : this.value) {
+			sb.append(String.format("%e", d) + SEPERATORTOKEN);
 		}
 		return sb.toString();
 	}
@@ -90,29 +91,29 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (Integer i : this.value) {
-			ret.add(i.toString());
+		for (Double d : this.value) {
+			ret.add(d.toString());
 		}
 		return ret;
 	}
 
+	@Override
+	public void fillFromStrings(String[] values) {
+		this.value = new ArrayList<Double>();
+		for (int i = 0; i < values.length; i++) {
+			this.value.add(Double.parseDouble(values[i]));
+		}
+	}
+
 	public String toString() {
 		if (value == null) {
-			return "";
+			return "[]";
 		}
 		String[] ret = new String[this.value.size()];
 		int idx = 0;
-		for (Integer i : value) {
+		for (Double i : value) {
 			ret[idx++] = i.toString();
 		}
 		return Arrays.toString(ret);
-	}
-
-	@Override
-	public void fillFromStrings(String[] values) {
-		this.value = new ArrayList<Integer>();
-		for (int i = 0; i < values.length; i++) {
-			this.value.add(Integer.parseInt(values[i]));
-		}
 	}
 }
