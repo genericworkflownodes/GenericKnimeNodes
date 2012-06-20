@@ -2,7 +2,7 @@
 
 	<property name="debug" value="true" />
 	
-	<property name="plugin.dir" value="/Users/delagarza/Documents/emboss-gkn" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
+	<property name="plugin.dir" value="sample" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
 
 	<property name="base.plugin.name" value="org.ballproject.knime" />
 	<property name="base.plugin.version.major" value="0" />
@@ -135,7 +135,7 @@
 
 	<target name="custom.plugin.build" depends="base.plugin.build">
 		<mkdir dir="${custom.plugin.build.dir}"/>
-		<antcall target="custom.plugin.generate_sources"/>
+		<antcall target="custom.plugin.generate_sources" />
 		<antcall target="custom.plugin.classes.build" />
 		<zip destfile="${custom.plugin.build.jar}" basedir="${custom.plugin.build.dir}" />
 	</target>
@@ -175,19 +175,7 @@
 			</fileset>
 		</copy>
 	</target>
-	
-	<target name="custom.plugin.undeploy">
-		<delete file="${knime.sdk}/plugins/${custom.plugin.name}_${custom.plugin.version}.jar" quiet="true"></delete>
-	</target>
-	
-	<target name="custom.plugin.deploy" depends="custom.plugin.build">
-		<copy todir="${knime.sdk}/plugins" failonerror="true" overwrite="true" file="${custom.plugin.build.jar}"/>
-	</target>
-	
-	<target name="base.plugin.deploy" depends="base.plugin.build">
-		<copy todir="${knime.sdk}/plugins" failonerror="true" overwrite="true" file="${base.plugin.build.jar}"/>
-	</target>
-	
+
 	<target name="test" depends="base.plugin.build">
 		<junit printsummary="yes" haltonfailure="yes" showoutput="yes">
   		<classpath refid="base.plugin.classpath"/>
