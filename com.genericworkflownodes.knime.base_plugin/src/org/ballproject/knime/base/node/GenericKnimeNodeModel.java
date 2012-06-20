@@ -308,7 +308,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 		for (String key : this.nodeConfig.getParameterKeys()) {
 			Parameter<?> param = nodeConfig.getParameter(key);
-			if (!param.getIsOptional()) {
+			if (!param.isOptional()) {
 				if (!settings.containsKey(key)) {
 					GenericNodesPlugin
 							.log("\t no key found for mand. parameter " + key);
@@ -364,7 +364,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		for (Parameter<?> param : this.nodeConfig.getParameters()) {
 			// System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
-			if (!param.getIsOptional() && param.getStringRep().equals("")) {
+			if (!param.isOptional() && param.getStringRep().equals("")) {
 				// throw new
 				// InvalidSettingsException("not all mandatory parameters are set");
 				this.setWarningMessage("some mandatory parameters might not be set");
@@ -525,7 +525,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		for (String key : nodeConfig.getParameterKeys()) {
 			Parameter<?> param = nodeConfig.getParameter(key);
 			if (param.isNull()) {
-				if (param.getIsOptional()) {
+				if (param.isOptional()) {
 					continue;
 				}
 			}

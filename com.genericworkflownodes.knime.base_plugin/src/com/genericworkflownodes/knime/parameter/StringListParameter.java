@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 import java.util.ArrayList;
@@ -31,9 +30,21 @@ import java.util.List;
  */
 public class StringListParameter extends Parameter<List<String>> implements
 		ListParameter {
+
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = -3843594608327851669L;
 
-	public StringListParameter(String key, List<String> value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public StringListParameter(final String key, final List<String> value) {
 		super(key, value);
 	}
 
@@ -43,58 +54,59 @@ public class StringListParameter extends Parameter<List<String>> implements
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = new ArrayList<String>();
+			setValue(new ArrayList<String>());
 			return;
 		}
-		this.value = new ArrayList<String>();
-		String[] toks = s.split(SEPERATORTOKEN);
+		setValue(new ArrayList<String>());
+		String[] toks = s.split(SEPARATOR_TOKEN);
 		for (int i = 0; i < toks.length; i++) {
-			this.value.add(toks[i]);
+			getValue().add(toks[i]);
 		}
 	}
 
 	@Override
 	public String getStringRep() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (String s : this.value) {
-			sb.append(s + SEPERATORTOKEN);
+		for (String s : this.getValue()) {
+			sb.append(s + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public boolean validate(List<String> val) {
+	public boolean validate(final List<String> val) {
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "[]";
 		}
-		String[] values = value.toArray(new String[0]);
+		String[] values = getValue().toArray(new String[0]);
 		return Arrays.toString(values);
 	}
 
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (String s : this.value) {
+		for (String s : this.getValue()) {
 			ret.add(s);
 		}
 		return ret;
 	}
 
 	@Override
-	public void fillFromStrings(String[] values) {
-		this.value = new ArrayList<String>();
+	public void fillFromStrings(final String[] values) {
+		this.setValue(new ArrayList<String>());
 		for (int i = 0; i < values.length; i++) {
-			this.value.add(values[i]);
+			this.getValue().add(values[i]);
 		}
 	}
 }

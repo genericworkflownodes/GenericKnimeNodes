@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 /**
@@ -27,52 +26,71 @@ package com.genericworkflownodes.knime.parameter;
  */
 public class DoubleParameter extends NumberParameter<Double> {
 
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = -8428868568959196082L;
 
-	public DoubleParameter(String key, Double value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public DoubleParameter(final String key, final Double value) {
 		super(key, value);
-		this.lowerBound = Double.NEGATIVE_INFINITY;
-		this.upperBound = Double.POSITIVE_INFINITY;
+		setLowerBound(Double.NEGATIVE_INFINITY);
+		setUpperBound(Double.POSITIVE_INFINITY);
 	}
 
-	public DoubleParameter(String key, String value) {
-		super(key, (value.equals("") ? null : Double.parseDouble(value)));
-		this.lowerBound = Double.NEGATIVE_INFINITY;
-		this.upperBound = Double.POSITIVE_INFINITY;
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter as {@link String}.
+	 */
+	public DoubleParameter(final String key, final String value) {
+		this(key, (value.equals("") ? null : Double.parseDouble(value)));
 	}
 
 	@Override
 	public String toString() {
-		if (value == null) {
+		if (getValue() == null) {
 			return null;
 		}
-		return String.format("%e", value);
+		return String.format("%e", getValue());
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = null;
+			setValue(null);
 			return;
 		}
 		try {
-			value = Double.parseDouble(s);
+			setValue(Double.parseDouble(s));
 		} catch (NumberFormatException e) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is not a double", e);
 		}
-		if (value < this.getLowerBound() || value > this.getUpperBound()) {
+		if (getValue() < this.getLowerBound()
+				|| getValue() > this.getUpperBound()) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is out of bounds");
 		}
 	}
 
 	@Override
-	public boolean validate(Double val) {
+	public boolean validate(final Double val) {
 		if (isNull()) {
 			return true;
 		}
-		if (val >= this.lowerBound && val <= this.upperBound) {
+		if (val >= this.getLowerBound() && val <= this.getUpperBound()) {
 			return true;
 		}
 		return false;
@@ -80,10 +98,10 @@ public class DoubleParameter extends NumberParameter<Double> {
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%e", this.lowerBound));
-		String ub = (this.upperBound == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%e", this.upperBound));
+		String lb = (this.getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
+				: String.format("%e", this.getLowerBound()));
+		String ub = (this.getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
+				: String.format("%e", this.getUpperBound()));
 		return String.format("double [%s:%s]", lb, ub);
 	}
 }

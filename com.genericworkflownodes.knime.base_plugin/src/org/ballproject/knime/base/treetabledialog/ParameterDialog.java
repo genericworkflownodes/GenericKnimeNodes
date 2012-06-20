@@ -94,7 +94,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 					ParameterNode node = (ParameterNode) path
 							.getLastPathComponent();
 					if (node.getPayload() != null) {
-						optional = node.getPayload().getIsOptional();
+						optional = node.getPayload().isOptional();
 						advanced = node.getPayload().isAdvanced();
 					}
 				}

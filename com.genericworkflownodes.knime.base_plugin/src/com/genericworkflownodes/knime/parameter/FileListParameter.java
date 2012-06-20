@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 import java.util.List;
@@ -32,17 +31,44 @@ import org.ballproject.knime.base.port.Port;
  * 
  */
 public class FileListParameter extends StringListParameter {
+
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = 3010211738983269403L;
+
+	/**
+	 * The port associated to the file list.
+	 */
 	private Port port;
 
-	public FileListParameter(String key, List<String> value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public FileListParameter(final String key, final List<String> value) {
 		super(key, value);
 	}
 
-	public void setPort(Port port) {
+	/**
+	 * Sets the port.
+	 * 
+	 * @param port
+	 *            The new port.
+	 */
+	public void setPort(final Port port) {
 		this.port = port;
 	}
 
+	/**
+	 * Returns the port.
+	 * 
+	 * @return The port.
+	 */
 	public Port getPort() {
 		return port;
 	}

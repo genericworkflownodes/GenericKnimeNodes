@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 /**
@@ -26,52 +25,72 @@ package com.genericworkflownodes.knime.parameter;
  * 
  */
 public class IntegerParameter extends NumberParameter<Integer> {
+
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = -2665635647061983296L;
 
-	public IntegerParameter(String key, Integer value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public IntegerParameter(final String key, final Integer value) {
 		super(key, value);
-		this.lowerBound = Integer.MIN_VALUE;
-		this.upperBound = Integer.MAX_VALUE;
+		setLowerBound(Integer.MIN_VALUE);
+		setUpperBound(Integer.MAX_VALUE);
 	}
 
-	public IntegerParameter(String key, String value) {
-		super(key, (value.equals("") ? null : Integer.parseInt(value)));
-		this.lowerBound = Integer.MIN_VALUE;
-		this.upperBound = Integer.MAX_VALUE;
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter as {@link String}.
+	 */
+	public IntegerParameter(final String key, final String value) {
+		this(key, (value.equals("") ? null : Integer.parseInt(value)));
 	}
 
 	@Override
 	public String toString() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "";
 		}
-		return String.format("%d", value);
+		return String.format("%d", getValue());
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = null;
+			setValue(null);
 			return;
 		}
 		try {
-			value = Integer.parseInt(s);
+			setValue(Integer.parseInt(s));
 		} catch (NumberFormatException e) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is not a double", e);
 		}
-		if (value < this.getLowerBound() || value > this.getUpperBound()) {
+		if (getValue() < this.getLowerBound()
+				|| getValue() > this.getUpperBound()) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is out of bounds");
 		}
 	}
 
 	@Override
-	public boolean validate(Integer val) {
+	public boolean validate(final Integer val) {
 		if (isNull()) {
 			return true;
 		}
-		if (val >= this.lowerBound && val <= this.upperBound) {
+		if (val >= getLowerBound() && val <= getUpperBound()) {
 			return true;
 		}
 		return false;
@@ -79,10 +98,10 @@ public class IntegerParameter extends NumberParameter<Integer> {
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
-				.format("%d", this.lowerBound));
-		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
-				.format("%d", this.upperBound));
+		String lb = (getLowerBound() == Integer.MIN_VALUE ? "-inf" : String
+				.format("%d", getLowerBound()));
+		String ub = (getUpperBound() == Integer.MAX_VALUE ? "+inf" : String
+				.format("%d", getUpperBound()));
 		return String.format("integer [%s:%s]", lb, ub);
 	}
 }

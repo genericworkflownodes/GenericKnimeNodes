@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 import java.util.ArrayList;
@@ -31,9 +30,21 @@ import java.util.List;
  */
 public class DoubleListParameter extends NumberListParameter<Double> implements
 		ListParameter {
+
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = -5162432579726548479L;
 
-	public DoubleListParameter(String key, List<Double> value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public DoubleListParameter(final String key, final List<Double> value) {
 		super(key, value);
 	}
 
@@ -47,21 +58,22 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = new ArrayList<Double>();
+			setValue(new ArrayList<Double>());
 			return;
 		}
-		this.value = new ArrayList<Double>();
-		String[] toks = s.split(SEPERATORTOKEN);
+		setValue(new ArrayList<Double>());
+		String[] toks = s.split(SEPARATOR_TOKEN);
 
 		for (int i = 0; i < toks.length; i++) {
-			this.value.add(Double.parseDouble(toks[i]));
+			getValue().add(Double.parseDouble(toks[i]));
 		}
 	}
 
 	@Override
-	public boolean validate(List<Double> val) {
+	public boolean validate(final List<Double> val) {
 		if (isNull()) {
 			return true;
 		}
@@ -78,12 +90,12 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 
 	@Override
 	public String getStringRep() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (Double d : this.value) {
-			sb.append(String.format("%e", d) + SEPERATORTOKEN);
+		for (Double d : this.getValue()) {
+			sb.append(String.format("%e", d) + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
 	}
@@ -91,27 +103,28 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (Double d : this.value) {
+		for (Double d : this.getValue()) {
 			ret.add(d.toString());
 		}
 		return ret;
 	}
 
 	@Override
-	public void fillFromStrings(String[] values) {
-		this.value = new ArrayList<Double>();
+	public void fillFromStrings(final String[] values) {
+		this.setValue(new ArrayList<Double>());
 		for (int i = 0; i < values.length; i++) {
-			this.value.add(Double.parseDouble(values[i]));
+			getValue().add(Double.parseDouble(values[i]));
 		}
 	}
 
+	@Override
 	public String toString() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "[]";
 		}
-		String[] ret = new String[this.value.size()];
+		String[] ret = new String[this.getValue().size()];
 		int idx = 0;
-		for (Double i : value) {
+		for (Double i : getValue()) {
 			ret[idx++] = i.toString();
 		}
 		return Arrays.toString(ret);

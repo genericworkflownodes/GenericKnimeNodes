@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,22 +16,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * The StringChoiceParameter class reprents string values taken from a
+ * The StringChoiceParameter class represents string allowedValues taken from a
  * restricted set.
  * 
- * @author roettig
+ * If the set itself is optional, the empty string is via convention also a
+ * valid choice.
  * 
+ * @author roettig,aiche
  */
 public class StringChoiceParameter extends Parameter<String> {
+
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = -2717347970783695908L;
-	private List<String> values;
+
+	/**
+	 * Set of string that is possible for this Parameter.
+	 */
+	private List<String> allowedValues;
+
+	/**
+	 * List of labels for each of the allowed strings.
+	 */
 	private List<String> labels;
 
 	public StringChoiceParameter(String key, String value) {
@@ -40,47 +53,47 @@ public class StringChoiceParameter extends Parameter<String> {
 
 	public StringChoiceParameter(String key, List<String> values) {
 		super(key, values.get(0));
-		this.values = values;
+		this.allowedValues = values;
 		this.labels = values;
 	}
 
 	public StringChoiceParameter(String key, String[] values) {
 		super(key, values[0]);
-		this.values = Arrays.asList(values);
+		this.allowedValues = Arrays.asList(values);
 		this.labels = Arrays.asList(values);
 	}
 
 	public StringChoiceParameter(String key, List<String> values,
 			List<String> labels) {
 		super(key, values.get(0));
-		this.values = values;
+		this.allowedValues = values;
 		this.labels = labels;
 	}
 
 	public StringChoiceParameter(String key, String[] values, String[] labels) {
 		super(key, values[0]);
-		this.values = Arrays.asList(values);
+		this.allowedValues = Arrays.asList(values);
 		this.labels = Arrays.asList(labels);
 	}
 
 	@Override
-	public void setValue(String value) {
-		if (values.contains(value)) {
+	public void setValue(final String value) {
+		if (allowedValues.contains(value)) {
 			super.setValue(value);
 		}
 	}
 
 	/**
-	 * returns the list of allowed string values
+	 * Returns the list of allowed string values.
 	 * 
-	 * @return allowed values
+	 * @return allowed allowedValues
 	 */
 	public List<String> getAllowedValues() {
-		return values;
+		return allowedValues;
 	}
 
 	/**
-	 * returns the list of associated labels for each value.
+	 * Returns the list of associated labels for each value.
 	 * 
 	 * This is mainly for display purposes within GUIs.
 	 * 
@@ -92,25 +105,25 @@ public class StringChoiceParameter extends Parameter<String> {
 
 	@Override
 	public String toString() {
-		return value;
+		return getValue();
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null) {
-			value = null;
+			setValue(null);
 			return;
 		}
 		if (!this.getAllowedValues().contains(s)) {
 			throw new InvalidParameterValueException("parameter "
 					+ this.getKey() + " value is invalid");
 		}
-		value = s;
-
+		setValue(s);
 	}
 
 	@Override
-	public boolean validate(String val) {
+	public boolean validate(final String val) {
 		return true;
 	}
 

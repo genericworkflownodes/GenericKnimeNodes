@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,16 +16,43 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
+/**
+ * An abstract numerical parameter providing boundary checking for the derived
+ * parameters.
+ * 
+ * @author roettig
+ * 
+ * @param <T>
+ *            The numerical parameter type.
+ */
 public abstract class NumberParameter<T> extends Parameter<T> {
 
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = 3529659248042850739L;
-	protected T lowerBound;
-	protected T upperBound;
 
-	public NumberParameter(String key, T value) {
+	/**
+	 * The lower bound of the given numerical parameter.
+	 */
+	private T lowerBound;
+
+	/**
+	 * The upper bound of the given numerical parameter.
+	 */
+	private T upperBound;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public NumberParameter(final String key, final T value) {
 		super(key, value);
 	}
 
@@ -42,8 +69,9 @@ public abstract class NumberParameter<T> extends Parameter<T> {
 	 * sets the lower bound for constrained numeric parameters.
 	 * 
 	 * @param lowerBound
+	 *            The new lower bound for the given numerical parameter.
 	 */
-	public void setLowerBound(T lowerBound) {
+	public void setLowerBound(final T lowerBound) {
 		this.lowerBound = lowerBound;
 	}
 
@@ -60,8 +88,9 @@ public abstract class NumberParameter<T> extends Parameter<T> {
 	 * sets the upper bound for constrained numeric parameters.
 	 * 
 	 * @param upperBound
+	 *            The new upper bound for the given numerical parameter.
 	 */
-	public void setUpperBound(T upperBound) {
+	public void setUpperBound(final T upperBound) {
 		this.upperBound = upperBound;
 	}
 }

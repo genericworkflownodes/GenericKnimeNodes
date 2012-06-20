@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 /**
@@ -27,13 +26,31 @@ package com.genericworkflownodes.knime.parameter;
  * 
  */
 public class InvalidParameterValueException extends Exception {
+
+	/**
+	 * The serial version id.
+	 */
 	private static final long serialVersionUID = 5408531919859345420L;
 
-	public InvalidParameterValueException(String msg) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param msg
+	 *            the detail message.
+	 */
+	public InvalidParameterValueException(final String msg) {
 		super(msg);
 	}
 
-	public InvalidParameterValueException(String msg, Throwable t) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param msg
+	 *            the detail message.
+	 * @param t
+	 *            the cause.
+	 */
+	public InvalidParameterValueException(final String msg, final Throwable t) {
 		super(msg, t);
 	}
 }

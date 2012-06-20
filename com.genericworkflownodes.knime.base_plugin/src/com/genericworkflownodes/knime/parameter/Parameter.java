@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.parameter;
 
 import java.io.Serializable;
@@ -28,31 +27,60 @@ import java.io.Serializable;
  * @author roettig
  * 
  * @param <T>
+ *            The type of the stored parameter.
  */
 public abstract class Parameter<T> implements Serializable {
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = 2145565007955019813L;
-	protected String key;
-	protected T value;
-	protected String description = "";
-	protected String section = "default";
-	protected boolean isOptional = true;
-	protected boolean advanced = false;
 
 	/**
-	 * ctor with unique key of parameter and generic value to store.
+	 * The unique key identifying the parameter.
+	 */
+	private String key;
+
+	/**
+	 * The actual value of the parameter.
+	 */
+	private T value;
+
+	/**
+	 * A description of the parameter.
+	 */
+	private String description = "";
+
+	/**
+	 * The section used to categorize the parameter.
+	 */
+	private String section = "default";
+
+	/**
+	 * Flag indicating if the parameter is optional or not.
+	 */
+	private boolean isOptional = true;
+
+	/**
+	 * Flag indicating if the parameter should be hidden from the "average"
+	 * user.
+	 */
+	private boolean advanced = false;
+
+	/**
+	 * Constructor with unique key of parameter and generic value to store.
 	 * 
 	 * @param key
 	 *            the key of the parameter
 	 * @param value
 	 *            the generic value of the parameter
 	 */
-	public Parameter(String key, T value) {
+	public Parameter(final String key, final T value) {
 		this.key = key;
 		this.value = value;
 	}
 
 	/**
-	 * returns the associated unique key (name) of the parameter.
+	 * Returns the associated unique key (name) of the parameter.
 	 * 
 	 * @return key
 	 */
@@ -61,55 +89,55 @@ public abstract class Parameter<T> implements Serializable {
 	}
 
 	/**
-	 * sets the unique key (name) of the parameter.
+	 * Sets the unique key (name) of the parameter.
 	 * 
 	 * @param key
 	 *            the key of the parameter
 	 */
-	public void setKey(String key) {
+	public void setKey(final String key) {
 		this.key = key;
 	}
 
 	/**
-	 * returns the generic value stored by this object.
+	 * Returns the generic value stored by this object.
 	 * 
-	 * @return
+	 * @return the value of the parameter.
 	 */
 	public T getValue() {
 		return value;
 	}
 
 	/**
-	 * sets the value stored by this object.
+	 * Sets the value stored by this object.
 	 * 
 	 * @param value
 	 *            the value to store
 	 */
-	public void setValue(T value) {
+	public void setValue(final T value) {
 		this.value = value;
 	}
 
 	/**
-	 * returns the description for this parameter object.
+	 * Returns the description for this parameter object.
 	 * 
-	 * @return description the descriptional text of the parameter
+	 * @return the description text of the parameter.
 	 */
 	public String getDescription() {
 		return description;
 	}
 
 	/**
-	 * sets the description of this parameter object.
+	 * Sets the description text of this parameter object.
 	 * 
 	 * @param description
-	 *            the descriptional text of the parameter
+	 *            the description text of the parameter.
 	 */
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
 	/**
-	 * returns the section (category) for the parameter.
+	 * Returns the section (category) for the parameter.
 	 * 
 	 * @return section the section of the parameter
 	 */
@@ -118,19 +146,20 @@ public abstract class Parameter<T> implements Serializable {
 	}
 
 	/**
-	 * sets the section (category) for the parameter.
+	 * Sets the section (category) for the parameter.
 	 * 
 	 * @param section
-	 *            the section of the parameter
+	 *            the section of the parameter.
 	 */
-	public void setSection(String section) {
+	public void setSection(final String section) {
 		this.section = section;
 	}
 
 	/**
-	 * returns whether this parameter is initialized with a valid value or not.
+	 * Returns whether this parameter is initialized with a valid, non-null
+	 * value or not.
 	 * 
-	 * @return is the parameter initialized
+	 * @return True if the parameter is initialized, false otherwise.
 	 */
 	public boolean isNull() {
 		if (value == null) {
@@ -140,45 +169,47 @@ public abstract class Parameter<T> implements Serializable {
 	}
 
 	/**
-	 * returns whether the parameter is deemed optional.
+	 * Returns whether the parameter is deemed optional.
 	 * 
-	 * @return is the parameter optional
+	 * @return True if the parameter is optional, false otherwise.
 	 */
-	public boolean getIsOptional() {
+	public boolean isOptional() {
 		return isOptional;
 	}
 
 	/**
-	 * sets whether the parameter is deemed optional.
+	 * Sets whether the parameter is deemed optional.
 	 * 
 	 * @param isOptional
-	 *            flag whether parameter is optional
+	 *            flag whether parameter is optional.
 	 */
-	public void setIsOptional(boolean isOptional) {
+	public void setIsOptional(final boolean isOptional) {
 		this.isOptional = isOptional;
 	}
 
 	/**
-	 * returns a textual information about the data type stored in this object.
+	 * Returns a textual information about the data type stored in this object.
 	 * 
 	 * @return mnemonic of parameter
 	 */
 	public abstract String getMnemonic();
 
 	/**
-	 * extracts data stored in the supplied string (previously generated by
+	 * Extracts data stored in the supplied string (previously generated by
 	 * {@link Parameter#getStringRep()}) representation and set the value
 	 * accordingly.
 	 * 
 	 * @param s
-	 *            special string representation of parameter
+	 *            special string representation of parameter.
 	 * @throws InvalidParameterValueException
+	 *             If the given string does not contain a valid value for the
+	 *             parameter.
 	 */
 	public abstract void fillFromString(String s)
 			throws InvalidParameterValueException;
 
 	/**
-	 * returns a special string representation which can be xferred through
+	 * Returns a special string representation which can be transferred through
 	 * string channels and reconstructed later on using
 	 * {@link Parameter#fillFromString()}.
 	 * 
@@ -188,25 +219,40 @@ public abstract class Parameter<T> implements Serializable {
 		return toString();
 	}
 
+	/**
+	 * Return whether the parameter is advanced (only for expert users) or not.
+	 * 
+	 * @return True if the parameter should only be shown to expert users, false
+	 *         otherwise.
+	 */
 	public boolean isAdvanced() {
 		return advanced;
 	}
 
-	public void setAdvanced(boolean newAdvanced) {
+	/**
+	 * Set whether the parameter is advanced (only for expert users) or not.
+	 * 
+	 * @param newAdvanced
+	 *            New advanced flag for the parameter.
+	 */
+	public void setAdvanced(final boolean newAdvanced) {
 		this.advanced = newAdvanced;
 	}
 
 	/**
-	 * checks whether the supplied generic value is compatible with the data
+	 * Checks whether the supplied generic value is compatible with the data
 	 * type of the parameter.
 	 * 
 	 * @param val
-	 *            value to validate
+	 *            value to validate.
 	 * 
-	 * @return is the supplied value valid
+	 * @return True if the supplied value is valid, false otherwise.
 	 */
 	public abstract boolean validate(T val);
 
-	protected static String SEPERATORTOKEN = "@@@__@@@";
+	/**
+	 * Separator token.
+	 */
+	protected static String SEPARATOR_TOKEN = "@@@__@@@";
 
 }
