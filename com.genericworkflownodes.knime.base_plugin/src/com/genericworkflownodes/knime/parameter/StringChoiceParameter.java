@@ -18,6 +18,7 @@
  */
 package com.genericworkflownodes.knime.parameter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,30 +48,75 @@ public class StringChoiceParameter extends Parameter<String> {
 	 */
 	private List<String> labels;
 
-	public StringChoiceParameter(String key, String value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public StringChoiceParameter(final String key, final String value) {
 		super(key, value);
 	}
 
-	public StringChoiceParameter(String key, List<String> values) {
+	/**
+	 * Constructor. The first value in the list will be set as current value.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param values
+	 *            The values of the parameter as {@link List}.
+	 */
+	public StringChoiceParameter(final String key, final List<String> values) {
 		super(key, values.get(0));
 		this.allowedValues = values;
 		this.labels = values;
 	}
 
-	public StringChoiceParameter(String key, String[] values) {
+	/**
+	 * Constructor. The first value in the list will be set as current value.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param values
+	 *            The values of the parameter as array of {@link String}s.
+	 */
+	public StringChoiceParameter(final String key, final String[] values) {
 		super(key, values[0]);
 		this.allowedValues = Arrays.asList(values);
 		this.labels = Arrays.asList(values);
 	}
 
-	public StringChoiceParameter(String key, List<String> values,
-			List<String> labels) {
+	/**
+	 * Constructor. The first value in the list will be set as current value.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param values
+	 *            The values of the parameter.
+	 * @param labels
+	 *            The labels for the values.
+	 */
+	public StringChoiceParameter(final String key, final List<String> values,
+			final List<String> labels) {
 		super(key, values.get(0));
 		this.allowedValues = values;
 		this.labels = labels;
 	}
 
-	public StringChoiceParameter(String key, String[] values, String[] labels) {
+	/**
+	 * Constructor. The first value in the list will be set as current value.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param values
+	 *            The values of the parameter.
+	 * @param labels
+	 *            The labels for the values.
+	 */
+	public StringChoiceParameter(final String key, final String[] values,
+			final String[] labels) {
 		super(key, values[0]);
 		this.allowedValues = Arrays.asList(values);
 		this.labels = Arrays.asList(labels);
@@ -78,7 +124,9 @@ public class StringChoiceParameter extends Parameter<String> {
 
 	@Override
 	public void setValue(final String value) {
-		if (allowedValues.contains(value)) {
+		// the value must either be contained in the allowed values
+		// or the empty string if the parameter itself is optional
+		if (allowedValues.contains(value) || (isOptional() && "".equals(value))) {
 			super.setValue(value);
 		}
 	}
@@ -89,7 +137,15 @@ public class StringChoiceParameter extends Parameter<String> {
 	 * @return allowed allowedValues
 	 */
 	public List<String> getAllowedValues() {
-		return allowedValues;
+		if (isOptional()) {
+			ArrayList<String> tAllowedValues = new ArrayList<String>(
+					allowedValues.size() + 1);
+			tAllowedValues.add("");
+			tAllowedValues.addAll(allowedValues);
+			return tAllowedValues;
+		} else {
+			return allowedValues;
+		}
 	}
 
 	/**
@@ -100,7 +156,14 @@ public class StringChoiceParameter extends Parameter<String> {
 	 * @return list of labels
 	 */
 	public List<String> getLabels() {
-		return labels;
+		if (isOptional()) {
+			ArrayList<String> tLabels = new ArrayList<String>(labels.size() + 1);
+			tLabels.add("");
+			tLabels.addAll(labels);
+			return tLabels;
+		} else {
+			return labels;
+		}
 	}
 
 	@Override

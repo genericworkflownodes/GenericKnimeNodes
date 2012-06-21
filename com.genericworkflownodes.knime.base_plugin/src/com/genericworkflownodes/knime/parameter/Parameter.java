@@ -53,18 +53,18 @@ public abstract class Parameter<T> implements Serializable {
 	/**
 	 * The section used to categorize the parameter.
 	 */
-	private String section = "default";
+	private String section;
 
 	/**
 	 * Flag indicating if the parameter is optional or not.
 	 */
-	private boolean isOptional = true;
+	private boolean isOptional;
 
 	/**
 	 * Flag indicating if the parameter should be hidden from the "average"
 	 * user.
 	 */
-	private boolean advanced = false;
+	private boolean advanced;
 
 	/**
 	 * Constructor with unique key of parameter and generic value to store.
@@ -77,6 +77,10 @@ public abstract class Parameter<T> implements Serializable {
 	public Parameter(final String key, final T value) {
 		this.key = key;
 		this.value = value;
+
+		setSection("default");
+		setIsOptional(true);
+		setAdvanced(false);
 	}
 
 	/**
