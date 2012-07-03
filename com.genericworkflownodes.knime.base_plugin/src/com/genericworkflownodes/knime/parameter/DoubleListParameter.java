@@ -45,15 +45,15 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 	 *            The value of the parameter.
 	 */
 	public DoubleListParameter(final String key, final List<Double> value) {
-		super(key, value);
+		super(key, value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	}
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%e", this.lowerBound));
-		String ub = (this.upperBound == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%e", this.upperBound));
+		String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
+				: String.format("%e", getLowerBound()));
+		String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
+				: String.format("%e", getUpperBound()));
 		return String.format("double list [%s:%s]", lb, ub);
 	}
 
@@ -81,7 +81,7 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 		boolean ok = true;
 
 		for (Double v : val) {
-			if (v < this.lowerBound || v > this.upperBound) {
+			if (v < getLowerBound() || v > getUpperBound()) {
 				ok = false;
 			}
 		}

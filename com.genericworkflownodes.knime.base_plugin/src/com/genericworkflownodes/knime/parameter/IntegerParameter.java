@@ -40,9 +40,7 @@ public class IntegerParameter extends NumberParameter<Integer> {
 	 *            The value of the parameter.
 	 */
 	public IntegerParameter(final String key, final Integer value) {
-		super(key, value);
-		setLowerBound(Integer.MIN_VALUE);
-		setUpperBound(Integer.MAX_VALUE);
+		super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -51,7 +49,7 @@ public class IntegerParameter extends NumberParameter<Integer> {
 	 * @param key
 	 *            The unique key of the parameter.
 	 * @param value
-	 *            The value of the parameter as {@link String}.
+	 *            The value of the parameter.
 	 */
 	public IntegerParameter(final String key, final String value) {
 		this(key, (value.equals("") ? null : Integer.parseInt(value)));

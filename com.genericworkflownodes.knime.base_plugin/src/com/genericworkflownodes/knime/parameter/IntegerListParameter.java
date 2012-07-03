@@ -30,18 +30,30 @@ import java.util.List;
  */
 public class IntegerListParameter extends NumberListParameter<Integer>
 		implements ListParameter {
+
+	/**
+	 * The serial version uid.
+	 */
 	private static final long serialVersionUID = 3136376166293660419L;
 
-	public IntegerListParameter(String key, List<Integer> value) {
-		super(key, value);
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public IntegerListParameter(final String key, final List<Integer> value) {
+		super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
-				.format("%d", this.lowerBound));
-		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
-				.format("%d", this.upperBound));
+		String lb = (getLowerBound() == Integer.MIN_VALUE ? "-inf" : String
+				.format("%d", getLowerBound()));
+		String ub = (getUpperBound() == Integer.MAX_VALUE ? "+inf" : String
+				.format("%d", getUpperBound()));
 		return String.format("integer list [%s:%s]", lb, ub);
 	}
 
@@ -68,7 +80,7 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 		boolean ok = true;
 
 		for (Integer v : val) {
-			if (v < this.lowerBound || v > this.upperBound) {
+			if (v < getLowerBound() || v > getUpperBound()) {
 				ok = false;
 			}
 		}

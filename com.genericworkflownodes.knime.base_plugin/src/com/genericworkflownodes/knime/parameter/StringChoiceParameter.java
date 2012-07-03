@@ -61,31 +61,34 @@ public class StringChoiceParameter extends Parameter<String> {
 	}
 
 	/**
-	 * Constructor. The first value in the list will be set as current value.
+	 * Constructor.
 	 * 
 	 * @param key
 	 *            The unique key of the parameter.
 	 * @param values
-	 *            The values of the parameter as {@link List}.
+	 *            The value of the parameter.
 	 */
 	public StringChoiceParameter(final String key, final List<String> values) {
 		super(key, values.get(0));
 		this.allowedValues = values;
 		this.labels = values;
+
+		// for optional value we use the empty string as default value
+		if (isOptional()) {
+			setValue("");
+		}
 	}
 
 	/**
-	 * Constructor. The first value in the list will be set as current value.
+	 * Constructor.
 	 * 
 	 * @param key
 	 *            The unique key of the parameter.
 	 * @param values
-	 *            The values of the parameter as array of {@link String}s.
+	 *            The value of the parameter.
 	 */
 	public StringChoiceParameter(final String key, final String[] values) {
-		super(key, values[0]);
-		this.allowedValues = Arrays.asList(values);
-		this.labels = Arrays.asList(values);
+		this(key, Arrays.asList(values));
 	}
 
 	/**
@@ -103,6 +106,11 @@ public class StringChoiceParameter extends Parameter<String> {
 		super(key, values.get(0));
 		this.allowedValues = values;
 		this.labels = labels;
+
+		// for optional value we use the empty string as default value
+		if (isOptional()) {
+			setValue("");
+		}
 	}
 
 	/**
@@ -117,16 +125,12 @@ public class StringChoiceParameter extends Parameter<String> {
 	 */
 	public StringChoiceParameter(final String key, final String[] values,
 			final String[] labels) {
-		super(key, values[0]);
-		this.allowedValues = Arrays.asList(values);
-		this.labels = Arrays.asList(labels);
+		this(key, Arrays.asList(values), Arrays.asList(labels));
 	}
 
 	@Override
 	public void setValue(final String value) {
-		// the value must either be contained in the allowed values
-		// or the empty string if the parameter itself is optional
-		if (allowedValues.contains(value) || (isOptional() && "".equals(value))) {
+		if (getAllowedValues().contains(value)) {
 			super.setValue(value);
 		}
 	}

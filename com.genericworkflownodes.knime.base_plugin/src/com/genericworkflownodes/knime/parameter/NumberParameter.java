@@ -27,7 +27,7 @@ package com.genericworkflownodes.knime.parameter;
  * @param <T>
  *            The numerical parameter type.
  */
-public abstract class NumberParameter<T> extends Parameter<T> {
+public abstract class NumberParameter<T extends Number> extends Parameter<T> {
 
 	/**
 	 * The serial version UID.
@@ -51,9 +51,16 @@ public abstract class NumberParameter<T> extends Parameter<T> {
 	 *            The unique key of the parameter.
 	 * @param value
 	 *            The value of the parameter.
+	 * @param lowerBound
+	 *            The lower bound of the contained values.
+	 * @param upperBound
+	 *            The upper bound of the contained values.
 	 */
-	public NumberParameter(final String key, final T value) {
+	public NumberParameter(final String key, final T value, final T lowerBound,
+			final T upperBound) {
 		super(key, value);
+		this.lowerBound = lowerBound;
+		this.upperBound = upperBound;
 	}
 
 	/**

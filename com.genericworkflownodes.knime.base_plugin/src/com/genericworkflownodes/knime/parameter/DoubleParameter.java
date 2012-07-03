@@ -40,9 +40,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 	 *            The value of the parameter.
 	 */
 	public DoubleParameter(final String key, final Double value) {
-		super(key, value);
-		setLowerBound(Double.NEGATIVE_INFINITY);
-		setUpperBound(Double.POSITIVE_INFINITY);
+		super(key, value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	}
 
 	/**
@@ -51,7 +49,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 	 * @param key
 	 *            The unique key of the parameter.
 	 * @param value
-	 *            The value of the parameter as {@link String}.
+	 *            The value of the parameter.
 	 */
 	public DoubleParameter(final String key, final String value) {
 		this(key, (value.equals("") ? null : Double.parseDouble(value)));

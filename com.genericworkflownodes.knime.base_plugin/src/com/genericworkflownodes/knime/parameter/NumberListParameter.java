@@ -24,21 +24,50 @@ import java.util.List;
  * The abstract NumberListParameter class is used to store lists of numeric
  * values.
  * 
+ * @param <T>
+ *            The numerical type stored in the list.
+ * 
  * @author roettig
  * 
  */
-public abstract class NumberListParameter<T> extends Parameter<List<T>> {
+public abstract class NumberListParameter<T extends Number> extends
+		Parameter<List<T>> {
 
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = -4722657913698964700L;
-	protected T lowerBound;
-	protected T upperBound;
 
-	public NumberListParameter(String key, List<T> value) {
+	/**
+	 * The lower bound of the given numerical parameter.
+	 */
+	private T lowerBound;
+
+	/**
+	 * The upper bound of the given numerical parameter.
+	 */
+	private T upperBound;
+
+	/**
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 * @param lowerBound
+	 *            The lower bound of the contained values.
+	 * @param upperBound
+	 *            The upper bound of the contained values.
+	 */
+	public NumberListParameter(final String key, final List<T> value,
+			final T lowerBound, final T upperBound) {
 		super(key, value);
+		this.lowerBound = lowerBound;
+		this.upperBound = upperBound;
 	}
 
 	/**
-	 * returns the lower bound for constrained numeric parameters.
+	 * Returns the lower bound for constrained numeric parameters.
 	 * 
 	 * @return lower bound
 	 */
@@ -47,16 +76,17 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>> {
 	}
 
 	/**
-	 * sets the lower bound for constrained numeric parameters.
+	 * Sets the lower bound for constrained numeric parameters.
 	 * 
 	 * @param lowerBound
+	 *            The new lower bound for the given numerical parameter.
 	 */
-	public void setLowerBound(T lowerBound) {
+	public void setLowerBound(final T lowerBound) {
 		this.lowerBound = lowerBound;
 	}
 
 	/**
-	 * returns the upper bound for constrained numeric parameters.
+	 * Returns the upper bound for constrained numeric parameters.
 	 * 
 	 * @return upper bound
 	 */
@@ -65,12 +95,12 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>> {
 	}
 
 	/**
-	 * sets the upper bound for constrained numeric parameters.
+	 * Sets the upper bound for constrained numeric parameters.
 	 * 
 	 * @param upperBound
-	 *            upper bound
+	 *            The new upper bound for the given numerical parameter.
 	 */
-	public void setUpperBound(T upperBound) {
+	public void setUpperBound(final T upperBound) {
 		this.upperBound = upperBound;
 	}
 }
