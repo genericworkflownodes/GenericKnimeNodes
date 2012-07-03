@@ -40,10 +40,11 @@ import javax.swing.text.StyledDocument;
 import javax.swing.tree.TreePath;
 
 import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.parameter.Parameter;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
+
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterDialog extends JPanel implements ListSelectionListener {
 	private static final long serialVersionUID = 8098990326681120709L;
@@ -93,7 +94,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 					ParameterNode node = (ParameterNode) path
 							.getLastPathComponent();
 					if (node.getPayload() != null) {
-						optional = node.getPayload().getIsOptional();
+						optional = node.getPayload().isOptional();
 						advanced = node.getPayload().isAdvanced();
 					}
 				}

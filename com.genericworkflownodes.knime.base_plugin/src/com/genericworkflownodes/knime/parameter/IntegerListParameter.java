@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,44 +30,57 @@ import java.util.List;
  */
 public class IntegerListParameter extends NumberListParameter<Integer>
 		implements ListParameter {
+
+	/**
+	 * The serial version uid.
+	 */
 	private static final long serialVersionUID = 3136376166293660419L;
 
-	public IntegerListParameter(String key, List<Integer> value) {
-		super(key, value);
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public IntegerListParameter(final String key, final List<Integer> value) {
+		super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.lowerBound == Integer.MIN_VALUE ? "-inf" : String
-				.format("%d", this.lowerBound));
-		String ub = (this.upperBound == Integer.MAX_VALUE ? "+inf" : String
-				.format("%d", this.upperBound));
+		String lb = (getLowerBound() == Integer.MIN_VALUE ? "-inf" : String
+				.format("%d", getLowerBound()));
+		String ub = (getUpperBound() == Integer.MAX_VALUE ? "+inf" : String
+				.format("%d", getUpperBound()));
 		return String.format("integer list [%s:%s]", lb, ub);
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = new ArrayList<Integer>();
+			setValue(new ArrayList<Integer>());
 			return;
 		}
-		this.value = new ArrayList<Integer>();
-		String[] toks = s.split(SEPERATORTOKEN);
+		setValue(new ArrayList<Integer>());
+		String[] toks = s.split(SEPARATOR_TOKEN);
 
 		for (int i = 0; i < toks.length; i++) {
-			this.value.add(Integer.parseInt(toks[i]));
+			this.getValue().add(Integer.parseInt(toks[i]));
 		}
 	}
 
 	@Override
-	public boolean validate(List<Integer> val) {
+	public boolean validate(final List<Integer> val) {
 		if (isNull()) {
 			return true;
 		}
 		boolean ok = true;
 
 		for (Integer v : val) {
-			if (v < this.lowerBound || v > this.upperBound) {
+			if (v < getLowerBound() || v > getUpperBound()) {
 				ok = false;
 			}
 		}
@@ -77,12 +89,12 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 
 	@Override
 	public String getStringRep() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (Integer d : this.value) {
-			sb.append(String.format("%d", d) + SEPERATORTOKEN);
+		for (Integer d : this.getValue()) {
+			sb.append(String.format("%d", d) + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
 	}
@@ -90,29 +102,30 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (Integer i : this.value) {
+		for (Integer i : this.getValue()) {
 			ret.add(i.toString());
 		}
 		return ret;
 	}
 
+	@Override
 	public String toString() {
-		if (value == null) {
+		if (getValue() == null) {
 			return "";
 		}
-		String[] ret = new String[this.value.size()];
+		String[] ret = new String[this.getValue().size()];
 		int idx = 0;
-		for (Integer i : value) {
+		for (Integer i : getValue()) {
 			ret[idx++] = i.toString();
 		}
 		return Arrays.toString(ret);
 	}
 
 	@Override
-	public void fillFromStrings(String[] values) {
-		this.value = new ArrayList<Integer>();
+	public void fillFromStrings(final String[] values) {
+		this.setValue(new ArrayList<Integer>());
 		for (int i = 0; i < values.length; i++) {
-			this.value.add(Integer.parseInt(values[i]));
+			this.getValue().add(Integer.parseInt(values[i]));
 		}
 	}
 }

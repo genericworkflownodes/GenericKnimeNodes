@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 /**
  * The StringParameter class is used to store string values.
@@ -27,28 +26,39 @@ package org.ballproject.knime.base.parameter;
  */
 public class StringParameter extends Parameter<String> {
 
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = 2757963248340525354L;
 
-	public StringParameter(String key, String value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public StringParameter(final String key, final String value) {
 		super(key, value);
 	}
 
 	@Override
 	public String toString() {
-		return value;
+		return getValue();
 	}
 
 	@Override
-	public void fillFromString(String s) {
+	public void fillFromString(final String s) {
 		if (s == null) {
-			value = null;
+			setValue(null);
 			return;
 		}
-		value = s;
+		setValue(s);
 	}
 
 	@Override
-	public boolean validate(String val) {
+	public boolean validate(final String val) {
 		return true;
 	}
 

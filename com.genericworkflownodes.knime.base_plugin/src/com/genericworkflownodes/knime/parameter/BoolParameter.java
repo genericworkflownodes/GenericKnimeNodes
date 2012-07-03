@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 /**
  * The BoolParameter class is used to store boolean values.
@@ -26,38 +25,59 @@ package org.ballproject.knime.base.parameter;
  * 
  */
 public class BoolParameter extends Parameter<Boolean> {
+
+	/**
+	 * The serial version UID.
+	 */
 	private static final long serialVersionUID = 7880934193463457962L;
 
-	public BoolParameter(String key, Boolean value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 */
+	public BoolParameter(final String key, final Boolean value) {
 		super(key, value);
 	}
 
-	public BoolParameter(String key, String value) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter as {@link String}.
+	 */
+	public BoolParameter(final String key, final String value) {
 		super(key, Boolean.valueOf(value.toLowerCase()));
 	}
 
 	@Override
 	public String toString() {
-		if (value == null) {
+		if (getValue() == null) {
 			return null;
 		}
-		return (value ? "true" : "false");
+		return (getValue() ? "true" : "false");
 	}
 
 	@Override
-	public void fillFromString(String s) throws InvalidParameterValueException {
+	public void fillFromString(final String s)
+			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			value = null;
+			setValue(null);
 			return;
 		}
 		if (!(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false"))) {
 			throw new InvalidParameterValueException("");
 		}
-		value = Boolean.parseBoolean(s);
+		setValue(Boolean.parseBoolean(s));
 	}
 
 	@Override
-	public boolean validate(Boolean val) {
+	public boolean validate(final Boolean val) {
 		return true;
 	}
 

@@ -8,13 +8,13 @@ import java.util.List;
 import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
-import org.ballproject.knime.base.parameter.BoolParameter;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
+import com.genericworkflownodes.knime.parameter.BoolParameter;
 
 public class CLICommandGenerator implements ICommandGenerator {
 

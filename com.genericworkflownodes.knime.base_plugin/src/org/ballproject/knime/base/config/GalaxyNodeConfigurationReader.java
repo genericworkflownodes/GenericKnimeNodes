@@ -27,17 +27,18 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.parameter.BoolParameter;
-import org.ballproject.knime.base.parameter.DoubleParameter;
-import org.ballproject.knime.base.parameter.IntegerParameter;
-import org.ballproject.knime.base.parameter.Parameter;
-import org.ballproject.knime.base.parameter.StringChoiceParameter;
-import org.ballproject.knime.base.parameter.StringParameter;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SimpleErrorHandler;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+
+import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.IntegerParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
 
 public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 	protected Document doc;

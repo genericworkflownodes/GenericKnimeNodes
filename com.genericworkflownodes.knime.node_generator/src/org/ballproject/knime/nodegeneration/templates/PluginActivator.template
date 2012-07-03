@@ -12,10 +12,13 @@ import __BASE__.knime.nodes.mimetypes.MimeFileCellFactory;
 
 public class PluginActivator extends GenericActivator {
 
+	private static PluginActivator INSTANCE = null;
+
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		initializePlugin();
+		INSTANCE = this;
 	}
 
 	@Override
@@ -31,5 +34,9 @@ public class PluginActivator extends GenericActivator {
 	@Override
 	public Class<?> getBinaryLocation() {
 		return BinaryResources.class;
+	}
+	
+	public static PluginActivator getInstance() {
+		return INSTANCE;
 	}
 }

@@ -38,10 +38,6 @@ import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.parameter.FileListParameter;
-import org.ballproject.knime.base.parameter.InvalidParameterValueException;
-import org.ballproject.knime.base.parameter.ListParameter;
-import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
@@ -66,6 +62,10 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
+import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
+import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -308,7 +308,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 		for (String key : this.nodeConfig.getParameterKeys()) {
 			Parameter<?> param = nodeConfig.getParameter(key);
-			if (!param.getIsOptional()) {
+			if (!param.isOptional()) {
 				if (!settings.containsKey(key)) {
 					GenericNodesPlugin
 							.log("\t no key found for mand. parameter " + key);
@@ -364,7 +364,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		for (Parameter<?> param : this.nodeConfig.getParameters()) {
 			// System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
-			if (!param.getIsOptional() && param.getStringRep().equals("")) {
+			if (!param.isOptional() && param.getStringRep().equals("")) {
 				// throw new
 				// InvalidSettingsException("not all mandatory parameters are set");
 				this.setWarningMessage("some mandatory parameters might not be set");
@@ -525,7 +525,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		for (String key : nodeConfig.getParameterKeys()) {
 			Parameter<?> param = nodeConfig.getParameter(key);
 			if (param.isNull()) {
-				if (param.getIsOptional()) {
+				if (param.isOptional()) {
 					continue;
 				}
 			}

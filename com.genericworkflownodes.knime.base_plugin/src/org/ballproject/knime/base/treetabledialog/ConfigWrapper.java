@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.parameter.Parameter;
+
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ConfigWrapper {
 	private INodeConfiguration config;

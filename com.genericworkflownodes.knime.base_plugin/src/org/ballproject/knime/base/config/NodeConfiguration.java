@@ -25,10 +25,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ballproject.knime.base.parameter.Parameter;
 import org.ballproject.knime.base.port.Port;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
  * Default implementation of {@link INodeConfiguration}

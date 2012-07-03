@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,34 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.parameter;
+package com.genericworkflownodes.knime.parameter;
 
 import java.util.List;
 
-import org.ballproject.knime.base.port.Port;
-
 /**
- * The FileListParameter class is used to store lists of filenames.
- * 
- * This is a convenience class to handle user supplied output filenames.
+ * The ListParameter interface is implemented by {@link Parameter} classes that
+ * store lists of plain datatypes.
  * 
  * @author roettig
  * 
  */
-public class FileListParameter extends StringListParameter {
-	private static final long serialVersionUID = 3010211738983269403L;
-	private Port port;
+public interface ListParameter {
+	/**
+	 * returns a list of string representations of the stored values.
+	 * 
+	 * This is mainly for display purposes within GUIs and console.
+	 * 
+	 * @return list of strings
+	 */
+	List<String> getStrings();
 
-	public FileListParameter(String key, List<String> value) {
-		super(key, value);
-	}
-
-	public void setPort(Port port) {
-		this.port = port;
-	}
-
-	public Port getPort() {
-		return port;
-	}
+	/**
+	 * fill the {@link Parameter} object from a list of strings.
+	 * 
+	 * @param values
+	 *            list of strings
+	 */
+	void fillFromStrings(String[] values);
 }

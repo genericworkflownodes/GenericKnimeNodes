@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,26 +16,51 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.parameter;
-
-import java.util.List;
+package com.genericworkflownodes.knime.parameter;
 
 /**
- * The abstract NumberListParameter class is used to store lists of numeric
- * values.
+ * An abstract numerical parameter providing boundary checking for the derived
+ * parameters.
  * 
  * @author roettig
  * 
+ * @param <T>
+ *            The numerical parameter type.
  */
-public abstract class NumberListParameter<T> extends Parameter<List<T>> {
+public abstract class NumberParameter<T extends Number> extends Parameter<T> {
 
-	private static final long serialVersionUID = -4722657913698964700L;
-	protected T lowerBound;
-	protected T upperBound;
+	/**
+	 * The serial version UID.
+	 */
+	private static final long serialVersionUID = 3529659248042850739L;
 
-	public NumberListParameter(String key, List<T> value) {
+	/**
+	 * The lower bound of the given numerical parameter.
+	 */
+	private T lowerBound;
+
+	/**
+	 * The upper bound of the given numerical parameter.
+	 */
+	private T upperBound;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            The unique key of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 * @param lowerBound
+	 *            The lower bound of the contained values.
+	 * @param upperBound
+	 *            The upper bound of the contained values.
+	 */
+	public NumberParameter(final String key, final T value, final T lowerBound,
+			final T upperBound) {
 		super(key, value);
+		this.lowerBound = lowerBound;
+		this.upperBound = upperBound;
 	}
 
 	/**
@@ -51,8 +76,9 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>> {
 	 * sets the lower bound for constrained numeric parameters.
 	 * 
 	 * @param lowerBound
+	 *            The new lower bound for the given numerical parameter.
 	 */
-	public void setLowerBound(T lowerBound) {
+	public void setLowerBound(final T lowerBound) {
 		this.lowerBound = lowerBound;
 	}
 
@@ -69,9 +95,9 @@ public abstract class NumberListParameter<T> extends Parameter<List<T>> {
 	 * sets the upper bound for constrained numeric parameters.
 	 * 
 	 * @param upperBound
-	 *            upper bound
+	 *            The new upper bound for the given numerical parameter.
 	 */
-	public void setUpperBound(T upperBound) {
+	public void setUpperBound(final T upperBound) {
 		this.upperBound = upperBound;
 	}
 }
