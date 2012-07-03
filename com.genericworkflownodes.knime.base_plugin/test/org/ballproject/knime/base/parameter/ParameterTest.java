@@ -8,8 +8,6 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import com.genericworkflownodes.knime.parameter.BoolParameter;
-import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
@@ -30,14 +28,9 @@ public class ParameterTest {
 		assertEquals(new Integer(1979), ip.getValue());
 
 		DoubleParameter dp = new DoubleParameter("d", 22.04);
-		assertEquals("2.204000e+01", dp.getStringRep());
+		assertEquals("22.040000", dp.getStringRep());
 		dp.fillFromString("-19.79");
 		assertEquals(new Double(-19.79), dp.getValue());
-
-		BoolParameter bp = new BoolParameter("b", true);
-		assertEquals("true", bp.getStringRep());
-		bp.fillFromString("false");
-		assertEquals(false, bp.getValue());
 
 		StringParameter sp = new StringParameter("s", "lkwpeter");
 		assertEquals("lkwpeter", sp.getStringRep());
@@ -68,19 +61,6 @@ public class ParameterTest {
 		assertEquals(new Integer(16), ilp.getValue().get(1));
 		assertEquals(new Integer(44), ilp.getValue().get(2));
 
-		List<Double> floats = new ArrayList<Double>();
-		floats.add(99.1);
-		floats.add(-12.4);
-		floats.add(3.3);
-		DoubleListParameter dlp = new DoubleListParameter("dlp", floats);
-		assertEquals(
-				"9.910000e+01@@@__@@@-1.240000e+01@@@__@@@3.300000e+00@@@__@@@",
-				dlp.getStringRep());
-		dlp.fillFromString("-19@@@__@@@16@@@__@@@44@@@__@@@");
-		assertEquals(3, dlp.getValue().size());
-		assertEquals(new Double(-19), dlp.getValue().get(0));
-		assertEquals(new Double(16), dlp.getValue().get(1));
-		assertEquals(new Double(44), dlp.getValue().get(2));
 	}
 
 }

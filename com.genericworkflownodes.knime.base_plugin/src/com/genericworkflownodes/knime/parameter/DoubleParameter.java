@@ -60,7 +60,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 		if (getValue() == null) {
 			return null;
 		}
-		return String.format("%e", getValue());
+		return String.format("%f", getValue());
 	}
 
 	@Override
