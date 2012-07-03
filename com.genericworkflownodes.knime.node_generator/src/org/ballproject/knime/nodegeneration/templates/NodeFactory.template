@@ -33,10 +33,10 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 	private IPluginConfiguration createPluginConfig()
 	{
 		// create pluginConfig
-		final IPreferenceStore pStore = PluginActivator.getDefault().getPreferenceStore();
+		final IPreferenceStore pStore = PluginActivator.getInstance().getPreferenceStore();
 	
 		return new PluginConfiguration("__BASE__", pStore.getString("binaries_path"),
-			PluginActivator.getDefault().getProperties(), PluginActivator.getDefault().getEnvironment());
+			PluginActivator.getInstance().getProperties(), PluginActivator.getInstance().getEnvironment());
 	}
 	
 	@Override

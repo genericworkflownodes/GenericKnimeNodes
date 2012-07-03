@@ -56,11 +56,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 			.getLogger(GenericActivator.class.getCanonicalName());
 
 	/**
-	 * Easy access for via {@link #getDefault()} method.
-	 */
-	private static GenericActivator plugin;
-
-	/**
 	 * Plugin properties.
 	 */
 	private Properties props = new Properties();
@@ -85,16 +80,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 */
 	public GenericActivator() {
 		super();
-		plugin = this;
-	}
-
-	/**
-	 * Easy access to the static instance.
-	 * 
-	 * @return The plugin instance.
-	 */
-	public static GenericActivator getDefault() {
-		return plugin;
 	}
 
 	@Override
@@ -106,7 +91,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
-		plugin = null;
 		bundleContext = null;
 	}
 
