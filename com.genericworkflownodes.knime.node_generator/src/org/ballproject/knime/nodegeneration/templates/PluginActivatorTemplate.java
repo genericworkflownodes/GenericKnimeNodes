@@ -21,8 +21,9 @@ package org.ballproject.knime.nodegeneration.templates;
 import java.io.IOException;
 import java.util.List;
 
-import org.ballproject.knime.base.util.StringUtils;
 import org.ballproject.knime.nodegeneration.NodeGenerator;
+
+import com.genericworkflownodes.util.StringUtils;
 
 /**
  * Abstraction of the PluginActivator template.

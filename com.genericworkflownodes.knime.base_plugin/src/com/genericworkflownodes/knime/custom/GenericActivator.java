@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.util.ZipUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -40,6 +39,7 @@ import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.util.ZipUtils;
 
 /**
  * This class is an abstract bundle activator which holds the code necessary to

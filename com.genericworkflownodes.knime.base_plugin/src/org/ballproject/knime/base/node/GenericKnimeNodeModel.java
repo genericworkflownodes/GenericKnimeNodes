@@ -41,7 +41,6 @@ import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
-import org.ballproject.knime.base.util.ToolRunner;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -102,7 +101,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
 
-	protected ToolRunner toolRunner;
 	protected IToolExecutor executor;
 
 	/**
