@@ -26,7 +26,7 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * Test for {@link DoubleListParameterTest}.
+ * Test for {@link DoubleListParameter}.
  * 
  * @author aiche
  */

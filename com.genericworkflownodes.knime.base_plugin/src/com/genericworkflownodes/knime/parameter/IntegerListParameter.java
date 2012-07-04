@@ -60,15 +60,20 @@ public class IntegerListParameter extends NumberListParameter<Integer>
 	@Override
 	public void fillFromString(final String s)
 			throws InvalidParameterValueException {
-		if (s == null || s.equals("")) {
+		try {
+			if (s == null || s.equals("")) {
+				setValue(new ArrayList<Integer>());
+				return;
+			}
 			setValue(new ArrayList<Integer>());
-			return;
-		}
-		setValue(new ArrayList<Integer>());
-		String[] toks = s.split(SEPARATOR_TOKEN);
+			String[] toks = s.split(SEPARATOR_TOKEN);
 
-		for (int i = 0; i < toks.length; i++) {
-			this.getValue().add(Integer.parseInt(toks[i]));
+			for (int i = 0; i < toks.length; i++) {
+				this.getValue().add(Integer.parseInt(toks[i]));
+			}
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterValueException(
+					"The given string cannot be transformed into a integer list.");
 		}
 	}
 

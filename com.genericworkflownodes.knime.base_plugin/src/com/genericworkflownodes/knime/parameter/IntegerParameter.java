@@ -74,7 +74,7 @@ public class IntegerParameter extends NumberParameter<Integer> {
 			setValue(Integer.parseInt(s));
 		} catch (NumberFormatException e) {
 			throw new InvalidParameterValueException("parameter "
-					+ this.getKey() + " value is not a double", e);
+					+ this.getKey() + " value is not an integer", e);
 		}
 		if (getValue() < this.getLowerBound()
 				|| getValue() > this.getUpperBound()) {
