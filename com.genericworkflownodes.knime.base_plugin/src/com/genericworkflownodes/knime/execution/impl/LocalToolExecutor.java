@@ -26,17 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationStore;
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
-import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
@@ -228,24 +225,6 @@ public class LocalToolExecutor implements IToolExecutor {
 
 		commands = generator.generateCommands(nodeConfiguration, configStore,
 				pluginConfiguration, workingDirectory);
-
-		updatePATH();
-	}
-
-	/**
-	 * TODO(Stephan): Re-think this concept. LocalToolExecutor shouldn't need to
-	 * know something about this.
-	 */
-	private void updatePATH() {
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		String PATH_extension = store
-				.getString(PreferenceInitializer.PREF_PATHES);
-		if (environmentVariables.containsKey("PATH")) {
-			PATH_extension = PATH_extension + PATHSEP
-					+ environmentVariables.get("PATH");
-		}
-		environmentVariables.put("PATH", PATH_extension);
 	}
 
 	/**

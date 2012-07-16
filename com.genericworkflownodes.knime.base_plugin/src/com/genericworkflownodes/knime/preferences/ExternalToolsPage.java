@@ -19,6 +19,8 @@
 package com.genericworkflownodes.knime.preferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,11 +41,22 @@ import org.eclipse.ui.PlatformUI;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
+/**
+ * Preferences page for to manage tool installations.
+ * 
+ * @author aiche
+ */
 public class ExternalToolsPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
+	/**
+	 * The list of all available tool pathes.
+	 */
 	private List<ToolFieldEditor> toolPathes = new ArrayList<ToolFieldEditor>();
 
+	/**
+	 * Default c'tor.
+	 */
 	public ExternalToolsPage() {
 		super();
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
@@ -85,9 +98,21 @@ public class ExternalToolsPage extends PreferencePage implements
 				Group group = new Group(c, SWT.SHADOW_ETCHED_IN);
 				group.setText(pluginname);
 
+				List<ExternalTool> tools = plugin2tools.get(pluginname);
+
+				// sort each plugin by name
+				Collections.sort(tools, new Comparator<ExternalTool>() {
+					@Override
+					public int compare(final ExternalTool o1,
+							final ExternalTool o2) {
+						return o1.getToolName().compareToIgnoreCase(
+								o2.getToolName());
+					}
+				});
+
 				// add each tool shipped with the current plugin to the GUI
 				// group
-				for (ExternalTool tool : plugin2tools.get(pluginname)) {
+				for (ExternalTool tool : tools) {
 					ToolFieldEditor gToolEditor = new ToolFieldEditor(tool,
 							group);
 					gToolEditor.load();
