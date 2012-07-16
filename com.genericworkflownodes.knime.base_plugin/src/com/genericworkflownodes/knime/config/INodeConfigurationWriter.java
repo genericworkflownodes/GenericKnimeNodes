@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,18 +16,45 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.File;
 import java.io.IOException;
 
-public interface NodeConfigurationWriter {
+/**
+ * NodeConfigurationWriter interface.
+ * 
+ * @author roettig, aiche
+ */
+public interface INodeConfigurationWriter {
+
+	/**
+	 * Sets the given parameter to the value in the output file.
+	 * 
+	 * @param name
+	 *            The parameter identifier.
+	 * @param value
+	 *            The new value of the parameter.
+	 */
 	void setParameterValue(String name, String value);
 
+	/**
+	 * Adds the given value to the given parameter.
+	 * 
+	 * @param name
+	 *            The parameter identifier.
+	 * @param value
+	 *            The new value of the parameter.
+	 */
 	void setMultiParameterValue(String name, String value);
 
-	void writeCTD(File file) throws IOException;
-
-	void writeParametersOnly(File file) throws IOException;
+	/**
+	 * Writes the node configuration to the given file.
+	 * 
+	 * @param file
+	 *            File to store the node configuration.
+	 * @throws IOException
+	 *             The {@link IOException} will be thrown in case of io errors.
+	 */
+	void write(File file) throws IOException;
 }

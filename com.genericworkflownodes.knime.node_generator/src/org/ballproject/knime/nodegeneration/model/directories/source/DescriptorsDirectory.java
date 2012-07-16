@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
 import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
@@ -14,6 +13,8 @@ import org.ballproject.knime.nodegeneration.model.files.MimeTypesFile;
 import org.ballproject.knime.nodegeneration.util.Utils;
 import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
+
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReaderException;
 
 /**
  * Directory containing the node descriptors and the mimetypes.xml file.

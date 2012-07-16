@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
-import org.ballproject.knime.base.config.CTDNodeConfigurationReaderException;
-import org.ballproject.knime.base.config.INodeConfiguration;
+
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReaderException;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 public class CTDFile extends File implements INodeConfigurationFile {
 
@@ -18,7 +19,7 @@ public class CTDFile extends File implements INodeConfigurationFile {
 			CTDNodeConfigurationReaderException {
 		super(file.getPath());
 
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		this.nodeConfiguration = reader.read(new FileInputStream(file));
 	}
 

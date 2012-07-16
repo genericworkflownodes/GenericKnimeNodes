@@ -88,7 +88,9 @@
     <module name="InterfaceIsType"/>
     <module name="VisibilityModifier"/>
     <module name="ArrayTypeStyle"/>
-    <module name="FinalParameters"/>
+    <module name="FinalParameters">
+      <property name="severity" value="ignore"/>
+    </module>
     <module name="TodoComment">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
@@ -99,6 +101,7 @@
       <property name="tokens" value="INTERFACE_DEF"/>
       <message key="name.invalidPattern" value="Interfaces should start with an I. Name ''{0}'' must match pattern ''{1}''."/>
     </module>
+    <module name="FinalParameters"/>
   </module>
   <module name="JavadocPackage">
     <property name="severity" value="ignore"/>

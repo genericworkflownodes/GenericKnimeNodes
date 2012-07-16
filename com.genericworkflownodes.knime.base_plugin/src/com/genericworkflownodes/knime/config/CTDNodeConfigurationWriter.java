@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,11 +33,34 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
+/**
+ * NodeConfigurationWriter for CTD files.
+ * 
+ * @author roettig,aiche
+ */
+public class CTDNodeConfigurationWriter implements INodeConfigurationWriter {
 
+	/**
+	 * The xml document.
+	 */
 	private Document doc;
 
-	public CTDNodeConfigurationWriter(String xml) {
+	/**
+	 * Provides access the internal XML document.
+	 * 
+	 * @return The XML document.
+	 */
+	protected Document getDocument() {
+		return doc;
+	}
+
+	/**
+	 * Constructor using the original CTD xml as input.
+	 * 
+	 * @param xml
+	 *            The original ctd file as single string.
+	 */
+	public CTDNodeConfigurationWriter(final String xml) {
 		SAXReader reader = new SAXReader();
 		try {
 			doc = reader.read(new StringReader(xml));
@@ -47,9 +70,13 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		cleanItemLists();
 	}
 
+	/**
+	 * Removes all default values from list items to enable addition of new
+	 * ones.
+	 */
 	@SuppressWarnings("unchecked")
 	private void cleanItemLists() {
-		List<Node> itemlists = doc.selectNodes("//ITEMLIST");
+		List<Node> itemlists = getDocument().selectNodes("//ITEMLIST");
 		for (Node itemlist : itemlists) {
 			List<Node> listitems = itemlist.selectNodes("LISTITEM");
 			for (Node item : listitems) {
@@ -58,6 +85,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		}
 	}
 
+	@Override
 	public void setParameterValue(String name, String value) {
 		String[] toks = name.split("\\.");
 		String query = "/tool/PARAMETERS/";
@@ -66,7 +94,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		}
 		query += "ITEM[@name='" + toks[toks.length - 1] + "']";
 
-		Node node = doc.selectSingleNode(query);
+		Node node = getDocument().selectSingleNode(query);
 		if (node == null) {
 			return;
 		}
@@ -74,6 +102,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		elem.addAttribute("value", value);
 	}
 
+	@Override
 	public void setMultiParameterValue(String name, String value) {
 		String[] toks = name.split("\\.");
 		String query = "/tool/PARAMETERS/";
@@ -82,7 +111,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		}
 		query += "ITEMLIST[@name='" + toks[toks.length - 1] + "']";
 
-		Node node = doc.selectSingleNode(query);
+		Node node = getDocument().selectSingleNode(query);
 		if (node == null) {
 			return;
 		}
@@ -91,7 +120,8 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		item.addAttribute("value", value);
 	}
 
-	public void writeCTD(File file) throws IOException {
+	@Override
+	public void write(File file) throws IOException {
 		OutputFormat format = OutputFormat.createPrettyPrint();
 
 		XMLWriter writer = new XMLWriter(new FileWriter(file), format);
@@ -100,16 +130,7 @@ public class CTDNodeConfigurationWriter implements NodeConfigurationWriter {
 		writer.close();
 	}
 
-	public void writeParametersOnly(File file) throws IOException {
-		OutputFormat format = OutputFormat.createPrettyPrint();
-
-		XMLWriter writer = new XMLWriter(new FileWriter(file), format);
-		writer.write(doc.selectSingleNode("//PARAMETERS"));
-
-		writer.close();
-	}
-
-	public void init(NodeConfigurationStore store) {
+	public void init(INodeConfigurationStore store) {
 		for (String key : store.getParameterKeys()) {
 			List<String> values = store.getMultiParameterValue(key);
 			if (values.size() == 1) {

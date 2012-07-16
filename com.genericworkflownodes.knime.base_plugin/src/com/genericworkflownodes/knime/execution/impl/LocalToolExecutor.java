@@ -27,13 +27,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
@@ -221,7 +221,7 @@ public class LocalToolExecutor implements IToolExecutor {
 	 * @param pluginConfiguration
 	 */
 	public void prepareExecution(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		findExecutable(nodeConfiguration, pluginConfiguration);
 		addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());

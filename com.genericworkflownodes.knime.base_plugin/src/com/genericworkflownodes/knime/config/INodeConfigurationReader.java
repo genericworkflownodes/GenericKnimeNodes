@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.InputStream;
 

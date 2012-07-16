@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,8 +24,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DefaultNodeConfigurationStore implements NodeConfigurationStore {
-	protected Map<String, List<String>> data = new LinkedHashMap<String, List<String>>();
+/**
+ * The default implementation of {@link INodeConfigurationStore}.
+ * 
+ * @author roettig, aiche
+ */
+public class NodeConfigurationStore implements INodeConfigurationStore {
+
+	/**
+	 * Map to store the parameter values.
+	 */
+	private Map<String, List<String>> data;
+
+	/**
+	 * Default c'tor.
+	 */
+	public NodeConfigurationStore() {
+		data = new LinkedHashMap<String, List<String>>();
+	}
 
 	@Override
 	public void setParameterValue(String name, String value) {

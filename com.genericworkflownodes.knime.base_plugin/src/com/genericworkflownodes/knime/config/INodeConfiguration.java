@@ -17,19 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.util.List;
-import java.util.Set;
 
-public interface NodeConfigurationStore {
-	void setParameterValue(String name, String value);
+import org.ballproject.knime.base.port.Port;
 
-	void setMultiParameterValue(String name, String value);
+import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
-	String getParameterValue(String name);
+public interface INodeConfiguration {
+	public String getName();
 
-	List<String> getMultiParameterValue(String name);
+	public String getCommand();
 
-	Set<String> getParameterKeys();
+	public String getDescription();
+
+	public String getManual();
+
+	public String getDocUrl();
+
+	public String getVersion();
+
+	public String getXML();
+
+	public String getCategory();
+
+	public CLI getCLI();
+
+	public int getNumberOfOutputPorts();
+
+	public int getNumberOfInputPorts();
+
+	public Port[] getInputPorts();
+
+	public Port[] getOutputPorts();
+
+	public Parameter<?> getParameter(String key);
+
+	public List<String> getParameterKeys();
+
+	public List<Parameter<?>> getParameters();
 }

@@ -60,7 +60,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 		if (getValue() == null) {
 			return null;
 		}
-		return String.format("%e", getValue());
+		return String.format("%f", getValue());
 	}
 
 	@Override
@@ -97,9 +97,9 @@ public class DoubleParameter extends NumberParameter<Double> {
 	@Override
 	public String getMnemonic() {
 		String lb = (this.getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%e", this.getLowerBound()));
+				: String.format("%f", this.getLowerBound()));
 		String ub = (this.getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%e", this.getUpperBound()));
+				: String.format("%f", this.getUpperBound()));
 		return String.format("double [%s:%s]", lb, ub);
 	}
 }

@@ -48,7 +48,7 @@ public abstract class Parameter<T> implements Serializable {
 	/**
 	 * A description of the parameter.
 	 */
-	private String description = "";
+	private String description;
 
 	/**
 	 * The section used to categorize the parameter.
@@ -78,6 +78,7 @@ public abstract class Parameter<T> implements Serializable {
 		this.key = key;
 		this.value = value;
 
+		setDescription("");
 		setSection("default");
 		setIsOptional(true);
 		setAdvanced(false);

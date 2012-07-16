@@ -23,11 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
 
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationWriter;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 
 /**
@@ -42,7 +42,7 @@ public class BALLCommandGenerator implements ICommandGenerator {
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception {
 
@@ -64,14 +64,14 @@ public class BALLCommandGenerator implements ICommandGenerator {
 	 * @throws IOException
 	 */
 	private File writePARFile(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore, File workingDirectory)
+			INodeConfigurationStore configStore, File workingDirectory)
 			throws IOException {
 		File paramFile = new File(workingDirectory, PAR_FILE_NAME);
 
 		CTDNodeConfigurationWriter ctdWriter = new CTDNodeConfigurationWriter(
 				nodeConfiguration.getXML());
 		ctdWriter.init(configStore);
-		ctdWriter.writeCTD(new File(paramFile, PAR_FILE_NAME));
+		ctdWriter.write(new File(paramFile, PAR_FILE_NAME));
 		return paramFile;
 	}
 

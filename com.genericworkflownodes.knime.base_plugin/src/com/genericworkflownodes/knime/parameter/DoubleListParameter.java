@@ -51,24 +51,29 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 	@Override
 	public String getMnemonic() {
 		String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%e", getLowerBound()));
+				: String.format("%f", getLowerBound()));
 		String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%e", getUpperBound()));
+				: String.format("%f", getUpperBound()));
 		return String.format("double list [%s:%s]", lb, ub);
 	}
 
 	@Override
 	public void fillFromString(final String s)
 			throws InvalidParameterValueException {
-		if (s == null || s.equals("")) {
+		try {
+			if (s == null || s.equals("")) {
+				setValue(new ArrayList<Double>());
+				return;
+			}
 			setValue(new ArrayList<Double>());
-			return;
-		}
-		setValue(new ArrayList<Double>());
-		String[] toks = s.split(SEPARATOR_TOKEN);
+			String[] toks = s.split(SEPARATOR_TOKEN);
 
-		for (int i = 0; i < toks.length; i++) {
-			getValue().add(Double.parseDouble(toks[i]));
+			for (int i = 0; i < toks.length; i++) {
+				getValue().add(Double.parseDouble(toks[i]));
+			}
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterValueException(
+					"The given string cannot be transformed into a double list.");
 		}
 	}
 
@@ -95,7 +100,7 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 		}
 		StringBuffer sb = new StringBuffer();
 		for (Double d : this.getValue()) {
-			sb.append(String.format("%e", d) + SEPARATOR_TOKEN);
+			sb.append(String.format("%f", d) + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
 	}
@@ -104,7 +109,7 @@ public class DoubleListParameter extends NumberListParameter<Double> implements
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
 		for (Double d : this.getValue()) {
-			ret.add(d.toString());
+			ret.add(String.format("%f", d));
 		}
 		return ret;
 	}

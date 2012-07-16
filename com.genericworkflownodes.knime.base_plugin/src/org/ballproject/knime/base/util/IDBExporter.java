@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
-import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -15,6 +13,8 @@ import org.dom4j.Namespace;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 // TODO documentation
@@ -67,7 +67,7 @@ public class IDBExporter {
 	public static void processCTD(String filename)
 			throws FileNotFoundException, Exception {
 		INodeConfiguration config = null;
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(new FileInputStream(filename));
 
 		Element root_ = root.addElement("idb:IDBApplication");

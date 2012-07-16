@@ -1,9 +1,9 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.node.GenericKnimeNodeModel;
 import org.knime.core.data.url.MIMEType;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 public class __NODENAME__NodeModel extends GenericKnimeNodeModel {	

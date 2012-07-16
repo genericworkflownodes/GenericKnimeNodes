@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
+import com.genericworkflownodes.knime.config.GalaxyNodeConfigurationReader;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;

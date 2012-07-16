@@ -2,18 +2,18 @@ package org.ballproject.knime.base.wrapper;
 
 import static org.junit.Assert.assertEquals;
 
-import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 public class GenericToolWrapperTest {
 
 	@Test
 	public void testCTDLoading() throws Exception {
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		INodeConfiguration config = reader.read(TestDataSource.class
 				.getResourceAsStream("test5.ctd"));
 

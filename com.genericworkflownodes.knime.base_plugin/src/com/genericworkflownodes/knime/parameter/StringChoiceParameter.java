@@ -58,6 +58,8 @@ public class StringChoiceParameter extends Parameter<String> {
 	 */
 	public StringChoiceParameter(final String key, final String value) {
 		super(key, value);
+		allowedValues = new ArrayList<String>(0);
+		labels = new ArrayList<String>(0);
 	}
 
 	/**
@@ -179,7 +181,7 @@ public class StringChoiceParameter extends Parameter<String> {
 	public void fillFromString(final String s)
 			throws InvalidParameterValueException {
 		if (s == null) {
-			setValue(null);
+			super.setValue(null);
 			return;
 		}
 		if (!this.getAllowedValues().contains(s)) {
@@ -197,5 +199,17 @@ public class StringChoiceParameter extends Parameter<String> {
 	@Override
 	public String getMnemonic() {
 		return "string choice";
+	}
+
+	@Override
+	public void setIsOptional(boolean isOptional) {
+		super.setIsOptional(isOptional);
+
+		// if we set the value initially to "" and now remove the optional flag,
+		// we need to make sure that the StringChoiceParameter still has a valid
+		// value
+		if (!isOptional && "".equals(getValue()) && !allowedValues.contains("")) {
+			setValue(allowedValues.get(0));
+		}
 	}
 }

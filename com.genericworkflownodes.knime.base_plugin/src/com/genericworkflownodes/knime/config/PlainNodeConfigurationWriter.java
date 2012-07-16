@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.List;
 
 public class PlainNodeConfigurationWriter {
-	private NodeConfigurationStore store;
+	private INodeConfigurationStore store;
 
 	private static String LINESEP = System.getProperty("line.separator");
 
-	public void init(NodeConfigurationStore store) {
+	public void init(INodeConfigurationStore store) {
 		this.store = store;
 	}
 

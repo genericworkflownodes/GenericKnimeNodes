@@ -3,10 +3,11 @@ package org.ballproject.knime.nodegeneration.model.directories.source;
 import java.io.File;
 import java.io.IOException;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 /**
  * Abstraction of the directory containing all icons related to the plugin that

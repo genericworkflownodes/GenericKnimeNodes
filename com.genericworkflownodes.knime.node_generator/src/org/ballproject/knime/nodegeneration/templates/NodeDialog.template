@@ -1,7 +1,8 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.node.*;
-import org.ballproject.knime.base.config.*;
+import org.ballproject.knime.base.node.GenericKnimeNodeDialog;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 public class __NODENAME__NodeDialog extends GenericKnimeNodeDialog
 {

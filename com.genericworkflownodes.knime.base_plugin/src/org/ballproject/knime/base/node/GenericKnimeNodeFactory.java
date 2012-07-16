@@ -19,11 +19,11 @@
 
 package org.ballproject.knime.base.node;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**

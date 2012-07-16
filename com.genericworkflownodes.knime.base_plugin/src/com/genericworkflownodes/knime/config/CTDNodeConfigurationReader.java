@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,17 +16,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
@@ -38,9 +39,11 @@ import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.schemas.SchemaProvider;
 import org.ballproject.knime.base.schemas.SimpleErrorHandler;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
@@ -50,118 +53,202 @@ import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
-import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.util.StringUtils.DoubleRangeExtracted;
+import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
 
-public class CTDFileNodeConfigurationReader implements INodeConfigurationReader {
+/**
+ * Class to read an {@link INodeConfiguration} from a CTD file.
+ * 
+ * @author roettig, aiche
+ */
+public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
+	/**
+	 * The logger used to indicate problems.
+	 */
 	@SuppressWarnings("unused")
-	private static Logger log = Logger
-			.getLogger(CTDFileNodeConfigurationReader.class.getCanonicalName());
+	private static Logger LOG = Logger
+			.getLogger(CTDNodeConfigurationReader.class.getCanonicalName());
 
+	/**
+	 * The XML document.
+	 */
 	private Document doc;
+
+	/**
+	 * The final node configuration.
+	 */
 	private NodeConfiguration config = new NodeConfiguration();
 
-	public CTDFileNodeConfigurationReader() {
+	/**
+	 * C'tor.
+	 */
+	public CTDNodeConfigurationReader() {
 	}
 
-	protected String SECTION_NODE_NAME = "NODE";
-	protected String INPUTFILE_TAG = "input file";
-	protected String OUTPUTFILE_TAG = "output file";
+	/**
+	 * Tag used to identify input ports.
+	 */
+	private static final String INPUTFILE_TAG = "input file";
 
-	protected Set<String> captured_ports = new HashSet<String>();
+	/**
+	 * Tag used to identify output ports.
+	 */
+	private static final String OUTPUTFILE_TAG = "output file";
 
-	private static List<Port> in_ports;
-	private static List<Port> out_ports;
+	/**
+	 * List of identified ports.
+	 */
+	private Set<String> capturedPorts = new HashSet<String>();
 
+	/**
+	 * List of identified input ports.
+	 */
+	private static List<Port> INPUT_PORTS;
+
+	/**
+	 * List of identified output ports.
+	 */
+	private static List<Port> OUTPUT_PORTS;
+
+	/**
+	 * List of port names that will not be created.
+	 */
+	private static final List<String> PORT_BLACKLIST = Arrays.asList(
+			"write_ini", "write_par", "par", "help", "ini");
+
+	/**
+	 * Extracts the port information from the CTD file.
+	 * 
+	 * @throws Exception
+	 *             An exception is thrown if invalid port information is .
+	 *             contained in the CTD.
+	 */
 	private void readPorts() throws Exception {
-		in_ports = new ArrayList<Port>();
-		out_ports = new ArrayList<Port>();
+		INPUT_PORTS = new ArrayList<Port>();
+		OUTPUT_PORTS = new ArrayList<Port>();
 
 		Node node = this.doc.selectSingleNode("/tool/PARAMETERS");
 		Element root = (Element) node;
 		this.processIOPorts(root);
 
-		this.config.setInports(in_ports.toArray(new Port[in_ports.size()]));
-		this.config.setOutports(out_ports.toArray(new Port[out_ports.size()]));
+		this.config
+				.setInports(INPUT_PORTS.toArray(new Port[INPUT_PORTS.size()]));
+		this.config.setOutports(OUTPUT_PORTS.toArray(new Port[OUTPUT_PORTS
+				.size()]));
 	}
 
+	/**
+	 * Extract IO port information from the XML document.
+	 * 
+	 * @param root
+	 *            The root of all parameter information in the CTD.
+	 * @throws Exception
+	 *             An exception is thrown if invalid port information is .
+	 *             contained in the CTD.
+	 */
 	@SuppressWarnings("unchecked")
-	public void processIOPorts(Element root) throws Exception {
+	private void processIOPorts(final Element root) throws Exception {
 		List<Node> items = root.selectNodes("//ITEM[contains(@tags,'"
-				+ this.OUTPUTFILE_TAG + "')]");
+				+ OUTPUTFILE_TAG + "')]");
 		for (Node n : items) {
-			this.createPortFromNode(n, false);
+			createPortFromNode(n);
 		}
-		items = root.selectNodes("//ITEM[contains(@tags,'" + this.INPUTFILE_TAG
+
+		items = root.selectNodes("//ITEM[contains(@tags,'" + INPUTFILE_TAG
 				+ "')]");
 		for (Node n : items) {
-			this.createPortFromNode(n, false);
+			createPortFromNode(n);
 		}
-		items = root.selectNodes("//ITEMLIST[contains(@tags,'"
-				+ this.INPUTFILE_TAG + "')]");
+
+		items = root.selectNodes("//ITEMLIST[contains(@tags,'" + INPUTFILE_TAG
+				+ "')]");
 		for (Node n : items) {
-			this.createPortFromNode(n, true);
+			createPortFromNode(n);
 		}
-		items = root.selectNodes("//ITEMLIST[contains(@tags,'"
-				+ this.OUTPUTFILE_TAG + "')]");
+
+		items = root.selectNodes("//ITEMLIST[contains(@tags,'" + OUTPUTFILE_TAG
+				+ "')]");
 		for (Node n : items) {
-			this.createPortFromNode(n, true);
+			createPortFromNode(n);
 		}
 	}
 
+	/**
+	 * Extract parameter (non-port) information from the CTD.
+	 */
 	@SuppressWarnings("unchecked")
-	public void readParameters() throws Exception {
+	private void readParameters() {
 		Node root = this.doc.selectSingleNode("/tool/PARAMETERS");
 		List<Node> items = root.selectNodes("//ITEM[not(contains(@tags,'"
-				+ this.OUTPUTFILE_TAG + "')) and not(contains(@tags,'"
-				+ this.INPUTFILE_TAG + "'))]");
+				+ OUTPUTFILE_TAG + "')) and not(contains(@tags,'"
+				+ INPUTFILE_TAG + "'))]");
 		for (Node n : items) {
 			this.processItem(n);
 		}
 		items = root.selectNodes("//ITEMLIST[not(contains(@tags,'"
-				+ this.OUTPUTFILE_TAG + "')) and not(contains(@tags,'"
-				+ this.INPUTFILE_TAG + "'))]");
+				+ OUTPUTFILE_TAG + "')) and not(contains(@tags,'"
+				+ INPUTFILE_TAG + "'))]");
 		for (Node n : items) {
 			this.processMultiItem(n);
 		}
 	}
 
-	public String getPath(Node n) {
+	/**
+	 * Given an xml element (node) the method extracts the path to parameter
+	 * root and returns it as string (e.g.,
+	 * algorithm.parameter-group.parametername).
+	 * 
+	 * @param node
+	 *            The parameter node for which the path should be extracted.
+	 * @return The path to given node as string.
+	 */
+	private String getPath(final Node node) {
+		Node iteratable = node;
 
-		List<String> path_nodes = new ArrayList<String>();
-		while (n != null && !n.getName().equals("PARAMETERS")) {
-			path_nodes.add(n.valueOf("@name"));
-			n = n.getParent();
+		List<String> pathNodes = new ArrayList<String>();
+		while (iteratable != null && !iteratable.getName().equals("PARAMETERS")) {
+			pathNodes.add(iteratable.valueOf("@name"));
+			iteratable = iteratable.getParent();
 		}
 
-		Collections.reverse(path_nodes);
+		Collections.reverse(pathNodes);
 
-		String ret = "";
-		int N = path_nodes.size();
-		for (int i = 0; i < N; i++) {
-			if (i == N - 1) {
-				ret += path_nodes.get(i);
+		String finalPath = "";
+		int numberOfNodes = pathNodes.size();
+		for (int i = 0; i < numberOfNodes; i++) {
+			if (i == numberOfNodes - 1) {
+				finalPath += pathNodes.get(i);
 			} else {
-				ret += path_nodes.get(i) + ".";
+				finalPath += pathNodes.get(i) + ".";
 			}
 		}
-		return ret;
+		return finalPath;
 	}
 
-	private void createPortFromNode(Node node, boolean multi) throws Exception {
+	/**
+	 * Creates an in- or output port from the given Node in the CTD document.
+	 * 
+	 * @param node
+	 *            The node from which the port should be generated.
+	 * @throws Exception
+	 *             An exception is thrown if the given port information is
+	 *             incomplete or invalid.
+	 */
+	private void createPortFromNode(final Node node) throws Exception {
 
 		Element elem = (Element) node;
+		final boolean multi = "ITEMLIST".equals(elem.getName());
 
 		String name = node.valueOf("@name");
 		String descr = node.valueOf("@description");
 		String tags = node.valueOf("@tags");
 
-		if (name.equals("write_ini") || name.equals("write_par")
-				|| name.equals("par") || name.equals("help")) {
+		if (isIgnoredPort(name)) {
 			return;
 		}
 
@@ -169,8 +256,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 
 		port.setMultiFile(multi);
 
-		if (tags.contains(this.INPUTFILE_TAG)
-				|| tags.contains(this.OUTPUTFILE_TAG)) {
+		if (tags.contains(INPUTFILE_TAG) || tags.contains(OUTPUTFILE_TAG)) {
 			String[] fileExtensions = null;
 
 			if (elem.attributeValue("supported_formats") == null) {
@@ -212,9 +298,9 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 			}
 
 		}
-		if (tags.contains(this.OUTPUTFILE_TAG)) {
-			out_ports.add(port);
-			this.captured_ports.add(port.getName());
+		if (tags.contains(OUTPUTFILE_TAG)) {
+			OUTPUT_PORTS.add(port);
+			this.capturedPorts.add(port.getName());
 
 			if (multi) {
 				String path = this.getPath(node);
@@ -226,11 +312,23 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 				this.config.addParameter(path, param);
 			}
 		}
-		if (tags.contains(this.INPUTFILE_TAG)) {
-			in_ports.add(port);
-			this.captured_ports.add(port.getName());
+		if (tags.contains(INPUTFILE_TAG)) {
+			INPUT_PORTS.add(port);
+			this.capturedPorts.add(port.getName());
 		}
 
+	}
+
+	/**
+	 * Checks if the port should not be integrated into the final node (e.g.,
+	 * debug or parameter outputs).
+	 * 
+	 * @param name
+	 *            The name of the potential port.
+	 * @return True if the port is on the blacklist of ports to ignore.
+	 */
+	private boolean isIgnoredPort(final String name) {
+		return PORT_BLACKLIST.contains(name);
 	}
 
 	/**
@@ -239,22 +337,20 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 * @param elem
 	 *            The current node.
 	 */
-	public void processItem(Node elem) {
+	private void processItem(final Node elem) {
 		String name = elem.valueOf("@name");
+		String path = getPath(elem);
 
-		String path = this.getPath(elem);
-
-		if (this.captured_ports.contains(path)) {
+		if (this.capturedPorts.contains(path)) {
 			return;
 		}
 
-		if (name.equals("write_ini") || name.equals("write_par")
-				|| name.equals("par") || name.equals("help")) {
+		if (isIgnoredPort(name)) {
 			return;
 		}
 
-		Parameter<?> param = this.getParameterFromNode(elem);
-		this.config.addParameter(path, param);
+		Parameter<?> param = getParameterFromNode(elem);
+		config.addParameter(path, param);
 	}
 
 	/**
@@ -264,22 +360,20 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 * @param elem
 	 *            The xml element.
 	 */
-	public void processMultiItem(Node elem) {
+	private void processMultiItem(final Node elem) {
 		String name = elem.valueOf("@name");
+		String path = getPath(elem);
 
-		String path = this.getPath(elem);
-
-		if (this.captured_ports.contains(path)) {
+		if (capturedPorts.contains(path)) {
 			return;
 		}
 
-		if (name.equals("write_ini") || name.equals("write_par")
-				|| name.equals("par") || name.equals("help")) {
+		if (isIgnoredPort(name)) {
 			return;
 		}
 
-		Parameter<?> param = this.getMultiParameterFromNode(elem);
-		this.config.addParameter(path, param);
+		Parameter<?> param = getMultiParameterFromNode(elem);
+		config.addParameter(path, param);
 	}
 
 	/**
@@ -363,7 +457,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 * @return a {@link Parameter} equivalent to the xml node.
 	 */
 	private Parameter<?> getParameterFromNode(final Node node) {
-		Parameter<?> ret = null;
+		Parameter<?> createdParameter = null;
 		String type = node.valueOf("@type");
 		String name = node.valueOf("@name");
 		String value = node.valueOf("@value");
@@ -375,39 +469,41 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 
 		if (type.toLowerCase().equals("double")
 				|| type.toLowerCase().equals("float")) {
-			ret = this.processDoubleParameter(name, value, restrs, tags);
+			createdParameter = this.processDoubleParameter(name, value, restrs,
+					tags);
 		} else {
 			if (type.toLowerCase().equals("int")) {
-				ret = this.processIntParameter(name, value, restrs, tags);
+				createdParameter = this.processIntParameter(name, value,
+						restrs, tags);
 			} else {
 				if (type.toLowerCase().equals("string")) {
-					ret = this
-							.processStringParameter(name, value, restrs, tags);
+					createdParameter = this.processStringParameter(name, value,
+							restrs, tags);
 				}
 			}
 		}
 
-		ret.setDescription(descr);
+		createdParameter.setDescription(descr);
 
 		if (tagset.contains("mandatory") || tagset.contains("required")) {
-			ret.setIsOptional(false);
+			createdParameter.setIsOptional(false);
 		}
 
 		if (tagset.contains("advanced")) {
-			ret.setAdvanced(true);
+			createdParameter.setAdvanced(true);
 		}
 
-		return ret;
+		return createdParameter;
 	}
 
 	/**
-	 * Creates a {@link ListParameter} from the given xml node.
+	 * Creates a {@link Parameter} from the given xml node.
 	 * 
 	 * @param node
 	 *            The xml node.
-	 * @return A {@link ListParameter} corresponding to the xml node.
+	 * @return A {@link Parameter} corresponding to the xml node.
 	 */
-	private Parameter<?> getMultiParameterFromNode(Node node) {
+	private Parameter<?> getMultiParameterFromNode(final Node node) {
 		String type = node.valueOf("@type");
 		String name = node.valueOf("@name");
 		String restrs = node.valueOf("@restrictions");
@@ -465,10 +561,10 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 *            Restrictions set for the given parameter.
 	 * @param tags
 	 *            Tags.
-	 * @return A {@link ListParameter}.
+	 * @return A {@link Parameter}.
 	 */
-	private Parameter<?> processStringListParameter(String name,
-			List<String> values, String restrs, String tags) {
+	private Parameter<?> processStringListParameter(final String name,
+			final List<String> values, final String restrs, final String tags) {
 		return new StringListParameter(name, values);
 	}
 
@@ -483,23 +579,24 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 *            Restrictions set for the given parameter.
 	 * @param tags
 	 *            Tags.
-	 * @return A {@link ListParameter}.
+	 * @return A {@link Parameter}.
 	 */
-	private Parameter<?> processIntListParameter(String name,
-			List<String> values, String restrs, String tags) {
+	private Parameter<?> processIntListParameter(final String name,
+			final List<String> values, final String restrs, final String tags) {
 		List<Integer> vals = new ArrayList<Integer>();
 		for (String currentValue : values) {
 			vals.add(Integer.parseInt(currentValue));
 		}
 
-		IntegerListParameter ret = new IntegerListParameter(name, vals);
+		IntegerListParameter integerListParameter = new IntegerListParameter(
+				name, vals);
 
-		Integer[] bounds = new Integer[2];
-		this.getIntegerBoundsFromRestrictions(restrs, bounds);
-		ret.setLowerBound(bounds[0]);
-		ret.setUpperBound(bounds[1]);
+		integerListParameter.setLowerBound(new IntegerRangeExtractor()
+				.getLowerBound(restrs));
+		integerListParameter.setUpperBound(new IntegerRangeExtractor()
+				.getUpperBound(restrs));
 
-		return ret;
+		return integerListParameter;
 	}
 
 	/**
@@ -513,174 +610,107 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 *            Restrictions set for the given parameter.
 	 * @param tags
 	 *            Tags.
-	 * @return A {@link ListParameter}.
+	 * @return A {@link Parameter}.
 	 */
-	private Parameter<?> processDoubleListParameter(String name,
-			List<String> values, String restrs, String tags) {
+	private Parameter<?> processDoubleListParameter(final String name,
+			final List<String> values, final String restrs, final String tags) {
 		List<Double> vals = new ArrayList<Double>();
 		for (String currentValue : values) {
 			vals.add(Double.parseDouble(currentValue));
 		}
 
-		DoubleListParameter ret = new DoubleListParameter(name, vals);
+		DoubleListParameter doubleListParameter = new DoubleListParameter(name,
+				vals);
 
-		Double[] bounds = new Double[2];
-		this.getDoubleBoundsFromRestrictions(restrs, bounds);
-		ret.setLowerBound(bounds[0]);
-		ret.setUpperBound(bounds[1]);
+		doubleListParameter.setLowerBound(new DoubleRangeExtracted()
+				.getLowerBound(restrs));
+		doubleListParameter.setUpperBound(new DoubleRangeExtracted()
+				.getUpperBound(restrs));
 
-		return ret;
+		return doubleListParameter;
 	}
 
 	/**
-	 * Extracts upper and lower bounds from the given restrictions string.
+	 * Creates an double parameter based on the given information.
 	 * 
-	 * @param restrictions
-	 *            The string containing the restrictions.
-	 * @param bounds
-	 *            The array where the restrictions will be stored.
+	 * @param name
+	 *            The name of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 * @param restrs
+	 *            The restrictions for the parameter.
+	 * @param tags
+	 *            The tags of the parameter.
+	 * @return An {@link DoubleParameter} corresponding to the passed
+	 *         information.
 	 */
-	private void getDoubleBoundsFromRestrictions(String restrictions,
-			Double[] bounds) {
-		Double upperBound = Double.POSITIVE_INFINITY;
-		Double lowerBound = Double.NEGATIVE_INFINITY;
-
-		if (restrictions.equals("")) {
-			bounds[0] = lowerBound;
-			bounds[1] = upperBound;
-			return;
-		}
-
-		String[] toks = restrictions.split(":");
-		if (toks.length != 0) {
-			if (toks[0].equals("")) {
-				// upper bounded only
-				double ub;
-				try {
-					ub = Double.parseDouble(toks[1]);
-				} catch (NumberFormatException e) {
-					throw new RuntimeException(e);
-				}
-				upperBound = ub;
-			} else {
-				// lower and upper bounded
-				if (toks.length == 2) {
-					double lb;
-					double ub;
-					try {
-						lb = Double.parseDouble(toks[0]);
-						ub = Double.parseDouble(toks[1]);
-					} catch (NumberFormatException e) {
-						throw new RuntimeException(e);
-					}
-					lowerBound = lb;
-					upperBound = ub;
-				} else {
-					// lower bounded only
-					double lb;
-					try {
-						lb = Double.parseDouble(toks[0]);
-					} catch (NumberFormatException e) {
-						throw new RuntimeException(e);
-					}
-					lowerBound = lb;
-				}
-			}
-		}
-		bounds[0] = lowerBound;
-		bounds[1] = upperBound;
-	}
-
-	private Parameter<?> processDoubleParameter(String name, String value,
-			String restrs, String tags) {
-		DoubleParameter retd = new DoubleParameter(name, value);
-		Double[] bounds = new Double[2];
-		this.getDoubleBoundsFromRestrictions(restrs, bounds);
-		retd.setLowerBound(bounds[0]);
-		retd.setUpperBound(bounds[1]);
-		return retd;
-	}
-
-	private static Set<String> tokenSet(String s) {
-		Set<String> ret = new HashSet<String>();
-		String[] toks = s.split(",");
-		for (String tok : toks) {
-			ret.add(tok);
-		}
-		return ret;
+	private Parameter<?> processDoubleParameter(final String name,
+			final String value, final String restrs, final String tags) {
+		DoubleParameter doubleParameter = new DoubleParameter(name, value);
+		doubleParameter.setLowerBound(new DoubleRangeExtracted()
+				.getLowerBound(restrs));
+		doubleParameter.setUpperBound(new DoubleRangeExtracted()
+				.getUpperBound(restrs));
+		return doubleParameter;
 	}
 
 	/**
-	 * Extracts upper and lower bounds from the given restrictions string.
+	 * Returns a list single tags delimited by a "," as given in the passed
+	 * string.
 	 * 
-	 * @param restrictions
-	 *            The string containing the restrictions.
-	 * @param bounds
-	 *            The array where the restrictions will be stored.
+	 * @param str
+	 *            The string from which the single tags/tokens should be
+	 *            extracted.
+	 * @return A {@link Set} containing all tags/tokens included in the passed
+	 *         string.
 	 */
-	private void getIntegerBoundsFromRestrictions(String restrictions,
-			Integer[] bounds) {
-		Integer upperBound = Integer.MAX_VALUE;
-		Integer lowerBound = Integer.MIN_VALUE;
-
-		if (restrictions.equals("")) {
-			bounds[0] = lowerBound;
-			bounds[1] = upperBound;
-			return;
-		}
-
-		String[] toks = restrictions.split(":");
-		if (toks.length != 0) {
-			if (toks[0].equals("")) {
-				// upper bounded only
-				int ub;
-				try {
-					ub = Integer.parseInt(toks[1]);
-				} catch (NumberFormatException e) {
-					throw new RuntimeException(e);
-				}
-				upperBound = ub;
-			} else {
-				// lower and upper bounded
-				if (toks.length == 2) {
-					int lb;
-					int ub;
-					try {
-						lb = Integer.parseInt(toks[0]);
-						ub = Integer.parseInt(toks[1]);
-					} catch (NumberFormatException e) {
-						throw new RuntimeException(e);
-					}
-					lowerBound = lb;
-					upperBound = ub;
-				} else {
-					// lower bounded only
-					int lb;
-					try {
-						lb = Integer.parseInt(toks[0]);
-					} catch (NumberFormatException e) {
-						throw new RuntimeException(e);
-					}
-					lowerBound = lb;
-				}
-			}
-		}
-		bounds[0] = lowerBound;
-		bounds[1] = upperBound;
+	private static Set<String> tokenSet(final String str) {
+		String[] tokens = str.split(",");
+		Set<String> tokenSet = new HashSet<String>();
+		Collections.addAll(tokenSet, tokens);
+		return tokenSet;
 	}
 
-	private Parameter<?> processIntParameter(String name, String value,
-			String restrs, String tags) {
-		IntegerParameter reti = new IntegerParameter(name, value);
-		Integer[] bounds = new Integer[2];
-		this.getIntegerBoundsFromRestrictions(restrs, bounds);
-		reti.setLowerBound(bounds[0]);
-		reti.setUpperBound(bounds[1]);
-		return reti;
+	/**
+	 * Creates an integer parameter based on the given information.
+	 * 
+	 * @param name
+	 *            The name of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 * @param restrs
+	 *            The restrictions for the parameter.
+	 * @param tags
+	 *            The tags of the parameter.
+	 * @return An {@link IntegerParameter} corresponding to the passed
+	 *         information.
+	 */
+	private Parameter<?> processIntParameter(final String name,
+			final String value, final String restrs, final String tags) {
+		IntegerParameter integerParameter = new IntegerParameter(name, value);
+		integerParameter.setLowerBound(new IntegerRangeExtractor()
+				.getLowerBound(restrs));
+		integerParameter.setUpperBound(new IntegerRangeExtractor()
+				.getUpperBound(restrs));
+		return integerParameter;
 	}
 
-	private Parameter<?> processStringParameter(String name, String value,
-			String restrs, String tags) {
+	/**
+	 * Creates an string parameter based on the given information.
+	 * 
+	 * @param name
+	 *            The name of the parameter.
+	 * @param value
+	 *            The value of the parameter.
+	 * @param restrs
+	 *            The restrictions for the parameter.
+	 * @param tags
+	 *            The tags of the parameter.
+	 * @return An {@link StringParameter} corresponding to the passed
+	 *         information.
+	 */
+	private Parameter<?> processStringParameter(final String name,
+			final String value, final String restrs, final String tags) {
 		Parameter<?> rets = null;
 
 		String[] toks = restrs.split(",");
@@ -705,45 +735,79 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	}
 
 	@Override
-	public INodeConfiguration read(InputStream xmlstream)
+	public INodeConfiguration read(InputStream xmlStream)
 			throws CTDNodeConfigurationReaderException {
 		try {
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SchemaFactory schemaFactory = SchemaFactory
-					.newInstance("http://www.w3.org/2001/XMLSchema");
+			readCTDDocument(xmlStream);
 
-			factory.setSchema(schemaFactory.newSchema(new Source[] {
-					new StreamSource(SchemaProvider.class
-							.getResourceAsStream("CTD.xsd")),
-					new StreamSource(SchemaProvider.class
-							.getResourceAsStream("Param_1_3.xsd")) }));
+			readPorts();
+			readParameters();
+			readDescription();
+			readCLI();
+			config.setXml(doc.asXML());
 
-			SAXParser parser = factory.newSAXParser();
-
-			SAXReader reader = new SAXReader(parser.getXMLReader());
-			reader.setValidation(false);
-
-			SimpleErrorHandler errorHandler = new SimpleErrorHandler();
-
-			reader.setErrorHandler(errorHandler);
-
-			this.doc = reader.read(xmlstream);
-
-			if (!errorHandler.isValid()) {
-				System.err.println(errorHandler.getErrorReport());
-				throw new Exception("CTD file is not valid !");
-			}
-
-			this.readPorts();
-			this.readParameters();
-			this.readDescription();
-			this.readCLI();
-			this.config.setXml(this.doc.asXML());
-
-			return this.config;
+			return config;
 		} catch (Exception e) {
 			throw new CTDNodeConfigurationReaderException(e);
 		}
+	}
+
+	/**
+	 * Reads the CTD file given in the xmlStream into the local document.
+	 * 
+	 * @param xmlStream
+	 *            The xmlStream providing the CTD.
+	 * @throws Exception
+	 *             An {@link Exception} is thrown if the CTD file could not be
+	 *             validated or produced other errors while reading it.
+	 */
+	private void readCTDDocument(InputStream xmlStream) throws Exception {
+		SimpleErrorHandler errorHandler = new SimpleErrorHandler();
+
+		try {
+			SAXReader reader = initializeSAXReader();
+			reader.setErrorHandler(errorHandler);
+			doc = reader.read(xmlStream);
+		} catch (SAXException ex) {
+			throw new Exception("Errror while reading CTD file!", ex);
+		} catch (ParserConfigurationException ex) {
+			throw new Exception("Errror while reading CTD file!", ex);
+		} catch (DocumentException ex) {
+			throw new Exception("Errror while reading CTD file!", ex);
+		}
+
+		if (!errorHandler.isValid()) {
+			System.err.println(errorHandler.getErrorReport());
+			throw new Exception("CTD file is not valid !");
+		}
+	}
+
+	/**
+	 * Initializes a SAXReader with the Param and CTD schema.
+	 * 
+	 * @return A fully configured {@link SAXReader}.
+	 * @throws SAXException
+	 *             See {@link SAXReader} documentation.
+	 * @throws ParserConfigurationException
+	 *             See {@link SAXReader} documentation.
+	 */
+	private SAXReader initializeSAXReader() throws SAXException,
+			ParserConfigurationException {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+
+		factory.setSchema(schemaFactory.newSchema(new Source[] {
+				new StreamSource(SchemaProvider.class
+						.getResourceAsStream("CTD.xsd")),
+				new StreamSource(SchemaProvider.class
+						.getResourceAsStream("Param_1_3.xsd")) }));
+
+		SAXParser parser = factory.newSAXParser();
+
+		SAXReader reader = new SAXReader(parser.getXMLReader());
+		reader.setValidation(false);
+		return reader;
 	}
 
 	/**
@@ -778,7 +842,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 *             An exception is thrown if the information contained is
 	 *             invalid.
 	 */
-	private void processCLIElement(Node elem) throws Exception {
+	private void processCLIElement(final Node elem) throws Exception {
 		CLIElement cliElement = new CLIElement();
 		// set attributes based on xml values
 		cliElement.setName(elem.valueOf("@name"));
@@ -835,7 +899,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	 *             An exception is thrown if it is not possible to construct a
 	 *             valid {@link CLIMapping} from the given xml node.
 	 */
-	private CLIMapping processMappingElement(Node mappingElement)
+	private CLIMapping processMappingElement(final Node mappingElement)
 			throws Exception {
 		CLIMapping cliMapping = new CLIMapping();
 		String mappingRefName = mappingElement.valueOf("@ref_name");
@@ -874,8 +938,8 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 		boolean hasPortWithMappingName = false;
 
 		// check inPorts
-		hasPortWithMappingName |= findInPortList(mappingRefName, in_ports);
-		hasPortWithMappingName |= findInPortList(mappingRefName, out_ports);
+		hasPortWithMappingName |= findInPortList(mappingRefName, INPUT_PORTS);
+		hasPortWithMappingName |= findInPortList(mappingRefName, OUTPUT_PORTS);
 
 		return hasPortWithMappingName;
 	}
