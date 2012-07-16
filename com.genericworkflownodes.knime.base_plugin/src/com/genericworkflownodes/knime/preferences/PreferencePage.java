@@ -6,7 +6,6 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
@@ -15,7 +14,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class PreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
 
-	private StringFieldEditor PREF_PATHES;
 	private BooleanFieldEditor PREF_DEBUG_MODE;
 	private DirectoryFieldEditor PREF_FILE_STASH_LOCATION;
 
@@ -39,11 +37,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 				"File stash directory:", parent);
 		PREF_DEBUG_MODE = new BooleanFieldEditor(
 				PreferenceInitializer.PREF_DEBUG_MODE, "Debug mode", parent);
-		PREF_PATHES = new StringFieldEditor(PreferenceInitializer.PREF_PATHES,
-				"Pathes:", parent);
 
 		addField(PREF_FILE_STASH_LOCATION);
-		addField(PREF_PATHES);
 		addField(PREF_DEBUG_MODE);
 	}
 
@@ -63,10 +58,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 		//
 		boolean flag = PREF_DEBUG_MODE.getBooleanValue();
 		GenericNodesPlugin.setDebug(flag);
-
-		String pathes = PREF_PATHES.getStringValue();
-
-		store.setValue(PreferenceInitializer.PREF_PATHES, pathes);
 
 		return true;
 	}
