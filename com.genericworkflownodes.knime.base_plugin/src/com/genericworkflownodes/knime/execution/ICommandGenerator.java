@@ -21,14 +21,14 @@ package com.genericworkflownodes.knime.execution;
 import java.io.File;
 import java.util.List;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 
 /**
  * Create based on a {@link INodeConfiguration} and a
- * {@link NodeConfigurationStore} a list of arguments that should be send to a
+ * {@link INodeConfigurationStore} a list of arguments that should be send to a
  * custom tool executor.
  * 
  * @author aiche
@@ -50,7 +50,7 @@ public interface ICommandGenerator {
 	 * @throws Exception
 	 */
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception;
 

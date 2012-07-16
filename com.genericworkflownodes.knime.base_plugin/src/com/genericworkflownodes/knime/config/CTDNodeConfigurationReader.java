@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -65,14 +65,14 @@ import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
  * 
  * @author roettig, aiche
  */
-public class CTDFileNodeConfigurationReader implements INodeConfigurationReader {
+public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
 	/**
 	 * The logger used to indicate problems.
 	 */
 	@SuppressWarnings("unused")
 	private static Logger LOG = Logger
-			.getLogger(CTDFileNodeConfigurationReader.class.getCanonicalName());
+			.getLogger(CTDNodeConfigurationReader.class.getCanonicalName());
 
 	/**
 	 * The XML document.
@@ -87,7 +87,7 @@ public class CTDFileNodeConfigurationReader implements INodeConfigurationReader 
 	/**
 	 * C'tor.
 	 */
-	public CTDFileNodeConfigurationReader() {
+	public CTDNodeConfigurationReader() {
 	}
 
 	/**

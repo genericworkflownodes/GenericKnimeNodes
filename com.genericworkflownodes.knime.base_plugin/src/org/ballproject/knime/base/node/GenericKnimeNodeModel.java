@@ -33,9 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.config.DefaultNodeConfigurationStore;
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.port.Port;
@@ -57,7 +54,10 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.config.NodeConfigurationStore;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
@@ -99,7 +99,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
 			MIMEURIPortObject.class, true);
 
-	protected NodeConfigurationStore store = new DefaultNodeConfigurationStore();
+	protected INodeConfigurationStore store = new NodeConfigurationStore();
 
 	protected IToolExecutor executor;
 
@@ -440,7 +440,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				!GenericNodesPlugin.isDebug()));
 		GenericNodesPlugin.log("jobdir=" + jobdir);
 
-		store = new DefaultNodeConfigurationStore();
+		store = new NodeConfigurationStore();
 
 		// prepare input data and parameter values
 		List<List<URI>> output_files = outputParameters(jobdir, inObjects);

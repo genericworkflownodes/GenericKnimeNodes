@@ -27,10 +27,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.jdesktop.swingx.VerticalLayout;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 3102737955888696834L;

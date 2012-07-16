@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -148,6 +148,7 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 				labs.add(label);
 			}
 			ret = new StringChoiceParameter(key, opts, labs);
+			ret.setIsOptional(false);
 		}
 		String descr = n.valueOf("label/text()");
 

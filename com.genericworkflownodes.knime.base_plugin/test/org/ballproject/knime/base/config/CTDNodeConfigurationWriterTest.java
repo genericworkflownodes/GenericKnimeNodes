@@ -10,11 +10,15 @@ import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.junit.Test;
 
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationWriter;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+
 public class CTDNodeConfigurationWriterTest {
 
 	@Test
 	public void test1() throws Exception {
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		INodeConfiguration config = reader.read(TestDataSource.class
 				.getResourceAsStream("test.ctd"));
 
@@ -29,7 +33,7 @@ public class CTDNodeConfigurationWriterTest {
 		File out = File.createTempFile("CTDWriter", "TEST");
 		out.deleteOnExit();
 
-		writer.writeCTD(new File(out.getAbsolutePath()));
+		writer.write(new File(out.getAbsolutePath()));
 
 		SAXReader rd = new SAXReader();
 
@@ -53,7 +57,7 @@ public class CTDNodeConfigurationWriterTest {
 
 	@Test
 	public void test2() throws Exception {
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		INodeConfiguration config = reader.read(TestDataSource.class
 				.getResourceAsStream("test3.ctd"));
 
@@ -66,7 +70,7 @@ public class CTDNodeConfigurationWriterTest {
 		File out = File.createTempFile("CTDWriter", "TEST");
 		// out.deleteOnExit();
 
-		writer.writeCTD(new File(out.getAbsolutePath()));
+		writer.write(new File(out.getAbsolutePath()));
 
 		SAXReader rd = new SAXReader();
 

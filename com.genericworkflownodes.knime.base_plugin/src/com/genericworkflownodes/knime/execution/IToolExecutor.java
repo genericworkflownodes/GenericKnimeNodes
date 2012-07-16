@@ -20,10 +20,10 @@ package com.genericworkflownodes.knime.execution;
 
 import java.io.File;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 
 public interface IToolExecutor {
 
@@ -52,7 +52,7 @@ public interface IToolExecutor {
 	 * @param pluginConfiguration
 	 */
 	public void prepareExecution(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception;
 
 	/**

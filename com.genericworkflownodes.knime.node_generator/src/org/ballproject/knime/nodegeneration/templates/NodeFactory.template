@@ -1,10 +1,10 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.config.CTDFileNodeConfigurationReader;
 import org.ballproject.knime.base.node.GenericKnimeNodeDialog;
 import org.ballproject.knime.base.node.GenericKnimeNodeFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.PluginConfiguration;
 
@@ -16,7 +16,7 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 	public __NODENAME__NodeFactory() 
 	{
 		// read NodeConfig from CTD
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader(); 
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader(); 
 		try
 		{
 			config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));

@@ -39,11 +39,11 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.TreePath;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterDialog extends JPanel implements ListSelectionListener {

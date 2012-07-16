@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import org.ballproject.knime.nodegeneration.exceptions.InvalidNodeNameException;
@@ -62,6 +61,8 @@ import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
 import org.ballproject.knime.nodegeneration.util.Utils;
 import org.ballproject.knime.nodegeneration.writer.PropertiesWriter;
 import org.dom4j.DocumentException;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 public class NodeGenerator {
 	private static final Logger LOGGER = Logger.getLogger(NodeGenerator.class

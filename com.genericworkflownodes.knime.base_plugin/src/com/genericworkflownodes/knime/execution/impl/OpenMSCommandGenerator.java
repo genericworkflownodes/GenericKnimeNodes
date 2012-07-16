@@ -23,12 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.config.CTDNodeConfigurationWriter;
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
-
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.NodeConfiguration;
+import com.genericworkflownodes.knime.config.OpenMSNodeConfigurationWriter;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 
 /**
@@ -38,12 +37,18 @@ import com.genericworkflownodes.knime.execution.ICommandGenerator;
  */
 public class OpenMSCommandGenerator implements ICommandGenerator {
 
+	/**
+	 * The command line switch needed to provide a ini file.
+	 */
 	private static final String INI_SWITCH = "-ini";
+	/**
+	 * The name of the generated ini file.
+	 */
 	private static final String INI_FILE_NAME = "params.ini";
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception {
 
@@ -68,17 +73,18 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
 	 * @param workingDirectory
 	 *            The directory where the tool will be executed. Make sure that
 	 *            the JVM has access to this directory.
-	 * @return
+	 * @return The {@link File} where the ini file was stored.
 	 * @throws IOException
+	 *             In case of i/o problems.
 	 */
 	private File createINIFile(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore, File workingDirectory)
+			INodeConfigurationStore configStore, File workingDirectory)
 			throws IOException {
 		File iniFile = new File(workingDirectory, INI_FILE_NAME);
-		CTDNodeConfigurationWriter ctdWriter = new CTDNodeConfigurationWriter(
+		OpenMSNodeConfigurationWriter openMSWriter = new OpenMSNodeConfigurationWriter(
 				nodeConfiguration.getXML());
-		ctdWriter.init(configStore);
-		ctdWriter.writeParametersOnly(iniFile);
+		openMSWriter.init(configStore);
+		openMSWriter.write(iniFile);
 		return iniFile;
 	}
 }

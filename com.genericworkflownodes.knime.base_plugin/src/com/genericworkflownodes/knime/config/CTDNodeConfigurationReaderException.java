@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 public class CTDNodeConfigurationReaderException extends Exception {
 

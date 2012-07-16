@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
-import org.ballproject.knime.base.config.NodeConfigurationStore;
-import org.ballproject.knime.base.config.PlainNodeConfigurationWriter;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationStore;
+import com.genericworkflownodes.knime.config.PlainNodeConfigurationWriter;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 
@@ -22,11 +22,11 @@ public class CLICommandGenerator implements ICommandGenerator {
 			.getLogger(CLICommandGenerator.class);
 
 	private INodeConfiguration nodeConfig;
-	private NodeConfigurationStore configStore;
+	private INodeConfigurationStore configStore;
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			NodeConfigurationStore configStore,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception {
 
@@ -197,7 +197,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 	 * @param configStore
 	 * @throws IOException
 	 */
-	private void exportPlainConfiguration(NodeConfigurationStore configStore,
+	private void exportPlainConfiguration(INodeConfigurationStore configStore,
 			File workingDirectory) throws IOException {
 		PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
 		configStore.setParameterValue("jobdir",

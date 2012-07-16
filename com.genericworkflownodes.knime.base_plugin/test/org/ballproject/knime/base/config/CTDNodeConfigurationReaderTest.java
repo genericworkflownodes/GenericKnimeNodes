@@ -31,6 +31,8 @@ import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
+import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -47,7 +49,7 @@ public class CTDNodeConfigurationReaderTest {
 	public void testReader() throws Exception {
 		INodeConfiguration config = null;
 
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test.ctd"));
 
@@ -158,7 +160,7 @@ public class CTDNodeConfigurationReaderTest {
 	@Test
 	public void testReader2() throws Exception {
 		INodeConfiguration config = null;
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test2.ctd"));
 		assertNotNull(config.getParameter("c"));
@@ -167,7 +169,7 @@ public class CTDNodeConfigurationReaderTest {
 	@Test
 	public void testReader3() throws Exception {
 		INodeConfiguration config = null;
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test3.ctd"));
 
@@ -221,7 +223,7 @@ public class CTDNodeConfigurationReaderTest {
 	@Test
 	public void testReader4() throws Exception {
 		INodeConfiguration config = null;
-		CTDFileNodeConfigurationReader reader = new CTDFileNodeConfigurationReader();
+		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
 		config = reader.read(TestDataSource.class
 				.getResourceAsStream("test4.ctd"));
 

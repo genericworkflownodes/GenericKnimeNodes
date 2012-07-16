@@ -31,11 +31,11 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
 
-import org.ballproject.knime.base.config.INodeConfiguration;
 import org.ballproject.knime.base.treetabledialog.itemlist.ItemListFillerDialog;
 import org.ballproject.knime.base.treetabledialog.itemlist.ListParameterModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;

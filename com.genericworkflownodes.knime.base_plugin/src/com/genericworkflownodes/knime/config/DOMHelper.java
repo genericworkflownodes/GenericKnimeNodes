@@ -17,45 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import java.util.List;
 
-import org.ballproject.knime.base.port.Port;
+import org.dom4j.Node;
 
-import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.parameter.Parameter;
+public class DOMHelper {
+	@SuppressWarnings("unchecked")
+	public static List<Node> selectNodes(Node root, String query)
+			throws Exception {
+		List<Node> result = root.selectNodes(query);
+		return result;
+	}
 
-public interface INodeConfiguration {
-	public String getName();
+	public static Node selectSingleNode(Node root, String query)
+			throws Exception {
+		Node result = root.selectSingleNode(query);
+		if (result == null) {
+			throw new Exception("XPath query yielded null result");
+		}
+		return result;
+	}
 
-	public String getCommand();
-
-	public String getDescription();
-
-	public String getManual();
-
-	public String getDocUrl();
-
-	public String getVersion();
-
-	public String getXML();
-
-	public String getCategory();
-
-	public CLI getCLI();
-
-	public int getNumberOfOutputPorts();
-
-	public int getNumberOfInputPorts();
-
-	public Port[] getInputPorts();
-
-	public Port[] getOutputPorts();
-
-	public Parameter<?> getParameter(String key);
-
-	public List<String> getParameterKeys();
-
-	public List<Parameter<?>> getParameters();
+	public static String valueOf(Node n, String query) throws Exception {
+		String val = n.valueOf(query);
+		if (val == null) {
+			throw new Exception("XPath query yielded null result");
+		}
+		return val;
+	}
 }
