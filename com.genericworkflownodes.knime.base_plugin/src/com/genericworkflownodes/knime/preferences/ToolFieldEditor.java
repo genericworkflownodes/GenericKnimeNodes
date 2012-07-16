@@ -43,19 +43,44 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.Tool
  */
 public class ToolFieldEditor extends FileFieldEditor {
 
+	/**
+	 * Text for the embedded checkbox.
+	 */
 	private static String CHECK_BOX_TEXT = "use embedded";
+
+	/**
+	 * Text to display if no embedded executable is available.
+	 */
 	private static String CHECK_BOX_UNAVAILABLE_EMBEDDED_TEXT = "(no executable contained in the plugin)";
 
+	/**
+	 * The external tool that is represented.
+	 */
 	private ExternalTool tool;
+
+	/**
+	 * The checkbox UI element.
+	 */
 	private Button checkBox;
 
+	/**
+	 * The composite where all UI elements are collected.
+	 */
 	private Composite parent;
 
-	public ToolFieldEditor(ExternalTool tool, Composite c) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param tool
+	 *            The tool to represent.
+	 * @param parent
+	 *            The parent composite.
+	 */
+	public ToolFieldEditor(final ExternalTool tool, Composite parent) {
 		super(tool.getKey() + IToolLocatorService.ToolPathType.USER_DEFINED,
-				tool.getToolName(), c);
+				tool.getToolName(), parent);
 		this.tool = tool;
-		this.parent = c;
+		this.parent = parent;
 	}
 
 	@Override
@@ -154,7 +179,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 	/**
 	 * Checks if a binary was shipped in the plugin for the given tool.
 	 * 
-	 * @return
+	 * @return True if a shipped binary exists, false otherwise.
 	 */
 	private boolean hasShippedBinary() {
 		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
@@ -170,7 +195,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 	}
 
 	/**
-	 * Changes the type of the tool to the selected value
+	 * Changes the type of the tool to the selected value.
 	 */
 	private void changeToolType() {
 		// boolean useShipped = checkBox.getSelection();
@@ -225,9 +250,9 @@ public class ToolFieldEditor extends FileFieldEditor {
 
 	/**
 	 * Checks if the executable selected by the user is valid (exists,
-	 * canExecute, ..)
+	 * canExecute, ..).
 	 * 
-	 * @return
+	 * @return True if the user provided executable is valid, false otherwise.
 	 */
 	private boolean isValidUserDefinedExecutable() {
 		File userDefinedExecutable = new File(this.getStringValue());
