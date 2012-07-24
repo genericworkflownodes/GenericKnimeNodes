@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.outputconverter.OutputConverters;
 
 public class GenericToolWrapperTest {
 
@@ -21,7 +22,6 @@ public class GenericToolWrapperTest {
 
 		CLIElement firstCLIElement = config.getCLI().getCLIElement().get(0);
 
-		assertEquals("", firstCLIElement.getName());
 		assertEquals("-i", firstCLIElement.getOptionIdentifier());
 		assertEquals(false, firstCLIElement.isList());
 		assertEquals(false, firstCLIElement.isRequired());
@@ -31,7 +31,6 @@ public class GenericToolWrapperTest {
 				.getRefName());
 
 		CLIElement secondCLIElement = config.getCLI().getCLIElement().get(1);
-		assertEquals("", secondCLIElement.getName());
 		assertEquals("-d", secondCLIElement.getOptionIdentifier());
 		assertEquals(false, secondCLIElement.isList());
 		assertEquals(false, secondCLIElement.isRequired());
@@ -39,5 +38,31 @@ public class GenericToolWrapperTest {
 		assertEquals(1, secondCLIElement.getMapping().size());
 		assertEquals("blastall.d", secondCLIElement.getMapping().get(0)
 				.getRefName());
+
+		// test converter
+		OutputConverters converters = config.getOutputConverters();
+		assertEquals(2, converters.getConverter().size());
+
+		assertEquals("DummyConverter", converters.getConverter().get(0)
+				.getClazz());
+		assertEquals("blastall.o", converters.getConverter().get(0).getRef());
+		assertEquals(0, converters.getConverter().get(0)
+				.getConverterProperties().size());
+
+		assertEquals("DummyConverter2", converters.getConverter().get(1)
+				.getClazz());
+		assertEquals("blastall.o", converters.getConverter().get(1).getRef());
+		assertEquals(2, converters.getConverter().get(1)
+				.getConverterProperties().size());
+
+		assertEquals(true, converters.getConverter().get(1)
+				.getConverterProperties().containsKey("prop1"));
+		assertEquals("val1", converters.getConverter().get(1)
+				.getConverterProperties().getProperty("prop1"));
+
+		assertEquals(true, converters.getConverter().get(1)
+				.getConverterProperties().containsKey("prop2"));
+		assertEquals("val2", converters.getConverter().get(1)
+				.getConverterProperties().getProperty("prop2"));
 	}
 }

@@ -6,53 +6,76 @@
 	<xs:element name="tool">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="1" name="name" type="xs:string">
+				<xs:element minOccurs="1" name="name"
+					type="xs:string">
 					<xs:annotation>
-						<xs:documentation>Name of the tool.
+						<xs:documentation>
+							Name of the tool.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="1" name="version" type="xs:string">
+				<xs:element minOccurs="1" name="version"
+					type="xs:string">
 					<xs:annotation>
-						<xs:documentation>Version string of the tool.
+						<xs:documentation>
+							Version string of the tool.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="0" name="description" type="xs:string">
+				<xs:element minOccurs="0" name="description"
+					type="xs:string">
 					<xs:annotation>
-						<xs:documentation>One line description of the tool.
+						<xs:documentation>
+							One line description of the tool.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="0" name="manual" type="xs:string">
+				<xs:element minOccurs="0" name="manual"
+					type="xs:string">
 					<xs:annotation>
-						<xs:documentation>More detailed description of the tool (about 10 lines).
+						<xs:documentation>
+							More detailed description of the tool (about
+							10 lines).
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="0" name="docurl" type="xs:string">
+				<xs:element minOccurs="0" name="docurl"
+					type="xs:string">
 					<xs:annotation>
-						<xs:documentation>URL to further documentation (WWW).
+						<xs:documentation>
+							URL to further documentation (WWW).
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element minOccurs="0" name="category" type="xs:string">
+				<xs:element minOccurs="0" name="category"
+					type="xs:string">
 					<xs:annotation>
-						<xs:documentation>The category gives information on the task the associated tool performs. It can be used to categorize different tools in a GUI.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element maxOccurs="unbounded" minOccurs="0" name="type" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>Whats this (FIX-ME!).
+						<xs:documentation>
+							The category gives information on the task
+							the associated tool performs. It can be used
+							to categorize different tools in a GUI.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				
-				<xs:element maxOccurs="1" minOccurs="0" name="cli" type="cliType">
+				<xs:element maxOccurs="unbounded" minOccurs="0"
+					name="type" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+							Whats this (FIX-ME!).
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+
+				<xs:element maxOccurs="1" minOccurs="0" name="cli"
+					type="cliType">
 				</xs:element>
 
 				<!-- reference PARAMETERS schema instead of redefinition -->
-				<xs:element minOccurs="0" name="PARAMETERS"/>
+                <xs:element name="output-converters" type="outputConvertersType" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Defines possible conversion rules for the output generated after the command line call.</xs:documentation>
+					</xs:annotation></xs:element>
+                <xs:element minOccurs="0" name="PARAMETERS" />
 			</xs:sequence>
 			<xs:attribute name="status" type="StatusType" use="required"/>
 		</xs:complexType>
@@ -116,15 +139,10 @@
 				<xs:annotation>
 					<xs:documentation>The mapping defines the association between the cliElement and the PARAM part. 
 
-Note: If the mapped paramter is boolean, the optionIdentifier will be added to the CLI only if the mapped value is true.</xs:documentation>
+Note: If the mapped parameter is boolean, the optionIdentifier will be added to the CLI only if the mapped value is true.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="optional">
-			<xs:annotation>
-				<xs:documentation>Optional value to improve the readability of the xml file (currently not used for anything else).</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
         <xs:attribute name="optionIdentifier" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>A string used to prefix any associated values (e.g., "-v" for a boolean flag to turn on verbosity).</xs:documentation>
@@ -140,5 +158,45 @@ Note: If the mapped paramter is boolean, the optionIdentifier will be added to t
 				<xs:documentation>Defines if the cliElement is required to build the full command line, i.e., if required is set to false and the mapped parameter was not set the complete element will not be used on the final cli.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="outputConvertersType">
+        <xs:annotation>
+        	<xs:documentation>Defines a list of conversion rules.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+			<xs:element name="converter" type="converterType" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>The conversion rules.</xs:documentation>
+				</xs:annotation></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="converterType">
+		<xs:sequence>
+			<xs:element name="converter-property" type="converterPropertyType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Properties for the specific conversion (e.g., extension to add after processing).</xs:documentation>
+				</xs:annotation></xs:element>
+		</xs:sequence>
+		<xs:attribute name="class" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>The name of the class which is used for the conversion. Note that this class needs to be instantiable in the GKN base plugin.</xs:documentation>
+			</xs:annotation></xs:attribute>
+		<xs:attribute name="ref" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>A reference to the output parameter that should be transformed.</xs:documentation>
+			</xs:annotation></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="converterPropertyType">
+		<xs:attribute name="name" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>The name or id of the property.</xs:documentation>
+			</xs:annotation></xs:attribute>
+		<xs:attribute name="value" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>The value of the property.</xs:documentation>
+			</xs:annotation></xs:attribute>
 	</xs:complexType>
 </xs:schema>

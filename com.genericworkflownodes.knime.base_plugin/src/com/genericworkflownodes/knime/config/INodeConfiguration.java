@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -24,8 +24,14 @@ import java.util.List;
 import org.ballproject.knime.base.port.Port;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.outputconverter.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
+/**
+ * Interface for the node configuration.
+ * 
+ * @author roettig, aiche
+ */
 public interface INodeConfiguration {
 	public String getName();
 
@@ -37,13 +43,40 @@ public interface INodeConfiguration {
 
 	public String getDocUrl();
 
+	/**
+	 * Returns the version of the node.
+	 * 
+	 * @return the version.
+	 */
 	public String getVersion();
 
+	/**
+	 * Returns the xml source of this configuration as {@link String}.
+	 * 
+	 * @return The xml document.
+	 */
 	public String getXML();
 
+	/**
+	 * Returns the category of the tool.
+	 * 
+	 * @return the category.
+	 */
 	public String getCategory();
 
+	/**
+	 * Returns the command line interface mapping of the tool.
+	 * 
+	 * @return The {@link CLI} mapping.
+	 */
 	public CLI getCLI();
+
+	/**
+	 * Returns the configured output converters.
+	 * 
+	 * @return the output converters.
+	 */
+	public OutputConverters getOutputConverters();
 
 	public int getNumberOfOutputPorts();
 

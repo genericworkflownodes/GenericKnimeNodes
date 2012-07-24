@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.config;
 
 import java.io.InputStream;
 
+
 public interface INodeConfigurationReader {
 	INodeConfiguration read(InputStream in) throws Exception;
 }

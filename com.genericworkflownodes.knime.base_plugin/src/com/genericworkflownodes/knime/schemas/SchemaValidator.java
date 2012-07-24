@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.schemas;
+package com.genericworkflownodes.knime.schemas;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,15 +36,47 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
 
+/**
+ * 
+ * Helper class for xml schema validation.
+ * 
+ * @author roettig
+ */
 public class SchemaValidator {
 
-	private List<InputStream> schemas = new ArrayList<InputStream>();
-	private String error_report = "";
+	/**
+	 * List of schemas to validate.
+	 */
+	private List<InputStream> schemas;
 
+	/**
+	 * Member to store the error report.
+	 */
+	private String errorReport;
+
+	/**
+	 * C'tor.
+	 */
+	public SchemaValidator() {
+		schemas = new ArrayList<InputStream>();
+		errorReport = "";
+	}
+
+	/**
+	 * Add a schema to validate.
+	 * 
+	 * @param in
+	 *            Input stream pointing to the schema.
+	 */
 	public void addSchema(InputStream in) {
 		schemas.add(in);
 	}
 
+	/**
+	 * Access all schema sources.
+	 * 
+	 * @return The schema sources.
+	 */
 	private Source[] getSchemaSources() {
 		Source[] ret = new Source[schemas.size()];
 		int idx = 0;
@@ -55,6 +86,13 @@ public class SchemaValidator {
 		return ret;
 	}
 
+	/**
+	 * Validate the given file against the stored schemata.
+	 * 
+	 * @param filename
+	 *            The file to validate.
+	 * @return True if the file is valid, false otherwise.
+	 */
 	public boolean validates(String filename) {
 		boolean ret = true;
 		FileInputStream fin = null;
@@ -80,6 +118,13 @@ public class SchemaValidator {
 		return ret;
 	}
 
+	/**
+	 * Validate the given xml stream against the stored schemata.
+	 * 
+	 * @param xmlstream
+	 *            The stream to validate.
+	 * @return True if the file is valid, false otherwise.
+	 */
 	public boolean validates(InputStream xmlstream) {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SchemaFactory schemaFactory = SchemaFactory
@@ -107,14 +152,19 @@ public class SchemaValidator {
 		}
 
 		if (!errorHandler.isValid()) {
-			error_report = errorHandler.getErrorReport();
+			errorReport = errorHandler.getErrorReport();
 			return false;
 		}
 
 		return true;
 	}
 
+	/**
+	 * Accessor for the error report.
+	 * 
+	 * @return The error report.
+	 */
 	public String getErrorReport() {
-		return error_report;
+		return errorReport;
 	}
 }

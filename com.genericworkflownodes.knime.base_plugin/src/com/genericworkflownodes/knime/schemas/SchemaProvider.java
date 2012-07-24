@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,9 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.genericworkflownodes.knime.schemas;
 
-package org.ballproject.knime.base.schemas;
-
+/**
+ * Accessor class for schemas stored in the same package.
+ * 
+ * @author roettig
+ */
 public class SchemaProvider {
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="external"  xsi:noNamespaceSchemaLocation="http://page.mi.fu-berlin.de/aiche/schemas/CTD.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<tool status="external" xsi:noNamespaceSchemaLocation="http://page.mi.fu-berlin.de/aiche/schemas/CTD.xsd"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<name>BLAST</name>
 	<version>2.2.1</version>
 	<description><![CDATA[BLAST.]]></description>
@@ -14,6 +14,13 @@
 			<mapping ref_name="blastall.d" />
 		</clielement>
 	</cli>
+	<output-converters>
+		<converter class="DummyConverter" ref="blastall.o" />
+		<converter class="DummyConverter2" ref="blastall.o">
+			<converter-property name="prop1" value="val1" />
+			<converter-property name="prop2" value="val2" />
+		</converter>
+	</output-converters>
 	<PARAMETERS version="1.3"
 		xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">

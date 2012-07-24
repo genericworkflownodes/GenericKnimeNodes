@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,21 +16,51 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.schemas;
+package com.genericworkflownodes.knime.schemas;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * Errrorhandler for the schema validator.
+ * 
+ * @author roettig
+ */
 public class SimpleErrorHandler implements ErrorHandler {
-	private boolean valid = true;
-	private StringBuffer errors = new StringBuffer();
 
+	/**
+	 * Indicates if the document is valid.
+	 */
+	private boolean valid;
+
+	/**
+	 * {@link StringBuffer} to store the reported errors.
+	 */
+	private StringBuffer errors;
+
+	/**
+	 * C'tor.
+	 */
+	public SimpleErrorHandler() {
+		valid = true;
+		errors = new StringBuffer();
+	}
+
+	/**
+	 * Returns true if the document is valid, false otherwise.
+	 * 
+	 * @return Returns true if the document is valid, false otherwise.
+	 */
 	public boolean isValid() {
 		return valid;
 	}
 
+	/**
+	 * Returns the complete error report of the validation process.
+	 * 
+	 * @return the error report.
+	 */
 	public String getErrorReport() {
 		return errors.toString();
 	}

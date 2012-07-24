@@ -44,7 +44,6 @@ import java.util.List;
  *       &lt;sequence>
  *         &lt;element name="mapping" type="{}mappingType" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="optionIdentifier" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="isList" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
@@ -61,11 +60,6 @@ public class CLIElement {
 	 * The mappings for this element.
 	 */
 	private List<CLIMapping> mapping;
-
-	/**
-	 * The name of this element.
-	 */
-	private String name;
 
 	/**
 	 * The identifier of this option. Can be an empty string if the
@@ -105,27 +99,6 @@ public class CLIElement {
 			mapping = new ArrayList<CLIMapping>();
 		}
 		return this.mapping;
-	}
-
-	/**
-	 * Gets the value of the name property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public final String getName() {
-		return name;
-	}
-
-	/**
-	 * Sets the value of the name property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public final void setName(final String value) {
-		this.name = value;
 	}
 
 	/**
