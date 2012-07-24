@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.node;
+package com.genericworkflownodes.knime.generic_node;
 
 import java.io.FileNotFoundException;
 

@@ -1,6 +1,6 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.node.GenericKnimeNodeDialog;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 

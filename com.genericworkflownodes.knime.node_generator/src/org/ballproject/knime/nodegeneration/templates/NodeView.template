@@ -1,6 +1,6 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.node.*;
+import com.genericworkflownodes.knime.generic_node.*;
 
 public class __NODENAME__NodeView extends GenericKnimeNodeView
 {
