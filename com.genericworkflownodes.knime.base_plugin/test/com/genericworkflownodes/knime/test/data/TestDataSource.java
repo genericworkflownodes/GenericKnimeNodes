@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.test.data;
+package com.genericworkflownodes.knime.test.data;
 
 public class TestDataSource {
 

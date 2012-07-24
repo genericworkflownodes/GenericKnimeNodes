@@ -1,14 +1,14 @@
-package org.ballproject.knime.base.wrapper;
+package com.genericworkflownodes.knime.config.wrapper;
 
 import static org.junit.Assert.assertEquals;
 
-import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.outputconverter.OutputConverters;
+import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 public class GenericToolWrapperTest {
 

@@ -1,11 +1,10 @@
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
 
-import org.ballproject.knime.test.data.TestDataSource;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.junit.Test;
@@ -13,6 +12,7 @@ import org.junit.Test;
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationWriter;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 public class CTDNodeConfigurationWriterTest {
 

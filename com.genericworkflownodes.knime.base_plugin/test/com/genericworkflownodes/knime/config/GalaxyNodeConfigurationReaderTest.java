@@ -17,13 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.config;
+package com.genericworkflownodes.knime.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.ballproject.knime.test.data.TestDataSource;
 import org.junit.Test;
 
 import com.genericworkflownodes.knime.config.GalaxyNodeConfigurationReader;
@@ -32,6 +31,7 @@ import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 public class GalaxyNodeConfigurationReaderTest {
 
