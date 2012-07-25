@@ -2,7 +2,8 @@
 <?eclipse version="3.4"?>
 
 <plugin>
-   <extension-point id="org.ballproject.knime.base.mime.demangler.DemanglerProvider" name="Demangler Provider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>  
+   <extension-point id="org.ballproject.knime.base.mime.demangler.DemanglerProvider" name="Demangler Provider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>
+   <extension-point id="com.genericworkflownods.knime.outputconverter.OutputConverter" name="OutputConverter" schema="schema/com.genericworkflownods.knime.outputconverter.OutputConverter.exsd"/>  
    
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -43,6 +44,19 @@
          <service serviceClass="com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService">
          </service>
       </serviceFactory>
+   </extension>
+   <extension
+         point="com.genericworkflownods.knime.outputconverter.OutputConverter">
+      <outputconverter
+            converter-id="DefaultOutputConverter"
+            factoryclass="com.genericworkflownodes.knime.outputconverter.impl.DefaultOutputConverterFactory"
+            identifier="DefaultOutputConverter">
+      </outputconverter>
+      <outputconverter
+            converter-id="FileNameExtender"
+            factoryclass="com.genericworkflownodes.knime.outputconverter.impl.FileNameExtenderFactory"
+            identifier="FileNameExtender">
+      </outputconverter>
    </extension>
    
 </plugin>

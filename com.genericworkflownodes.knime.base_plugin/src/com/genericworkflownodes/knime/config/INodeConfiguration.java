@@ -24,7 +24,7 @@ import java.util.List;
 import org.ballproject.knime.base.port.Port;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.outputconverter.OutputConverters;
+import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**

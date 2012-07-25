@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
-import com.genericworkflownodes.knime.outputconverter.Converter;
+import com.genericworkflownodes.knime.outputconverter.config.Converter;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -800,7 +800,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		}
 
 		validateConverter(converter);
-		config.getOutputConverters().getConverter().add(converter);
+		config.getOutputConverters().addConverter(converter);
 	}
 
 	/**
