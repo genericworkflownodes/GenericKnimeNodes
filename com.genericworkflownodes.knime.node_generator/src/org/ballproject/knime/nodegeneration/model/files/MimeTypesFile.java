@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ballproject.knime.base.schemas.SchemaProvider;
-import org.ballproject.knime.base.schemas.SchemaValidator;
 import org.ballproject.knime.nodegeneration.model.mime.MimeType;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -21,6 +19,9 @@ import org.dom4j.io.SAXReader;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.dom4j.Dom4jXPath;
+
+import com.genericworkflownodes.knime.schemas.SchemaProvider;
+import com.genericworkflownodes.knime.schemas.SchemaValidator;
 
 public class MimeTypesFile extends File {
 

@@ -1,6 +1,6 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.ballproject.knime.base.node.GenericKnimeNodeModel;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;

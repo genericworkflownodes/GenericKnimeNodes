@@ -21,10 +21,9 @@ package com.genericworkflownodes.knime.execution;
 import java.io.File;
 import java.util.List;
 
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationStore;
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**
  * Create based on a {@link INodeConfiguration} and a
@@ -46,10 +45,11 @@ public interface ICommandGenerator {
 	 *            The directory where the tool will be executed. Make sure that
 	 *            the JVM has access to this directory. This gets particularly
 	 *            important if the process will be executed on a different host.
-	 * @return
+	 * @return The generated series of command line arguments.
 	 * @throws Exception
+	 *             An exception is thrown if the construction fails.
 	 */
-	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+	List<String> generateCommands(INodeConfiguration nodeConfiguration,
 			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception;

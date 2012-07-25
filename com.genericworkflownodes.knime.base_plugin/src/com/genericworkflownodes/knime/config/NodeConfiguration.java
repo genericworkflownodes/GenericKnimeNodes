@@ -27,6 +27,7 @@ import java.util.Map;
 import org.ballproject.knime.base.port.Port;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
@@ -56,10 +57,19 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	protected String xml = "";
 	protected String category = "";
 
-	protected CLI cli;
+	/**
+	 * The CLI element stored in the CTD file.
+	 */
+	private CLI cli;
+
+	/**
+	 * The output converters stored in the CTD file.
+	 */
+	private OutputConverters converters;
 
 	public NodeConfiguration() {
 		cli = new CLI();
+		converters = new OutputConverters();
 	}
 
 	public NodeConfiguration(INodeConfiguration config) {
@@ -114,6 +124,11 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	@Override
 	public CLI getCLI() {
 		return cli;
+	}
+
+	@Override
+	public OutputConverters getOutputConverters() {
+		return converters;
 	}
 
 	@Override
@@ -233,5 +248,4 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		}
 		return true;
 	}
-
 }

@@ -10,8 +10,8 @@ import org.knime.core.node.NodeLogger;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationStore;
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.PlainNodeConfigurationWriter;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
@@ -53,8 +53,12 @@ public class CLICommandGenerator implements ICommandGenerator {
 	}
 
 	/**
-	 * @return
+	 * Converts the CLI part of the configuration to a list of commands that can
+	 * be send to the shell.
+	 * 
+	 * @return A configured list of commands.
 	 * @throws Exception
+	 *             Is thrown if the configuration values are invalid.
 	 */
 	private List<String> processCLI() throws Exception {
 		List<String> commands = new ArrayList<String>();
@@ -66,7 +70,14 @@ public class CLICommandGenerator implements ICommandGenerator {
 					&& cliElement.getMapping().size() == 0) {
 				// simple fixed argument for the command line, no mapping to
 				// params given
-				commands.add(cliElement.getOptionIdentifier());
+
+				// to avoid problems with spaces in commands we split fixed
+				// values
+				String[] splitResult = cliElement.getOptionIdentifier().split(
+						" ");
+				for (String splittedCommand : splitResult) {
+					commands.add(splittedCommand);
+				}
 			} else if (isMappedToBooleanParameter(cliElement)) {
 				// it is mapped to bool
 				handleBooleanParameter(commands, cliElement);

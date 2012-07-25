@@ -23,16 +23,25 @@ import java.util.concurrent.Callable;
 /**
  * Handles asynchronous execution of IToolExecutor
  * 
- * @note AsynchronousToolExecutor is based on the AsyncToolRunner implemented by
- *       Marc Röttig.
+ * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by
+ * Marc Röttig.
  * 
  * @author aiche
  */
 public class AsynchronousToolExecutor implements Callable<Integer> {
 
+	/**
+	 * The executor which should be handled asynchronously.
+	 */
 	private IToolExecutor executor;
 
-	public AsynchronousToolExecutor(IToolExecutor executor) {
+	/**
+	 * C'tor.
+	 * 
+	 * @param executor
+	 *            The executor which should be handled asynchronously.
+	 */
+	public AsynchronousToolExecutor(final IToolExecutor executor) {
 		this.executor = executor;
 	}
 
@@ -46,6 +55,9 @@ public class AsynchronousToolExecutor implements Callable<Integer> {
 		return executor.getReturnCode();
 	}
 
+	/**
+	 * Kills the executed process.
+	 */
 	public void kill() {
 		executor.kill();
 	}

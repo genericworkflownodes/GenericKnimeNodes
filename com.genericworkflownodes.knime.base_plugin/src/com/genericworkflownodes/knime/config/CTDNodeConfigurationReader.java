@@ -36,8 +36,6 @@ import javax.xml.validation.SchemaFactory;
 
 import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
-import org.ballproject.knime.base.schemas.SchemaProvider;
-import org.ballproject.knime.base.schemas.SimpleErrorHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -47,6 +45,7 @@ import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+import com.genericworkflownodes.knime.outputconverter.config.Converter;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -57,6 +56,8 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.schemas.SchemaProvider;
+import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 import com.genericworkflownodes.util.StringUtils.DoubleRangeExtracted;
 import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
 
@@ -744,11 +745,79 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 			readParameters();
 			readDescription();
 			readCLI();
+			readOutputConverters();
 			config.setXml(doc.asXML());
 
 			return config;
 		} catch (Exception e) {
 			throw new CTDNodeConfigurationReaderException(e);
+		}
+	}
+
+	/**
+	 * Processes the &lt;output-converters/> part of the CTD document.
+	 * 
+	 * @throws Exception
+	 *             Is thrown if the configuration is invalid.
+	 */
+	private void readOutputConverters() throws Exception {
+		Node convertersRoot = this.doc
+				.selectSingleNode("/tool/output-converters");
+
+		// check if this CTD contains a cli part
+		if (convertersRoot == null) {
+			return;
+		}
+
+		@SuppressWarnings("unchecked")
+		List<Node> converters = convertersRoot.selectNodes("//converter");
+		for (Node elem : converters) {
+			processConverter(elem);
+		}
+
+	}
+
+	/**
+	 * Creates a converter object from the xml node.
+	 * 
+	 * @param elem
+	 *            The xml node to convert.
+	 * @throws Exception
+	 *             Is thrown if the configuration is invalid.
+	 */
+	private void processConverter(final Node elem) throws Exception {
+		Converter converter = new Converter();
+		converter.setClazz(elem.valueOf("@class"));
+		converter.setRef(elem.valueOf("@ref"));
+
+		// set mapping
+		@SuppressWarnings("unchecked")
+		List<Node> properties = elem.selectNodes("./converter-property");
+		for (Node prop : properties) {
+			String name = prop.valueOf("@name");
+			String value = prop.valueOf("@value");
+			converter.getConverterProperties().setProperty(name, value);
+		}
+
+		validateConverter(converter);
+		config.getOutputConverters().addConverter(converter);
+	}
+
+	/**
+	 * Checks if the converter is valid (e.g., if the referenced parameter
+	 * exists and if it is an output parameter).
+	 * 
+	 * @param converter
+	 *            The converter to validate.
+	 * @throws Exception
+	 *             Is thrown if the port points to a non existing output port.
+	 */
+	private void validateConverter(final Converter converter) throws Exception {
+		// check if converter ref exists
+		if (!findInPortList(converter.getRef(), OUTPUT_PORTS)) {
+			throw new Exception(
+					"Invalid Output Converter: No output port with name "
+							+ converter.getRef() + " exists.");
 		}
 	}
 
@@ -845,7 +914,6 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	private void processCLIElement(final Node elem) throws Exception {
 		CLIElement cliElement = new CLIElement();
 		// set attributes based on xml values
-		cliElement.setName(elem.valueOf("@name"));
 		cliElement.setOptionIdentifier(elem.valueOf("@optionIdentifier"));
 		cliElement.setIsList(elem.valueOf("@isList") == "true");
 		cliElement.setRequired(elem.valueOf("@required") == "true");
