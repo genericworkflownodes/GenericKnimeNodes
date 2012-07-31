@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,27 +16,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.flow.beanshell;
+package com.genericworkflownodes.knime.nodes.flow.merger;
 
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeView</code> for the "Demangler" Node.
+ * <code>NodeView</code> for the "FileMerger" Node. This nodes takes two files
+ * (file lists) as input and outputs a merged list of both inputs.
  * 
- * 
- * @author roettig
+ * @author aiche
  */
-public class BeanShellNodeView extends NodeView<BeanShellNodeModel> {
+public class FileMergerNodeView extends NodeView<FileMergerNodeModel> {
 
 	/**
 	 * Creates a new view.
 	 * 
 	 * @param nodeModel
-	 *            The model (class: {@link BeanShellNodeModel})
+	 *            The model (class: {@link FileMergerNodeModel})
 	 */
-	protected BeanShellNodeView(final BeanShellNodeModel nodeModel) {
+	protected FileMergerNodeView(final FileMergerNodeModel nodeModel) {
 		super(nodeModel);
+
+		// TODO instantiate the components of the view here.
+
 	}
 
 	/**
@@ -47,7 +49,7 @@ public class BeanShellNodeView extends NodeView<BeanShellNodeModel> {
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
-		BeanShellNodeModel nodeModel = (BeanShellNodeModel) getNodeModel();
+		FileMergerNodeModel nodeModel = (FileMergerNodeModel) getNodeModel();
 		assert nodeModel != null;
 
 		// be aware of a possibly not executed nodeModel! The data you retrieve

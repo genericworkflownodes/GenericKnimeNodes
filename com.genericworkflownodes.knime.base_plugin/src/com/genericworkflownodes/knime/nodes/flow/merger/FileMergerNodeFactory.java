@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,43 +16,59 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.ballproject.knime.base.flow.column2list;
+package com.genericworkflownodes.knime.nodes.flow.merger;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * @author roettig
+ * <code>NodeFactory</code> for the "FileMerger" Node. This nodes takes two
+ * files (file lists) as input and outputs a merged list of both inputs.
  * 
+ * @author aiche
  */
-public class ColumnToListNodeFactory extends NodeFactory<ColumnToListNodeModel> {
+public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected NodeDialogPane createNodeDialogPane() {
-		return null;
+	public FileMergerNodeModel createNodeModel() {
+		return new FileMergerNodeModel();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public ColumnToListNodeModel createNodeModel() {
-		return new ColumnToListNodeModel();
-	}
-
-	@Override
-	public NodeView<ColumnToListNodeModel> createNodeView(int arg0,
-			ColumnToListNodeModel arg1) {
-		return null;
-	}
-
-	@Override
-	protected int getNrNodeViews() {
+	public int getNrNodeViews() {
 		return 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected boolean hasDialog() {
-		return false;
+	public NodeView<FileMergerNodeModel> createNodeView(final int viewIndex,
+			final FileMergerNodeModel nodeModel) {
+		return new FileMergerNodeView(nodeModel);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasDialog() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeDialogPane createNodeDialogPane() {
+		return new FileMergerNodeDialog();
 	}
 
 }

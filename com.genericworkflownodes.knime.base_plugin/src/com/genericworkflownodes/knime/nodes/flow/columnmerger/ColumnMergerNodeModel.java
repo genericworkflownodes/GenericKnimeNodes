@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.flow.columnmerger;
+package com.genericworkflownodes.knime.nodes.flow.columnmerger;
 
 import java.io.File;
 import java.io.IOException;

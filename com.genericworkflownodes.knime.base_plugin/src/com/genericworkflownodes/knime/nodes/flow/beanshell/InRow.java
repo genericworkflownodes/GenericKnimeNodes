@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.flow.beanshell;
+package com.genericworkflownodes.knime.nodes.flow.beanshell;
 
 import org.knime.core.data.DataCell;
 

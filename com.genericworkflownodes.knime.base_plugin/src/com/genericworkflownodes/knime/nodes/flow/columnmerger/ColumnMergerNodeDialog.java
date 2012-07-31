@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, Stephan Aiche.
+/*
+ * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,28 +16,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.merger;
+
+package com.genericworkflownodes.knime.nodes.flow.columnmerger;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
 /**
- * <code>NodeDialog</code> for the "FileMerger" Node. This nodes takes two files
- * (file lists) as input and outputs a merged list of both inputs.
+ * <code>NodeDialog</code> for the "Demangler" Node.
+ * 
  * 
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
  * creation of a simple dialog with standard components. If you need a more
  * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
  * 
- * @author aiche
+ * @author roettig
  */
-public class FileMergerNodeDialog extends DefaultNodeSettingsPane {
+public class ColumnMergerNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
-	 * New pane for configuring FileMerger node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
+	 * New pane for configuring Demangler node dialog. This is just a suggestion
+	 * to demonstrate possible default dialog components.
 	 */
-	protected FileMergerNodeDialog() {
+	protected ColumnMergerNodeDialog(Object obj) {
 		super();
 	}
+
 }

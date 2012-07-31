@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.flow.listzip;
+package com.genericworkflownodes.knime.nodes.flow.beanshell;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -29,15 +29,14 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class ListZipLoopStartNodeFactory extends
-		NodeFactory<ListZipLoopStartNodeModel> {
+public class BeanShellNodeFactory extends NodeFactory<BeanShellNodeModel> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ListZipLoopStartNodeModel createNodeModel() {
-		return new ListZipLoopStartNodeModel();
+	public BeanShellNodeModel createNodeModel() {
+		return new BeanShellNodeModel();
 	}
 
 	/**
@@ -52,9 +51,9 @@ public class ListZipLoopStartNodeFactory extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<ListZipLoopStartNodeModel> createNodeView(
-			final int viewIndex, final ListZipLoopStartNodeModel nodeModel) {
-		return null;
+	public NodeView<BeanShellNodeModel> createNodeView(final int viewIndex,
+			final BeanShellNodeModel nodeModel) {
+		return new BeanShellNodeView(nodeModel);
 	}
 
 	/**
@@ -62,7 +61,7 @@ public class ListZipLoopStartNodeFactory extends
 	 */
 	@Override
 	public boolean hasDialog() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -70,7 +69,7 @@ public class ListZipLoopStartNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return null;
+		return new BeanShellNodeDialog(new Object());
 	}
 
 }

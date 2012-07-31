@@ -21,10 +21,10 @@
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listexporter.ListMimeFileExporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listexporter.ListMimeFileExporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Util" factory-class="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
-    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
-   <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
+   <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
 </extension>
    
    <extension point="org.knime.product.splashExtension">

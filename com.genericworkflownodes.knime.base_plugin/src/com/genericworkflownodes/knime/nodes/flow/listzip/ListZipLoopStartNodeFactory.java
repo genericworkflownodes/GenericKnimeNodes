@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.flow.columnmerger;
+package com.genericworkflownodes.knime.nodes.flow.listzip;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -29,14 +29,15 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class ColumnMergerNodeFactory extends NodeFactory<ColumnMergerNodeModel> {
+public class ListZipLoopStartNodeFactory extends
+		NodeFactory<ListZipLoopStartNodeModel> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ColumnMergerNodeModel createNodeModel() {
-		return new ColumnMergerNodeModel();
+	public ListZipLoopStartNodeModel createNodeModel() {
+		return new ListZipLoopStartNodeModel();
 	}
 
 	/**
@@ -51,9 +52,9 @@ public class ColumnMergerNodeFactory extends NodeFactory<ColumnMergerNodeModel> 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<ColumnMergerNodeModel> createNodeView(final int viewIndex,
-			final ColumnMergerNodeModel nodeModel) {
-		return new ColumnMergerNodeView(nodeModel);
+	public NodeView<ListZipLoopStartNodeModel> createNodeView(
+			final int viewIndex, final ListZipLoopStartNodeModel nodeModel) {
+		return null;
 	}
 
 	/**
@@ -69,7 +70,7 @@ public class ColumnMergerNodeFactory extends NodeFactory<ColumnMergerNodeModel> 
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new ColumnMergerNodeDialog(new Object());
+		return null;
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.flow.beanshell;
+package com.genericworkflownodes.knime.nodes.flow.beanshell;
 
 import java.util.ArrayList;
 import java.util.List;

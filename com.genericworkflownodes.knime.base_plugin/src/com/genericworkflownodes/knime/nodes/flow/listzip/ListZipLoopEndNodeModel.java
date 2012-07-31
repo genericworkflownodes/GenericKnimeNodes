@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ballproject.knime.base.flow.listzip;
+package com.genericworkflownodes.knime.nodes.flow.listzip;
 
 import java.io.File;
 import java.io.IOException;

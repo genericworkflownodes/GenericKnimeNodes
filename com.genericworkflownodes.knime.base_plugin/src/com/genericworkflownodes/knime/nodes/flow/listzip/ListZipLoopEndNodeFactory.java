@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ballproject.knime.base.flow.listzip;
+package com.genericworkflownodes.knime.nodes.flow.listzip;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, Stephan Aiche.
+/*
+ * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,26 +16,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.merger;
+
+package com.genericworkflownodes.knime.nodes.flow.columnmerger;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeFactory</code> for the "FileMerger" Node. This nodes takes two
- * files (file lists) as input and outputs a merged list of both inputs.
+ * <code>NodeFactory</code> for the "Demangler" Node.
  * 
- * @author aiche
+ * 
+ * @author roettig
  */
-public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
+public class ColumnMergerNodeFactory extends NodeFactory<ColumnMergerNodeModel> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public FileMergerNodeModel createNodeModel() {
-		return new FileMergerNodeModel();
+	public ColumnMergerNodeModel createNodeModel() {
+		return new ColumnMergerNodeModel();
 	}
 
 	/**
@@ -50,9 +51,9 @@ public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<FileMergerNodeModel> createNodeView(final int viewIndex,
-			final FileMergerNodeModel nodeModel) {
-		return new FileMergerNodeView(nodeModel);
+	public NodeView<ColumnMergerNodeModel> createNodeView(final int viewIndex,
+			final ColumnMergerNodeModel nodeModel) {
+		return new ColumnMergerNodeView(nodeModel);
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 	 */
 	@Override
 	public boolean hasDialog() {
-		return true;
+		return false;
 	}
 
 	/**
@@ -68,7 +69,7 @@ public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new FileMergerNodeDialog();
+		return new ColumnMergerNodeDialog(new Object());
 	}
 
 }

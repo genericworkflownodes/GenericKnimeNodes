@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.flow.column2list;
+package com.genericworkflownodes.knime.nodes.flow.column2list;
 
 import java.io.File;
 import java.io.IOException;

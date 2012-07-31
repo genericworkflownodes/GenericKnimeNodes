@@ -17,29 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.flow.columnmerger;
+package com.genericworkflownodes.knime.nodes.flow.column2list;
 
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeDialog</code> for the "Demangler" Node.
- * 
- * 
- * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more
- * complex dialog please derive directly from
- * {@link org.knime.core.node.NodeDialogPane}.
- * 
  * @author roettig
+ * 
  */
-public class ColumnMergerNodeDialog extends DefaultNodeSettingsPane {
+public class ColumnToListNodeFactory extends NodeFactory<ColumnToListNodeModel> {
 
-	/**
-	 * New pane for configuring Demangler node dialog. This is just a suggestion
-	 * to demonstrate possible default dialog components.
-	 */
-	protected ColumnMergerNodeDialog(Object obj) {
-		super();
+	@Override
+	protected NodeDialogPane createNodeDialogPane() {
+		return null;
+	}
+
+	@Override
+	public ColumnToListNodeModel createNodeModel() {
+		return new ColumnToListNodeModel();
+	}
+
+	@Override
+	public NodeView<ColumnToListNodeModel> createNodeView(int arg0,
+			ColumnToListNodeModel arg1) {
+		return null;
+	}
+
+	@Override
+	protected int getNrNodeViews() {
+		return 0;
+	}
+
+	@Override
+	protected boolean hasDialog() {
+		return false;
 	}
 
 }
