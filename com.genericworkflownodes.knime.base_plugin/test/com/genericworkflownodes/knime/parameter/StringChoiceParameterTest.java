@@ -49,7 +49,7 @@ public class StringChoiceParameterTest {
 	public void testFillFromString() throws InvalidParameterValueException {
 		StringChoiceParameter scp = new StringChoiceParameter(key, choices);
 		scp.fillFromString("");
-		assertEquals("", scp.getValue());
+		assertEquals(null, scp.getValue());
 		scp.fillFromString("c1");
 		assertEquals("c1", scp.getValue());
 		scp.fillFromString(null);
@@ -105,7 +105,7 @@ public class StringChoiceParameterTest {
 	public void testStringChoiceParameterStringListOfStringListOfString() {
 		StringChoiceParameter scp = new StringChoiceParameter(key, choices,
 				labels);
-		assertEquals("", scp.getValue());
+		assertEquals(null, scp.getValue());
 		assertEquals(4, scp.getAllowedValues().size());
 		assertEquals("", scp.getAllowedValues().get(0));
 		assertEquals("c1", scp.getAllowedValues().get(1));
@@ -118,7 +118,7 @@ public class StringChoiceParameterTest {
 	public void testStringChoiceParameterStringStringArrayStringArray() {
 		StringChoiceParameter scp = new StringChoiceParameter(key,
 				(String[]) choices.toArray(), (String[]) labels.toArray());
-		assertEquals("", scp.getValue());
+		assertEquals(null, scp.getValue());
 		assertEquals(4, scp.getAllowedValues().size());
 		assertEquals("", scp.getAllowedValues().get(0));
 		assertEquals("c1", scp.getAllowedValues().get(1));
