@@ -32,12 +32,10 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 public interface IToolExecutor {
 
 	/**
-	 * Defines which command generator should be used to create the command line
-	 * call for the execution.
+	 * Defines which command generator should be used to create the command line call for the execution.
 	 * 
 	 * @param generator
-	 *            The {@link ICommandGenerator} that should be used to generate
-	 *            the execute call.
+	 *            The {@link ICommandGenerator} that should be used to generate the execute call.
 	 */
 	void setCommandGenerator(ICommandGenerator generator);
 
@@ -59,8 +57,7 @@ public interface IToolExecutor {
 	 * @throws Exception
 	 *             In case of errors.
 	 */
-	void prepareExecution(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
+	void prepareExecution(INodeConfiguration nodeConfiguration, INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception;
 
 	/**
@@ -69,23 +66,20 @@ public interface IToolExecutor {
 	void kill();
 
 	/**
-	 * Returns the return value of the process. If the tool didn't not run or is
-	 * not finished it is set to -1.
+	 * Returns the return value of the process. If the tool didn't not run or is not finished it is set to -1.
 	 * 
 	 * @return The return code of the executed process.
 	 */
 	int getReturnCode();
 
 	/**
-	 * Sets the working directory of the process. If the directory does not
-	 * exist or the @p path does not point to a directory (but a file), an
-	 * exception will be thrown.
+	 * Sets the working directory of the process. If the directory does not exist or the @p path does not point to a
+	 * directory (but a file), an exception will be thrown.
 	 * 
 	 * @param directory
 	 *            The new working directory.
 	 * @throws Exception
-	 *             If the path does not exist or points to a file (and not a
-	 *             directory).
+	 *             If the path does not exist or points to a file (and not a directory).
 	 */
 	void setWorkingDirectory(File directory) throws Exception;
 

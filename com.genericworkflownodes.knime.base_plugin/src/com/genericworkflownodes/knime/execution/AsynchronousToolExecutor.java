@@ -19,21 +19,24 @@
 package com.genericworkflownodes.knime.execution;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Handles asynchronous execution of IToolExecutor
  * 
- * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by
- * Marc Röttig.
+ * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by Marc Röttig.
  * 
  * @author aiche
  */
 public class AsynchronousToolExecutor implements Callable<Integer> {
+	private final CountDownLatch countdownLatch;
+	private final AtomicBoolean calledInvoked;
 
 	/**
 	 * The executor which should be handled asynchronously.
 	 */
-	private IToolExecutor executor;
+	private final IToolExecutor executor;
 
 	/**
 	 * C'tor.
@@ -43,14 +46,24 @@ public class AsynchronousToolExecutor implements Callable<Integer> {
 	 */
 	public AsynchronousToolExecutor(final IToolExecutor executor) {
 		this.executor = executor;
+		countdownLatch = new CountDownLatch(1);
+		calledInvoked = new AtomicBoolean(false);
 	}
 
 	@Override
 	public Integer call() throws Exception {
+		// set the atomic value to true and check, atomically, the previous value
+		// check getAndSet javadoc :)
+		if (calledInvoked.getAndSet(true) == true) {
+			throw new IllegalStateException("The method call can be executed only once!");
+		}
 		try {
 			executor.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			// regardless of what hapenned, make sure to decrease the count in the latch
+			countdownLatch.countDown();
 		}
 		return executor.getReturnCode();
 	}
@@ -62,4 +75,14 @@ public class AsynchronousToolExecutor implements Callable<Integer> {
 		executor.kill();
 	}
 
+	/**
+	 * The thread invoking this method will wait until the execution has completed, regardless of the result.
+	 */
+	public void waitUntilFinished() {
+		try {
+			countdownLatch.await();
+		} catch (InterruptedException e) {
+			// ignore
+		}
+	}
 }

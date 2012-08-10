@@ -35,7 +35,7 @@
       <option value="srspair">SRS pair (p)</option>
       <option value="score">Score (p)</option>
     </param>
-    <param name="menu" type="select">
+    <param name="menu" type="select" value="1">
       <label>label</label>
       <option value="1">A</option>
       <option value="2">B</option>

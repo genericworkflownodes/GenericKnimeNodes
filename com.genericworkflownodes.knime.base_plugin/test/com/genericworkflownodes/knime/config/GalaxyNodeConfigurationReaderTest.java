@@ -25,8 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.genericworkflownodes.knime.config.GalaxyNodeConfigurationReader;
-import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
@@ -39,8 +37,7 @@ public class GalaxyNodeConfigurationReaderTest {
 	public void testReader() throws Exception {
 		INodeConfiguration config = null;
 		GalaxyNodeConfigurationReader reader = new GalaxyNodeConfigurationReader();
-		config = reader.read(TestDataSource.class
-				.getResourceAsStream("emboss_water.xml"));
+		config = reader.read(TestDataSource.class.getResourceAsStream("emboss_water.xml"));
 
 		assertEquals("Smith-Waterman local alignment", config.getDescription());
 		assertEquals("water", config.getName());
@@ -55,8 +52,7 @@ public class GalaxyNodeConfigurationReaderTest {
 
 		Parameter<?> p1 = config.getParameter("gapopen");
 		Parameter<?> p2 = config.getParameter("gapextend");
-		StringChoiceParameter p3 = (StringChoiceParameter) config
-				.getParameter("menu");
+		StringChoiceParameter p3 = (StringChoiceParameter) config.getParameter("menu");
 
 		assertTrue(p1 instanceof StringParameter);
 		assertTrue(p2 instanceof DoubleParameter);

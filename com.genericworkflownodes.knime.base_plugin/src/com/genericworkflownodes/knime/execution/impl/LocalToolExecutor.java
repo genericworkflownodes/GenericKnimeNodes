@@ -38,17 +38,15 @@ import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 /**
- * The LocalToolExecutor handles the basic tasks associated with the execution
- * of a tool on the command line.
+ * The LocalToolExecutor handles the basic tasks associated with the execution of a tool on the command line.
  * 
  * @author aiche
  */
 public class LocalToolExecutor implements IToolExecutor {
-	protected static final NodeLogger logger = NodeLogger
-			.getLogger(LocalToolExecutor.class);
+	protected static final NodeLogger logger = NodeLogger.getLogger(LocalToolExecutor.class);
 
 	private File workingDirectory;
-	private Map<String, String> environmentVariables;
+	private final Map<String, String> environmentVariables;
 	private int returnCode;
 	private String toolOutput;
 	private Process process;
@@ -69,16 +67,15 @@ public class LocalToolExecutor implements IToolExecutor {
 	}
 
 	/**
-	 * Sets the working directory of the process. If the directory does not
-	 * exist or the @p path does not point to a directory (but a file), an
-	 * exception will be thrown.
+	 * Sets the working directory of the process. If the directory does not exist or the @p path does not point to a
+	 * directory (but a file), an exception will be thrown.
 	 * 
 	 * @param directory
 	 *            The new working directory.
 	 * @throws Exception
-	 *             If the path does not exist or points to a file (and not a
-	 *             directory).
+	 *             If the path does not exist or points to a file (and not a directory).
 	 */
+	@Override
 	public void setWorkingDirectory(File directory) throws Exception {
 		workingDirectory = directory;
 		if (!workingDirectory.isDirectory() || !workingDirectory.exists()) {
@@ -87,30 +84,26 @@ public class LocalToolExecutor implements IToolExecutor {
 	}
 
 	/**
-	 * Adds the environment variables included in @p newEnvironmentVariables to
-	 * the environment variables of the tool.
+	 * Adds the environment variables included in @p newEnvironmentVariables to the environment variables of the tool.
 	 * 
-	 * @note If the environment variable is a path (e.g., PATH or
-	 *       LD_LIBRARY_PATH) the environment variable will be extended and not
-	 *       overwritten (i.e.,
-	 *       LD_LIBRARY_PATH=<specified-value>:$LD_LIBRARY_PATH).
+	 * @note If the environment variable is a path (e.g., PATH or LD_LIBRARY_PATH) the environment variable will be
+	 *       extended and not overwritten (i.e., LD_LIBRARY_PATH=<specified-value>:$LD_LIBRARY_PATH).
 	 * 
 	 * @note Existing values with equal keys will be overwritten.
 	 * 
 	 * @param newEnvironmentVariables
 	 *            The environment variables that will be added.
 	 */
-	private void addEnvironmentVariables(
-			Map<String, String> newEnvironmentVariables) {
+	private void addEnvironmentVariables(Map<String, String> newEnvironmentVariables) {
 		environmentVariables.putAll(newEnvironmentVariables);
 	}
 
 	/**
-	 * Returns the return value of the process. If the tool didn't not run or is
-	 * not finished it is set to -1.
+	 * Returns the return value of the process. If the tool didn't not run or is not finished it is set to -1.
 	 * 
 	 * @return
 	 */
+	@Override
 	public int getReturnCode() {
 		return returnCode;
 	}
@@ -120,6 +113,7 @@ public class LocalToolExecutor implements IToolExecutor {
 	 * 
 	 * @return The ouput of the tool.
 	 */
+	@Override
 	public String getToolOutput() {
 		return toolOutput;
 	}
@@ -127,6 +121,7 @@ public class LocalToolExecutor implements IToolExecutor {
 	/**
 	 * Kills the running process.
 	 */
+	@Override
 	public void kill() {
 		process.destroy();
 	}
@@ -146,13 +141,14 @@ public class LocalToolExecutor implements IToolExecutor {
 	 * @return The return value of the executed process.
 	 * @throws Exception
 	 */
+	@Override
 	public int execute() throws Exception {
 
-		List<String> command = new ArrayList<String>();
-		command.add(executable.getCanonicalPath());
-		command.addAll(commands);
-
 		try {
+			List<String> command = new ArrayList<String>();
+			command.add(executable.getCanonicalPath());
+			command.addAll(commands);
+
 			// build process
 			ProcessBuilder builder = new ProcessBuilder(command);
 
@@ -168,8 +164,7 @@ public class LocalToolExecutor implements IToolExecutor {
 			process = builder.start();
 
 			// fetch output data (stdio+stderr)
-			InputStreamReader isr = new InputStreamReader(
-					process.getInputStream());
+			InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			BufferedReader br = new BufferedReader(isr);
 
 			String line = null;
@@ -217,36 +212,33 @@ public class LocalToolExecutor implements IToolExecutor {
 	 * @param nodeConfiguration
 	 * @param pluginConfiguration
 	 */
-	public void prepareExecution(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
+	@Override
+	public void prepareExecution(INodeConfiguration nodeConfiguration, INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		findExecutable(nodeConfiguration, pluginConfiguration);
 		addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
 
-		commands = generator.generateCommands(nodeConfiguration, configStore,
-				pluginConfiguration, workingDirectory);
+		commands = generator.generateCommands(nodeConfiguration, configStore, pluginConfiguration, workingDirectory);
 	}
 
 	/**
-	 * Tries to find the needed tool by searching in the
-	 * PluginPreferenceToolLocator and the plugin package.
+	 * Tries to find the needed tool by searching in the PluginPreferenceToolLocator and the plugin package.
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	private void findExecutable(INodeConfiguration nodeConfiguration,
-			IPluginConfiguration pluginConfiguration) throws Exception {
+	private void findExecutable(INodeConfiguration nodeConfiguration, IPluginConfiguration pluginConfiguration)
+			throws Exception {
 
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI.getWorkbench().getService(
+				IToolLocatorService.class);
 
 		if (toolLocator == null) {
 			throw new Exception("Could not find matching ToolLocatorService.");
 		}
 
-		executable = toolLocator.getToolPath(new ExternalTool(
-				pluginConfiguration.getPluginName(), nodeConfiguration
-						.getName()));
+		executable = toolLocator.getToolPath(new ExternalTool(pluginConfiguration.getPluginName(), nodeConfiguration
+				.getName()));
 
 		if (executable == null) {
 			throw new Exception("Neither externally configured nor shipped "

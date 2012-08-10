@@ -3,3 +3,5 @@ bin/*
 build/*
 *.class
 build.properties
+.classpath
+.project
