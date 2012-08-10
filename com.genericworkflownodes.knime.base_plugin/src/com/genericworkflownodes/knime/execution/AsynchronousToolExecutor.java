@@ -20,23 +20,35 @@ package com.genericworkflownodes.knime.execution;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Handles asynchronous execution of IToolExecutor
+ * Handles asynchronous execution of IToolExecutor.
  * 
- * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by Marc RÃ¶ttig.
+ * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by Marc Ršttig.
+ * 
+ * This class is a simple wrapper that goes around any {@link IToolExecutor}
  * 
  * @author aiche
  */
-public class AsynchronousToolExecutor implements Callable<Integer> {
-	private final CountDownLatch countdownLatch;
-	private final AtomicBoolean calledInvoked;
+public class AsynchronousToolExecutor {
+	// all instances will use the same thread pool
+	private final static ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
 	/**
 	 * The executor which should be handled asynchronously.
 	 */
 	private final IToolExecutor executor;
+	// determines if the invoke method has already been called
+	private final AtomicBoolean calledInvoked;
+	// useful when other threads call the waitUntilFinished method
+	private final CountDownLatch countdownLatch;
+	// the future that wraps around the callable
+	private FutureTask<Integer> futureTask;
 
 	/**
 	 * C'tor.
@@ -48,31 +60,72 @@ public class AsynchronousToolExecutor implements Callable<Integer> {
 		this.executor = executor;
 		countdownLatch = new CountDownLatch(1);
 		calledInvoked = new AtomicBoolean(false);
+		futureTask = new FutureTask<Integer>(new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				return doCall();
+			}
+		});
 	}
 
-	@Override
-	public Integer call() throws Exception {
-		// set the atomic value to true and check, atomically, the previous value
-		// check getAndSet javadoc :)
-		if (calledInvoked.getAndSet(true) == true) {
-			throw new IllegalStateException("The method call can be executed only once!");
-		}
+	/**
+	 * Returns whether the underlying task has completed, regardless of its status.
+	 * 
+	 * @return
+	 */
+	public boolean isDone() {
+		return futureTask.isDone();
+	}
+
+	/**
+	 * Retrieves the return status from the underlying task. If the task is not yet completed, this method will block
+	 * the invoker.
+	 * 
+	 * @return The return code.
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public int getReturnCode() throws InterruptedException, ExecutionException {
+		return futureTask.get();
+	}
+
+	private int doCall() throws Exception {
 		try {
-			executor.execute();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return executor.execute();
 		} finally {
 			// regardless of what hapenned, make sure to decrease the count in the latch
 			countdownLatch.countDown();
 		}
-		return executor.getReturnCode();
+	}
+
+	/**
+	 * Invokes the {@link IToolExecutor#execute()} method in an asynchronous way, that is, the invoker will not block
+	 * while the underlying {@link IToolExecutor} performs its tasks.
+	 * 
+	 * @return The return code of the underlying executor.
+	 * 
+	 * @throws Exception
+	 */
+	public void invoke() throws Exception {
+		// set the atomic value to true and check, atomically, the previous value
+		// check getAndSet javadoc :)
+		if (calledInvoked.getAndSet(true) == true) {
+			throw new IllegalStateException("The method 'invoke()' can be executed only once!");
+		}
+		EXECUTOR_SERVICE.execute(futureTask);
 	}
 
 	/**
 	 * Kills the executed process.
 	 */
 	public void kill() {
-		executor.kill();
+		try {
+			executor.kill();
+			futureTask.cancel(true);
+		} finally {
+			// make sure to wake up any thread that is waiting
+			countdownLatch.countDown();
+		}
 	}
 
 	/**

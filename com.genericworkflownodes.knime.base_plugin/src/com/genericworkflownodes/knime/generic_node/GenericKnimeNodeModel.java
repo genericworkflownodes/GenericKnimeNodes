@@ -28,9 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 
 import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtype;
@@ -184,33 +181,24 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	private void executeTool(final File jobdir, final ExecutionContext exec) throws Exception {
 
-		AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(executor);
+		final AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(executor);
 
-		FutureTask<Integer> future = new FutureTask<Integer>(asyncExecutor);
+		asyncExecutor.invoke();
 
-		ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.execute(future);
+		// create one thread that will periodically check if the user has cancelled the execution of the node
+		// if this monitor thread detects that a cancel was requested, then it will invoke the kill method
+		// of the asyncExecutor
+		final Thread monitorThread = new CancelMonitorThread(asyncExecutor, exec);
+		monitorThread.start();
 
-		while (!future.isDone()) {
-			asyncExecutor.waitUntilFinished();
-
-			try {
-				exec.checkCanceled();
-			} catch (CanceledExecutionException e) {
-				asyncExecutor.kill();
-				executorService.shutdown();
-				throw e;
-			}
-		}
+		asyncExecutor.waitUntilFinished();
 
 		int retcode = -1;
 		try {
-			retcode = future.get();
+			retcode = asyncExecutor.getReturnCode();
 		} catch (ExecutionException ex) {
 			ex.printStackTrace();
 		}
-
-		executorService.shutdown();
 
 		output = executor.getToolOutput();
 

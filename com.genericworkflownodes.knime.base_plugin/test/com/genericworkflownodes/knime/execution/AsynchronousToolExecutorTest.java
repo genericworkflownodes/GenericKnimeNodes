@@ -22,9 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -41,56 +38,52 @@ public class AsynchronousToolExecutorTest {
 
 	private DummyToolExecutor dummyTask;
 	private AsynchronousToolExecutor asyncExecutor;
-	private FutureTask<Integer> future;
-	private Executor executor;
 
 	@Before
 	public void setUp() {
 		dummyTask = new DummyToolExecutor();
 		asyncExecutor = new AsynchronousToolExecutor(dummyTask);
-		executor = Executors.newCachedThreadPool();
-		future = new FutureTask<Integer>(asyncExecutor);
 	}
 
 	@Test
-	public void testNormalExecution() {
+	public void testNormalExecution() throws Exception {
 		dummyTask.setSleepTime(100);
-		executor.execute(future);
+		asyncExecutor.invoke();
 		busyWait();
 		assertTrue("The underlying task did not complete", dummyTask.isCompleted());
 	}
 
 	@Test
-	public void testFaultyExecution() {
+	public void testFaultyExecution() throws Exception {
 		dummyTask.setThrowException(true);
-		executor.execute(future);
+		asyncExecutor.invoke();
 		busyWait();
 		assertFalse("The underlying task should not have completed", dummyTask.isCompleted());
 	}
 
 	@Test
-	public void testWaitForNormalExecution() {
-		executor.execute(future);
+	public void testWaitForNormalExecution() throws Exception {
+		asyncExecutor.invoke();
 		asyncExecutor.waitUntilFinished();
 		assertTrue("The underlying task did not complete", dummyTask.isCompleted());
 	}
 
 	@Test
-	public void testWaitForFaultyExecution() {
+	public void testWaitForFaultyExecution() throws Exception {
 		dummyTask.setThrowException(true);
-		executor.execute(future);
+		asyncExecutor.invoke();
 		asyncExecutor.waitUntilFinished();
 		assertFalse("The underlying task should not have completed", dummyTask.isCompleted());
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testAsynchronousToolExecutorIsNotReusable() throws Exception {
-		asyncExecutor.call();
-		asyncExecutor.call();
+		asyncExecutor.invoke();
+		asyncExecutor.invoke();
 	}
 
 	@Test
-	public void testSeveralThreadsWaitingForNormalExecution() {
+	public void testSeveralThreadsWaitingForNormalExecution() throws Exception {
 		final int nThreads = 10;
 		Thread[] threads = new Thread[nThreads];
 		final AtomicInteger completedThreads = new AtomicInteger(0);
@@ -103,7 +96,7 @@ public class AsynchronousToolExecutorTest {
 				}
 			};
 		}
-		executor.execute(future);
+		asyncExecutor.invoke();
 		for (int i = 0; i < nThreads; i++) {
 			threads[i].start();
 		}
@@ -119,7 +112,7 @@ public class AsynchronousToolExecutorTest {
 	}
 
 	@Test
-	public void testSeveralThreadsWaitingForFaultyExecution() {
+	public void testSeveralThreadsWaitingForFaultyExecution() throws Exception {
 		final int nThreads = 10;
 		Thread[] threads = new Thread[nThreads];
 		final AtomicInteger completedThreads = new AtomicInteger(0);
@@ -133,7 +126,7 @@ public class AsynchronousToolExecutorTest {
 			};
 		}
 		dummyTask.setThrowException(true);
-		executor.execute(future);
+		asyncExecutor.invoke();
 		for (int i = 0; i < nThreads; i++) {
 			threads[i].start();
 		}
@@ -149,16 +142,16 @@ public class AsynchronousToolExecutorTest {
 	}
 
 	@Test
-	public void testKill() {
+	public void testKill() throws Exception {
 		dummyTask.setSleepTime(50000);
-		executor.execute(future);
+		asyncExecutor.invoke();
 		asyncExecutor.kill();
 		assertTrue("The underlying task should have been killed", dummyTask.isKilled());
 		assertFalse("The underlying task should not have completed", dummyTask.isCompleted());
 	}
 
 	private void busyWait() {
-		while (!future.isDone() && !future.isCancelled()) {
+		while (!asyncExecutor.isDone()) {
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
