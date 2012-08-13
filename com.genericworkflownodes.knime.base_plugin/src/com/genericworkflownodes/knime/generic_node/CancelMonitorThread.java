@@ -22,13 +22,14 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
+import com.genericworkflownodes.knime.execution.IWaitable;
 
 /**
  * This thread monitors the execution context to determine if a cancelation was requested.
  * 
  * @author Luis de la Garza
  */
-public class CancelMonitorThread extends Thread {
+public class CancelMonitorThread extends Thread implements IWaitable {
 	private final AsynchronousToolExecutor asyncExecutor;
 	private final ExecutionContext exec;
 
@@ -56,6 +57,15 @@ public class CancelMonitorThread extends Thread {
 					// ignore
 				}
 			}
+		}
+	}
+
+	@Override
+	public void waitUntilFinished() {
+		try {
+			join();
+		} catch (InterruptedException e) {
+			// ignore
 		}
 	}
 }

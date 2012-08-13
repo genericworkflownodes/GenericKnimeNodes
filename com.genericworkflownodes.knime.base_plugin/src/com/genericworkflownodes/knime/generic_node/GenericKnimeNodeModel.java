@@ -188,15 +188,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// create one thread that will periodically check if the user has cancelled the execution of the node
 		// if this monitor thread detects that a cancel was requested, then it will invoke the kill method
 		// of the asyncExecutor
-		final Thread monitorThread = new CancelMonitorThread(asyncExecutor, exec);
+		final CancelMonitorThread monitorThread = new CancelMonitorThread(asyncExecutor, exec);
 		monitorThread.start();
 
+		// wait until the execution completes
 		asyncExecutor.waitUntilFinished();
+		// also wait for the monitor thread to die
+		monitorThread.waitUntilFinished();
 
 		int retcode = -1;
 		try {
 			retcode = asyncExecutor.getReturnCode();
 		} catch (ExecutionException ex) {
+			// it means that the task threw an exception, assume retcode == -1
 			ex.printStackTrace();
 		}
 

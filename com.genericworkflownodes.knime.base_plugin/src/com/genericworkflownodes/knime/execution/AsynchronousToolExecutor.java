@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author aiche
  */
-public class AsynchronousToolExecutor {
+public class AsynchronousToolExecutor implements IWaitable {
 	// all instances will use the same thread pool
 	private final static ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
@@ -131,6 +131,7 @@ public class AsynchronousToolExecutor {
 	/**
 	 * The thread invoking this method will wait until the execution has completed, regardless of the result.
 	 */
+	@Override
 	public void waitUntilFinished() {
 		try {
 			countdownLatch.await();
