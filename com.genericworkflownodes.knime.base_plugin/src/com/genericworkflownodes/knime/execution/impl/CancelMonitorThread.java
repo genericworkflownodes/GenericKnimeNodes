@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.generic_node;
+package com.genericworkflownodes.knime.execution.impl;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -25,7 +25,8 @@ import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.IWaitable;
 
 /**
- * This thread monitors the execution context to determine if a cancelation was requested.
+ * This thread monitors the execution context to determine if a cancelation was
+ * requested.
  * 
  * @author Luis de la Garza
  */
@@ -33,7 +34,8 @@ public class CancelMonitorThread extends Thread implements IWaitable {
 	private final AsynchronousToolExecutor asyncExecutor;
 	private final ExecutionContext exec;
 
-	public CancelMonitorThread(final AsynchronousToolExecutor asyncExecutor, final ExecutionContext exec) {
+	public CancelMonitorThread(final AsynchronousToolExecutor asyncExecutor,
+			final ExecutionContext exec) {
 		this.asyncExecutor = asyncExecutor;
 		this.exec = exec;
 	}
@@ -41,7 +43,8 @@ public class CancelMonitorThread extends Thread implements IWaitable {
 	@Override
 	public void run() {
 		boolean cancelRequested = false;
-		while (!asyncExecutor.isDone() && cancelRequested == false) {
+		// loop while the executor is not done and no cancel has been requested
+		while (!asyncExecutor.isDone() && !cancelRequested) {
 			try {
 				// if cancel was requested, an exception will be thrown
 				exec.checkCanceled();
@@ -49,8 +52,8 @@ public class CancelMonitorThread extends Thread implements IWaitable {
 				cancelRequested = true;
 				asyncExecutor.kill();
 			}
-			// wait a bit, if needed
-			if (cancelRequested == false) {
+			// wait a bit before checking one again
+			if (!cancelRequested) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -63,6 +66,7 @@ public class CancelMonitorThread extends Thread implements IWaitable {
 	@Override
 	public void waitUntilFinished() {
 		try {
+			// simply invoke this thread's join method
 			join();
 		} catch (InterruptedException e) {
 			// ignore
