@@ -29,12 +29,15 @@ import com.genericworkflownodes.knime.execution.IToolExecutor;
 /**
  * Class useful for unit testing.
  * 
- * Simulates real work by just waiting (using {@link Thread#sleep(long)}). It is possible to adjust the behaviour of
- * this class by using {@link #setSleepTime(long)}, {@link #setReturnCode(int)} and {@link #setThrowException(boolean)}.
+ * Simulates real work by just waiting (using {@link Thread#sleep(long)}). It is
+ * possible to adjust the behaviour of this class by using
+ * {@link #setSleepTime(long)}, {@link #setReturnCode(int)} and
+ * {@link #setThrowException(boolean)}.
  * 
- * This class provides information via the methods: {@link #isCompleted()}, {@link 
+ * This class provides debugging information via the methods:
+ * {@link #isCompleted()} and {@link #isKilled()}.
  * 
- * @author delagarza
+ * @author Luis de la Garza
  */
 public class DummyToolExecutor implements IToolExecutor {
 
@@ -46,7 +49,8 @@ public class DummyToolExecutor implements IToolExecutor {
 	private volatile boolean throwException = false;
 
 	/**
-	 * Instructs this executor to throw an exception when {@link #execute()} is invoked.
+	 * Instructs this executor to throw an exception when {@link #execute()} is
+	 * invoked.
 	 * 
 	 * @param throwException
 	 */
@@ -62,7 +66,8 @@ public class DummyToolExecutor implements IToolExecutor {
 	 */
 	public void setSleepTime(long sleepTime) {
 		if (sleepTime < 0) {
-			throw new IllegalArgumentException("sleepTime must be greater than zero.");
+			throw new IllegalArgumentException(
+					"sleepTime must be greater than zero.");
 		}
 		this.sleepTime = sleepTime;
 	}
@@ -80,7 +85,8 @@ public class DummyToolExecutor implements IToolExecutor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.genericworkflownodes.knime.execution.IToolExecutor#setCommandGenerator
+	 * @see
+	 * com.genericworkflownodes.knime.execution.IToolExecutor#setCommandGenerator
 	 * (com.genericworkflownodes.knime.execution.ICommandGenerator)
 	 */
 	@Override
@@ -116,13 +122,15 @@ public class DummyToolExecutor implements IToolExecutor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.genericworkflownodes.knime.execution.IToolExecutor#prepareExecution
+	 * @see
+	 * com.genericworkflownodes.knime.execution.IToolExecutor#prepareExecution
 	 * (com.genericworkflownodes.knime.config.INodeConfiguration,
 	 * com.genericworkflownodes.knime.config.INodeConfigurationStore,
 	 * com.genericworkflownodes.knime.config.IPluginConfiguration)
 	 */
 	@Override
-	public void prepareExecution(INodeConfiguration nodeConfiguration, INodeConfigurationStore configStore,
+	public void prepareExecution(INodeConfiguration nodeConfiguration,
+			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		// TODO Auto-generated method stub
 
@@ -144,7 +152,8 @@ public class DummyToolExecutor implements IToolExecutor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.genericworkflownodes.knime.execution.IToolExecutor#getReturnCode()
+	 * @see
+	 * com.genericworkflownodes.knime.execution.IToolExecutor#getReturnCode()
 	 */
 	@Override
 	public int getReturnCode() {
@@ -154,7 +163,9 @@ public class DummyToolExecutor implements IToolExecutor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.genericworkflownodes.knime.execution.IToolExecutor#setWorkingDirectory (java.io.File)
+	 * @see
+	 * com.genericworkflownodes.knime.execution.IToolExecutor#setWorkingDirectory
+	 * (java.io.File)
 	 */
 	@Override
 	public void setWorkingDirectory(File directory) throws Exception {
@@ -164,7 +175,8 @@ public class DummyToolExecutor implements IToolExecutor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.genericworkflownodes.knime.execution.IToolExecutor#getToolOutput()
+	 * @see
+	 * com.genericworkflownodes.knime.execution.IToolExecutor#getToolOutput()
 	 */
 	@Override
 	public String getToolOutput() {

@@ -19,16 +19,17 @@
 package com.genericworkflownodes.knime.execution;
 
 /**
- * Exposes one single method, {@link #waitUntilFinished()} in order to simplify the common task of waiting for
- * completion of a task.
+ * Exposes one single method, {@link #waitUntilFinished()} in order to simplify
+ * the common task of waiting for completion of a task.
  * 
  * @author Luis de la Garza
  */
 public interface IWaitable {
 
 	/**
-	 * Forces the invoking thread to wait until completion of the executed task. Note that this method does not throw
-	 * any exception, forcing implementations to handly any possible {@link InterruptedException}.
+	 * Forces the invoking thread to wait until completion of the executed task.
+	 * Note that this method does not throw any exception, forcing
+	 * implementations to handly any possible {@link InterruptedException}.
 	 */
 	void waitUntilFinished();
 }

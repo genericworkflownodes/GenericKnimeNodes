@@ -29,22 +29,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Handles asynchronous execution of IToolExecutor.
  * 
- * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by Marc Ršttig.
+ * Note: AsynchronousToolExecutor is based on the AsyncToolRunner implemented by
+ * Marc RÃ¶ttig.
  * 
- * This class is a simple wrapper that goes around any {@link IToolExecutor}
+ * This class is a simple wrapper that goes around any {@link IToolExecutor}.
+ * Note that the {@link #invoke()} method can be used only once. Invoking it
+ * more than once will result in a {@link IllegalStateException}.
  * 
  * @author aiche
+ * @author Luis de la Garza
  */
 public class AsynchronousToolExecutor implements IWaitable {
 	// all instances will use the same thread pool
-	private final static ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+	// using a cached thread pool has the following advantages:
+	// 1. if after some time no threads are used, the pool will shrink
+	// 2. the pool grows as needed
+	private final static ExecutorService EXECUTOR_SERVICE = Executors
+			.newCachedThreadPool();
 
 	/**
 	 * The executor which should be handled asynchronously.
 	 */
 	private final IToolExecutor executor;
 	// determines if the invoke method has already been called
-	private final AtomicBoolean calledInvoked;
+	private final AtomicBoolean invokeAlreadyCalled;
 	// useful when other threads call the waitUntilFinished method
 	private final CountDownLatch countdownLatch;
 	// the future that wraps around the callable
@@ -59,7 +67,7 @@ public class AsynchronousToolExecutor implements IWaitable {
 	public AsynchronousToolExecutor(final IToolExecutor executor) {
 		this.executor = executor;
 		countdownLatch = new CountDownLatch(1);
-		calledInvoked = new AtomicBoolean(false);
+		invokeAlreadyCalled = new AtomicBoolean(false);
 		futureTask = new FutureTask<Integer>(new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
@@ -69,7 +77,8 @@ public class AsynchronousToolExecutor implements IWaitable {
 	}
 
 	/**
-	 * Returns whether the underlying task has completed, regardless of its status.
+	 * Returns whether the underlying task has completed, regardless of its
+	 * status.
 	 * 
 	 * @return
 	 */
@@ -78,8 +87,8 @@ public class AsynchronousToolExecutor implements IWaitable {
 	}
 
 	/**
-	 * Retrieves the return status from the underlying task. If the task is not yet completed, this method will block
-	 * the invoker.
+	 * Retrieves the return status from the underlying task. If the task is not
+	 * yet completed, this method will block the invoker.
 	 * 
 	 * @return The return code.
 	 * @throws InterruptedException
@@ -93,24 +102,27 @@ public class AsynchronousToolExecutor implements IWaitable {
 		try {
 			return executor.execute();
 		} finally {
-			// regardless of what hapenned, make sure to decrease the count in the latch
+			// regardless of what hapenned, make sure to decrease the count in
+			// the latch
 			countdownLatch.countDown();
 		}
 	}
 
 	/**
-	 * Invokes the {@link IToolExecutor#execute()} method in an asynchronous way, that is, the invoker will not block
-	 * while the underlying {@link IToolExecutor} performs its tasks.
+	 * Invokes the {@link IToolExecutor#execute()} method in an asynchronous
+	 * way, that is, the invoker will not block while the underlying
+	 * {@link IToolExecutor} performs its tasks.
 	 * 
 	 * @return The return code of the underlying executor.
 	 * 
 	 * @throws Exception
 	 */
 	public void invoke() throws Exception {
-		// set the atomic value to true and check, atomically, the previous value
-		// check getAndSet javadoc :)
-		if (calledInvoked.getAndSet(true) == true) {
-			throw new IllegalStateException("The method 'invoke()' can be executed only once!");
+		// set the atomic value to true and check, atomically, the previous
+		// value. for more information, check out getAndSet javadoc
+		if (invokeAlreadyCalled.getAndSet(true)) {
+			throw new IllegalStateException(
+					"The method 'invoke()' can be executed only once!");
 		}
 		EXECUTOR_SERVICE.execute(futureTask);
 	}
@@ -129,7 +141,8 @@ public class AsynchronousToolExecutor implements IWaitable {
 	}
 
 	/**
-	 * The thread invoking this method will wait until the execution has completed, regardless of the result.
+	 * The thread invoking this method will wait until the execution has
+	 * completed, regardless of the result.
 	 */
 	@Override
 	public void waitUntilFinished() {

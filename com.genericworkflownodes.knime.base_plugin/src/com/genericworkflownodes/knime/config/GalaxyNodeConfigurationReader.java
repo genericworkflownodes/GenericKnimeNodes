@@ -87,7 +87,8 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 	}
 
 	private void readParameters() throws Exception {
-		List<Node> nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='text']");
+		List<Node> nodes = DOMHelper.selectNodes(doc,
+				"/tool/inputs/param[@type='text']");
 		for (Node n : nodes) {
 			processParameter(n);
 		}
@@ -95,15 +96,18 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		for (Node n : nodes) {
 			processParameter(n);
 		}
-		nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='boolean']");
+		nodes = DOMHelper.selectNodes(doc,
+				"/tool/inputs/param[@type='boolean']");
 		for (Node n : nodes) {
 			processParameter(n);
 		}
-		nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='integer']");
+		nodes = DOMHelper.selectNodes(doc,
+				"/tool/inputs/param[@type='integer']");
 		for (Node n : nodes) {
 			processParameter(n);
 		}
-		nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='select']");
+		nodes = DOMHelper
+				.selectNodes(doc, "/tool/inputs/param[@type='select']");
 		for (Node n : nodes) {
 			processParameter(n);
 		}
@@ -119,7 +123,8 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		String key = n.valueOf("@name");
 		String val = n.valueOf("@value");
 
-		System.out.println("processing param " + key + " type:" + type + " value: " + val);
+		System.out.println("processing param " + key + " type:" + type
+				+ " value: " + val);
 
 		if (type.equals("integer")) {
 			ret = new IntegerParameter(key, val);
@@ -158,7 +163,8 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 	}
 
 	private void readPorts() throws Exception {
-		List<Node> nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='data']");
+		List<Node> nodes = DOMHelper.selectNodes(doc,
+				"/tool/inputs/param[@type='data']");
 		for (Node n : nodes) {
 			Port port = readInPort(n);
 			inports.add(port);

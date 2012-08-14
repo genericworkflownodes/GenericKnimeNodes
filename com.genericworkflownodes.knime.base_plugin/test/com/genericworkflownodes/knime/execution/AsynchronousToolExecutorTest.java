@@ -32,7 +32,7 @@ import com.genericworkflownodes.knime.execution.impl.DummyToolExecutor;
 /**
  * Tests for the {@link AsynchronousToolExecutor}.
  * 
- * @author delagarza
+ * @author Luis de la Garza
  */
 public class AsynchronousToolExecutorTest {
 
@@ -50,7 +50,8 @@ public class AsynchronousToolExecutorTest {
 		dummyTask.setSleepTime(100);
 		asyncExecutor.invoke();
 		busyWait();
-		assertTrue("The underlying task did not complete", dummyTask.isCompleted());
+		assertTrue("The underlying task did not complete",
+				dummyTask.isCompleted());
 	}
 
 	@Test
@@ -58,14 +59,16 @@ public class AsynchronousToolExecutorTest {
 		dummyTask.setThrowException(true);
 		asyncExecutor.invoke();
 		busyWait();
-		assertFalse("The underlying task should not have completed", dummyTask.isCompleted());
+		assertFalse("The underlying task should not have completed",
+				dummyTask.isCompleted());
 	}
 
 	@Test
 	public void testWaitForNormalExecution() throws Exception {
 		asyncExecutor.invoke();
 		asyncExecutor.waitUntilFinished();
-		assertTrue("The underlying task did not complete", dummyTask.isCompleted());
+		assertTrue("The underlying task did not complete",
+				dummyTask.isCompleted());
 	}
 
 	@Test
@@ -73,7 +76,8 @@ public class AsynchronousToolExecutorTest {
 		dummyTask.setThrowException(true);
 		asyncExecutor.invoke();
 		asyncExecutor.waitUntilFinished();
-		assertFalse("The underlying task should not have completed", dummyTask.isCompleted());
+		assertFalse("The underlying task should not have completed",
+				dummyTask.isCompleted());
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -107,8 +111,10 @@ public class AsynchronousToolExecutorTest {
 				// ignore
 			}
 		}
-		assertTrue("The underlying task did not complete", dummyTask.isCompleted());
-		assertEquals("Some of the threads did not complete", nThreads, completedThreads.get());
+		assertTrue("The underlying task did not complete",
+				dummyTask.isCompleted());
+		assertEquals("Some of the threads did not complete", nThreads,
+				completedThreads.get());
 	}
 
 	@Test
@@ -137,8 +143,10 @@ public class AsynchronousToolExecutorTest {
 				// ignore
 			}
 		}
-		assertFalse("The underlying task should have not completed", dummyTask.isCompleted());
-		assertEquals("Some of the threads did not complete", nThreads, completedThreads.get());
+		assertFalse("The underlying task should have not completed",
+				dummyTask.isCompleted());
+		assertEquals("Some of the threads did not complete", nThreads,
+				completedThreads.get());
 	}
 
 	@Test
@@ -146,8 +154,10 @@ public class AsynchronousToolExecutorTest {
 		dummyTask.setSleepTime(50000);
 		asyncExecutor.invoke();
 		asyncExecutor.kill();
-		assertTrue("The underlying task should have been killed", dummyTask.isKilled());
-		assertFalse("The underlying task should not have completed", dummyTask.isCompleted());
+		assertTrue("The underlying task should have been killed",
+				dummyTask.isKilled());
+		assertFalse("The underlying task should not have completed",
+				dummyTask.isCompleted());
 	}
 
 	private void busyWait() {
