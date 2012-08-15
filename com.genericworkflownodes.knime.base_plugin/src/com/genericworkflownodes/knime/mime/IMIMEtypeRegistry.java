@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.mime;
 
-import org.ballproject.knime.base.mime.MIMEtype;
 import org.knime.core.data.url.MIMEType;
 
 /**
@@ -30,7 +29,7 @@ import org.knime.core.data.url.MIMEType;
 public interface IMIMEtypeRegistry {
 
 	/**
-	 * Returns the {@link MIMEtype} of a given filename.
+	 * Returns the {@link MIMEType} of a given filename.
 	 * 
 	 * @param filename
 	 *            Name of the file
@@ -38,6 +37,17 @@ public interface IMIMEtypeRegistry {
 	 * @return MIMEtype
 	 */
 	MIMEType getMIMEtype(String filename);
+
+	/**
+	 * Returns the {@link MIMEType} for the given extension (if it is
+	 * available).
+	 * 
+	 * @param extension
+	 *            The extension to check.
+	 * @return The {@link MIMEType} for the given extension if it is registered,
+	 *         {@code null} otherwise.
+	 */
+	MIMEType getMIMETypeByExtension(String extension);
 
 	/**
 	 * Adds a new {@link MIMEType} to the registry.

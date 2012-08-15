@@ -60,12 +60,12 @@ public class DemanglerNodeModel extends NodeModel {
 	/**
 	 * Settings field where the currently selected demangler is stored.
 	 */
-	private static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
+	static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
 
 	/**
 	 * Settings field where the currently configured {@link MIMEType} is stored.
 	 */
-	private static final String CONFIGURED_MIMETYPE_SETTINGNAME = "configured_mime_type";
+	static final String CONFIGURED_MIMETYPE_SETTINGNAME = "configured_mime_type";
 
 	/**
 	 * Ref. to the central {@link IMIMEtypeRegistry}.
@@ -165,23 +165,27 @@ public class DemanglerNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		String demanglerClassName = settings
-				.getString(SELECTED_DEMANGLER_SETTINGNAME);
+		String demanglerClassName = settings.getString(
+				SELECTED_DEMANGLER_SETTINGNAME, "");
 		String configuredMIMEExtension = settings
 				.getString(CONFIGURED_MIMETYPE_SETTINGNAME);
 
 		// get a list of registered MIMEType
-		configuredMIMEType = resolver.getMIMEtype(configuredMIMEExtension);
+		configuredMIMEType = resolver
+				.getMIMETypeByExtension(configuredMIMEExtension);
 		List<IDemangler> availableDemangler = demanglerRegistry
 				.getDemangler(configuredMIMEType);
 
 		demangler = null;
-
-		for (IDemangler de : availableDemangler) {
-			if (demanglerClassName.equals(de.getClass().getName())) {
-				demangler = de;
-				break;
+		if (!"".equals(demanglerClassName)) {
+			for (IDemangler de : availableDemangler) {
+				if (demanglerClassName.equals(de.getClass().getName())) {
+					demangler = de;
+					break;
+				}
 			}
+		} else if (availableDemangler.size() > 0) {
+			demangler = availableDemangler.get(0);
 		}
 
 		if (demangler == null) {
@@ -259,13 +263,14 @@ public class DemanglerNodeModel extends NodeModel {
 		List<IDemangler> availableDemanglers = demanglerRegistry
 				.getDemangler(configuredMIMEType);
 
-		if (availableDemanglers == null) {
-			throw new InvalidSettingsException("no IDemangler found for "
-					+ configuredMIMEType.toString()
-					+ ". Please register one first.");
+		if (availableDemanglers == null || availableDemanglers.size() == 0) {
+			throw new InvalidSettingsException(
+					"no IDemangler found for "
+							+ configuredMIMEType.toString()
+							+ ". Please register before transforming the a file with this MIMEType to a KNIME table.");
 		}
 
-		// demangler = demanglers.get(idx);
+		demangler = availableDemanglers.get(0);
 
 		return new DataTableSpec[] { getDataTableSpec() };
 	}
@@ -304,6 +309,7 @@ public class DemanglerNodeModel extends NodeModel {
 		while (iter.hasNext()) {
 			container.addRowToTable(iter.next());
 		}
+		container.close();
 		BufferedDataTable out = container.getTable();
 
 		return new BufferedDataTable[] { out };

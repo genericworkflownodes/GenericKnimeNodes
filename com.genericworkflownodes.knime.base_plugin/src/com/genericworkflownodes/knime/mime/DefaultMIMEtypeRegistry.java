@@ -78,4 +78,13 @@ public class DefaultMIMEtypeRegistry implements IMIMEtypeRegistry {
 		}
 		return mt;
 	}
+
+	@Override
+	public MIMEType getMIMETypeByExtension(final String extension) {
+		if (fileExtensionToMIMEType.containsKey(extension)) {
+			return fileExtensionToMIMEType.get(extension);
+		} else {
+			return null;
+		}
+	}
 }
