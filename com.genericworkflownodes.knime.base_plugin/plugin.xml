@@ -2,8 +2,8 @@
 <?eclipse version="3.4"?>
 
 <plugin>
-   <extension-point id="org.ballproject.knime.base.mime.demangler.DemanglerProvider" name="Demangler Provider" schema="schema/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd"/>
-   <extension-point id="com.genericworkflownods.knime.outputconverter.OutputConverter" name="OutputConverter" schema="schema/com.genericworkflownods.knime.outputconverter.OutputConverter.exsd"/>  
+   <extension-point id="com.genericworkflownodes.knime.outputconverter.OutputConverter" name="OutputConverter" schema="schema/com.genericworkflownods.knime.outputconverter.OutputConverter.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>  
    
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -46,7 +46,7 @@
       </serviceFactory>
    </extension>
    <extension
-         point="com.genericworkflownods.knime.outputconverter.OutputConverter">
+         point="com.genericworkflownodes.knime.outputconverter.OutputConverter">
       <outputconverter
             converter-id="DefaultOutputConverter"
             factoryclass="com.genericworkflownodes.knime.outputconverter.impl.DefaultOutputConverterFactory"

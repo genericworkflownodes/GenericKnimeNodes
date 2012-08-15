@@ -25,8 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -50,6 +48,9 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+
 import bsh.Interpreter;
 
 /**
@@ -60,7 +61,7 @@ import bsh.Interpreter;
  */
 public class BeanShellNodeModel extends NodeModel {
 
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
+	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**

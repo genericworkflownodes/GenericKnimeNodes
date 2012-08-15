@@ -31,8 +31,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.MimeType;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
@@ -50,6 +48,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeModel;
 
 /**
@@ -95,7 +95,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	/**
 	 * Resolver for the mimetypes.
 	 */
-	private MIMEtypeRegistry resolver = GenericNodesPlugin
+	private IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**

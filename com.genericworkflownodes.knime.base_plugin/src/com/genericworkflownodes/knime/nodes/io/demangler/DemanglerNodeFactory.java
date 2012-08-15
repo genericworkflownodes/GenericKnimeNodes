@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.demangler;
 
 import org.knime.core.node.NodeDialogPane;
@@ -24,7 +23,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeFactory</code> for the "Demangler" Node.
+ * <code>NodeFactory</code> for the "IDemangler" Node.
  * 
  * 
  * @author roettig

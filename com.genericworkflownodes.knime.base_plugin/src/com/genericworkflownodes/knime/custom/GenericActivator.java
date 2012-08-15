@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
@@ -277,10 +277,10 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 	/**
 	 * Reads the list of {@link MIMEType}s associated with the plugin and
-	 * registers them in the central {@link MIMEtypeRegistry}.
+	 * registers them in the central {@link IMIMEtypeRegistry}.
 	 */
 	private void registerMimeTypes() {
-		MIMEtypeRegistry registry = GenericNodesPlugin.getMIMEtypeRegistry();
+		IMIMEtypeRegistry registry = GenericNodesPlugin.getMIMEtypeRegistry();
 
 		for (MIMEType mimeType : getMIMETypes()) {
 			registry.registerMIMEtype(mimeType);

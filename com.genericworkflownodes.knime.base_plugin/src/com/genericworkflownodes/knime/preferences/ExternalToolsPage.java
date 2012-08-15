@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -38,6 +37,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 

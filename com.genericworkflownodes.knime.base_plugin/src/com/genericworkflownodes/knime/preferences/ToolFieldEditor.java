@@ -20,7 +20,6 @@ package com.genericworkflownodes.knime.preferences;
 
 import java.io.File;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,6 +29,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;

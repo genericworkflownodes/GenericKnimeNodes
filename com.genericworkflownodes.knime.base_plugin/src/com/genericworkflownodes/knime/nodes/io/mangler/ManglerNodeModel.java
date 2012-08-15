@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,27 +16,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.mangler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.mime.demangler.Demangler;
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
+import org.ballproject.knime.base.util.FileStash;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.RowIterator;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.data.url.MIMEType;
+import org.knime.core.data.url.URIContent;
+import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -45,71 +37,87 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 
 /**
  * This is the model implementation of ManglerNodeModel.
  * 
- * 
- * @author roettig
+ * @author roettig, aiche
  */
 public class ManglerNodeModel extends NodeModel {
 
-	protected Demangler demangler;
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
+	/**
+	 * Settings field where the currently selected demangler is stored.
+	 */
+	static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
+
+	/**
+	 * Settings field where the currently configured {@link MIMEType} is stored.
+	 */
+	static final String AVAILABLE_MIMETYPE_SETTINGNAME = "available_demangler";
+
+	/**
+	 * Ref. to the central {@link IDemanglerRegistry}.
+	 */
+	private IDemanglerRegistry demanglerRegistry = GenericNodesPlugin
+			.getDemanglerRegistry();
+
+	/**
+	 * The selected {@link IDemangler}.
+	 */
+	private IDemangler demangler;
+
+	/**
+	 * Available {@link IDemangler}.
+	 */
+	private List<IDemangler> availableMangler;
+
+	/**
+	 * The currently active inputTalbeSpecification.
+	 */
+	private DataTableSpec inputTalbeSpecification;
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected ManglerNodeModel() {
-		super(1, 1);
-	}
-
-	private static class Adapter implements Iterator<DataCell> {
-		private RowIterator rowiter;
-		private int idx;
-
-		public Adapter(RowIterator rowiter, int idx) {
-			this.rowiter = rowiter;
-			this.idx = idx;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return rowiter.hasNext();
-		}
-
-		@Override
-		public DataCell next() {
-			return rowiter.next().getCell(idx);
-		}
-
-		@Override
-		public void remove() {
-			// NOP
-		}
+		super(new PortType[] { new PortType(BufferedDataTable.class) },
+				new PortType[] { new PortType(MIMEURIPortObject.class) });
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
+	protected PortObject[] execute(final PortObject[] inData,
 			final ExecutionContext exec) throws Exception {
-		BufferedDataContainer container = exec.createDataContainer(outspec);
 
-		Adapter iter = new Adapter(inData[0].iterator(), 0);
-		MIMEFileCell cell = demangler.mangle(iter);
+		// translate portobject to table
 
-		DataRow row = new DefaultRow("Row 0", cell);
-		container.addRowToTable(row);
+		BufferedDataTable table = (BufferedDataTable) inData[0];
 
-		container.close();
-		inData[0].iterator().close();
+		// create a file where we can write to
+		String filename = FileStash.getInstance().allocateFile(
+				demangler.getMIMEType().getExtension());
 
-		BufferedDataTable out = container.getTable();
+		// translate the filename to a URIContent
+		URIContent outputURI = new URIContent(new File(filename).toURI());
 
-		return new BufferedDataTable[] { out };
+		// write file
+		demangler.mangle(table, outputURI.getURI());
+
+		// create list
+		List<URIContent> uriList = new ArrayList<URIContent>();
+		uriList.add(outputURI);
+
+		return new MIMEURIPortObject[] { new MIMEURIPortObject(uriList,
+				demangler.getMIMEType()) };
 	}
 
 	/**
@@ -117,50 +125,37 @@ public class ManglerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
+		demangler = null;
+		availableMangler = null;
 	}
-
-	protected DataType inType;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
+	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		// get data type of first column (where the MIMEFileCell is stored by
-		// convention)
-		inType = inSpecs[0].getColumnSpec(0).getType();
+		if (inSpecs[0] instanceof DataTableSpec) {
 
-		// try to find a demangler for the data type ...
-		List<Demangler> demanglers = resolver.getMangler(inType);
+			inputTalbeSpecification = (DataTableSpec) inSpecs[0];
 
-		if (demanglers.size() == 0) {
-			throw new InvalidSettingsException("no Mangler found for "
-					+ inType.toString() + ". Please register one first.");
+			availableMangler = demanglerRegistry
+					.getMangler(inputTalbeSpecification);
+
+			if (availableMangler == null || availableMangler.size() == 0) {
+				throw new InvalidSettingsException(
+						"no IDemangler found for the given table configuration. "
+								+ "Please register one before transforming the a file with "
+								+ "this MIMEType to a KNIME table.");
+			}
+
+			demangler = availableMangler.get(0);
+
+			return new MIMEURIPortObjectSpec[] { new MIMEURIPortObjectSpec(
+					demangler.getMIMEType()) };
+		} else {
+			throw new InvalidSettingsException("Cannot handle non-table input");
 		}
-
-		// we support only one mangler (the first one)
-		demangler = demanglers.get(0);
-
-		return new DataTableSpec[] { getDataTableSpec() };
-	}
-
-	private DataTableSpec outspec;
-
-	private DataTableSpec getDataTableSpec() throws InvalidSettingsException {
-		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-		// FIXME
-		DataType dt = null; // demangler.getSourceType();
-		allColSpecs[0] = new DataColumnSpecCreator("column 0", dt).createSpec();
-		DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-
-		// save this internally
-		outspec = outputSpec;
-
-		return outputSpec;
 	}
 
 	/**
@@ -168,6 +163,15 @@ public class ManglerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
+		settings.addString(SELECTED_DEMANGLER_SETTINGNAME, demangler.getClass()
+				.getName());
+		String[] manglers = new String[availableMangler.size()];
+		int i = 0;
+		for (IDemangler mangler : availableMangler) {
+			manglers[i++] = mangler.getClass().getName();
+		}
+
+		settings.addStringArray(AVAILABLE_MIMETYPE_SETTINGNAME, manglers);
 	}
 
 	/**
@@ -176,6 +180,26 @@ public class ManglerNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
+
+		String manglerClassName = settings.getString(
+				SELECTED_DEMANGLER_SETTINGNAME, "");
+
+		List<IDemangler> matchingManglers = demanglerRegistry
+				.getMangler(inputTalbeSpecification);
+
+		demangler = null;
+		for (IDemangler mangler : matchingManglers) {
+			if (manglerClassName.equals(mangler.getClass().getName())) {
+				demangler = mangler;
+				break;
+			}
+		}
+
+		if (demangler == null) {
+			throw new InvalidSettingsException(
+					"Could not find an implementation for the previously selected mangler: "
+							+ manglerClassName);
+		}
 	}
 
 	/**

@@ -38,14 +38,15 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 
 /**
  * Dialog component to choose multiple files at once, as input for a KNIME
@@ -359,7 +360,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 	/**
 	 * Registry for the mime types.
 	 */
-	private MIMEtypeRegistry resolver = GenericNodesPlugin
+	private IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**

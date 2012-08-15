@@ -18,10 +18,11 @@
  */
 package com.genericworkflownodes.knime.toolfinderservice;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.services.AbstractServiceFactory;
 import org.eclipse.ui.services.IServiceLocator;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 
 /**
  * {@link AbstractServiceFactory} for the TooFinderService

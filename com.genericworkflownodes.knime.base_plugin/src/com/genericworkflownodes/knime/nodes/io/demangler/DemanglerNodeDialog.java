@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,13 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.demangler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 
 import org.ballproject.knime.base.ui.choice.ChoiceDialog;
 import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
+import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -30,51 +33,104 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+
 /**
- * <code>NodeDialog</code> for the "Demangler" Node.
+ * <code>NodeDialog</code> for the "IDemangler" Node.
  * 
  * 
- * @author roettig
+ * @author aiche, roettig
  */
 public class DemanglerNodeDialog extends NodeDialogPane implements
 		ChoiceDialogListener {
 
+	/**
+	 * The ChoiceElement to select the correct {@link IDemangler}.
+	 */
 	private ChoiceDialog choice;
-	private DefaultComboBoxModel model = new DefaultComboBoxModel();
 
+	/**
+	 * The DataModel for the ChoiceDialog.
+	 */
+	private DefaultComboBoxModel model;
+
+	/**
+	 * The actual selected demangler.
+	 */
+	private String demanglerClassName;
+
+	/**
+	 * The currently configured {@link MIMEType}.
+	 */
+	private MIMEType configuredMIMEType;
+
+	/**
+	 * Default c'tor.
+	 */
 	protected DemanglerNodeDialog() {
 		super();
+
+		model = new DefaultComboBoxModel();
+
 		choice = new ChoiceDialog(model);
 		choice.registerChoiceListener(this);
-		this.addTab("Demanglers", choice);
+
+		addTab("Demanglers", choice);
+
+		// we assume there is no demangler selected
+		demanglerClassName = "";
 	}
 
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings)
 			throws InvalidSettingsException {
-		settings.addInt("selected_index", idx);
+		settings.addString(DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
+				demanglerClassName);
+		settings.addString(DemanglerNodeModel.CONFIGURED_MIMETYPE_SETTINGNAME,
+				configuredMIMEType.getExtension());
 	}
 
 	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings,
-			PortObjectSpec[] specs) throws NotConfigurableException {
-		String[] demanglers = null;
+	protected void loadSettingsFrom(final NodeSettingsRO settings,
+			final PortObjectSpec[] specs) throws NotConfigurableException {
+
+		List<IDemangler> availableDemangler = new ArrayList<IDemangler>();
+		String demanglerClassName = "";
 		try {
-			demanglers = settings.getStringArray("demanglers");
+			demanglerClassName = settings.getString(
+					DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
+			String configuredMIMEExtension = settings
+					.getString(DemanglerNodeModel.CONFIGURED_MIMETYPE_SETTINGNAME);
+
+			configuredMIMEType = GenericNodesPlugin.getMIMEtypeRegistry()
+					.getMIMETypeByExtension(configuredMIMEExtension);
+
+			availableDemangler = GenericNodesPlugin.getDemanglerRegistry()
+					.getDemangler(configuredMIMEType);
 		} catch (InvalidSettingsException e) {
 			e.printStackTrace();
 		}
 
 		model.removeAllElements();
-		for (String d : demanglers) {
-			model.addElement(d);
+		for (IDemangler d : availableDemangler) {
+			model.addElement(d.getClass().getName());
+		}
+
+		// select already configured demangler -> find by class name
+		if (!"".equals(demanglerClassName)) {
+			int indexToSelect = model.getIndexOf(demanglerClassName);
+			if (indexToSelect != -1) {
+				model.setSelectedItem(demanglerClassName);
+			}
+		} else {
+			// there is no pre-selected demangler
+			model.setSelectedItem(0);
 		}
 	}
 
-	private int idx = 0;
-
 	@Override
-	public void onChoice(int sel_idx) {
-		idx = sel_idx;
+	public void onChoice(final int selectedIndex) {
+		demanglerClassName = (String) model.getElementAt(selectedIndex);
 	}
 }
