@@ -109,9 +109,9 @@ public class StringChoiceParameter extends Parameter<String> {
 		this.allowedValues = values;
 		this.labels = labels;
 
-		// for optional value we use the empty string as default value
+		// for optional value we use null=unselected as default value
 		if (isOptional()) {
-			setValue("");
+			setValue(null);
 		}
 	}
 
@@ -132,7 +132,8 @@ public class StringChoiceParameter extends Parameter<String> {
 
 	@Override
 	public void setValue(final String value) {
-		if (getAllowedValues().contains(value)) {
+		if (getAllowedValues().contains(value)
+				|| (isOptional() && value == null)) {
 			super.setValue(value);
 		}
 	}
@@ -180,7 +181,7 @@ public class StringChoiceParameter extends Parameter<String> {
 	@Override
 	public void fillFromString(final String s)
 			throws InvalidParameterValueException {
-		if (s == null) {
+		if (s == null || "".equals(s)) {
 			super.setValue(null);
 			return;
 		}

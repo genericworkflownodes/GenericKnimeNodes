@@ -62,7 +62,7 @@ public class GalaxyNodeConfigurationReaderTest {
 
 		assertEquals(p1.getValue(), "10.0");
 		assertEquals(p2.getValue(), 0.5);
-		assertEquals("1", p3.getValue());
+		assertEquals(null, p3.getValue());
 
 		assertEquals("A", p3.getLabels().get(0));
 		assertEquals("B", p3.getLabels().get(1));

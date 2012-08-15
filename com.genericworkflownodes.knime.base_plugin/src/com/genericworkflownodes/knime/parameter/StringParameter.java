@@ -40,7 +40,9 @@ public class StringParameter extends Parameter<String> {
 	 *            The value of the parameter.
 	 */
 	public StringParameter(final String key, final String value) {
-		super(key, value);
+		// we treat empty strings as if the parameter wasn't set
+		// so we set it to null
+		super(key, ("".equals(value) ? null : value));
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class StringParameter extends Parameter<String> {
 
 	@Override
 	public void fillFromString(final String s) {
-		if (s == null) {
+		if (s == null || "".equals(s)) {
 			setValue(null);
 			return;
 		}
