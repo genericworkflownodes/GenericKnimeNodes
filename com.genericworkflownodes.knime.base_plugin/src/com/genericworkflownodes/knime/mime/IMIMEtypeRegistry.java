@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,40 +16,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.genericworkflownodes.knime.mime;
 
-package org.ballproject.knime.base.mime;
-
-import java.util.List;
-
-import org.ballproject.knime.base.mime.demangler.Demangler;
-import org.knime.core.data.DataType;
+import org.ballproject.knime.base.mime.MIMEtype;
 import org.knime.core.data.url.MIMEType;
 
 /**
- * The interface MIMEtypeRegistry defines methods needed to build a (recursive)
- * database or registry of MIME types known to GenericKnimeNodes.
+ * The interface {@link IMIMEtypeRegistry} defines methods needed to build a
+ * (recursive) database or registry of MIME types known to GenericKnimeNodes.
  * 
  * @author roettig
- * 
  */
-public interface MIMEtypeRegistry {
+public interface IMIMEtypeRegistry {
+
 	/**
-	 * returns MIMEtype of a given filename.
+	 * Returns the {@link MIMEtype} of a given filename.
 	 * 
 	 * @param filename
-	 *            name of the file
+	 *            Name of the file
 	 * 
 	 * @return MIMEtype
 	 */
 	MIMEType getMIMEtype(String filename);
 
+	/**
+	 * Adds a new {@link MIMEType} to the registry.
+	 * 
+	 * @param mt
+	 *            The {@link MIMEType} to add.
+	 */
 	void registerMIMEtype(MIMEType mt);
-
-	List<Demangler> getDemangler(MIMEType type);
-
-	List<Demangler> getMangler(DataType type);
-
-	void addDemangler(Demangler demangler);
-
-	boolean isCompatible(DataType dt1, DataType dt2);
 }

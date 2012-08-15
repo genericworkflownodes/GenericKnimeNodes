@@ -38,7 +38,7 @@ public final class OutputConverterHelper {
 	/**
 	 * Id of the extension point we want to query.
 	 */
-	private static String EXTENSION_ID = "com.genericworkflownods.knime.outputconverter.OutputConverter";
+	private static String EXTENSION_ID = "com.genericworkflownodes.knime.outputconverter.OutputConverter";
 
 	/**
 	 * Name of the attribute that stores the converter id.

@@ -31,7 +31,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
 /**
- * <code>NodeDialog</code> for the "Demangler" Node.
+ * <code>NodeDialog</code> for the "IDemangler" Node.
  * 
  * 
  * @author roettig

@@ -32,9 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
@@ -54,6 +52,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
@@ -61,6 +60,7 @@ import com.genericworkflownodes.knime.config.NodeConfigurationStore;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.outputconverter.IOutputConverter;
 import com.genericworkflownodes.knime.outputconverter.config.Converter;
 import com.genericworkflownodes.knime.outputconverter.util.OutputConverterHelper;
@@ -92,7 +92,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected int[] selected_output_type;
 	public String output = "";
 
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
+	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**

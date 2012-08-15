@@ -24,7 +24,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeFactory</code> for the "Demangler" Node.
+ * <code>NodeFactory</code> for the "IDemangler" Node.
  * 
  * 
  * @author roettig

@@ -18,10 +18,11 @@
  */
 package com.genericworkflownodes.knime.preferences;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 
 /**
  * Initializer for the GKN preferences.

@@ -22,20 +22,13 @@ package com.genericworkflownodes.knime.nodes.io.mangler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.mime.demangler.Demangler;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.RowIterator;
-import org.knime.core.data.def.DefaultRow;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -46,6 +39,10 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+
 /**
  * This is the model implementation of ManglerNodeModel.
  * 
@@ -54,8 +51,8 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class ManglerNodeModel extends NodeModel {
 
-	protected Demangler demangler;
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
+	protected IDemangler demangler;
+	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**
@@ -99,17 +96,17 @@ public class ManglerNodeModel extends NodeModel {
 		BufferedDataContainer container = exec.createDataContainer(outspec);
 
 		Adapter iter = new Adapter(inData[0].iterator(), 0);
-		MIMEFileCell cell = demangler.mangle(iter);
-
-		DataRow row = new DefaultRow("Row 0", cell);
-		container.addRowToTable(row);
-
-		container.close();
-		inData[0].iterator().close();
-
-		BufferedDataTable out = container.getTable();
-
-		return new BufferedDataTable[] { out };
+		/*
+		 * MIMEFileCell cell = demangler.mangle(iter);
+		 * 
+		 * DataRow row = new DefaultRow("Row 0", cell);
+		 * container.addRowToTable(row);
+		 * 
+		 * container.close(); inData[0].iterator().close();
+		 * 
+		 * BufferedDataTable out = container.getTable();
+		 */
+		return new BufferedDataTable[] {};
 	}
 
 	/**
@@ -134,17 +131,17 @@ public class ManglerNodeModel extends NodeModel {
 		// convention)
 		inType = inSpecs[0].getColumnSpec(0).getType();
 
-		// try to find a demangler for the data type ...
-		List<Demangler> demanglers = resolver.getMangler(inType);
-
-		if (demanglers.size() == 0) {
-			throw new InvalidSettingsException("no Mangler found for "
-					+ inType.toString() + ". Please register one first.");
-		}
-
-		// we support only one mangler (the first one)
-		demangler = demanglers.get(0);
-
+		/*
+		 * // try to find a demangler for the data type ... List<IDemangler>
+		 * demanglers = resolver.getMangler(inType);
+		 * 
+		 * if (demanglers.size() == 0) { throw new
+		 * InvalidSettingsException("no Mangler found for " + inType.toString()
+		 * + ". Please register one first."); }
+		 * 
+		 * // we support only one mangler (the first one) demangler =
+		 * demanglers.get(0);
+		 */
 		return new DataTableSpec[] { getDataTableSpec() };
 	}
 

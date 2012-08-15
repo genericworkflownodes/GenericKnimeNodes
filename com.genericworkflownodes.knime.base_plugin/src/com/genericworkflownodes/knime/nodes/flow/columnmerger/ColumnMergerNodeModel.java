@@ -25,9 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ballproject.knime.GenericNodesPlugin;
 import org.ballproject.knime.base.mime.MIMEFileCell;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -49,6 +47,9 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+
 /**
  * This is the model implementation of DemanglerNodeModel.
  * 
@@ -57,7 +58,7 @@ import org.knime.core.node.port.PortType;
  */
 public class ColumnMergerNodeModel extends NodeModel {
 
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
+	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**

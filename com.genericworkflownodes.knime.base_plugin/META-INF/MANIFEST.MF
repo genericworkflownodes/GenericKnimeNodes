@@ -17,12 +17,11 @@ Require-Bundle: org.eclipse.core.runtime,
 Export-Package: com.genericworkflownodes.knime.config,
  com.genericworkflownodes.knime.custom,
  com.genericworkflownodes.knime.generic_node,
+ com.genericworkflownodes.knime.mime.demangler,
  com.genericworkflownodes.knime.outputconverter,
  com.genericworkflownodes.knime.parameter,
  com.genericworkflownodes.knime.toolfinderservice,
- org.ballproject.knime,
  org.ballproject.knime.base.mime,
- org.ballproject.knime.base.mime.demangler,
  org.ballproject.knime.base.model,
  org.ballproject.knime.base.port,
  org.ballproject.knime.base.treetabledialog,
@@ -106,6 +105,6 @@ Export-Package: com.genericworkflownodes.knime.config,
  org.knime.core.data.url.cell,
  org.knime.core.data.url.port
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.ballproject.knime.GenericNodesPlugin
+Bundle-Activator: com.genericworkflownodes.knime.GenericNodesPlugin
 Eclipse-RegisterBuddy: org.knime.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

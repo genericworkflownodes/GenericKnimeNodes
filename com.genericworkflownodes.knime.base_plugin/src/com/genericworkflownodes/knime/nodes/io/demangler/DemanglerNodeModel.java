@@ -19,29 +19,14 @@
 
 package com.genericworkflownodes.knime.nodes.io.demangler;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
-import org.ballproject.knime.base.mime.demangler.Demangler;
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataType;
-import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -53,12 +38,16 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 
 /**
  * This is the model implementation of DemanglerNodeModel.
@@ -68,10 +57,37 @@ import org.knime.core.node.port.PortType;
  */
 public class DemanglerNodeModel extends NodeModel {
 
-	protected List<Demangler> demanglers = new ArrayList<Demangler>();
-	protected MIMEtypeRegistry resolver = GenericNodesPlugin
+	/**
+	 * Settings field where the currently selected demangler is stored.
+	 */
+	private static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
+
+	/**
+	 * Settings field where the currently configured {@link MIMEType} is stored.
+	 */
+	private static final String CONFIGURED_MIMETYPE_SETTINGNAME = "configured_mime_type";
+
+	/**
+	 * Ref. to the central {@link IMIMEtypeRegistry}.
+	 */
+	private IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
-	protected Demangler demangler;
+
+	/**
+	 * Ref. to the central {@link IDemanglerRegistry}.
+	 */
+	private IDemanglerRegistry demanglerRegistry = GenericNodesPlugin
+			.getDemanglerRegistry();
+
+	/**
+	 * The selected {@link IDemangler}.
+	 */
+	private IDemangler demangler;
+
+	/**
+	 * The currently configured {@link MIMEType}.
+	 */
+	private MIMEType configuredMIMEType;
 
 	/**
 	 * Constructor for the node model.
@@ -128,9 +144,8 @@ public class DemanglerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
+		demangler = null;
+		configuredMIMEType = null;
 	}
 
 	/**
@@ -138,17 +153,11 @@ public class DemanglerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		String[] names = new String[demanglers.size()];
-		int i = 0;
-		for (Demangler demangler : demanglers) {
-			names[i++] = demangler.getClass().getCanonicalName();
-
-		}
-		settings.addStringArray("demanglers", names);
-		settings.addInt("selected_index", idx);
+		settings.addString(CONFIGURED_MIMETYPE_SETTINGNAME,
+				configuredMIMEType.getExtension());
+		settings.addStringArray(SELECTED_DEMANGLER_SETTINGNAME, demangler
+				.getClass().getName());
 	}
-
-	private int idx = 0;
 
 	/**
 	 * {@inheritDoc}
@@ -156,9 +165,29 @@ public class DemanglerNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		idx = settings.getInt("selected_index");
-		if (demanglers.size() != 0) {
-			demangler = demanglers.get(idx);
+		String demanglerClassName = settings
+				.getString(SELECTED_DEMANGLER_SETTINGNAME);
+		String configuredMIMEExtension = settings
+				.getString(CONFIGURED_MIMETYPE_SETTINGNAME);
+
+		// get a list of registered MIMEType
+		configuredMIMEType = resolver.getMIMEtype(configuredMIMEExtension);
+		List<IDemangler> availableDemangler = demanglerRegistry
+				.getDemangler(configuredMIMEType);
+
+		demangler = null;
+
+		for (IDemangler de : availableDemangler) {
+			if (demanglerClassName.equals(de.getClass().getName())) {
+				demangler = de;
+				break;
+			}
+		}
+
+		if (demangler == null) {
+			throw new InvalidSettingsException(
+					"Could not find an implementation for the previously selected demangler: "
+							+ demanglerClassName);
 		}
 	}
 
@@ -173,32 +202,22 @@ public class DemanglerNodeModel extends NodeModel {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		ObjectInputStream in = new ObjectInputStream(new FileInputStream(
-				new File(internDir, "demanglers")));
-		try {
-			demanglers = (List<Demangler>) in.readObject();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		in.close();
-
-		// create the file
-		File f = new File(internDir, "selected_index");
-		// load the settings from the file
-		NodeSettingsRO settings = NodeSettings.loadFromXML(new FileInputStream(
-				f));
-		// retrieve the stored values
-		try {
-			idx = settings.getInt("selected_index");
-		} catch (InvalidSettingsException e) {
-			e.printStackTrace();
-		}
-
+		/*
+		 * ObjectInputStream in = new ObjectInputStream(new FileInputStream( new
+		 * File(internDir, "demanglers"))); try { demanglers =
+		 * (List<IDemangler>) in.readObject(); } catch (ClassNotFoundException
+		 * e) { e.printStackTrace(); } in.close();
+		 * 
+		 * // create the file File f = new File(internDir, "selected_index"); //
+		 * load the settings from the file NodeSettingsRO settings =
+		 * NodeSettings.loadFromXML(new FileInputStream( f)); // retrieve the
+		 * stored values try { idx = settings.getInt("selected_index"); } catch
+		 * (InvalidSettingsException e) { e.printStackTrace(); }
+		 */
 	}
 
 	/**
@@ -208,27 +227,25 @@ public class DemanglerNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		DataOutputStream out = new DataOutputStream(new FileOutputStream(
-				new File(internDir, "demanglers")));
 
-		ObjectOutput oout = new ObjectOutputStream(out);
-		oout.writeObject(this.demanglers);
-		oout.close();
-
-		// create a settings object with a config name
-		NodeSettings settings = new NodeSettings("selected_index");
-		// store your values under a certain key
-		settings.addInt("selected_index", idx);
-		// create a file in the given directory
-		File f = new File(internDir, "selected_index");
-		// and save it
-		settings.saveToXML(new FileOutputStream(f));
+		/*
+		 * DataOutputStream out = new DataOutputStream(new FileOutputStream( new
+		 * File(internDir, "demanglers")));
+		 * 
+		 * ObjectOutput oout = new ObjectOutputStream(out);
+		 * oout.writeObject(this.demanglers); oout.close();
+		 * 
+		 * // create a settings object with a config name NodeSettings settings
+		 * = new NodeSettings("selected_index"); // store your values under a
+		 * certain key settings.addInt("selected_index", idx); // create a file
+		 * in the given directory File f = new File(internDir,
+		 * "selected_index"); // and save it settings.saveToXML(new
+		 * FileOutputStream(f));
+		 */
 	}
 
-	protected MIMEType mt;
-
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 		if (!(inSpecs[0] instanceof MIMEURIPortObjectSpec)) {
 			throw new InvalidSettingsException(
@@ -236,68 +253,59 @@ public class DemanglerNodeModel extends NodeModel {
 		}
 
 		MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[0];
-		mt = spec.getMIMEType();
+		configuredMIMEType = spec.getMIMEType();
 
 		// try to find a demangler for the data type ...
-		demanglers = resolver.getDemangler(mt);
+		List<IDemangler> availableDemanglers = demanglerRegistry
+				.getDemangler(configuredMIMEType);
 
-		if (demanglers == null) {
-			throw new InvalidSettingsException("no Demangler found for "
-					+ mt.toString() + ". Please register one first.");
+		if (availableDemanglers == null) {
+			throw new InvalidSettingsException("no IDemangler found for "
+					+ configuredMIMEType.toString()
+					+ ". Please register one first.");
 		}
 
-		demangler = demanglers.get(idx);
+		// demangler = demanglers.get(idx);
 
 		return new DataTableSpec[] { getDataTableSpec() };
 	}
 
-	private DataTableSpec outspec;
-
+	/**
+	 * Retrieves the {@link DataTableSpec} from the selected {@link IDemangler}.
+	 * 
+	 * @return A configured {@link DataTableSpec}.
+	 * @throws InvalidSettingsException
+	 *             If the requested configuration can not be created.
+	 */
 	private DataTableSpec getDataTableSpec() throws InvalidSettingsException {
-		DataColumnSpec[] allColSpecs = new DataColumnSpec[1];
-
-		DataType dt = demangler.getTargetType();
-		allColSpecs[0] = new DataColumnSpecCreator("column 0", dt).createSpec();
-		DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-
-		// save this internally
-		outspec = outputSpec;
-
-		return outputSpec;
+		return demangler.getTableSpec();
 	}
 
 	@Override
-	protected BufferedDataTable[] execute(PortObject[] inObjects,
-			ExecutionContext exec) throws Exception {
-		BufferedDataContainer container = exec.createDataContainer(outspec);
+	protected BufferedDataTable[] execute(final PortObject[] inObjects,
+			final ExecutionContext exec) throws Exception {
+		BufferedDataContainer container = exec.createDataContainer(demangler
+				.getTableSpec());
 
 		MIMEURIPortObject obj = (MIMEURIPortObject) inObjects[0];
 		List<URIContent> uris = obj.getURIContents();
 		if (uris.size() == 0) {
 			throw new Exception(
-					"no URIs were supplied in MIMEURIPortObject at input port 0");
+					"No URI was supplied in MIMEURIPortObject at input port 0");
+		} else if (uris.size() != 1) {
+			throw new Exception(String.format(
+					"We can only demangle a single file but got %d.",
+					uris.size()));
 		}
 
-		// FIXME
 		URI relURI = uris.get(0).getURI();
 
-		Iterator<DataCell> iter = demangler.demangle(relURI);
-
-		int ridx = 0;
-
+		Iterator<DataRow> iter = demangler.demangle(relURI);
 		while (iter.hasNext()) {
-			DataCell[] rowcells = new DataCell[1];
-			rowcells[0] = iter.next();
-			DataRow row = new DefaultRow("Row " + ridx, rowcells);
-			container.addRowToTable(row);
-			ridx++;
+			container.addRowToTable(iter.next());
 		}
-
-		container.close();
-
 		BufferedDataTable out = container.getTable();
 
 		return new BufferedDataTable[] { out };
 	}
-
 }

@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.GenericNodesPlugin;
-import org.ballproject.knime.base.mime.MIMEtypeRegistry;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -40,6 +38,9 @@ import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 
 /**
  * This is the model implementation of ListMimeFileImporter.
@@ -62,7 +63,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	/**
 	 * The registry for all mimi types.
 	 */
-	private MIMEtypeRegistry resolver = GenericNodesPlugin
+	private IMIMEtypeRegistry resolver = GenericNodesPlugin
 			.getMIMEtypeRegistry();
 
 	/**
