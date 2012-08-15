@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -25,6 +25,7 @@ import java.util.Iterator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.url.MIMEType;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 
 /**
@@ -73,10 +74,11 @@ public interface IDemangler extends Serializable {
 	/**
 	 * Writes the content of the table to the given file.
 	 * 
-	 * @param rows
-	 *            An iterator on the table rows.
+	 * @param table
+	 *            The {@link BufferedDataTable} which should be translated to a
+	 *            file.
 	 * @param file
 	 *            The file where the content of the table should be stored.
 	 */
-	void mangle(Iterator<DataRow> rows, URI file);
+	void mangle(BufferedDataTable table, URI file);
 }

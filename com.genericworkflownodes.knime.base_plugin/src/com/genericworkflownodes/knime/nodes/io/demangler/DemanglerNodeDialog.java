@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.demangler;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import com.genericworkflownodes.knime.mime.demangler.IDemangler;
  * <code>NodeDialog</code> for the "IDemangler" Node.
  * 
  * 
- * @author roettig
+ * @author aiche, roettig
  */
 public class DemanglerNodeDialog extends NodeDialogPane implements
 		ChoiceDialogListener {

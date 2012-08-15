@@ -62,13 +62,12 @@ public class DemanglerRegistry implements IDemanglerRegistry {
 		return availableDemangler;
 	}
 
-	/**
+	/*
 	 * Searchs through the eclipse extension point registry for registered
 	 * {@link IDemangler}s.
-	 * 
-	 * @return A list of available {@link IDemangler}s.
 	 */
-	private List<IDemangler> getAvailableDemangler() {
+	@Override
+	public List<IDemangler> getAvailableDemangler() {
 		List<IDemangler> availableDemangler = new ArrayList<IDemangler>();
 
 		IExtensionRegistry reg = Platform.getExtensionRegistry();

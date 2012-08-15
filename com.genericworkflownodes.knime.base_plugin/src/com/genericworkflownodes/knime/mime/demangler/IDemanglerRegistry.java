@@ -52,4 +52,11 @@ public interface IDemanglerRegistry {
 	 *         {@link DataTableSpec}.
 	 */
 	List<IDemangler> getMangler(DataTableSpec spec);
+
+	/**
+	 * Returns a list of a registered {@link IDemangler}s.
+	 * 
+	 * @return A list of available {@link IDemangler}s.
+	 */
+	List<IDemangler> getAvailableDemangler();
 }

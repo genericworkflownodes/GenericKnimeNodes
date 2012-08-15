@@ -6,13 +6,13 @@
     <shortDescription>Converts a table into a MIMEFile.</shortDescription>
     
     <fullDescription>
-        <intro>The Mangler Node will mangle incoming classical KNIME columns into  corresponding MIMEFileCell data. To register a Mangler for 
-    a MIMEFile use a plugin that delivers a DemanglerProvider for your Demangler by extending the DemanglerProvider extension point.</intro>
+        <intro>The Mangler Node will mangle incoming classical KNIME columns into  corresponding MIMEFiles. To register a Mangler for 
+    	a MIMEFile use a plugin that delivers a Demangler by extending the Demangler extension point.</intro>
     </fullDescription>
     
     <ports>
-     <inPort index="0" name="mimefile"> Table </inPort>
-     <outPort index="0" name="loaded file "> MIMEFile </outPort>   
+     <inPort index="0" name="Input taple"> Table </inPort>
+     <outPort index="0" name="File"> MIMEFile </outPort>   
     </ports>    
     <views>
         <view index="0" name=""></view>

@@ -6,14 +6,14 @@
     <shortDescription>Converts a MIMEFile into a table</shortDescription>
     
     <fullDescription>
-        <intro>The FileToTable Node will convert the data contained in an incoming <i>MIMEFileCell</i> into a table with classical KNIME cells. 
-        This mechanism does only work if a plugin providing a <i>Demangler</i> for that conversion is registered. To register a <i>Demangler</i>
-        for a <i>MIMEFile</i> use a plugin that delivers a <i>DemanglerProvider</i> for your <i>Demangler</i> by extending the <i>DemanglerProvider</i> extension point.</intro>
+        <intro>The FileToTable Node will convert the data contained in an incoming <i>MIMEFile</i> into a table with classical KNIME cells. 
+        This mechanism does only work if a plugin providing a <i>IDemangler</i> for that conversion is registered. To register a <i>IDemangler</i>
+        for a <i>MIMEFile</i> use a plugin that delivers a <i>IDemangler</i> by extending the <i>Demangler</i> extension point.</intro>
     </fullDescription>
     
     <ports>
-     <inPort index="0" name="mimefile"> MIMEFile </inPort>
-     <outPort index="0" name="loaded file "> Table with entities stored in MIMEFile </outPort>   
+     <inPort index="0" name="mimefile">MIMEFile </inPort>
+     <outPort index="0" name="loaded file">Table with entities stored in MIMEFile </outPort>   
     </ports>    
     <views>
         <view index="0" name=""></view>

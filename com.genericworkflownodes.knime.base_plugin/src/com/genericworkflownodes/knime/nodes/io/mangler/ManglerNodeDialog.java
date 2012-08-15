@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,9 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.mangler;
 
+import javax.swing.DefaultComboBoxModel;
+
+import org.ballproject.knime.base.ui.choice.ChoiceDialog;
+import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
@@ -26,12 +29,35 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 
+import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+
 /**
  * <code>NodeDialog</code> for the "Mangler" Node.
  * 
- * @author roettig
+ * @author aiche, roettig
  */
-public class ManglerNodeDialog extends NodeDialogPane {
+public class ManglerNodeDialog extends NodeDialogPane implements
+		ChoiceDialogListener {
+
+	/**
+	 * The ChoiceElement to select the correct {@link IDemangler}.
+	 */
+	private ChoiceDialog choice;
+
+	/**
+	 * The DataModel for the ChoiceDialog.
+	 */
+	private DefaultComboBoxModel model;
+
+	/**
+	 * The actual selected demangler.
+	 */
+	private String demanglerClassName;
+
+	/**
+	 * Available manglers.
+	 */
+	private String[] availableManglers;
 
 	/**
 	 * New pane for configuring Mangler node dialog. This is just a suggestion
@@ -39,16 +65,58 @@ public class ManglerNodeDialog extends NodeDialogPane {
 	 */
 	protected ManglerNodeDialog(Object obj) {
 		super();
+
+		model = new DefaultComboBoxModel();
+
+		choice = new ChoiceDialog(model);
+		choice.registerChoiceListener(this);
+
+		addTab("Demanglers", choice);
+
+		// we assume there is no demangler selected
+		demanglerClassName = "";
+		availableManglers = null;
 	}
 
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings)
 			throws InvalidSettingsException {
-
+		settings.addString(ManglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
+				demanglerClassName);
+		settings.addStringArray(
+				ManglerNodeModel.AVAILABLE_MIMETYPE_SETTINGNAME,
+				availableManglers);
 	}
 
 	@Override
 	protected void loadSettingsFrom(NodeSettingsRO settings,
 			DataTableSpec[] specs) throws NotConfigurableException {
+		String demanglerClassName = settings.getString(
+				ManglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
+
+		availableManglers = settings.getStringArray(
+				ManglerNodeModel.AVAILABLE_MIMETYPE_SETTINGNAME,
+				new String[] {});
+
+		model.removeAllElements();
+		for (String d : availableManglers) {
+			model.addElement(d);
+		}
+
+		// select already configured demangler -> find by class name
+		if (!"".equals(demanglerClassName)) {
+			int indexToSelect = model.getIndexOf(demanglerClassName);
+			if (indexToSelect != -1) {
+				model.setSelectedItem(demanglerClassName);
+			}
+		} else {
+			// there is no pre-selected demangler
+			model.setSelectedItem(0);
+		}
+	}
+
+	@Override
+	public void onChoice(final int selectedIdx) {
+		demanglerClassName = (String) model.getElementAt(selectedIdx);
 	}
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.demangler;
 
 import java.io.File;
@@ -203,51 +202,6 @@ public class DemanglerNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		/*
-		 * ObjectInputStream in = new ObjectInputStream(new FileInputStream( new
-		 * File(internDir, "demanglers"))); try { demanglers =
-		 * (List<IDemangler>) in.readObject(); } catch (ClassNotFoundException
-		 * e) { e.printStackTrace(); } in.close();
-		 * 
-		 * // create the file File f = new File(internDir, "selected_index"); //
-		 * load the settings from the file NodeSettingsRO settings =
-		 * NodeSettings.loadFromXML(new FileInputStream( f)); // retrieve the
-		 * stored values try { idx = settings.getInt("selected_index"); } catch
-		 * (InvalidSettingsException e) { e.printStackTrace(); }
-		 */
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-
-		/*
-		 * DataOutputStream out = new DataOutputStream(new FileOutputStream( new
-		 * File(internDir, "demanglers")));
-		 * 
-		 * ObjectOutput oout = new ObjectOutputStream(out);
-		 * oout.writeObject(this.demanglers); oout.close();
-		 * 
-		 * // create a settings object with a config name NodeSettings settings
-		 * = new NodeSettings("selected_index"); // store your values under a
-		 * certain key settings.addInt("selected_index", idx); // create a file
-		 * in the given directory File f = new File(internDir,
-		 * "selected_index"); // and save it settings.saveToXML(new
-		 * FileOutputStream(f));
-		 */
-	}
-
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
@@ -313,5 +267,19 @@ public class DemanglerNodeModel extends NodeModel {
 		BufferedDataTable out = container.getTable();
 
 		return new BufferedDataTable[] { out };
+	}
+
+	@Override
+	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
+		// TODO Auto-generated method stub
+
 	}
 }
