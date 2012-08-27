@@ -46,13 +46,17 @@ which will produce the respective jar file
 The following directory structure must be provided within
 the specified directory:
 
-- plugin.properties
-|
-|-- descriptors (place your ctd files and mimetypes.xml here)
-|
-|-- payload (place your binaries here)
-|
-|-- icons (the icons to be used must be here)
+your
+plugin
+directory
+  │
+  ├── plugin.properties
+  │
+  ├── descriptors (place your ctd files and mimetypes.xml here)
+  │
+  ├── payload (place your binaries here)
+  │
+  └── icons (the icons to be used must be here)
 
 See the sample directory of your GenericKnimeNodes directory
 for an example.
