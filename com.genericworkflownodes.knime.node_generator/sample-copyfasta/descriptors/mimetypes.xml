@@ -1,4 +1,5 @@
 <mimetypes xmlns="http://www.ball-project.org/mimetypes">
  <mimetype name="FASTA" binary="false" ext="FASTA" description="FASTA"/>
+ <mimetype name="FASTA" binary="false" ext="FA" description="FASTA"/> 
  <mimetype name="BlastXML" binary="false" ext="BLASTXML" description="BlastXML"/>
 </mimetypes>

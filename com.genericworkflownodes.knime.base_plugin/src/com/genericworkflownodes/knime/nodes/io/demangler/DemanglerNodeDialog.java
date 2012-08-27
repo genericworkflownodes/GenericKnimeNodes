@@ -125,7 +125,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 			}
 		} else {
 			// there is no pre-selected demangler
-			model.setSelectedItem(0);
+			model.setSelectedItem(model.getElementAt(0));
 		}
 	}
 

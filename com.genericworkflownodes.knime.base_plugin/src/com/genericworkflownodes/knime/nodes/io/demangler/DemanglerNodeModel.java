@@ -224,7 +224,9 @@ public class DemanglerNodeModel extends NodeModel {
 							+ ". Please register before transforming the a file with this MIMEType to a KNIME table.");
 		}
 
-		demangler = availableDemanglers.get(0);
+		if (demangler == null) {
+			demangler = availableDemanglers.get(0);
+		}
 
 		return new DataTableSpec[] { getDataTableSpec() };
 	}
