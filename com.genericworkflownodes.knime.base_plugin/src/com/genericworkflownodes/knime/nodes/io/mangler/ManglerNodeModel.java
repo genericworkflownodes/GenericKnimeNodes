@@ -149,7 +149,9 @@ public class ManglerNodeModel extends NodeModel {
 								+ "this MIMEType to a KNIME table.");
 			}
 
-			demangler = availableMangler.get(0);
+			if (demangler == null) {
+				demangler = availableMangler.get(0);
+			}
 
 			return new MIMEURIPortObjectSpec[] { new MIMEURIPortObjectSpec(
 					demangler.getMIMEType()) };
