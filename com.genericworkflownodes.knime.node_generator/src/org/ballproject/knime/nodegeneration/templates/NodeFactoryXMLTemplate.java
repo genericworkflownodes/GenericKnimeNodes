@@ -54,7 +54,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 */
 	private static String getInPorts(final INodeConfiguration nodeConfiguration) {
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTDESCR__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
+		String ip = "<inPort index=\"__IDX__\" name=\"__PORTNAME__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getInputPorts()) {
@@ -88,7 +88,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 *         config file.
 	 */
 	private static String getOutPorts(final INodeConfiguration nodeConfiguration) {
-		String op = "<outPort index=\"__IDX__\" name=\"__PORTDESCR__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
+		String op = "<outPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getOutputPorts()) {
