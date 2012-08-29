@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.ballproject.knime.base.treetabledialog.UIHelper;
+import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 
 public class EditorPanel extends JPanel {
 	private static final long serialVersionUID = -366002958038558740L;

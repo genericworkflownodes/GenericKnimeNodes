@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.treetabledialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.util.ArrayList;
 import java.util.List;
