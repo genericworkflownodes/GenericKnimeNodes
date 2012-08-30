@@ -20,6 +20,8 @@
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
@@ -40,17 +42,74 @@ import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
 
 /**
+ * The cell editor for the {@link ParameterDialog}.
  * 
  * @author roettig
  */
 public class ParamCellEditor extends AbstractCellEditor implements
 		TableCellEditor {
-	private static final long serialVersionUID = -4994391905477312605L;
-	private JComboBox box;
-	private JTextField field;
-	private JLabel label = new JLabel("");
 
+	private final class ChoiceParamActionListener<T extends Parameter<?>>
+			implements ActionListener {
+
+		/**
+		 * The underlying parameter.
+		 */
+		private T representedParametere;
+
+		/**
+		 * C'tor.
+		 * 
+		 * @param param
+		 *            The underlying parameter.
+		 */
+		public ChoiceParamActionListener(T param) {
+			representedParametere = param;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JComboBox cb = (JComboBox) e.getSource();
+			String selectedParamValue = (String) cb.getSelectedItem();
+			try {
+				representedParametere.fillFromString(selectedParamValue);
+			} catch (InvalidParameterValueException ex) {
+				// cannot happen
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * The serialVersionUID.
+	 */
+	private static final long serialVersionUID = -4994391905477312605L;
+
+	/**
+	 * The {@link JComboBox} used for {@link StringChoiceParameter} and
+	 * {@link BoolParameter}.
+	 */
+	private JComboBox choiceComboBox;
+
+	/**
+	 * The {@link JTextField} used for {@link StringParameter},
+	 * {@link DoubleParameter}, and {@link IntegerParameter}.
+	 */
+	private JTextField field;
+
+	/**
+	 * The {@link JLabel} used for {@link ListParameter}.
+	 */
+	private JLabel listParameterLabel = new JLabel("");
+
+	/**
+	 * The {@link Parameter} represented by this {@link ParamCellEditor}.
+	 */
 	private Parameter<?> param;
+
+	/**
+	 * A {@link String} representation of the parameter value.
+	 */
 	private String rep;
 
 	@Override
@@ -66,12 +125,13 @@ public class ParamCellEditor extends AbstractCellEditor implements
 		}
 		if (param instanceof StringChoiceParameter) {
 			StringChoiceParameter scp = (StringChoiceParameter) param;
-			int idx = box.getSelectedIndex();
-			scp.setValue(scp.getAllowedValues().get(idx));
+			String selectedValue = (String) choiceComboBox.getSelectedItem();
+			scp.setValue(selectedValue);
 		}
 		if (param instanceof BoolParameter) {
 			try {
-				param.fillFromString(box.getSelectedItem().toString());
+				param.fillFromString(choiceComboBox.getSelectedItem()
+						.toString());
 			} catch (InvalidParameterValueException e) {
 				e.printStackTrace();
 			}
@@ -100,8 +160,13 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			for (String s : scp.getLabels()) {
 				values[i++] = s;
 			}
-			box = new JComboBox(values);
-			return box;
+			choiceComboBox = new JComboBox(values);
+
+			// we need to make sure that we catch all edit operations.
+			choiceComboBox
+					.addActionListener(new ChoiceParamActionListener<StringChoiceParameter>(
+							scp));
+			return choiceComboBox;
 		}
 		if (value instanceof StringParameter
 				|| value instanceof DoubleParameter
@@ -111,8 +176,11 @@ public class ParamCellEditor extends AbstractCellEditor implements
 		}
 		if (value instanceof BoolParameter) {
 			String[] values = new String[] { "true", "false" };
-			box = new JComboBox(values);
-			return box;
+			choiceComboBox = new JComboBox(values);
+			choiceComboBox
+					.addActionListener(new ChoiceParamActionListener<BoolParameter>(
+							(BoolParameter) param));
+			return choiceComboBox;
 		}
 		if (value instanceof ListParameter) {
 			ListParameterModel mpm = new ListParameterModel(param);
@@ -123,7 +191,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			ListParameter lp = (ListParameter) param;
 			lp.fillFromStrings(sel);
 			rep = param.getStringRep();
-			return label;
+			return listParameterLabel;
 		}
 		return null;
 	}

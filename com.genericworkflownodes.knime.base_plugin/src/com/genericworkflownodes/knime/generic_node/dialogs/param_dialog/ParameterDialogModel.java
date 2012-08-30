@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -30,22 +30,38 @@ import org.jdesktop.swingx.treetable.TreeTableModel;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
+/**
+ * Dialog Model for the {@link ParameterDialog} of the generic KNIME node.
+ * 
+ * @author roettig, aiche
+ */
 public class ParameterDialogModel implements
 		org.jdesktop.swingx.treetable.TreeTableModel {
-	private INodeConfiguration config;
+	/**
+	 * The node configuration represented by this dialog model.
+	 */
+	private INodeConfiguration nodeConfig;
 	private ConfigWrapper wrapper;
 	private boolean showAdvanced = true;
 	private Object root;
 
+	/**
+	 * The {@link ParamCellEditor} instance for this DialogModel.
+	 */
+	private ParamCellEditor paramCellEditor;
+
 	public ParameterDialogModel(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
-		this.config = config;
-		wrapper = new ConfigWrapper(this.config);
+
+		this.nodeConfig = config;
+		wrapper = new ConfigWrapper(this.nodeConfig);
 		this.root = wrapper.getRoot();
+
+		paramCellEditor = new ParamCellEditor();
 	}
 
 	public void refresh() {
-		wrapper = new ConfigWrapper(this.config);
+		wrapper = new ConfigWrapper(this.nodeConfig);
 	}
 
 	@Override
@@ -175,6 +191,6 @@ public class ParameterDialogModel implements
 	}
 
 	public TableCellEditor getCellEditor() {
-		return new ParamCellEditor();
+		return paramCellEditor;
 	}
 }
