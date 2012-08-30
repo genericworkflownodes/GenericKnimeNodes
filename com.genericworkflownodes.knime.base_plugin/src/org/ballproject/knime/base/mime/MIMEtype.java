@@ -26,7 +26,7 @@ import java.io.Serializable;
  * the associated file extension.
  * 
  * @author roettig
- * 
+ * @deprecated
  */
 public class MIMEtype implements Serializable {
 	private static final long serialVersionUID = 6278476552472937978L;
