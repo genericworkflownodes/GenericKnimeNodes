@@ -15,7 +15,7 @@ public class KNIMEPluginMeta {
 	 * @return
 	 */
 	private static String getPluginName(Properties props, String packageName) {
-		String pluginname = props.getProperty("pluginname");
+		String pluginname = props.getProperty("pluginName");
 		if (pluginname != null && !pluginname.isEmpty()) {
 			return pluginname;
 		}
@@ -106,48 +106,49 @@ public class KNIMEPluginMeta {
 		return true;
 	}
 
-	private String name;
-	private String version;
-	private String packageRoot;
-	private String nodeRepositoyPath;
+	private final String name;
+	private final String version;
+	private final String packageRoot;
+	private final String nodeRepositoyPath;
 
 	public KNIMEPluginMeta(Properties properties) {
-		packageRoot = getPackageRoot(properties);
-		if (packageRoot == null || packageRoot.isEmpty()) {
+		this.packageRoot = getPackageRoot(properties);
+		if (this.packageRoot == null || this.packageRoot.isEmpty()) {
 			throw new InvalidParameterException("No package name was specified");
 		}
-		if (!isValidPackageRoot(packageRoot)) {
+		if (!isValidPackageRoot(this.packageRoot)) {
 			throw new InvalidParameterException("The given package name \""
-					+ packageRoot + "\" is invalid");
+					+ this.packageRoot + "\" is invalid");
 		}
 
-		name = getPluginName(properties, packageRoot);
-		if (packageRoot == null || name.isEmpty()) {
+		this.name = getPluginName(properties, this.packageRoot);
+		if (this.packageRoot == null || this.name.isEmpty()) {
 			throw new InvalidParameterException("No plugin name was specified");
 		}
-		if (!isPluginNameValid(name)) {
-			throw new InvalidParameterException("The plugin name \"" + name
+		if (!isPluginNameValid(this.name)) {
+			throw new InvalidParameterException("The plugin name \""
+					+ this.name
 					+ "\" must only contain alpha numeric characters");
 		}
 
-		version = getPluginVersion(properties);
-		if (version == null || version.isEmpty()) {
+		this.version = getPluginVersion(properties);
+		if (this.version == null || this.version.isEmpty()) {
 			throw new InvalidParameterException(
 					"No plugin version was specified");
 		}
-		if (!isPluginVersionValid(version)) {
+		if (!isPluginVersionValid(this.version)) {
 			throw new InvalidParameterException("The plugin version \""
-					+ version + "\" is not valid");
+					+ this.version + "\" is not valid");
 		}
 
-		nodeRepositoyPath = getNodeRepositoyPath(properties);
-		if (nodeRepositoyPath == null || nodeRepositoyPath.isEmpty()) {
+		this.nodeRepositoyPath = getNodeRepositoyPath(properties);
+		if (this.nodeRepositoyPath == null || this.nodeRepositoyPath.isEmpty()) {
 			throw new InvalidParameterException(
 					"No path within the node repository was specified");
 		}
-		if (!isNodeRepositoyPathValid(version)) {
+		if (!isNodeRepositoyPathValid(this.version)) {
 			throw new InvalidParameterException("The node repository path \""
-					+ nodeRepositoyPath + "\" is not valid");
+					+ this.nodeRepositoyPath + "\" is not valid");
 		}
 	}
 
@@ -159,7 +160,7 @@ public class KNIMEPluginMeta {
 	 * @return The plugin's name.
 	 */
 	public final String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
@@ -170,7 +171,7 @@ public class KNIMEPluginMeta {
 	 * @return The plugin's version.
 	 */
 	public final String getVersion() {
-		return version;
+		return this.version;
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class KNIMEPluginMeta {
 	 * @return The plugin's package root.
 	 */
 	public final String getPackageRoot() {
-		return packageRoot;
+		return this.packageRoot;
 	}
 
 	/**
@@ -193,6 +194,6 @@ public class KNIMEPluginMeta {
 	 *         registry.
 	 */
 	public final String getNodeRepositoryRoot() {
-		return nodeRepositoyPath;
+		return this.nodeRepositoyPath;
 	}
 }
