@@ -21,8 +21,6 @@ package com.genericworkflownodes.knime.generic_node;
 
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.base.treetabledialog.MimeTypeChooserDialog;
-import org.ballproject.knime.base.treetabledialog.ParameterDialog;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -31,6 +29,8 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.dialogs.mimetype_dialog.MimeTypeChooserDialog;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ParameterDialog;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 

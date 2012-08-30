@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.treetabledialog.itemlist;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist;
 
 /**
  * The Validator interface defines all methods a validator needs to validate a

@@ -30,8 +30,6 @@ import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.junit.Test;
 
-import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
-import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;

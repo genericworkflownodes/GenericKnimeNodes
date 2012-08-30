@@ -17,35 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.treetabledialog.itemlist;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist;
 
 /**
- * The IntegerValidator class checks whether supplied string values are valid
- * ints.
+ * The DoubleValidator class checks whether supplied string values are valid
+ * doubles.
  * 
  * @author roettig
  * 
  */
-public class IntegerValidator implements Validator {
+public class DoubleValidator implements Validator {
+	private Double UB = Double.POSITIVE_INFINITY;
+	private Double LB = Double.NEGATIVE_INFINITY;
 	private String reason = "N/A";
-	private Integer UB = Integer.MAX_VALUE;
-	private Integer LB = Integer.MIN_VALUE;
 
 	@Override
-	public boolean validate(String s) {
-		Integer i = null;
+	public boolean validate(final String s) {
+		Double d = null;
 		try {
-			i = Integer.parseInt(s);
+			d = Double.parseDouble(s);
 		} catch (NumberFormatException e) {
 			reason = "invalid number format";
 			return false;
 		}
 
-		if (i > UB) {
+		if (d > UB) {
 			reason = "higher than upper bound";
 			return false;
 		}
-		if (i < LB) {
+		if (d < LB) {
 			reason = "lower than lower bound";
 			return false;
 		}
@@ -55,27 +55,27 @@ public class IntegerValidator implements Validator {
 
 	@Override
 	public String getName() {
-		return "integer";
+		return "double";
 	}
 
 	/**
 	 * set the lower bound for any range validation.
 	 * 
-	 * @param i
+	 * @param d
 	 *            lower bound
 	 */
-	public void setLowerBound(int i) {
-		LB = i;
+	public void setLowerBound(final Double d) {
+		LB = d;
 	}
 
 	/**
-	 * set the upper bound for any range validation.
+	 * sets the upper bound for any range validation.
 	 * 
-	 * @param i
+	 * @param d
 	 *            upper bound
 	 */
-	public void setUpperBound(int i) {
-		UB = i;
+	public void setUpperBound(final Double d) {
+		UB = d;
 	}
 
 	@Override

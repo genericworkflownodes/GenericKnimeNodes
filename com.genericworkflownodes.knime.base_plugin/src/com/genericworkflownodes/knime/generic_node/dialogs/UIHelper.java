@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.treetabledialog;
+package com.genericworkflownodes.knime.generic_node.dialogs;
 
 import java.awt.Component;
 import java.awt.Container;

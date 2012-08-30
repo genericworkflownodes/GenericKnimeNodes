@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.treetabledialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import java.util.List;
  * @author roettig
  * 
  * @param <T>
+ *            The data represented by this node.
  */
 public class Node<T> {
 	protected Node<T> parent;
