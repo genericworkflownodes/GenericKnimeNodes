@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.mime.MIMEtype;
+import org.knime.core.data.url.MIMEType;
 
 /**
  * The Port class represents a incoming or outgoing port of a KNIME node.
@@ -46,14 +46,14 @@ public class Port implements Serializable {
 	protected String description;
 	protected boolean isMultiFile;
 
-	protected List<MIMEtype> types = new ArrayList<MIMEtype>();
+	protected List<MIMEType> types = new ArrayList<MIMEType>();
 
 	/**
 	 * adds a supported MIMEtype to the port
 	 * 
 	 * @param MIMEtype
 	 */
-	public void addMimeType(MIMEtype type) {
+	public void addMimeType(MIMEType type) {
 		types.add(type);
 	}
 
@@ -62,7 +62,7 @@ public class Port implements Serializable {
 	 * 
 	 * @return MIMEtypes list
 	 */
-	public List<MIMEtype> getMimeTypes() {
+	public List<MIMEType> getMimeTypes() {
 		return types;
 	}
 

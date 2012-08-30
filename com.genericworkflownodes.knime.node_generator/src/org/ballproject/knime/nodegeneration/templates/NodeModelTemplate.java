@@ -2,10 +2,10 @@ package org.ballproject.knime.nodegeneration.templates;
 
 import java.io.IOException;
 
-import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.nodegeneration.NodeGenerator;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
+import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 
@@ -28,8 +28,8 @@ public class NodeModelTemplate extends Template {
 		String clazzez = "";
 		for (Port port : config.getInputPorts()) {
 			String tmp = "{";
-			for (MIMEtype type : port.getMimeTypes()) {
-				String ext = type.getExt().toLowerCase();
+			for (MIMEType type : port.getMimeTypes()) {
+				String ext = type.getExtension().toLowerCase();
 				if (ext == null) {
 					throw new UnknownMimeTypeException(type);
 				}
@@ -56,8 +56,8 @@ public class NodeModelTemplate extends Template {
 		clazzez = "";
 		for (Port port : config.getOutputPorts()) {
 			String tmp = "{";
-			for (MIMEtype type : port.getMimeTypes()) {
-				String ext = type.getExt().toLowerCase();
+			for (MIMEType type : port.getMimeTypes()) {
+				String ext = type.getExtension().toLowerCase();
 				if (ext == null) {
 					throw new UnknownMimeTypeException(type);
 				}

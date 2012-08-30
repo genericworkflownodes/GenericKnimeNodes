@@ -34,13 +34,13 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
-import org.ballproject.knime.base.mime.MIMEtype;
 import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.knime.core.data.url.MIMEType;
 import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
@@ -295,7 +295,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 			port.setOptional(optional);
 
 			for (String mt : fileExtensions) {
-				port.addMimeType(new MIMEtype(mt.trim()));
+				port.addMimeType(new MIMEType(mt.trim()));
 			}
 
 		}
