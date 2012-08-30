@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.treetabledialog.itemlist;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -34,7 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import org.ballproject.knime.base.treetabledialog.UIHelper;
+import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 
 public class ItemListFillerDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = -3296308108315788626L;

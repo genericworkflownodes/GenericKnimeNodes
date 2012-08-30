@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.treetabledialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.mimetype_dialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,11 +27,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.port.Port;
 import org.jdesktop.swingx.VerticalLayout;
+import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.port.Port;
 
 public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 3102737955888696834L;
@@ -56,12 +56,12 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 
 			this.add(new JLabel(port.getName()));
 
-			List<MIMEtype> types = port.getMimeTypes();
+			List<MIMEType> types = port.getMimeTypes();
 			String[] strs = new String[types.size()];
 
 			int idx = 0;
-			for (MIMEtype type : types) {
-				strs[idx++] = type.getExt();
+			for (MIMEType type : types) {
+				strs[idx++] = type.getExtension();
 			}
 
 			JComboBox cb = new JComboBox(strs);

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.port;
+package com.genericworkflownodes.knime.port;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.mime.MIMEtype;
+import org.knime.core.data.url.MIMEType;
 
 /**
  * The Port class represents a incoming or outgoing port of a KNIME node.
@@ -46,98 +46,103 @@ public class Port implements Serializable {
 	protected String description;
 	protected boolean isMultiFile;
 
-	protected List<MIMEtype> types = new ArrayList<MIMEtype>();
+	protected List<MIMEType> types = new ArrayList<MIMEType>();
 
 	/**
-	 * adds a supported MIMEtype to the port
+	 * Adds a supported {@link MIMEType} to the port.
 	 * 
 	 * @param MIMEtype
+	 *            A new {@link MIMEType} supported by this port.
 	 */
-	public void addMimeType(MIMEtype type) {
+	public void addMimeType(MIMEType type) {
 		types.add(type);
 	}
 
 	/**
-	 * returns the list of supported MIMEtypes of this port
+	 * Returns the list of supported MIMEtypes of this port.
 	 * 
-	 * @return MIMEtypes list
+	 * @return List of all {@link MIMEType}s supported by this port.
 	 */
-	public List<MIMEtype> getMimeTypes() {
+	public List<MIMEType> getMimeTypes() {
 		return types;
 	}
 
 	/**
-	 * returns whether this port is optional or needs a mandatory incoming
-	 * connection
+	 * Returns whether this port is optional or needs a mandatory incoming
+	 * connection.
 	 * 
-	 * @return isOptional
+	 * @return True if the port is optional, false otherwise.
 	 */
 	public boolean isOptional() {
 		return isOptional;
 	}
 
 	/**
-	 * sets whether this port is optional or needs a mandatory incoming
-	 * connection
+	 * Sets whether this port is optional or needs a mandatory incoming
+	 * connection.
 	 * 
 	 * @param isOptional
-	 *            boolean
+	 *            New indicator if the given port is optional or not.
+	 * 
 	 */
 	public void setOptional(boolean isOptional) {
 		this.isOptional = isOptional;
 	}
 
 	/**
-	 * returns the name of the port
+	 * Returns the name of the port
 	 * 
-	 * @return port name
+	 * @return port The name of the port.
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * sets the name of the port
+	 * Sets the name of the port.
 	 * 
-	 * @param port
-	 *            name
+	 * @param name
+	 *            The new port name.
+	 * 
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * returns the description for this port
+	 * Returns the description for this port.
 	 * 
-	 * @return description
+	 * @return The port description.
 	 */
 	public String getDescription() {
 		return description;
 	}
 
 	/**
-	 * sets the description for this port
+	 * Sets the description for this port.
 	 * 
 	 * @param description
+	 *            The new description of the port.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	/**
-	 * returns whether this port allows multiple files of a given MIMEtype
+	 * Returns whether this port allows multiple files of a given MIMEtype.
 	 * 
-	 * @return flag
+	 * @return True if the port allows multiple files, false otherwise.
 	 */
 	public boolean isMultiFile() {
 		return isMultiFile;
 	}
 
 	/**
-	 * set whether this port allows multiple files of a given MIMEtype
+	 * Set whether this port allows multiple files of a given MIMEtype.
 	 * 
 	 * @param isMultiFile
-	 *            flag
+	 *            New indicator if more then one value for the given port are
+	 *            allowed.
 	 */
 	public void setMultiFile(boolean isMultiFile) {
 		this.isMultiFile = isMultiFile;

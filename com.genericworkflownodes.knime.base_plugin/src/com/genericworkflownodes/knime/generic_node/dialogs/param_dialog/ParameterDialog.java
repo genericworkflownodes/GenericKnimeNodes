@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.ballproject.knime.base.treetabledialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -44,6 +44,7 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterDialog extends JPanel implements ListSelectionListener {
@@ -164,4 +165,5 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		}
 
 	}
+
 }
