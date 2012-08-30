@@ -20,7 +20,7 @@ package com.genericworkflownodes.knime.parameter;
 
 import java.util.List;
 
-import org.ballproject.knime.base.port.Port;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * The FileListParameter class is used to store lists of filenames.

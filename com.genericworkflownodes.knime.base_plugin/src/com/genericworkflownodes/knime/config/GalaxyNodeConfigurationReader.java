@@ -26,11 +26,10 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -38,6 +37,7 @@ import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 
 public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
@@ -195,7 +195,7 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		port.setDescription(portdescr);
 
 		String extension = DOMHelper.valueOf(portnode, "@format");
-		port.addMimeType(new MIMEtype(extension));
+		port.addMimeType(new MIMEType(extension));
 
 		String portname = DOMHelper.valueOf(portnode, "@name");
 		port.setName(portname);
@@ -214,7 +214,7 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		port.setDescription("");
 
 		String extension = DOMHelper.valueOf(portnode, "@format");
-		port.addMimeType(new MIMEtype(extension));
+		port.addMimeType(new MIMEType(extension));
 
 		String portname = DOMHelper.valueOf(portnode, "@name");
 		port.setName(portname);

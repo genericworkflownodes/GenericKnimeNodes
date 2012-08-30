@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.ballproject.knime.base.mime.MIMEtype;
-import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
 import org.knime.core.data.url.MIMEType;
@@ -66,6 +64,7 @@ import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -75,7 +74,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * holding information about:
  * <ul>
  * <li>number of input and output ports</li>
- * <li> {@link MIMEtype}s of these ports</li>
+ * <li> {@link MIMEType}s of these ports</li>
  * </ul>
  * 
  * @author
@@ -125,7 +124,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				.getNumberOfOutputPorts()];
 	}
 
-	protected MIMEtype getOutputType(int idx) {
+	protected MIMEType getOutputType(int idx) {
 		return this.nodeConfig.getOutputPorts()[idx].getMimeTypes().get(
 				this.selected_output_type[idx]);
 	}
@@ -513,7 +512,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			Port port = this.nodeConfig.getOutputPorts()[i];
 			String name = port.getName();
 
-			String ext = this.getOutputType(i).getExt();
+			String ext = this.getOutputType(i).getExtension();
 
 			if (port.isMultiFile()) {
 				// keep this list empty for now ...
@@ -550,7 +549,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 					int slot = port2slot.get(flp.getPort());
 
-					String ext = this.getOutputType(slot).getExt();
+					String ext = this.getOutputType(slot).getExtension();
 
 					for (String file : files) {
 						String filename = FileStash.getInstance().allocateFile(
