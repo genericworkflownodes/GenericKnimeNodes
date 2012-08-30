@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.ballproject.knime.base.port.Port;
 import org.junit.Test;
 import org.knime.core.data.url.MIMEType;
 
@@ -39,6 +38,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 public class CTDNodeConfigurationReaderTest {

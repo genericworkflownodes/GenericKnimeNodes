@@ -34,7 +34,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
-import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -56,6 +55,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SchemaProvider;
 import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 import com.genericworkflownodes.util.StringUtils.DoubleRangeExtracted;

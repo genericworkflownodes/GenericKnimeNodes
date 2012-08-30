@@ -24,8 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ballproject.knime.base.port.Port;
 import org.junit.Test;
+
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * Test for {@link FileListParameter}.

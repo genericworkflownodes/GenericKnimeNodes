@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.nodegeneration.NodeGenerator;
 import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * Wrapper class for the NodeNameNodeFactory.xml file template.

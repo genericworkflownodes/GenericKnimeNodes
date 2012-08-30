@@ -2,12 +2,12 @@ package org.ballproject.knime.nodegeneration.templates;
 
 import java.io.IOException;
 
-import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.nodegeneration.NodeGenerator;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.port.Port;
 
 public class NodeModelTemplate extends Template {
 

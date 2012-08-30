@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.ballproject.knime.base.port.Port;
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
 import org.knime.core.data.url.MIMEType;
@@ -65,6 +64,7 @@ import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within

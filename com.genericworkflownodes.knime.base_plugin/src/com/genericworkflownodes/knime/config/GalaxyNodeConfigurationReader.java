@@ -26,7 +26,6 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.ballproject.knime.base.port.Port;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
@@ -38,6 +37,7 @@ import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 
 public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {

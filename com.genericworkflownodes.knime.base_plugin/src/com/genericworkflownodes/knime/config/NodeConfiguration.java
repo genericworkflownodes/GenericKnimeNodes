@@ -24,11 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ballproject.knime.base.port.Port;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * Default implementation of {@link INodeConfiguration}
