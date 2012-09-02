@@ -23,11 +23,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationWriter;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationStore;
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 
 /**
@@ -71,7 +70,7 @@ public class BALLCommandGenerator implements ICommandGenerator {
 		CTDNodeConfigurationWriter ctdWriter = new CTDNodeConfigurationWriter(
 				nodeConfiguration.getXML());
 		ctdWriter.init(configStore);
-		ctdWriter.write(new File(paramFile, PAR_FILE_NAME));
+		ctdWriter.write(paramFile);
 		return paramFile;
 	}
 
