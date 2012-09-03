@@ -80,6 +80,8 @@
 		<fileset dir="${nodegenerator.src}/lib">
 			<include name="*.jar" />
 		</fileset>
+		<!-- Make sure we have the urltype plugin in our classpath -->
+		<pathelement location="${base.plugin.src}/lib/org.knime.core.data.urltype.jar" />		
 	</path>
 
 	<path id="nodegenerator.exec.classpath">
