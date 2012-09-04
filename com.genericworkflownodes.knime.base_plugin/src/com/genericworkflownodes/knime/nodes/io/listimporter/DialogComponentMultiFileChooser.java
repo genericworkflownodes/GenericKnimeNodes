@@ -38,6 +38,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
@@ -45,7 +46,6 @@ import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 
 /**
@@ -358,12 +358,6 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 	}
 
 	/**
-	 * Registry for the mime types.
-	 */
-	private IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
-
-	/**
 	 * Transfers the value from the component into the settings model.
 	 * 
 	 * @throws InvalidSettingsException
@@ -375,10 +369,16 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
 		int idx = 0;
 
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+		if (registry == null)
+			throw new InvalidSettingsException(
+					"Could not find IMIMETypeRegistry to resolve MIMETyepes.");
+
 		for (File file : ((FileListModel) listbox.getModel()).getFiles()) {
 			String filename = file.getAbsolutePath();
 			filenames[idx] = filename;
-			mts[idx] = resolver.getMIMEtype(filename);
+			mts[idx] = registry.getMIMEtype(filename);
 			if (mts[idx] == null) {
 				throw new InvalidSettingsException(
 						"file of unknown MIMEtype selected " + filename);

@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.url.MIMEType;
@@ -65,12 +66,6 @@ public class DemanglerNodeModel extends NodeModel {
 	 * Settings field where the currently configured {@link MIMEType} is stored.
 	 */
 	static final String CONFIGURED_MIMETYPE_SETTINGNAME = "configured_mime_type";
-
-	/**
-	 * Ref. to the central {@link IMIMEtypeRegistry}.
-	 */
-	private IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
 
 	/**
 	 * Ref. to the central {@link IDemanglerRegistry}.
@@ -169,8 +164,16 @@ public class DemanglerNodeModel extends NodeModel {
 		String configuredMIMEExtension = settings
 				.getString(CONFIGURED_MIMETYPE_SETTINGNAME);
 
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+
+		if (registry == null) {
+			throw new InvalidSettingsException(
+					"Could not resolve configured MIMEType since the IMIMETypeRegistry is not available.");
+		}
+
 		// get a list of registered MIMEType
-		configuredMIMEType = resolver
+		configuredMIMEType = registry
 				.getMIMETypeByExtension(configuredMIMEExtension);
 		List<IDemangler> availableDemangler = demanglerRegistry
 				.getDemangler(configuredMIMEType);

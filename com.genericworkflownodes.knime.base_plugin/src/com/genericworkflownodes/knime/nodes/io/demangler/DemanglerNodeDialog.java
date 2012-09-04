@@ -25,6 +25,7 @@ import javax.swing.DefaultComboBoxModel;
 
 import org.ballproject.knime.base.ui.choice.ChoiceDialog;
 import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
@@ -34,6 +35,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 
 /**
@@ -103,8 +105,11 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 			String configuredMIMEExtension = settings
 					.getString(DemanglerNodeModel.CONFIGURED_MIMETYPE_SETTINGNAME);
 
-			configuredMIMEType = GenericNodesPlugin.getMIMEtypeRegistry()
-					.getMIMETypeByExtension(configuredMIMEExtension);
+			IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+					.getWorkbench().getService(IMIMEtypeRegistry.class);
+			if (registry != null)
+				configuredMIMEType = registry
+						.getMIMETypeByExtension(configuredMIMEExtension);
 
 			availableDemangler = GenericNodesPlugin.getDemanglerRegistry()
 					.getDemangler(configuredMIMEType);

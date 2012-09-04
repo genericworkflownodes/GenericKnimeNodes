@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.MimeType;
 
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
@@ -48,7 +49,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeModel;
 
@@ -93,12 +93,6 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	}
 
 	/**
-	 * Resolver for the mimetypes.
-	 */
-	private IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -138,7 +132,15 @@ public class MimeFileImporterNodeModel extends NodeModel {
 			throw new InvalidSettingsException("input file cannot be read: "
 					+ filename);
 		}
-		if (resolver.getMIMEtype(filename) == null) {
+
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+
+		if (registry == null) {
+			throw new InvalidSettingsException(
+					"Could not resolve MIMEType due to missing IMIMETypeRegistry.");
+		}
+		if (registry.getMIMEtype(filename) == null) {
 			throw new InvalidSettingsException(
 					"file of unknown MIMEtype selected: " + filename);
 		}
@@ -202,7 +204,10 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 		try {
-			mt = resolver.getMIMEtype(this.m_filename.getStringValue());
+			IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+					.getWorkbench().getService(IMIMEtypeRegistry.class);
+			// if service is unavailable it will be catched below
+			mt = registry.getMIMEtype(this.m_filename.getStringValue());
 		} catch (Exception e) {
 			throw new InvalidSettingsException(
 					"could not resolve MIME type of file");
