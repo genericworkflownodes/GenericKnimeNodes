@@ -22,6 +22,7 @@ package com.genericworkflownodes.knime.generic_node;
 import java.awt.Font;
 
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 import org.knime.core.node.NodeView;
@@ -43,10 +44,31 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 	protected GenericKnimeNodeView(final GenericKnimeNodeModel nodeModel) {
 		super(nodeModel);
 
-		JTextArea text = new JTextArea(nodeModel.output, 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
+		JTabbedPane tabs = new JTabbedPane();
+
+		tabs.add("stdout",
+				createScrollableOutputArea(nodeModel.executor.getToolOutput()));
+		tabs.add("stderr", createScrollableOutputArea(nodeModel.executor
+				.getToolErrorOutput()));
+
+		// we generally prefer stderr (if available), since it should be more
+		// important
+		if (nodeModel.executor.getToolErrorOutput().length() > 0) {
+			tabs.setSelectedIndex(1);
+		}
+
+		setComponent(tabs);
+	}
+
+	private JScrollPane createScrollableOutputArea(final String content) {
+		JTextArea text = new JTextArea(content, 40, 80);
 		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		setComponent(scrollpane);
+		text.setEditable(false);
+		if (content.length() == 0) {
+			text.setEnabled(false);
+		}
+		JScrollPane scrollpane = new JScrollPane(text);
+		return scrollpane;
 	}
 
 	/**
@@ -57,7 +79,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 
 		// TODO retrieve the new model from your nodemodel and
 		// update the view.
-		GenericKnimeNodeModel nodeModel = (GenericKnimeNodeModel) getNodeModel();
+		GenericKnimeNodeModel nodeModel = getNodeModel();
 		assert nodeModel != null;
 
 		// be aware of a possibly not executed nodeModel! The data you retrieve

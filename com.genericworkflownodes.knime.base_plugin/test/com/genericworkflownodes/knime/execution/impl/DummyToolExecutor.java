@@ -183,6 +183,18 @@ public class DummyToolExecutor implements IToolExecutor {
 		return "Slept " + sleepTime + "ms, got killed=" + killed;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.genericworkflownodes.knime.execution.IToolExecutor#getToolErrorOutput
+	 * ()
+	 */
+	@Override
+	public String getToolErrorOutput() {
+		return "Slept " + sleepTime + "ms, got killed=" + killed;
+	}
+
 	/**
 	 * Returns {@code true} if the method {@link #execute()} completed.
 	 * 
