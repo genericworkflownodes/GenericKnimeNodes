@@ -28,7 +28,7 @@
 </extension>
    
    <extension point="org.knime.product.splashExtension">
-        <splashExtension icon="icons/GKN.png" id="org.ballproject.knime.splashExtension"/>
+        <splashExtension icon="icons/GKN.png" id="com.genericworkflownodes.knime.splashExtension"/>
    </extension>
    
    <extension point="org.eclipse.equinox.preferences.preferences">
@@ -36,8 +36,8 @@
    </extension>
    
    <extension point="org.eclipse.ui.preferencePages">
-      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="org.ballproject.knime.base.preferences.GKNPreferences" name="Generic KNIME Nodes"/>
-      <page category="org.ballproject.knime.base.preferences.GKNPreferences" class="com.genericworkflownodes.knime.preferences.ExternalToolsPage" id="org.ballproject.knime.base.preferences.GKNExternalTools" name="Tool DB"/>
+      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.GKNPreferences" name="Generic KNIME Nodes"/>
+      <page category="org.ballproject.knime.base.preferences.GKNPreferences" class="com.genericworkflownodes.knime.preferences.ExternalToolsPage" id="com.genericworkflownodes.knime.preferences.GKNExternalTools" name="Tool DB"/>
    </extension>
    <extension point="org.eclipse.ui.services">
       <serviceFactory factoryClass="com.genericworkflownodes.knime.toolfinderservice.ToolLocatorServiceFactory">
