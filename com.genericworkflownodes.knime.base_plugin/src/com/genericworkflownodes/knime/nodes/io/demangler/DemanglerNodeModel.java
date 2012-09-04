@@ -44,7 +44,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
@@ -66,12 +65,6 @@ public class DemanglerNodeModel extends NodeModel {
 	 * Settings field where the currently configured {@link MIMEType} is stored.
 	 */
 	static final String CONFIGURED_MIMETYPE_SETTINGNAME = "configured_mime_type";
-
-	/**
-	 * Ref. to the central {@link IDemanglerRegistry}.
-	 */
-	private IDemanglerRegistry demanglerRegistry = GenericNodesPlugin
-			.getDemanglerRegistry();
 
 	/**
 	 * The selected {@link IDemangler}.
@@ -175,6 +168,13 @@ public class DemanglerNodeModel extends NodeModel {
 		// get a list of registered MIMEType
 		configuredMIMEType = registry
 				.getMIMETypeByExtension(configuredMIMEExtension);
+
+		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
+				.getWorkbench().getService(IDemanglerRegistry.class);
+		if (demanglerRegistry == null)
+			throw new InvalidSettingsException(
+					"Could not find IDemanglerRegistry to find Demangler.");
+
 		List<IDemangler> availableDemangler = demanglerRegistry
 				.getDemangler(configuredMIMEType);
 
@@ -217,6 +217,12 @@ public class DemanglerNodeModel extends NodeModel {
 		configuredMIMEType = spec.getMIMEType();
 
 		// try to find a demangler for the data type ...
+		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
+				.getWorkbench().getService(IDemanglerRegistry.class);
+		if (demanglerRegistry == null)
+			throw new InvalidSettingsException(
+					"Could not find IDemanglerRegistry to find Demangler.");
+
 		List<IDemangler> availableDemanglers = demanglerRegistry
 				.getDemangler(configuredMIMEType);
 

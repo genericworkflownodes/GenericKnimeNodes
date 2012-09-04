@@ -373,7 +373,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 				.getWorkbench().getService(IMIMEtypeRegistry.class);
 		if (registry == null)
 			throw new InvalidSettingsException(
-					"Could not find IMIMETypeRegistry to resolve MIMETyepes.");
+					"Could not find IMIMETypeRegistry to resolve MIMETypes.");
 
 		for (File file : ((FileListModel) listbox.getModel()).getFiles()) {
 			String filename = file.getAbsolutePath();

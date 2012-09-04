@@ -34,9 +34,9 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 
 /**
  * <code>NodeDialog</code> for the "IDemangler" Node.
@@ -111,7 +111,13 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 				configuredMIMEType = registry
 						.getMIMETypeByExtension(configuredMIMEExtension);
 
-			availableDemangler = GenericNodesPlugin.getDemanglerRegistry()
+			IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
+					.getWorkbench().getService(IDemanglerRegistry.class);
+			if (demanglerRegistry == null)
+				throw new InvalidSettingsException(
+						"Could not find IDemanglerRegistry to find Demangler.");
+
+			availableDemangler = demanglerRegistry
 					.getDemangler(configuredMIMEType);
 		} catch (InvalidSettingsException e) {
 			e.printStackTrace();

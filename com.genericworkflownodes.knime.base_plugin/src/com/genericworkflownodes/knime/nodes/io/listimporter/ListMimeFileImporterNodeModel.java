@@ -142,7 +142,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 				.getWorkbench().getService(IMIMEtypeRegistry.class);
 		if (registry == null)
 			throw new InvalidSettingsException(
-					"Could not find IMIMETypeRegistry to resolve MIMETyepes.");
+					"Could not find IMIMETypeRegistry to resolve MIMETypes.");
 
 		for (String filename : filenames) {
 			mt = registry.getMIMEtype(filename);
