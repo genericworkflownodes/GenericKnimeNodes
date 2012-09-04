@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -88,9 +89,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	protected int[] selected_output_type;
 	public String output = "";
-
-	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
 
 	/**
 	 * stores the node configuration (i.e. parameters, ports, ..)
@@ -656,7 +654,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	}
 
 	private MIMEType resolveMIMEType(String filename) {
-		return this.resolver.getMIMEtype(filename);
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+		if (registry != null)
+			return registry.getMIMEtype(filename);
+		else
+			return null;
 	}
 
 }

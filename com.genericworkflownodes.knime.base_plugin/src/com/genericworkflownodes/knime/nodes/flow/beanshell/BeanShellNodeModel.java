@@ -48,9 +48,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
-
 import bsh.Interpreter;
 
 /**
@@ -60,9 +57,6 @@ import bsh.Interpreter;
  * @author roettig
  */
 public class BeanShellNodeModel extends NodeModel {
-
-	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
 
 	/**
 	 * Constructor for the node model.

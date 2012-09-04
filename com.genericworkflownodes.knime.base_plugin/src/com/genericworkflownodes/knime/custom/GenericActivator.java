@@ -280,10 +280,12 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * registers them in the central {@link IMIMEtypeRegistry}.
 	 */
 	private void registerMimeTypes() {
-		IMIMEtypeRegistry registry = GenericNodesPlugin.getMIMEtypeRegistry();
-
-		for (MIMEType mimeType : getMIMETypes()) {
-			registry.registerMIMEtype(mimeType);
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+		if (registry != null) {
+			for (MIMEType mimeType : getMIMETypes()) {
+				registry.registerMIMEtype(mimeType);
+			}
 		}
 	}
 
