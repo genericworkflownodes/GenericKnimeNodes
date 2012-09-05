@@ -83,7 +83,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	/**
 	 * The final node configuration.
 	 */
-	private NodeConfiguration config = new NodeConfiguration();
+	private final NodeConfiguration config = new NodeConfiguration();
 
 	/**
 	 * C'tor.
@@ -104,7 +104,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	/**
 	 * List of identified ports.
 	 */
-	private Set<String> capturedPorts = new HashSet<String>();
+	private final Set<String> capturedPorts = new HashSet<String>();
 
 	/**
 	 * List of identified input ports.
@@ -133,14 +133,12 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		INPUT_PORTS = new ArrayList<Port>();
 		OUTPUT_PORTS = new ArrayList<Port>();
 
-		Node node = this.doc.selectSingleNode("/tool/PARAMETERS");
+		Node node = doc.selectSingleNode("/tool/PARAMETERS");
 		Element root = (Element) node;
-		this.processIOPorts(root);
+		processIOPorts(root);
 
-		this.config
-				.setInports(INPUT_PORTS.toArray(new Port[INPUT_PORTS.size()]));
-		this.config.setOutports(OUTPUT_PORTS.toArray(new Port[OUTPUT_PORTS
-				.size()]));
+		config.setInports(INPUT_PORTS.toArray(new Port[INPUT_PORTS.size()]));
+		config.setOutports(OUTPUT_PORTS.toArray(new Port[OUTPUT_PORTS.size()]));
 	}
 
 	/**
@@ -184,18 +182,18 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	 */
 	@SuppressWarnings("unchecked")
 	private void readParameters() {
-		Node root = this.doc.selectSingleNode("/tool/PARAMETERS");
+		Node root = doc.selectSingleNode("/tool/PARAMETERS");
 		List<Node> items = root.selectNodes("//ITEM[not(contains(@tags,'"
 				+ OUTPUTFILE_TAG + "')) and not(contains(@tags,'"
 				+ INPUTFILE_TAG + "'))]");
 		for (Node n : items) {
-			this.processItem(n);
+			processItem(n);
 		}
 		items = root.selectNodes("//ITEMLIST[not(contains(@tags,'"
 				+ OUTPUTFILE_TAG + "')) and not(contains(@tags,'"
 				+ INPUTFILE_TAG + "'))]");
 		for (Node n : items) {
-			this.processMultiItem(n);
+			processMultiItem(n);
 		}
 	}
 
@@ -281,7 +279,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 				}
 			}
 
-			String path = this.getPath(node);
+			String path = getPath(node);
 			port.setName(path);
 
 			port.setDescription(descr);
@@ -301,21 +299,21 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		}
 		if (tags.contains(OUTPUTFILE_TAG)) {
 			OUTPUT_PORTS.add(port);
-			this.capturedPorts.add(port.getName());
+			capturedPorts.add(port.getName());
 
 			if (multi) {
-				String path = this.getPath(node);
+				String path = getPath(node);
 				FileListParameter param = new FileListParameter(name,
 						new ArrayList<String>());
 				param.setPort(port);
 				param.setDescription(descr);
 				param.setIsOptional(false);
-				this.config.addParameter(path, param);
+				config.addParameter(path, param);
 			}
 		}
 		if (tags.contains(INPUTFILE_TAG)) {
 			INPUT_PORTS.add(port);
-			this.capturedPorts.add(port.getName());
+			capturedPorts.add(port.getName());
 		}
 
 	}
@@ -342,7 +340,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		String name = elem.valueOf("@name");
 		String path = getPath(elem);
 
-		if (this.capturedPorts.contains(path)) {
+		if (capturedPorts.contains(path)) {
 			return;
 		}
 
@@ -386,7 +384,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	 *             in the document.
 	 */
 	private void readDescription() throws Exception {
-		Node node = this.doc.selectSingleNode("/tool");
+		Node node = doc.selectSingleNode("/tool");
 		if (node == null) {
 			throw new Exception("CTD has no root named tool");
 		}
@@ -396,7 +394,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 			throw new Exception("CTD has no status");
 		}
 
-		node = this.doc.selectSingleNode("/tool/name");
+		node = doc.selectSingleNode("/tool/name");
 		if (node == null) {
 			throw new Exception("CTD has no tool name");
 		}
@@ -404,50 +402,50 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		if (name.equals("")) {
 			throw new Exception("CTD has no tool name");
 		}
-		this.config.setName(name);
+		config.setName(name);
 
-		node = this.doc.selectSingleNode("/tool/description");
+		node = doc.selectSingleNode("/tool/description");
 		String sdescr = "";
 		if (node != null) {
 			sdescr = node.valueOf("text()");
 		}
-		this.config.setDescription(sdescr);
+		config.setDescription(sdescr);
 
-		node = this.doc.selectSingleNode("/tool/path");
+		node = doc.selectSingleNode("/tool/path");
 		String spath = "";
 		if (node != null) {
 			spath = node.valueOf("text()");
 		}
 
-		this.config.setCommand(spath);
+		config.setCommand(spath);
 
-		node = this.doc.selectSingleNode("/tool/manual");
+		node = doc.selectSingleNode("/tool/manual");
 		String ldescr = "";
 		if (node != null) {
 			ldescr = node.valueOf("text()");
 		}
-		this.config.setManual(ldescr);
+		config.setManual(ldescr);
 
-		node = this.doc.selectSingleNode("/tool/version");
+		node = doc.selectSingleNode("/tool/version");
 		String lversion = "";
 		if (node != null) {
 			lversion = node.valueOf("text()");
 		}
-		this.config.setVersion(lversion);
+		config.setVersion(lversion);
 
-		node = this.doc.selectSingleNode("/tool/docurl");
+		node = doc.selectSingleNode("/tool/docurl");
 		String docurl = "";
 		if (node != null) {
 			docurl = node.valueOf("text()");
 		}
-		this.config.setDocUrl(docurl);
+		config.setDocUrl(docurl);
 
-		node = this.doc.selectSingleNode("/tool/category");
+		node = doc.selectSingleNode("/tool/category");
 		String cat = "";
 		if (node != null) {
 			cat = node.valueOf("text()");
 		}
-		this.config.setCategory(cat);
+		config.setCategory(cat);
 	}
 
 	/**
@@ -470,15 +468,14 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
 		if (type.toLowerCase().equals("double")
 				|| type.toLowerCase().equals("float")) {
-			createdParameter = this.processDoubleParameter(name, value, restrs,
-					tags);
+			createdParameter = processDoubleParameter(name, value, restrs, tags);
 		} else {
 			if (type.toLowerCase().equals("int")) {
-				createdParameter = this.processIntParameter(name, value,
-						restrs, tags);
+				createdParameter = processIntParameter(name, value, restrs,
+						tags);
 			} else {
 				if (type.toLowerCase().equals("string")) {
-					createdParameter = this.processStringParameter(name, value,
+					createdParameter = processStringParameter(name, value,
 							restrs, tags);
 				}
 			}
@@ -525,15 +522,14 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
 		if (type.toLowerCase().equals("double")
 				|| type.toLowerCase().equals("float")) {
-			param = this.processDoubleListParameter(name, values, restrs, tags);
+			param = processDoubleListParameter(name, values, restrs, tags);
 		} else {
 			if (type.toLowerCase().equals("int")) {
-				param = this
-						.processIntListParameter(name, values, restrs, tags);
+				param = processIntListParameter(name, values, restrs, tags);
 			} else {
 				if (type.toLowerCase().equals("string")) {
-					param = this.processStringListParameter(name, values,
-							restrs, tags);
+					param = processStringListParameter(name, values, restrs,
+							tags);
 				}
 			}
 		}
@@ -755,14 +751,13 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	}
 
 	/**
-	 * Processes the &lt;output-converters/> part of the CTD document.
+	 * Processes the &lt;outputConverters/> part of the CTD document.
 	 * 
 	 * @throws Exception
 	 *             Is thrown if the configuration is invalid.
 	 */
 	private void readOutputConverters() throws Exception {
-		Node convertersRoot = this.doc
-				.selectSingleNode("/tool/output-converters");
+		Node convertersRoot = doc.selectSingleNode("/tool/outputConverters");
 
 		// check if this CTD contains a cli part
 		if (convertersRoot == null) {
@@ -792,7 +787,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
 		// set mapping
 		@SuppressWarnings("unchecked")
-		List<Node> properties = elem.selectNodes("./converter-property");
+		List<Node> properties = elem.selectNodes("./converterProperty");
 		for (Node prop : properties) {
 			String name = prop.valueOf("@name");
 			String value = prop.valueOf("@value");
@@ -888,7 +883,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	 */
 	private void readCLI() throws Exception {
 
-		Node cliRoot = this.doc.selectSingleNode("/tool/cli");
+		Node cliRoot = doc.selectSingleNode("/tool/cli");
 
 		// check if this CTD contains a cli part
 		if (cliRoot == null) {
@@ -898,7 +893,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		@SuppressWarnings("unchecked")
 		List<Node> cliElements = cliRoot.selectNodes("//clielement");
 		for (Node elem : cliElements) {
-			this.processCLIElement(elem);
+			processCLIElement(elem);
 		}
 	}
 
@@ -928,7 +923,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		validateCLIElement(cliElement);
 
 		// add to the config
-		this.config.getCLI().getCLIElement().add(cliElement);
+		config.getCLI().getCLIElement().add(cliElement);
 	}
 
 	/**
@@ -947,9 +942,9 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		if (cliElement.getMapping().size() > 1) {
 			for (CLIMapping mapping : cliElement.getMapping()) {
 				// find mapped parameter
-				if (config.getParameter(mapping.getRefName()) != null) {
+				if (config.getParameter(mapping.getReferenceName()) != null) {
 					// check that it is not boolean
-					if (config.getParameter(mapping.getRefName()) instanceof BoolParameter) {
+					if (config.getParameter(mapping.getReferenceName()) instanceof BoolParameter) {
 						throw new Exception();
 					}
 				}
@@ -970,8 +965,8 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	private CLIMapping processMappingElement(final Node mappingElement)
 			throws Exception {
 		CLIMapping cliMapping = new CLIMapping();
-		String mappingRefName = mappingElement.valueOf("@ref_name");
-		cliMapping.setRefName(mappingRefName);
+		String mappingRefName = mappingElement.valueOf("@referenceName");
+		cliMapping.setReferenceName(mappingRefName);
 
 		// check if a parameter with the given name was registered
 		checkIfMappedParameterExists(cliMapping);
@@ -989,9 +984,10 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	 */
 	private void checkIfMappedParameterExists(final CLIMapping cliMapping)
 			throws Exception {
-		if (config.getParameter(cliMapping.getRefName()) == null
-				&& !portWithRefNameExists(cliMapping.getRefName())) {
-			throw new Exception("Unknown Parameter " + cliMapping.getRefName());
+		if (config.getParameter(cliMapping.getReferenceName()) == null
+				&& !portWithRefNameExists(cliMapping.getReferenceName())) {
+			throw new Exception("Unknown Parameter "
+					+ cliMapping.getReferenceName());
 		}
 	}
 
