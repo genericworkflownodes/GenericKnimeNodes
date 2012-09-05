@@ -31,7 +31,7 @@ public class GenericToolWrapperTest {
 
 		assertEquals(1, firstCLIElement.getMapping().size());
 		assertEquals("blastall.i", firstCLIElement.getMapping().get(0)
-				.getRefName());
+				.getReferenceName());
 
 		CLIElement secondCLIElement = config.getCLI().getCLIElement().get(1);
 		assertEquals("-d", secondCLIElement.getOptionIdentifier());
@@ -40,7 +40,7 @@ public class GenericToolWrapperTest {
 
 		assertEquals(1, secondCLIElement.getMapping().size());
 		assertEquals("blastall.d", secondCLIElement.getMapping().get(0)
-				.getRefName());
+				.getReferenceName());
 
 		// test converter
 		OutputConverters converters = config.getOutputConverters();

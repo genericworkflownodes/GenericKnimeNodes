@@ -50,7 +50,7 @@ public class CLIMapping {
 	/**
 	 * Holds the name of the mapped PARAM entry.
 	 */
-	private String refName;
+	private String referenceName;
 
 	/**
 	 * Gets the value of the refName property.
@@ -58,8 +58,8 @@ public class CLIMapping {
 	 * @return possible object is {@link String }
 	 * 
 	 */
-	public final String getRefName() {
-		return refName;
+	public final String getReferenceName() {
+		return referenceName;
 	}
 
 	/**
@@ -69,8 +69,8 @@ public class CLIMapping {
 	 *            allowed object is {@link String }
 	 * 
 	 */
-	public final void setRefName(final String value) {
-		this.refName = value;
+	public final void setReferenceName(final String value) {
+		this.referenceName = value;
 	}
 
 }
