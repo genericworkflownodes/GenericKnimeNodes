@@ -8,10 +8,10 @@
 	<category>Sequence Analysis</category>
 	<cli>
 		<clielement optionIdentifier="-sequence">
-			<mapping ref_name="chaos.sequence" />
+			<mapping referenceName="chaos.sequence" />
 		</clielement>
 		<clielement optionIdentifier="-goutfile">
-			<mapping ref_name="chaos.outputfile" />
+			<mapping referenceName="chaos.outputfile" />
 		</clielement>
 		<clielement optionIdentifier="-graph ps"/>
 	</cli>

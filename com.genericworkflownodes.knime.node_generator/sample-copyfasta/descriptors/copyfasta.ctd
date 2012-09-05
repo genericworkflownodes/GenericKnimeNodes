@@ -8,10 +8,10 @@
 	<category>Test Nodes</category>
 	<cli>
 		<clielement optionIdentifier="-if">
-			<mapping ref_name="copyfasta.if" />
+			<mapping referenceName="copyfasta.if" />
 		</clielement>
 		<clielement optionIdentifier="-of">
-			<mapping ref_name="copyfasta.of" />
+			<mapping referenceName="copyfasta.of" />
 		</clielement>
 	</cli>
 	<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">

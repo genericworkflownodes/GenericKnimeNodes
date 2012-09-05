@@ -37,7 +37,7 @@ package com.genericworkflownodes.knime.cliwrapper;
  * &lt;complexType name="mappingType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="ref_name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="referenceName" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

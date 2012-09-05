@@ -8,10 +8,10 @@
 	<category>Sequence Tools</category>
 	<cli>
 		<clielement optionIdentifier="-i" isList="true">
-			<mapping ref_name="blastall.i" />
+			<mapping referenceName="blastall.i" />
 		</clielement>
 		<clielement optionIdentifier="-d">
-			<mapping ref_name="blastall.d" />
+			<mapping referenceName="blastall.d" />
 		</clielement>
 	</cli>
 	<output-converters>
