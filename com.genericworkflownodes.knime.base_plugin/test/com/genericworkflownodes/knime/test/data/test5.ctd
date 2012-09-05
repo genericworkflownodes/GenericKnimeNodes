@@ -14,13 +14,13 @@
 			<mapping referenceName="blastall.d" />
 		</clielement>
 	</cli>
-	<output-converters>
+	<outputConverters>
 		<converter class="DummyConverter" ref="blastall.o" />
 		<converter class="DummyConverter2" ref="blastall.o">
 			<converter-property name="prop1" value="val1" />
 			<converter-property name="prop2" value="val2" />
 		</converter>
-	</output-converters>
+	</outputConverters>
 	<PARAMETERS version="1.3"
 		xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">

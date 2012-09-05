@@ -71,7 +71,7 @@
 				</xs:element>
 
 				<!-- reference PARAMETERS schema instead of redefinition -->
-                <xs:element name="output-converters" type="outputConvertersType" minOccurs="0" maxOccurs="1">
+                <xs:element name="outputConverters" type="outputConvertersType" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>Defines possible conversion rules for the output generated after the command line call.</xs:documentation>
 					</xs:annotation></xs:element>

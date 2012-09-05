@@ -751,13 +751,13 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	}
 
 	/**
-	 * Processes the &lt;output-converters/> part of the CTD document.
+	 * Processes the &lt;outputConverters/> part of the CTD document.
 	 * 
 	 * @throws Exception
 	 *             Is thrown if the configuration is invalid.
 	 */
 	private void readOutputConverters() throws Exception {
-		Node convertersRoot = doc.selectSingleNode("/tool/output-converters");
+		Node convertersRoot = doc.selectSingleNode("/tool/outputConverters");
 
 		// check if this CTD contains a cli part
 		if (convertersRoot == null) {
