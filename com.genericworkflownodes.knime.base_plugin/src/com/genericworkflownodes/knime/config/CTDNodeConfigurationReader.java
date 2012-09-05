@@ -787,7 +787,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
 		// set mapping
 		@SuppressWarnings("unchecked")
-		List<Node> properties = elem.selectNodes("./converter-property");
+		List<Node> properties = elem.selectNodes("./converterProperty");
 		for (Node prop : properties) {
 			String name = prop.valueOf("@name");
 			String value = prop.valueOf("@value");

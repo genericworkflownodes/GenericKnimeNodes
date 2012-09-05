@@ -17,8 +17,8 @@
 	<outputConverters>
 		<converter class="DummyConverter" ref="blastall.o" />
 		<converter class="DummyConverter2" ref="blastall.o">
-			<converter-property name="prop1" value="val1" />
-			<converter-property name="prop2" value="val2" />
+			<converterProperty name="prop1" value="val1" />
+			<converterProperty name="prop2" value="val2" />
 		</converter>
 	</outputConverters>
 	<PARAMETERS version="1.3"
