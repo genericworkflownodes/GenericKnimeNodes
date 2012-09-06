@@ -83,7 +83,7 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
 		File iniFile = new File(workingDirectory, INI_FILE_NAME);
 		OpenMSNodeConfigurationWriter openMSWriter = new OpenMSNodeConfigurationWriter(
 				nodeConfiguration.getXML());
-		openMSWriter.init(configStore);
+		openMSWriter.init(configStore, nodeConfiguration);
 		openMSWriter.write(iniFile);
 		return iniFile;
 	}

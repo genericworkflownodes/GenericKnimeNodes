@@ -33,6 +33,9 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * NodeConfigurationWriter for CTD files.
@@ -131,16 +134,43 @@ public class CTDNodeConfigurationWriter implements INodeConfigurationWriter {
 		writer.close();
 	}
 
-	public void init(INodeConfigurationStore store) {
+	public void init(INodeConfigurationStore store, INodeConfiguration config) {
 		for (String key : store.getParameterKeys()) {
 			List<String> values = store.getMultiParameterValue(key);
-			if (values.size() == 1) {
-				setParameterValue(key, values.get(0));
-			} else {
+			if (isMultiParameterValue(key, config)) {
 				for (String value : values) {
 					setMultiParameterValue(key, value);
 				}
+			} else {
+				setParameterValue(key, values.get(0));
 			}
 		}
 	}
+
+	private boolean isMultiParameterValue(String key, INodeConfiguration config) {
+
+		// check if it is a parameter
+		Parameter<?> param = config.getParameter(key);
+		if (param != null) {
+			return param instanceof ListParameter;
+		}
+		// check ports
+		return isMultiFilePort(key, config);
+	}
+
+	private boolean isMultiFilePort(String key, INodeConfiguration config) {
+		// find the port that has the 'key' name
+		return multiPortFound(key, config.getInputPorts())
+				|| multiPortFound(key, config.getOutputPorts());
+	}
+
+	private boolean multiPortFound(final String key, final Port[] ports) {
+		for (final Port port : ports) {
+			if (key.equals(port.getName()) && port.isMultiFile()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

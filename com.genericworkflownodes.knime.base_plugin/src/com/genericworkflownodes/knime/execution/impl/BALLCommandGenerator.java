@@ -69,7 +69,7 @@ public class BALLCommandGenerator implements ICommandGenerator {
 
 		CTDNodeConfigurationWriter ctdWriter = new CTDNodeConfigurationWriter(
 				nodeConfiguration.getXML());
-		ctdWriter.init(configStore);
+		ctdWriter.init(configStore, nodeConfiguration);
 		ctdWriter.write(paramFile);
 		return paramFile;
 	}

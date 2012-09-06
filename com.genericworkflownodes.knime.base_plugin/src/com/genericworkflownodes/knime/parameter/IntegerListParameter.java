@@ -28,8 +28,7 @@ import java.util.List;
  * @author roettig
  * 
  */
-public class IntegerListParameter extends NumberListParameter<Integer>
-		implements ListParameter {
+public class IntegerListParameter extends NumberListParameter<Integer> {
 
 	/**
 	 * The serial version uid.

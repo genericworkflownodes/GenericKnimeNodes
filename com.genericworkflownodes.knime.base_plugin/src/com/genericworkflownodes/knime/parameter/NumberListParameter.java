@@ -31,7 +31,7 @@ import java.util.List;
  * 
  */
 public abstract class NumberListParameter<T extends Number> extends
-		Parameter<List<T>> {
+		Parameter<List<T>> implements ListParameter {
 
 	/**
 	 * The serial version UID.

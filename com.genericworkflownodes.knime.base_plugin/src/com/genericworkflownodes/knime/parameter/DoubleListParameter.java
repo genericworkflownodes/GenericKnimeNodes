@@ -28,8 +28,7 @@ import java.util.List;
  * @author roettig
  * 
  */
-public class DoubleListParameter extends NumberListParameter<Double> implements
-		ListParameter {
+public class DoubleListParameter extends NumberListParameter<Double> {
 
 	/**
 	 * The serial version UID.

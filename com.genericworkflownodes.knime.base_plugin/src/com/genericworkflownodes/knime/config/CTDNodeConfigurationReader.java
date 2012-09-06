@@ -83,7 +83,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	/**
 	 * The final node configuration.
 	 */
-	private NodeConfiguration config = new NodeConfiguration();
+	private final NodeConfiguration config = new NodeConfiguration();
 
 	/**
 	 * C'tor.
@@ -104,7 +104,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	/**
 	 * List of identified ports.
 	 */
-	private Set<String> capturedPorts = new HashSet<String>();
+	private final Set<String> capturedPorts = new HashSet<String>();
 
 	/**
 	 * List of identified input ports.

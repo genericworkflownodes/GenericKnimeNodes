@@ -59,6 +59,17 @@ public class NumberListParameterTest {
 			return false;
 		}
 
+		@Override
+		public List<String> getStrings() {
+			return null;
+		}
+
+		@Override
+		public void fillFromStrings(String[] values) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 
 	List<Integer> ints = Arrays.asList(1, 2, 3);
