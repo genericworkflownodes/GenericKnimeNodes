@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -39,7 +40,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 
 /**
@@ -59,12 +59,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	 */
 	private SettingsModelStringArray m_filenames = ListMimeFileImporterNodeDialog
 			.createFileChooserModel();
-
-	/**
-	 * The registry for all mimi types.
-	 */
-	private IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
 
 	/**
 	 * Constructor for the node model.
@@ -144,8 +138,14 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 
 		List<MIMEType> mts = new ArrayList<MIMEType>();
 
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+		if (registry == null)
+			throw new InvalidSettingsException(
+					"Could not find IMIMETypeRegistry to resolve MIMETypes.");
+
 		for (String filename : filenames) {
-			mt = resolver.getMIMEtype(filename);
+			mt = registry.getMIMEtype(filename);
 			if (mt == null) {
 				throw new InvalidSettingsException(
 						"could not resolve MIMEType of file " + filename);

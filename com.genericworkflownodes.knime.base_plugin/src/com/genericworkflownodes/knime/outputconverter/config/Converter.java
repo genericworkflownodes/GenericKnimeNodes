@@ -41,7 +41,7 @@ import java.util.Properties;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="converter-property" type="{}converterPropertyType" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="converterProperty" type="{}converterPropertyType" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="ref" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -104,7 +104,7 @@ public class Converter {
 	 * 
 	 */
 	public void setClazz(final String value) {
-		this.clazz = value;
+		clazz = value;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class Converter {
 	 * 
 	 */
 	public void setRef(final String value) {
-		this.ref = value;
+		ref = value;
 	}
 
 }

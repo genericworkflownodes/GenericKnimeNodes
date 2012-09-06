@@ -71,7 +71,7 @@
 				</xs:element>
 
 				<!-- reference PARAMETERS schema instead of redefinition -->
-                <xs:element name="output-converters" type="outputConvertersType" minOccurs="0" maxOccurs="1">
+                <xs:element name="outputConverters" type="outputConvertersType" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>Defines possible conversion rules for the output generated after the command line call.</xs:documentation>
 					</xs:annotation></xs:element>
@@ -126,7 +126,7 @@
         <xs:annotation>
         	<xs:documentation>Defines which ITEM from the parameter part is associated to cliElement.</xs:documentation>
         </xs:annotation>
-        <xs:attribute name="ref_name" type="xs:string">
+        <xs:attribute name="referenceName" type="xs:string">
 			<xs:annotation/>
 		</xs:attribute>
 	</xs:complexType>
@@ -174,7 +174,7 @@ Note: If the mapped parameter is boolean, the optionIdentifier will be added to 
 
 	<xs:complexType name="converterType">
 		<xs:sequence>
-			<xs:element name="converter-property" type="converterPropertyType" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="converterProperty" type="converterPropertyType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Properties for the specific conversion (e.g., extension to add after processing).</xs:documentation>
 				</xs:annotation></xs:element>

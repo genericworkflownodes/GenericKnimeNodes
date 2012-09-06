@@ -21,6 +21,6 @@
         __OUTPORTS__
     </ports>
     <views>
-     <view index="0" name="logfile">Logfile view</view>
+     <view index="0" name="Logview">Shows the stdout/stderr output of the tool.</view>
     </views>    
 </knimeNode>

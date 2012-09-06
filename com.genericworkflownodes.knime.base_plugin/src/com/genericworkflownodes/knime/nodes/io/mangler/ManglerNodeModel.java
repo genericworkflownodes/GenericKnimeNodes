@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ballproject.knime.base.util.FileStash;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
@@ -41,7 +42,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 
@@ -61,12 +61,6 @@ public class ManglerNodeModel extends NodeModel {
 	 * Settings field where the currently configured {@link MIMEType} is stored.
 	 */
 	static final String AVAILABLE_MIMETYPE_SETTINGNAME = "available_demangler";
-
-	/**
-	 * Ref. to the central {@link IDemanglerRegistry}.
-	 */
-	private IDemanglerRegistry demanglerRegistry = GenericNodesPlugin
-			.getDemanglerRegistry();
 
 	/**
 	 * The selected {@link IDemangler}.
@@ -139,6 +133,12 @@ public class ManglerNodeModel extends NodeModel {
 
 			inputTalbeSpecification = (DataTableSpec) inSpecs[0];
 
+			IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
+					.getWorkbench().getService(IDemanglerRegistry.class);
+			if (demanglerRegistry == null)
+				throw new InvalidSettingsException(
+						"Could not find IDemanglerRegistry to find Demangler.");
+
 			availableMangler = demanglerRegistry
 					.getMangler(inputTalbeSpecification);
 
@@ -185,6 +185,12 @@ public class ManglerNodeModel extends NodeModel {
 
 		String manglerClassName = settings.getString(
 				SELECTED_DEMANGLER_SETTINGNAME, "");
+
+		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
+				.getWorkbench().getService(IDemanglerRegistry.class);
+		if (demanglerRegistry == null)
+			throw new InvalidSettingsException(
+					"Could not find IDemanglerRegistry to find Demangler.");
 
 		List<IDemangler> matchingManglers = demanglerRegistry
 				.getMangler(inputTalbeSpecification);

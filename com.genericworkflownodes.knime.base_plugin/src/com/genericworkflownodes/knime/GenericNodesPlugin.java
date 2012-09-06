@@ -24,10 +24,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
 
-import com.genericworkflownodes.knime.mime.DefaultMIMEtypeRegistry;
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
-import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
-import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
 
 /**
@@ -51,16 +47,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 	 * Debuggin state of the plugin.
 	 */
 	private static boolean DEBUG = false;
-
-	/**
-	 * Central IMIMETypeRegistry.
-	 */
-	private static IMIMEtypeRegistry MIMETYPE_REGISTRY = new DefaultMIMEtypeRegistry();
-
-	/**
-	 * Central registry for all Demanglers.
-	 */
-	private static IDemanglerRegistry DEMANGLER_REGISTRY = new DemanglerRegistry();
 
 	/**
 	 * Logging method for debugging purpose.
@@ -101,24 +87,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 	public static void setDebug(final boolean debugEnabled) {
 		GenericNodesPlugin.DEBUG = debugEnabled;
 		System.out.println("setting Debug Mode :" + debugEnabled);
-	}
-
-	/**
-	 * Access the central {@link IMIMEtypeRegistry} of the plugin.
-	 * 
-	 * @return The central, static {@link IMIMEtypeRegistry}.
-	 */
-	public static IMIMEtypeRegistry getMIMEtypeRegistry() {
-		return MIMETYPE_REGISTRY;
-	}
-
-	/**
-	 * Access the central {@link IDemanglerRegistry} of the plugin.
-	 * 
-	 * @return The central, static {@link IDemanglerRegistry}.
-	 */
-	public static IDemanglerRegistry getDemanglerRegistry() {
-		return DEMANGLER_REGISTRY;
 	}
 
 	/**

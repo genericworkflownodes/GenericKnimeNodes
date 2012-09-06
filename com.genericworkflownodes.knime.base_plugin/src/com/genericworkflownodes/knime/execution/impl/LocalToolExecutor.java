@@ -20,6 +20,8 @@ package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +46,38 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
  * @author aiche
  */
 public class LocalToolExecutor implements IToolExecutor {
+
+	/**
+	 * NodeLogger used for this executor.
+	 */
 	protected static final NodeLogger logger = NodeLogger
 			.getLogger(LocalToolExecutor.class);
 
+	/**
+	 * The working directory where the process will be executed.
+	 */
 	private File workingDirectory;
+
+	/**
+	 * The environment variables that will be passed to the running environment.
+	 */
 	private final Map<String, String> environmentVariables;
+
+	/**
+	 * The return code of the process.
+	 */
 	private int returnCode;
-	private String toolOutput;
+
+	/**
+	 * The std-out of the executed process.
+	 */
+	private String stdOut;
+
+	/**
+	 * The std-err of the executed process.
+	 */
+	private String stdErr;
+
 	private Process process;
 
 	private ICommandGenerator generator;
@@ -66,6 +93,9 @@ public class LocalToolExecutor implements IToolExecutor {
 		returnCode = -1;
 		executable = null;
 		workingDirectory = null;
+
+		stdErr = "";
+		stdOut = "";
 	}
 
 	/**
@@ -124,7 +154,7 @@ public class LocalToolExecutor implements IToolExecutor {
 	 */
 	@Override
 	public String getToolOutput() {
-		return toolOutput;
+		return stdOut;
 	}
 
 	/**
@@ -170,33 +200,45 @@ public class LocalToolExecutor implements IToolExecutor {
 				builder.directory(workingDirectory);
 			}
 
-			builder.redirectErrorStream(true);
-
 			// execute
 			process = builder.start();
 
-			// fetch output data (stdio+stderr)
-			InputStreamReader isr = new InputStreamReader(
-					process.getInputStream());
-			BufferedReader br = new BufferedReader(isr);
-
-			String line = null;
-			StringBuffer out = new StringBuffer();
-
-			while ((line = br.readLine()) != null) {
-				out.append(line + System.getProperty("line.separator"));
-			}
-
-			toolOutput = out.toString();
-
 			// fetch return code
 			returnCode = process.waitFor();
+
+			// extract messages from stderr and stdout
+			stdOut = extractStdMessages(process.getInputStream());
+			stdErr = extractStdMessages(process.getErrorStream());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 
 		return returnCode;
+	}
+
+	/**
+	 * Extracts all the data from the given stream and returns it as string.
+	 * 
+	 * @param stream
+	 *            The stream to translate.
+	 * @return The content of the stream as string.
+	 * 
+	 * @throws IOException
+	 *             Is thrown if the given stream cannot be handled correctly.
+	 */
+	private String extractStdMessages(InputStream stream) throws IOException {
+		InputStreamReader isr = new InputStreamReader(stream);
+		BufferedReader br = new BufferedReader(isr);
+
+		String line = null;
+		StringBuffer out = new StringBuffer();
+
+		while ((line = br.readLine()) != null) {
+			out.append(line + System.getProperty("line.separator"));
+		}
+
+		return out.toString();
 	}
 
 	/**
@@ -266,5 +308,10 @@ public class LocalToolExecutor implements IToolExecutor {
 	@Override
 	public void setCommandGenerator(ICommandGenerator generator) {
 		this.generator = generator;
+	}
+
+	@Override
+	public String getToolErrorOutput() {
+		return stdErr;
 	}
 }

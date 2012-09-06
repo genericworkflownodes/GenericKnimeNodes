@@ -47,9 +47,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
-
 /**
  * This is the model implementation of DemanglerNodeModel.
  * 
@@ -57,9 +54,6 @@ import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
  * @author roettig
  */
 public class ColumnMergerNodeModel extends NodeModel {
-
-	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
 
 	/**
 	 * Constructor for the node model.

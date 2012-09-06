@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.url.MIMEType;
 import org.knime.core.data.url.URIContent;
 import org.knime.core.data.url.port.MIMEURIPortObject;
@@ -87,10 +88,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			.getLogger(GenericKnimeNodeModel.class);
 
 	protected int[] selected_output_type;
-	public String output = "";
-
-	protected IMIMEtypeRegistry resolver = GenericNodesPlugin
-			.getMIMEtypeRegistry();
 
 	/**
 	 * stores the node configuration (i.e. parameters, ports, ..)
@@ -104,7 +101,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	protected INodeConfigurationStore store = new NodeConfigurationStore();
 
-	protected IToolExecutor executor;
+	/**
+	 * The actual executor used to run the tool.
+	 */
+	IToolExecutor executor;
 
 	/**
 	 * Constructor for the node model.
@@ -113,24 +113,23 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			IPluginConfiguration pluginConfig) {
 		super(createOPOs(config.getInputPorts()), createOPOs(config
 				.getOutputPorts()));
-		this.nodeConfig = config;
+		nodeConfig = config;
 		this.pluginConfig = pluginConfig;
-		this.init();
+		init();
 	}
 
 	protected void init() {
 		// init with [0,0,....,0]
-		this.selected_output_type = new int[this.nodeConfig
-				.getNumberOfOutputPorts()];
+		selected_output_type = new int[nodeConfig.getNumberOfOutputPorts()];
 	}
 
 	protected MIMEType getOutputType(int idx) {
-		return this.nodeConfig.getOutputPorts()[idx].getMimeTypes().get(
-				this.selected_output_type[idx]);
+		return nodeConfig.getOutputPorts()[idx].getMimeTypes().get(
+				selected_output_type[idx]);
 	}
 
 	protected int getOutputTypeIndex(int idx) {
-		return this.selected_output_type[idx];
+		return selected_output_type[idx];
 	}
 
 	private static PortType[] createOPOs(Port[] ports) {
@@ -147,13 +146,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	private void prepareExecute(final File jobdir, final ExecutionContext exec)
 			throws Exception {
 
-		this.instantiateToolExecutor();
+		instantiateToolExecutor();
 
-		this.executor.setWorkingDirectory(jobdir);
-		this.executor.prepareExecution(this.nodeConfig, this.store,
-				this.pluginConfig);
+		executor.setWorkingDirectory(jobdir);
+		executor.prepareExecution(nodeConfig, store, pluginConfig);
 
-		this.executeTool(jobdir, exec);
+		executeTool(jobdir, exec);
 	}
 
 	/**
@@ -166,21 +164,21 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		String executorClassName = "";
 		String commandGeneratorClassName = "";
 		try {
-			executorClassName = this.pluginConfig.getPluginProperties()
-					.getProperty("executor");
-			commandGeneratorClassName = this.pluginConfig.getPluginProperties()
+			executorClassName = pluginConfig.getPluginProperties().getProperty(
+					"executor");
+			commandGeneratorClassName = pluginConfig.getPluginProperties()
 					.getProperty("commandGenerator");
 			if (executorClassName == null || "".equals(executorClassName)) {
 				throw new Exception("No executor was specified by the plugin.");
 			}
 
-			this.executor = (IToolExecutor) Class.forName(executorClassName)
+			executor = (IToolExecutor) Class.forName(executorClassName)
 					.newInstance();
 
 			// configure the executor
 			ICommandGenerator generator = (ICommandGenerator) Class.forName(
 					commandGeneratorClassName).newInstance();
-			this.executor.setCommandGenerator(generator);
+			executor.setCommandGenerator(generator);
 
 		} catch (IllegalAccessException ex) {
 			throw new Exception(
@@ -204,7 +202,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			throws Exception {
 
 		final AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
-				this.executor);
+				executor);
 
 		asyncExecutor.invoke();
 
@@ -230,14 +228,15 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			ex.printStackTrace();
 		}
 
-		this.output = this.executor.getToolOutput();
+		GenericNodesPlugin.log("STDOUT: " + executor.getToolOutput());
+		GenericNodesPlugin.log("STDERR: " + executor.getToolErrorOutput());
 
-		GenericNodesPlugin.log(this.output);
 		GenericNodesPlugin.log("retcode=" + retcode);
 
 		if (retcode != 0) {
-			LOGGER.error(this.output);
-			throw new Exception("execution of external tool failed");
+			LOGGER.error(executor.getToolOutput());
+			LOGGER.error(executor.getToolErrorOutput());
+			throw new Exception("Execution of external tool failed.");
 		}
 
 	}
@@ -261,13 +260,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		for (String key : this.nodeConfig.getParameterKeys()) {
-			settings.addString(key, this.nodeConfig.getParameter(key)
-					.getStringRep());
+		for (String key : nodeConfig.getParameterKeys()) {
+			settings.addString(key, nodeConfig.getParameter(key).getStringRep());
 		}
-		for (int i = 0; i < this.nodeConfig.getNumberOfOutputPorts(); i++) {
+		for (int i = 0; i < nodeConfig.getNumberOfOutputPorts(); i++) {
 			settings.addInt("GENERIC_KNIME_NODES_outtype#" + i,
-					this.getOutputTypeIndex(i));
+					getOutputTypeIndex(i));
 		}
 	}
 
@@ -279,18 +277,18 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
-		for (String key : this.nodeConfig.getParameterKeys()) {
+		for (String key : nodeConfig.getParameterKeys()) {
 			String value = settings.getString(key);
 			try {
-				this.nodeConfig.getParameter(key).fillFromString(value);
+				nodeConfig.getParameter(key).fillFromString(value);
 			} catch (InvalidParameterValueException e) {
 				e.printStackTrace();
 			}
 		}
 
-		for (int i = 0; i < this.nodeConfig.getNumberOfOutputPorts(); i++) {
+		for (int i = 0; i < nodeConfig.getNumberOfOutputPorts(); i++) {
 			int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
-			this.selected_output_type[i] = idx;
+			selected_output_type[i] = idx;
 		}
 	}
 
@@ -304,8 +302,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// - we do not xfer values to member variables
 		// - we throw an exception if something is invalid
 
-		for (String key : this.nodeConfig.getParameterKeys()) {
-			Parameter<?> param = this.nodeConfig.getParameter(key);
+		for (String key : nodeConfig.getParameterKeys()) {
+			Parameter<?> param = nodeConfig.getParameter(key);
 			if (!param.isOptional()) {
 				if (!settings.containsKey(key)) {
 					GenericNodesPlugin
@@ -360,23 +358,23 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		for (Parameter<?> param : this.nodeConfig.getParameters()) {
+		for (Parameter<?> param : nodeConfig.getParameters()) {
 			// System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
 			if (!param.isOptional() && param.getStringRep().equals("")) {
 				// throw new
 				// InvalidSettingsException("not all mandatory parameters are set");
-				this.setWarningMessage("some mandatory parameters might not be set");
+				setWarningMessage("some mandatory parameters might not be set");
 			}
 
 		}
 
-		int nIn = this.mimetypes_in.length;
+		int nIn = mimetypes_in.length;
 
 		for (int i = 0; i < nIn; i++) {
 			// not connected input ports have nulls in inSpec
 			if (inSpecs[i] == null) {
 				// .. if port is optional everything is fine
-				if (this.nodeConfig.getInputPorts()[i].isOptional()) {
+				if (nodeConfig.getInputPorts()[i].isOptional()) {
 					continue;
 				} else {
 					throw new InvalidSettingsException(
@@ -393,12 +391,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			boolean ok = false;
 			String mismatch = "";
 
-			for (int j = 0; j < this.mimetypes_in[i].length; j++) {
-				if (mt.equals(this.mimetypes_in[i][j])) {
+			for (int j = 0; j < mimetypes_in[i].length; j++) {
+				if (mt.equals(mimetypes_in[i][j])) {
 					ok = true;
 				} else {
 					mismatch = String.format("in: [%s] expected:[%s]", mt,
-							Arrays.toString(this.mimetypes_in[i]));
+							Arrays.toString(mimetypes_in[i]));
 				}
 			}
 			if (!ok) {
@@ -409,21 +407,21 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		}
 
 		// create output spec
-		this.outspec_ = this.createOutSpec();
+		outspec_ = createOutSpec();
 
-		return this.outspec_;
+		return outspec_;
 	}
 
 	protected PortObjectSpec[] createOutSpec() {
-		int nOut = this.mimetypes_out.length;
+		int nOut = mimetypes_out.length;
 		PortObjectSpec[] out_spec = new PortObjectSpec[nOut];
 
 		// set selected MIMEURIPortObjectSpecs at output ports
 		for (int i = 0; i < nOut; i++) {
 			// selected output MIMEType
-			int selectedMIMETypeIndex = this.getOutputTypeIndex(i);
+			int selectedMIMETypeIndex = getOutputTypeIndex(i);
 			out_spec[i] = new MIMEURIPortObjectSpec(
-					this.mimetypes_out[i][selectedMIMETypeIndex]);
+					mimetypes_out[i][selectedMIMETypeIndex]);
 		}
 
 		return out_spec;
@@ -433,23 +431,23 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
 		// fetch node descriptors
-		String nodeName = this.nodeConfig.getName();
+		String nodeName = nodeConfig.getName();
 
 		// create job directory
 		File jobdir = new File(Helper.getTemporaryDirectory(nodeName,
 				!GenericNodesPlugin.isDebug()));
 		GenericNodesPlugin.log("jobdir=" + jobdir);
 
-		this.store = new NodeConfigurationStore();
+		store = new NodeConfigurationStore();
 
 		// prepare input data and parameter values
-		List<List<URI>> outputFiles = this.outputParameters(jobdir, inObjects);
+		List<List<URI>> outputFiles = outputParameters(jobdir, inObjects);
 
 		// launch executable
-		this.prepareExecute(jobdir, exec);
+		prepareExecute(jobdir, exec);
 
 		// process result files
-		PortObject[] outports = this.processOutput(outputFiles, exec);
+		PortObject[] outports = processOutput(outputFiles, exec);
 
 		if (!GenericNodesPlugin.isDebug()) {
 			Helper.deleteDirectory(jobdir);
@@ -479,7 +477,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				continue;
 			}
 
-			Port port = this.nodeConfig.getInputPorts()[i];
+			Port port = nodeConfig.getInputPorts()[i];
 
 			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
 			List<URIContent> uris = po.getURIContents();
@@ -498,7 +496,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				String filename = new File(uri).getAbsolutePath();
 				GenericNodesPlugin.log("< setting param " + name + "->"
 						+ filename);
-				this.store.setParameterValue(name, filename);
+				store.setParameterValue(name, filename);
 			}
 		}
 
@@ -507,12 +505,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		Map<Port, Integer> port2slot = new HashMap<Port, Integer>();
 
 		// .. output files
-		int nOut = this.nodeConfig.getOutputPorts().length;
+		int nOut = nodeConfig.getOutputPorts().length;
 		for (int i = 0; i < nOut; i++) {
-			Port port = this.nodeConfig.getOutputPorts()[i];
+			Port port = nodeConfig.getOutputPorts()[i];
 			String name = port.getName();
 
-			String ext = this.getOutputType(i).getExtension();
+			String ext = getOutputType(i).getExtension();
 
 			if (port.isMultiFile()) {
 				// keep this list empty for now ...
@@ -525,15 +523,15 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				String filename = FileStash.getInstance().allocateFile(ext);
 				GenericNodesPlugin.log("> setting param " + name + "->"
 						+ filename);
-				this.store.setParameterValue(name, filename);
+				store.setParameterValue(name, filename);
 				files.add(new File(filename).toURI());
 				outfiles.add(files);
 			}
 		}
 
 		// .. node parameters
-		for (String key : this.nodeConfig.getParameterKeys()) {
-			Parameter<?> param = this.nodeConfig.getParameter(key);
+		for (String key : nodeConfig.getParameterKeys()) {
+			Parameter<?> param = nodeConfig.getParameter(key);
 			if (param.isNull()) {
 				if (param.isOptional()) {
 					continue;
@@ -549,7 +547,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 					int slot = port2slot.get(flp.getPort());
 
-					String ext = this.getOutputType(slot).getExtension();
+					String ext = getOutputType(slot).getExtension();
 
 					for (String file : files) {
 						String filename = FileStash.getInstance().allocateFile(
@@ -562,20 +560,20 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 						// String filename = jobdir.getAbsolutePath() +
 						// File.separator + file + "." + ext;
 						outfiles.get(slot).add(new File(filename).toURI());
-						this.store.setMultiParameterValue(key, filename);
+						store.setMultiParameterValue(key, filename);
 					}
 
 				} else {
 					for (String val : lp.getStrings()) {
 						GenericNodesPlugin.log("@@ setting param " + key + "->"
 								+ val);
-						this.store.setMultiParameterValue(key, val);
+						store.setMultiParameterValue(key, val);
 					}
 				}
 			} else {
 				GenericNodesPlugin.log("@ setting param " + key + "->"
 						+ param.getValue().toString());
-				this.store.setParameterValue(key, param.getValue().toString());
+				store.setParameterValue(key, param.getValue().toString());
 			}
 		}
 
@@ -595,19 +593,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	private PortObject[] processOutput(final List<List<URI>> outputFileNames,
 			final ExecutionContext exec) throws Exception {
-		int nOut = this.nodeConfig.getOutputPorts().length;
+		int nOut = nodeConfig.getOutputPorts().length;
 
 		// create output tables
 		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];
 
 		for (int i = 0; i < nOut; i++) {
 			List<IOutputConverter> converters = new ArrayList<IOutputConverter>();
-			if (this.nodeConfig.getOutputConverters().findConverter(
-					this.nodeConfig.getOutputPorts()[i].getName()) != null) {
+			if (nodeConfig.getOutputConverters().findConverter(
+					nodeConfig.getOutputPorts()[i].getName()) != null) {
 				// we should transform this port
-				for (Converter conv : this.nodeConfig.getOutputConverters()
-						.findConverter(
-								this.nodeConfig.getOutputPorts()[i].getName())) {
+				for (Converter conv : nodeConfig
+						.getOutputConverters()
+						.findConverter(nodeConfig.getOutputPorts()[i].getName())) {
 					try {
 						converters.add(OutputConverterHelper
 								.getConfiguredOutputConverter(conv));
@@ -624,11 +622,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			// multi output file
 			for (URI filename : outputFileNames.get(i)) {
 				someFileName = filename.getPath();
-				URI convertedUri = this.applyConverter(converters, filename);
+				URI convertedUri = applyConverter(converters, filename);
 				uris.add(new URIContent(convertedUri));
 			}
 
-			MIMEType mimeType = this.resolveMIMEType(someFileName);
+			MIMEType mimeType = resolveMIMEType(someFileName);
 			if (mimeType == null)
 				throw new NonExistingMimeTypeException(someFileName);
 			outports[i] = new MIMEURIPortObject(uris, mimeType);
@@ -656,7 +654,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	}
 
 	private MIMEType resolveMIMEType(String filename) {
-		return this.resolver.getMIMEtype(filename);
+		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
+				.getWorkbench().getService(IMIMEtypeRegistry.class);
+		if (registry != null)
+			return registry.getMIMEtype(filename);
+		else
+			return null;
 	}
 
 }

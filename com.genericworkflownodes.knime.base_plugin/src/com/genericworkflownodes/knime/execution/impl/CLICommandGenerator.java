@@ -164,9 +164,9 @@ public class CLICommandGenerator implements ICommandGenerator {
 
 		for (CLIMapping cliMapping : cliElement.getMapping()) {
 			if (configStore.getParameterKeys()
-					.contains(cliMapping.getRefName())) {
+					.contains(cliMapping.getReferenceName())) {
 				extractedParameterValues.add(configStore
-						.getMultiParameterValue(cliMapping.getRefName()));
+						.getMultiParameterValue(cliMapping.getReferenceName()));
 			}
 		}
 
@@ -182,7 +182,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 	private boolean isMappedToBooleanParameter(CLIElement cliElement) {
 		return cliElement.getMapping().size() == 1
 				&& nodeConfig.getParameter(cliElement.getMapping().get(0)
-						.getRefName()) instanceof BoolParameter;
+						.getReferenceName()) instanceof BoolParameter;
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 	private void handleBooleanParameter(List<String> commands,
 			CLIElement cliElement) {
 		if (((BoolParameter) nodeConfig.getParameter(cliElement.getMapping()
-				.get(0).getRefName())).getValue()) {
+				.get(0).getReferenceName())).getValue()) {
 			commands.add(cliElement.getOptionIdentifier());
 		}
 	}
