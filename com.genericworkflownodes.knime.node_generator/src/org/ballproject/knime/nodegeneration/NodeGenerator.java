@@ -100,13 +100,12 @@ public class NodeGenerator {
 			throws NodeGeneratorException {
 		try {
 			this.srcDir = new NodesSourceDirectory(srcDir);
-			this.meta = new KNIMEPluginMeta(this.srcDir.getProperties());
+			meta = new KNIMEPluginMeta(this.srcDir.getProperties());
 			if (buildDir != null) {
 				this.buildDir = new NodesBuildDirectory(buildDir,
-						this.meta.getPackageRoot());
+						meta.getPackageRoot());
 			} else {
-				this.buildDir = new NodesBuildDirectory(
-						this.meta.getPackageRoot());
+				this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
 			}
 		} catch (Exception e) {
 			throw new NodeGeneratorException(e);
@@ -114,14 +113,14 @@ public class NodeGenerator {
 	}
 
 	public void generate() throws NodeGeneratorException {
-		LOGGER.info("Creating KNIME plugin sources\n\tFrom: " + this.srcDir
-				+ "\n\tTo: " + this.buildDir);
+		LOGGER.info("Creating KNIME plugin sources\n\tFrom: " + srcDir
+				+ "\n\tTo: " + buildDir);
 
 		try {
 			boolean dynamicCTDs = NodeDescriptionUtils
-					.createCTDsIfNecessary(this.srcDir);
+					.createCTDsIfNecessary(srcDir);
 			DescriptorsDirectory descriptorsDirectory = (dynamicCTDs) ? new DescriptorsDirectory(
-					this.srcDir.getExecutablesDirectory()) : this.srcDir
+					srcDir.getExecutablesDirectory()) : srcDir
 					.getDescriptorsDirectory();
 
 			if (dynamicCTDs) {
@@ -133,28 +132,26 @@ public class NodeGenerator {
 			// build.properties - only useful if you re-import the generated
 			// node in
 			// Eclipse
-			new BuildPropertiesTemplate().write(this.buildDir
-					.getBuildProperties());
+			new BuildPropertiesTemplate().write(buildDir.getBuildProperties());
 
 			// META-INF/MANIFEST.MF
-			new ManifestMFTemplate(this.meta).write(this.buildDir
-					.getManifestMf());
+			new ManifestMFTemplate(meta).write(buildDir.getManifestMf());
 
 			// src/[PACKAGE]/knime/plugin.properties
-			new PropertiesWriter(new File(this.buildDir.getKnimeDirectory(),
+			new PropertiesWriter(new File(buildDir.getKnimeDirectory(),
 					"plugin.properties")).write(new HashMap<String, String>() {
 				private static final long serialVersionUID = 1L;
 				{
-					this.put("executor", NodeGenerator.this.srcDir.getProperty(
-							"executor", "CLIExecutor"));
-					this.put("commandGenerator", NodeGenerator.this.srcDir
-							.getProperty("commandGenerator", ""));
+					put("executor",
+							srcDir.getProperty("executor", "CLIExecutor"));
+					put("commandGenerator",
+							srcDir.getProperty("commandGenerator", ""));
 				}
 			});
 
 			// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
-			new MimeFileCellFactoryTemplate(this.meta.getPackageRoot(),
-					this.srcDir.getMimeTypes()).write(new File(this.buildDir
+			new MimeFileCellFactoryTemplate(meta.getPackageRoot(),
+					srcDir.getMimeTypes()).write(new File(buildDir
 					.getKnimeNodesDirectory(), "mimetypes" + File.separator
 					+ "MimeFileCellFactory.java"));
 
@@ -168,52 +165,48 @@ public class NodeGenerator {
 				nodeNames.add(ctdFile.getNodeConfiguration().getName());
 
 				String factoryClass = copyNodeSources(ctdFile,
-						this.srcDir.getIconsDirectory(),
-						this.buildDir.getKnimeNodesDirectory(), this.meta);
+						srcDir.getIconsDirectory(),
+						buildDir.getKnimeNodesDirectory(), meta);
 
-				String absoluteCategory = "/"
-						+ this.meta.getNodeRepositoryRoot() + "/"
-						+ this.meta.getName() + "/"
+				String absoluteCategory = "/" + meta.getNodeRepositoryRoot()
+						+ "/" + meta.getName() + "/"
 						+ ctdFile.getNodeConfiguration().getCategory();
 				pluginXML.registerNode(factoryClass, absoluteCategory);
 			}
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new PluginActivatorTemplate(this.meta.getPackageRoot(), nodeNames)
-					.write(new File(this.buildDir.getKnimeDirectory(),
+			new PluginActivatorTemplate(meta.getPackageRoot(), nodeNames)
+					.write(new File(buildDir.getKnimeDirectory(),
 							"PluginActivator.java"));
 
 			// icons/*
-			copyFolderIcon(this.srcDir.getIconsDirectory(),
-					this.buildDir.getIconsDirectory());
-			registerSplashIcon(this.meta, pluginXML,
-					this.srcDir.getIconsDirectory(),
-					this.buildDir.getIconsDirectory());
+			copyFolderIcon(srcDir.getIconsDirectory(),
+					buildDir.getIconsDirectory());
+			registerSplashIcon(meta, pluginXML, srcDir.getIconsDirectory(),
+					buildDir.getIconsDirectory());
 
 			// plugin.xml
-			pluginXML.saveTo(this.buildDir.getPluginXml());
+			pluginXML.saveTo(buildDir.getPluginXml());
 
 			// .project
-			new ProjectTemplate(this.meta)
-					.write(this.buildDir.getProjectFile());
+			new ProjectTemplate(meta).write(buildDir.getProjectFile());
 
 			// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
-			new BinaryResourcesTemplate(this.meta.getPackageRoot())
-					.write(new File(
-							this.buildDir.getBinaryResourcesDirectory(),
-							"BinaryResources.java"));
+			new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
+					buildDir.getBinaryResourcesDirectory(),
+					"BinaryResources.java"));
 
 			// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
-			if (this.srcDir.getPayloadDirectory() != null) {
-				this.srcDir.getPayloadDirectory().copyPayloadTo(
-						this.buildDir.getBinaryResourcesDirectory());
+			if (srcDir.getPayloadDirectory() != null) {
+				srcDir.getPayloadDirectory().copyPayloadTo(
+						buildDir.getBinaryResourcesDirectory());
 			}
 
 			// copy assets
-			this.copyAsset(".classpath");
+			copyAsset(".classpath");
 
 			LOGGER.info("KNIME plugin sources successfully created in:\n\t"
-					+ this.buildDir);
+					+ buildDir);
 		} catch (Exception e) {
 			LOGGER.info("KNIME plugin source creation failed");
 			throw new NodeGeneratorException(e);
@@ -223,26 +216,26 @@ public class NodeGenerator {
 	private void copyAsset(String assetResourcePath) throws IOException {
 		InputStream in = NodeGenerator.class.getResourceAsStream("assets/"
 				+ assetResourcePath);
-		FileWriter fileWriter = new FileWriter(new File(this.buildDir,
+		FileWriter fileWriter = new FileWriter(new File(buildDir,
 				assetResourcePath));
 		IOUtils.copy(in, fileWriter, "UTF-8");
 		fileWriter.close();
 	}
 
 	public File getSourceDirectory() {
-		return this.srcDir;
+		return srcDir;
 	}
 
 	public File getBuildDirectory() {
-		return this.buildDir;
+		return buildDir;
 	}
 
 	public String getPluginName() {
-		return this.meta.getName();
+		return meta.getName();
 	}
 
 	public String getPluginVersion() {
-		return this.meta.getVersion();
+		return meta.getVersion();
 	}
 
 	public static void copyFolderIcon(IconsDirectory iconsSrc,

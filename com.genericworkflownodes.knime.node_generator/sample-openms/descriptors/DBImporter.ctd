@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>DBImporter</name>
+<version>1.10.0</version>
+<description><![CDATA[Imports data to an OpenMS database.]]></description>
+<manual><![CDATA[Imports data to an OpenMS database.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__DBImporter.html</docurl>
+<category>File Handling</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="DBImporter" description="Imports data to an OpenMS database.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;DBImporter&apos;">
+      <ITEM name="user" value="" type="string" description="user/login of the DB" tags="required" />
+      <ITEM name="host" value="localhost" type="string" description="host name of the DB server" />
+      <ITEM name="password" value="" type="string" description="password for the user" tags="required" />
+      <ITEM name="port" value="3306" type="int" description="port the DB server is running on" />
+      <ITEM name="db" value="" type="string" description="DB name" tags="required" />
+      <ITEM name="in" value="" type="string" description="input file " tags="input file" restrictions="*.mzML" />
+      <ITEM name="init" value="false" type="string" description="Deletes all tables and sets up a new OpenMS database.#br#The data of &apos;in&apos; is not imported!" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

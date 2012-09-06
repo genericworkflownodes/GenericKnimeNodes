@@ -28,4 +28,7 @@
  <mimetype name="KROENIK" binary="false" description="kroenik file" ext="kroenik"/>
  <mimetype name="FASTA" binary="false" description="FASTA file" ext="fasta"/>
  <mimetype name="EDTA" binary="false" description="enhanced comma separated files (RT, m/z, Intensity, [meta])" ext="EDTA"/>
+ <mimetype name="PSQ" binary="false" description="PSQ file" ext="psq"/> 
+ <mimetype name="EXE" binary="true" description="Executable files" ext="exe"/> 
+ <mimetype name="MZQUANTML" binary="false" description="mzQuantML" ext="mzq"/>  
 </mimetypes>

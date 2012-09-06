@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>SpectraFilterBernNorm</name>
+<version>1.10.0</version>
+<description><![CDATA[Applies thresholdfilter to peak spectra.]]></description>
+<manual><![CDATA[Applies thresholdfilter to peak spectra.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__SpectraFilterBernNorm.html</docurl>
+<category>Identification</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="SpectraFilterBernNorm" description="Applies thresholdfilter to peak spectra.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;SpectraFilterBernNorm&apos;">
+      <ITEM name="in" value="" type="string" description="input file " tags="input file,required" restrictions="*.mzML" />
+      <ITEM name="out" value="" type="string" description="output file " tags="output file,required" restrictions="*.mzML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="algorithm" description="Algorithm parameter subsection.">
+        <ITEM name="C1" value="28" type="float" description="C1 value of the normalization." tags="advanced" />
+        <ITEM name="C2" value="400" type="float" description="C2 value of the normalization." tags="advanced" />
+        <ITEM name="threshold" value="0.1" type="float" description="Threshold of the Bern et al. normalization." />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

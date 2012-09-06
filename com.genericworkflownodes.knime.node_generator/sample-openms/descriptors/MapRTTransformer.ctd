@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>MapRTTransformer</name>
+<version>1.10.0</version>
+<description><![CDATA[Applies retention time transformations to maps.]]></description>
+<manual><![CDATA[Applies retention time transformations to maps.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__MapRTTransformer.html</docurl>
+<category>Map Alignment</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="MapRTTransformer" description="Applies retention time transformations to maps.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;MapRTTransformer&apos;">
+      <ITEMLIST name="in" type="string" description="Input files to transform (separated by blanks)" tags="input file" restrictions="*.mzML,*.featureXML,*.consensusXML,*.idXML">
+      </ITEMLIST>
+      <ITEMLIST name="out" type="string" description="Output files separated by blanks" tags="output file" restrictions="*.mzML,*.featureXML,*.consensusXML,*.idXML">
+      </ITEMLIST>
+      <ITEMLIST name="trafo_in" type="string" description="Transformations to apply (files separated by blanks)" tags="input file,required" restrictions="*.trafoXML">
+      </ITEMLIST>
+      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks" tags="output file" restrictions="*.trafoXML">
+      </ITEMLIST>
+      <ITEM name="invert" value="false" type="string" description="Invert transformations (approximatively) before applying them" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="model" description="Options to control the modeling of retention time transformations from data">
+        <ITEM name="type" value="none" type="string" description="Type of model" restrictions="none,linear,b_spline,interpolated" />
+        <NODE name="linear" description="Parameters for &apos;linear&apos; model">
+          <ITEM name="symmetric_regression" value="false" type="string" description="Perform linear regression on &apos;y - x&apos; vs. &apos;y + x&apos;, instead of on &apos;y&apos; vs. &apos;x&apos;." restrictions="true,false" />
+        </NODE>
+        <NODE name="b_spline" description="Parameters for &apos;b_spline&apos; model">
+          <ITEM name="num_breakpoints" value="5" type="int" description="Number of breakpoints of the cubic spline in the smoothing step. More breakpoints mean less smoothing. Reduce this number if the transformation has an unexpected shape." restrictions="2:" />
+          <ITEM name="break_positions" value="uniform" type="string" description="How to distribute the breakpoints on the retention time scale. &apos;uniform&apos;: intervals of equal size; &apos;quantiles&apos;: equal number of data points per interval." restrictions="uniform,quantiles" />
+        </NODE>
+        <NODE name="interpolated" description="Parameters for &apos;interpolated&apos; model">
+          <ITEM name="interpolation_type" value="cspline" type="string" description="Type of interpolation to apply." restrictions="linear,cspline,akima" />
+        </NODE>
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

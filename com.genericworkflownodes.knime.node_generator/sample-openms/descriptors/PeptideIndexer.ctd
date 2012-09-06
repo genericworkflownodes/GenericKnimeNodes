@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>PeptideIndexer</name>
+<version>1.10.0</version>
+<description><![CDATA[Refreshes the protein references for all peptide hits.]]></description>
+<manual><![CDATA[Refreshes the protein references for all peptide hits.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__PeptideIndexer.html</docurl>
+<category>ID Processing</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="PeptideIndexer" description="Refreshes the protein references for all peptide hits.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;PeptideIndexer&apos;">
+      <ITEM name="in" value="" type="string" description="Input idXML file containing the identifications." tags="input file,required" restrictions="*.IdXML" />
+      <ITEM name="fasta" value="" type="string" description="Input sequence database in FASTA format. Non-existing relative file-names are looked up via&apos;OpenMS.ini:id_db_dir&apos;" tags="input file,required" restrictions="*.fasta" />
+      <ITEM name="out" value="" type="string" description="Output idXML file." tags="output file,required" restrictions="*.IdXML" />
+      <ITEM name="decoy_string" value="_rev" type="string" description="String that was appended (or prepended - see &apos;prefix&apos; flag below) to the accession of the protein database to indicate a decoy protein." />
+      <ITEM name="missing_decoy_action" value="error" type="string" description="Action to take if NO peptide was assigned to a decoy protein (which indicates wrong database or decoy string): &apos;error&apos; (exit with error, no output), &apos;warn&apos; (exit with success, warning message)" restrictions="error,warn" />
+      <ITEM name="write_protein_sequence" value="false" type="string" description="If set, the protein sequences are stored as well." restrictions="true,false" />
+      <ITEM name="prefix" value="false" type="string" description="If set, the database has protein accessions with &apos;decoy_string&apos; as prefix." restrictions="true,false" />
+      <ITEM name="keep_unreferenced_proteins" value="false" type="string" description="If set, protein hits which are not referenced by any peptide are kept." restrictions="true,false" />
+      <ITEM name="allow_unmatched" value="false" type="string" description="If set, unmatched peptide sequences are allowed. By default (i.e. this flag is not set) the program terminates with error status on unmatched peptides." restrictions="true,false" />
+      <ITEM name="full_tolerant_search" value="false" type="string" description="If set, all peptide sequences are matched using tolerant search. Thus potentially more proteins (containing ambiguous AA&apos;s) are associated. This is much slower!" restrictions="true,false" />
+      <ITEM name="aaa_max" value="4" type="int" description="Maximal number of ambiguous amino acids (AAA) allowed when matching to a protein DB with AAA&apos;s. AAA&apos;s are &apos;B&apos;, &apos;Z&apos;, and &apos;X&apos;" restrictions="0:" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

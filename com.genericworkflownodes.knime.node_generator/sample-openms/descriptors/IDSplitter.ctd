@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>IDSplitter</name>
+<version>1.10.0</version>
+<description><![CDATA[Splits protein/peptide identifications off of annotated data files]]></description>
+<manual><![CDATA[Splits protein/peptide identifications off of annotated data files]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__IDSplitter.html</docurl>
+<category></category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDSplitter" description="Splits protein/peptide identifications off of annotated data files">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDSplitter&apos;">
+      <ITEM name="in" value="" type="string" description="Input file (data annotated with identifications)" tags="input file,required" restrictions="*.mzML,*.featureXML,*.consensusXML" />
+      <ITEM name="out" value="" type="string" description="Output file (data without identifications)" tags="output file" restrictions="*.mzML,*.featureXML,*.consensusXML" />
+      <ITEM name="id_out" value="" type="string" description="Output file (identifications)" tags="output file" restrictions="*.idXML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

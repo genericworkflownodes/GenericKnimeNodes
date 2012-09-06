@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>IDRipper</name>
+<version>1.10.0</version>
+<description><![CDATA[Split protein/peptide identification file into several files according annotated file origin.]]></description>
+<manual><![CDATA[Split protein/peptide identification file into several files according annotated file origin.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__IDRipper.html</docurl>
+<category>File Handling</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDRipper" description="Split protein/peptide identification file into several files according annotated file origin.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDRipper&apos;">
+      <ITEM name="in" value="" type="string" description="IdXML-file, whereas the protein/peptide identifications must be tagged with file_origin" tags="input file,required" restrictions="*.idXML" />
+      <ITEM name="out" value="" type="string" description="The path to the file is used as the output directory." tags="output file" restrictions="*.idXML" />
+      <ITEM name="out_path" value="" type="string" description="Directory for the IdXML-files after ripping according file_origin tag. If out_path is set, out is ignored." />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

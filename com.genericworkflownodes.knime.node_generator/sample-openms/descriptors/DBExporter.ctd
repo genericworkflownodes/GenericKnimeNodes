@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>DBExporter</name>
+<version>1.10.0</version>
+<description><![CDATA[Exports data from an OpenMS database to a file.]]></description>
+<manual><![CDATA[Exports data from an OpenMS database to a file.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__DBExporter.html</docurl>
+<category>File Handling</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="DBExporter" description="Exports data from an OpenMS database to a file.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;DBExporter&apos;">
+      <ITEM name="user" value="" type="string" description="user/login of the DB" tags="required" />
+      <ITEM name="host" value="localhost" type="string" description="host name of the DB server" />
+      <ITEM name="password" value="" type="string" description="password for the user" tags="required" />
+      <ITEM name="port" value="3306" type="int" description="port the DB server is running on" />
+      <ITEM name="db" value="" type="string" description="DB name" tags="required" />
+      <ITEM name="id" value="0" type="int" description="id of the the map to export" />
+      <ITEM name="query" value="" type="string" description="a SQL query that returns one or several DB ids of the MSExperiment table" />
+      <ITEM name="out" value="" type="string" description="output file in mzML format (prefixed with DB id and &apos;_&apos; if several files are exported)" tags="required" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

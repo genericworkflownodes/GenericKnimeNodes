@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool status="internal">
+<name>SpectraFilterParentPeakMower</name>
+<version>1.10.0</version>
+<description><![CDATA[Applies thresholdfilter to peak spectra.]]></description>
+<manual><![CDATA[Applies thresholdfilter to peak spectra.]]></manual>
+<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__SpectraFilterParentPeakMower.html</docurl>
+<category>Identification</category>
+<type></type>
+<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="SpectraFilterParentPeakMower" description="Applies thresholdfilter to peak spectra.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;SpectraFilterParentPeakMower&apos;">
+      <ITEM name="in" value="" type="string" description="input file " tags="input file,required" restrictions="*.mzML" />
+      <ITEM name="out" value="" type="string" description="output file " tags="output file,required" restrictions="*.mzML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="algorithm" description="Algorithm parameter subsection.">
+        <ITEM name="window_size" value="2" type="float" description="The size of the m/z window where the peaks are removed, +/- window_size." />
+        <ITEM name="default_charge" value="2" type="int" description="If the precursor has no charge set, the default charge is assumed." />
+        <ITEM name="clean_all_charge_states" value="1" type="int" description="Set to 1 if precursor ions of all possible charge states should be removed." tags="advanced" />
+        <ITEM name="consider_NH3_loss" value="1" type="int" description="Whether NH3 loss peaks from the precursor should be removed." />
+        <ITEM name="consider_H2O_loss" value="1" type="int" description="Whether H2O loss peaks from the precursor should be removed." />
+        <ITEM name="reduce_by_factor" value="0" type="int" description="Reduce the intensities of the precursor and related ions by a given factor (set &apos;set_to_zero&apos; to 0)." tags="advanced" />
+        <ITEM name="factor" value="1000" type="float" description="Factor which is used to reduce the intensities if &apos;reduce_by_factor&apos; is selected." tags="advanced" />
+        <ITEM name="set_to_zero" value="1" type="int" description="Reduce the intensities of the precursor and related ions to zero." tags="advanced" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>
