@@ -3,29 +3,10 @@
 <!-- Mit XMLSpy v2007 sp1 bearbeitet (http://www.altova.com) von Oliver Kohlbacher (Universität Tübingen) -->
 <!-- Mit XMLSpy v2007 sp1 bearbeitet (http://www.altova.com) von Oliver Kohlbacher (Universität Tübingen) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="PARAMETERS">
+	<xs:element name="PARAMETERS" type="PARAMETERSType">
 		<xs:annotation>
 			<xs:documentation>Main parameters node.</xs:documentation>
 		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:group ref="ITEMS" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>A group that encapsulates items and item lists</xs:documentation>
-					</xs:annotation>
-				</xs:group>
-				<xs:element ref="NODE" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>Sections used to bundle related parameters.</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-			<xs:attribute name="version" type="xs:float">
-				<xs:annotation>
-					<xs:documentation>Schema version, e.g. '1.1'. If it is missing, version 1.0 is assumed.</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-		</xs:complexType>
 	</xs:element>
 	<xs:element name="NODE">
 		<xs:complexType>
@@ -180,5 +161,19 @@
 			</xs:element>
 		</xs:choice>
 	</xs:group>
+	<xs:complexType name="PARAMETERSType">
+		<xs:sequence>
+			<xs:group minOccurs="0" maxOccurs="unbounded" ref="ITEMS">
+				<xs:annotation></xs:annotation>
+			</xs:group>
+			<xs:element minOccurs="0" maxOccurs="unbounded"
+				ref="NODE">
+				<xs:annotation></xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="version" type="xs:float">
+			<xs:annotation></xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 </xs:schema>
 

@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:include schemaLocation="Param_1_3.xsd"/>
+	<xs:include schemaLocation="http://page.mi.fu-berlin.de/aiche/schemas/Param_1_3.xsd"/>
 
 	<xs:element name="tool">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="1" name="name"
-					type="xs:string">
+				<xs:element minOccurs="1" name="name" type="xs:string">
 					<xs:annotation>
-						<xs:documentation>
-							Name of the tool.
+						<xs:documentation>Name of the tool. Needs to pass following regex [[A-Z]|[a-z]][[0-9]|[A-Z]|[a-z]]+
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="executableName" type="xs:string"
+					minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Optionally a separate name for the
+							executable can be specified here.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="executablePath" type="xs:string" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Contains the path were the tool can be found using either the name element or (if set) the executableName.</xs:documentation>
+					</xs:annotation></xs:element>
 				<xs:element minOccurs="1" name="version"
 					type="xs:string">
 					<xs:annotation>
@@ -57,62 +68,27 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element maxOccurs="unbounded" minOccurs="0"
-					name="type" type="xs:string">
-					<xs:annotation>
-						<xs:documentation>
-							Whats this (FIX-ME!).
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
 
 				<xs:element maxOccurs="1" minOccurs="0" name="cli"
 					type="cliType">
 				</xs:element>
 
-				<!-- reference PARAMETERS schema instead of redefinition -->
-                <xs:element name="outputConverters" type="outputConvertersType" minOccurs="0" maxOccurs="1">
+				<xs:element name="outputConverters"
+					type="outputConvertersType" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
-						<xs:documentation>Defines possible conversion rules for the output generated after the command line call.</xs:documentation>
-					</xs:annotation></xs:element>
-                <xs:element minOccurs="0" name="PARAMETERS" />
+						<xs:documentation>
+							Defines possible conversion rules for the
+							output generated after the command line
+							call.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				
+				<!-- reference PARAMETERS schema instead of redefinition -->
+				<xs:element minOccurs="0" name="PARAMETERS" type="PARAMETERSType"/>
 			</xs:sequence>
-			<xs:attribute name="status" type="StatusType" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:simpleType name="StatusType">
-		<xs:annotation>
-			<xs:documentation>Enumeration of possible status</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="internal"/>
-			<xs:enumeration value="external"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="clExprType">
-		<xs:annotation>
-			<xs:documentation>Enumeration of possible status</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:pattern value=".*([^%]|%[0-9]+).*"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="clVarType">
-		<xs:annotation>
-			<xs:documentation>Enumeration of possible status</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:pattern value="%+\S+"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="locationType">
-		<xs:annotation>
-			<xs:documentation>Enumeration of possible status</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:pattern value=".*([^%]|%TMP|[%%S+]|%BASENAME\[%+S+\])"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="cliType">
         <xs:annotation>
         	<xs:documentation>Wraps the information necessary to construct a command line call for the tool.</xs:documentation>
@@ -168,35 +144,19 @@ Note: If the mapped parameter is boolean, the optionIdentifier will be added to 
 			<xs:element name="converter" type="converterType" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>The conversion rules.</xs:documentation>
-				</xs:annotation></xs:element>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="converterType">
-		<xs:sequence>
-			<xs:element name="converterProperty" type="converterPropertyType" minOccurs="0" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:documentation>Properties for the specific conversion (e.g., extension to add after processing).</xs:documentation>
-				</xs:annotation></xs:element>
-		</xs:sequence>
-		<xs:attribute name="class" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>The name of the class which is used for the conversion. Note that this class needs to be instantiable in the GKN base plugin.</xs:documentation>
-			</xs:annotation></xs:attribute>
+        <xs:annotation>
+        	<xs:documentation>Defines a actual regex based converter. The ref attribute names the parameter that should be converted.</xs:documentation>
+        </xs:annotation>
 		<xs:attribute name="ref" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>A reference to the output parameter that should be transformed.</xs:documentation>
-			</xs:annotation></xs:attribute>
-	</xs:complexType>
-
-	<xs:complexType name="converterPropertyType">
-		<xs:attribute name="name" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>The name or id of the property.</xs:documentation>
-			</xs:annotation></xs:attribute>
-		<xs:attribute name="value" type="xs:string">
-			<xs:annotation>
-				<xs:documentation>The value of the property.</xs:documentation>
-			</xs:annotation></xs:attribute>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 </xs:schema>

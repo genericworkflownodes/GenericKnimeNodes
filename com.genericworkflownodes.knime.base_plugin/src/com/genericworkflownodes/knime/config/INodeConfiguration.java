@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.config;
 
 import java.util.List;
 
-
 import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
@@ -33,6 +32,11 @@ import com.genericworkflownodes.knime.port.Port;
  * @author roettig, aiche
  */
 public interface INodeConfiguration {
+	/**
+	 * The name of the tool.
+	 * 
+	 * @return The name of the tool.
+	 */
 	public String getName();
 
 	public String getCommand();

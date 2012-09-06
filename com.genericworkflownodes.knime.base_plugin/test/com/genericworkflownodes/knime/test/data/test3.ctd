@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
     <name>MascotAdapter</name>
     <version>1.8.0</version>
     <description>Annotates MS/MS spectra using Mascot.</description>
     <manual>Annotates MS/MS spectra using Mascot.</manual>
     <docurl/>
     <category>OpenMS</category>
-    <type/>
     <PARAMETERS>
   <NODE name="MascotAdapter" description="Annotates MS/MS spectra using Mascot.">
     <ITEM name="version" value="1.8.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced"/>

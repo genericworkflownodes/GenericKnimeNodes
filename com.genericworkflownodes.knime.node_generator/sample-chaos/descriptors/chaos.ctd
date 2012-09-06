@@ -16,9 +16,9 @@
 		<clielement optionIdentifier="-graph ps"/>
 	</cli>
 	<outputConverters>
-		<converter class="FileNameExtender" ref="chaos.outputfile">
-			<converterProperty name="file-extension" value=".ps" />
-		</converter>		
+		<converter ref="chaos.outputfile">
+			/\.ps$/.ps.ps/
+		</converter>
 	</outputConverters>
 	<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<NODE name="chaos" description="Draw a chaos game representation plot for a nucleotide sequence">

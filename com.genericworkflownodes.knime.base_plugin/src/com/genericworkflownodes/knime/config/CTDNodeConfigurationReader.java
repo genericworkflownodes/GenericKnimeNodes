@@ -389,11 +389,6 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 			throw new Exception("CTD has no root named tool");
 		}
 
-		String lstatus = node.valueOf("@status");
-		if (lstatus != null && lstatus.equals("")) {
-			throw new Exception("CTD has no status");
-		}
-
 		node = doc.selectSingleNode("/tool/name");
 		if (node == null) {
 			throw new Exception("CTD has no tool name");
