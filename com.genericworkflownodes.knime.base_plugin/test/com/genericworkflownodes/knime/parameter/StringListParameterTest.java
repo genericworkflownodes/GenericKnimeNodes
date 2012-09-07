@@ -111,7 +111,7 @@ public class StringListParameterTest {
 	}
 
 	@Test
-	public void testFillFromStrings() {
+	public void testFillFromStrings() throws InvalidParameterValueException {
 		StringListParameter slp = new StringListParameter(key, null);
 		String[] stringsToInclude = new String[] { "a", "b", "c" };
 		slp.fillFromStrings(stringsToInclude);

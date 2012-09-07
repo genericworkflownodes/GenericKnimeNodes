@@ -42,6 +42,7 @@ public interface ListParameter {
 	 * 
 	 * @param values
 	 *            list of strings
+	 * @throws InvalidParameterValueException
 	 */
-	void fillFromStrings(String[] values);
+	void fillFromStrings(String[] values) throws InvalidParameterValueException;
 }

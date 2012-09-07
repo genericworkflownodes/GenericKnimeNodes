@@ -32,6 +32,11 @@ public class StringListParameter extends Parameter<List<String>> implements
 		ListParameter {
 
 	/**
+	 * Set of allowed entries for this StringListParameter
+	 */
+	private List<String> validValues;
+
+	/**
 	 * The serial version UID.
 	 */
 	private static final long serialVersionUID = -3843594608327851669L;
@@ -46,6 +51,20 @@ public class StringListParameter extends Parameter<List<String>> implements
 	 */
 	public StringListParameter(final String key, final List<String> value) {
 		super(key, value);
+		validValues = new ArrayList<String>();
+	}
+
+	public void setRestrictions(List<String> newRestrictions) {
+		validValues = newRestrictions;
+	}
+
+	public void addRestrictions(String allowedValue) {
+		if (!validValues.contains(allowedValue))
+			validValues.add(allowedValue);
+	}
+
+	public String[] getRestrictions() {
+		return (String[]) validValues.toArray();
 	}
 
 	@Override
@@ -73,15 +92,19 @@ public class StringListParameter extends Parameter<List<String>> implements
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (String s : this.getValue()) {
+		for (String s : getValue()) {
 			sb.append(s + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public boolean validate(final List<String> val) {
-		return true;
+	public boolean validate(final List<String> values) {
+		if (validValues.isEmpty())
+			return true;
+		else {
+			return validValues.containsAll(values);
+		}
 	}
 
 	@Override
@@ -96,17 +119,23 @@ public class StringListParameter extends Parameter<List<String>> implements
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (String s : this.getValue()) {
+		for (String s : getValue()) {
 			ret.add(s);
 		}
 		return ret;
 	}
 
 	@Override
-	public void fillFromStrings(final String[] values) {
-		this.setValue(new ArrayList<String>());
-		for (int i = 0; i < values.length; i++) {
-			this.getValue().add(values[i]);
+	public void fillFromStrings(final String[] values)
+			throws InvalidParameterValueException {
+		setValue(new ArrayList<String>());
+		if (validate(Arrays.asList(values))) {
+			for (int i = 0; i < values.length; i++) {
+				getValue().add(values[i]);
+			}
+		} else {
+			throw new InvalidParameterValueException(
+					"Some or all of the given values are not contained in the set of valid values.");
 		}
 	}
 }

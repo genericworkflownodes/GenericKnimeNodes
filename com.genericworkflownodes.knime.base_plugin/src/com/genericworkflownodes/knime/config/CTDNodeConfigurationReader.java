@@ -562,7 +562,12 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	 */
 	private Parameter<?> processStringListParameter(final String name,
 			final List<String> values, final String restrs, final String tags) {
-		return new StringListParameter(name, values);
+		StringListParameter slp = new StringListParameter(name, values);
+		if (restrs != null && !restrs.isEmpty()) {
+			String[] toks = restrs.split(",");
+			slp.setRestrictions(Arrays.asList(toks));
+		}
+		return slp;
 	}
 
 	/**

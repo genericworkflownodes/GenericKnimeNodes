@@ -166,6 +166,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			choiceComboBox
 					.addActionListener(new ChoiceParamActionListener<StringChoiceParameter>(
 							scp));
+			choiceComboBox.setSelectedItem(scp.getValue());
 			return choiceComboBox;
 		}
 		if (value instanceof StringParameter
@@ -183,13 +184,22 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			return choiceComboBox;
 		}
 		if (value instanceof ListParameter) {
-			ListParameterModel mpm = new ListParameterModel(param);
-			mpm.setSetLike(true);
-			ItemListFillerDialog sd = new ItemListFillerDialog(mpm);
-			sd.setVisible(true);
-			String[] sel = mpm.getSelectedItems();
+			ListParameterModel listParameterModel = new ListParameterModel(
+					param);
+			listParameterModel.setSetLike(true);
+
+			String[] sel = listParameterModel.getSelectedItems();
 			ListParameter lp = (ListParameter) param;
-			lp.fillFromStrings(sel);
+			try {
+				lp.fillFromStrings(sel);
+			} catch (InvalidParameterValueException ex) {
+				// should not happen
+			}
+
+			ItemListFillerDialog sd = new ItemListFillerDialog(
+					listParameterModel);
+			sd.setVisible(true);
+
 			rep = param.getStringRep();
 			return listParameterLabel;
 		}

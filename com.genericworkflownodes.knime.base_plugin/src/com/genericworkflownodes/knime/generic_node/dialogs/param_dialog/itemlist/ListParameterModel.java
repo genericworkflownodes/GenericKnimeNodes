@@ -23,6 +23,7 @@ import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.parameter.StringListParameter;
 
 public class ListParameterModel extends ItemListFillerDialogModel {
 	private static final long serialVersionUID = -7693134082619250857L;
@@ -37,20 +38,23 @@ public class ListParameterModel extends ItemListFillerDialogModel {
 	private void init() {
 		if (param instanceof ListParameter) {
 			ListParameter lp = (ListParameter) param;
-			this.data = lp.getStrings();
+			data = lp.getStrings();
 			if (param instanceof DoubleListParameter) {
 				DoubleListParameter dlp = (DoubleListParameter) param;
 				DoubleValidator val = new DoubleValidator();
 				val.setLowerBound(dlp.getLowerBound());
 				val.setUpperBound(dlp.getUpperBound());
-				this.setValidator(val);
+				setValidator(val);
 			}
 			if (param instanceof IntegerListParameter) {
 				IntegerListParameter ilp = (IntegerListParameter) param;
 				IntegerValidator val = new IntegerValidator();
 				val.setLowerBound(ilp.getLowerBound());
 				val.setUpperBound(ilp.getUpperBound());
-				this.setValidator(val);
+				setValidator(val);
+			} else if (param instanceof StringListParameter) {
+				StringListParameter slp = (StringListParameter) param;
+				values = slp.getRestrictions();
 			}
 		} else {
 			throw new RuntimeException();
