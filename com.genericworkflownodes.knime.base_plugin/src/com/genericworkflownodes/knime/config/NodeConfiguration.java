@@ -255,6 +255,10 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		cli = newCli;
 	}
 
+	public void setOutputConverters(OutputConverters converters) {
+		this.converters = converters;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.config.reader;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -31,6 +32,8 @@ import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.outputconverter.config.Converter;
+import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 /**
@@ -73,6 +76,33 @@ public class CTDHandlerTest {
 		assertEquals(1, secondCLIElement.getMapping().size());
 		assertEquals("blastall.d", secondCLIElement.getMapping().get(0)
 				.getReferenceName());
+
+		// test converter
+		OutputConverters converters = config.getOutputConverters();
+		List<Converter> availableConverters = (List<Converter>) converters
+				.getConverters();
+
+		assertEquals(2, availableConverters.size());
+
+		assertEquals("DummyConverter", availableConverters.get(0).getClazz());
+		assertEquals("blastall.o", availableConverters.get(0).getRef());
+		assertEquals(0, availableConverters.get(0).getConverterProperties()
+				.size());
+
+		assertEquals("DummyConverter2", availableConverters.get(1).getClazz());
+		assertEquals("blastall.o", availableConverters.get(1).getRef());
+		assertEquals(2, availableConverters.get(1).getConverterProperties()
+				.size());
+
+		assertEquals(true, availableConverters.get(1).getConverterProperties()
+				.containsKey("prop1"));
+		assertEquals("val1", availableConverters.get(1)
+				.getConverterProperties().getProperty("prop1"));
+
+		assertEquals(true, availableConverters.get(1).getConverterProperties()
+				.containsKey("prop2"));
+		assertEquals("val2", availableConverters.get(1)
+				.getConverterProperties().getProperty("prop2"));
 
 	}
 }

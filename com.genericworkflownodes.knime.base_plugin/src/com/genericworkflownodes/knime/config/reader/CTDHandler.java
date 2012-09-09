@@ -27,6 +27,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
+import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 
 /**
  * The main {@link ContentHandler} for the CTD.
@@ -93,6 +94,17 @@ public class CTDHandler extends DefaultHandler {
 		config.setCLI(cli);
 	}
 
+	/**
+	 * Injects a newly parsed {@link OutputConverters} into the underlying
+	 * config.
+	 * 
+	 * @param converters
+	 *            The parsed converters.
+	 */
+	public void setOutputConverters(OutputConverters converters) {
+		config.setOutputConverters(converters);
+	}
+
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
@@ -106,7 +118,8 @@ public class CTDHandler extends DefaultHandler {
 		if (TAG_PARAMETERS.equals(name)) {
 
 		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
-
+			xmlReader.setContentHandler(new OutputConverterHandler(xmlReader,
+					this));
 		} else if (TAG_CLI.equals(name)) {
 			xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this));
 		}
