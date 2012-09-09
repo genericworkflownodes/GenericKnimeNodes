@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
@@ -43,10 +42,10 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	private static final long serialVersionUID = -5250528380628071121L;
 
-	protected Map<String, Parameter<?>> params = new LinkedHashMap<String, Parameter<?>>();
+	private Map<String, Parameter<?>> params;
 
-	protected Port[] in_ports;
-	protected Port[] out_ports;
+	private Map<String, Port> inputPorts;
+	private Map<String, Port> outputPorts;
 
 	protected String name;
 	protected String version;
@@ -70,6 +69,10 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	public NodeConfiguration() {
 		cli = new CLI();
 		converters = new OutputConverters();
+
+		params = new LinkedHashMap<String, Parameter<?>>();
+		inputPorts = new LinkedHashMap<String, Port>();
+		outputPorts = new LinkedHashMap<String, Port>();
 	}
 
 	public NodeConfiguration(INodeConfiguration config) {
@@ -78,22 +81,39 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	@Override
 	public int getNumberOfOutputPorts() {
-		return out_ports.length;
+		return outputPorts.size();
 	}
 
 	@Override
 	public int getNumberOfInputPorts() {
-		return in_ports.length;
+		return inputPorts.size();
 	}
 
 	@Override
 	public Port[] getInputPorts() {
-		return in_ports;
+		return portsToArray(inputPorts);
 	}
 
 	@Override
 	public Port[] getOutputPorts() {
-		return out_ports;
+		return portsToArray(outputPorts);
+	}
+
+	/**
+	 * Utility function that converts the given map into an array of port
+	 * objects.
+	 * 
+	 * @param ports
+	 *            The port map to convert.
+	 * @return The port map as array of {@link Port}s.
+	 */
+	private Port[] portsToArray(Map<String, Port> ports) {
+		Port[] portsAsArray = new Port[ports.size()];
+		int i = 0;
+		for (Map.Entry<String, Port> entry : ports.entrySet()) {
+			portsAsArray[i++] = entry.getValue();
+		}
+		return portsAsArray;
 	}
 
 	@Override
@@ -163,7 +183,7 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	}
 
 	protected void addParameter(String key, Parameter<?> param) {
-		this.params.put(key, param);
+		params.put(key, param);
 	}
 
 	@Override
@@ -175,48 +195,64 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		return ret;
 	}
 
+	/**
+	 * Utility function to copy all elements of the portArray into the provided
+	 * portmap.
+	 * 
+	 * @param portMap
+	 *            {@link Map} of {@link Port}s.
+	 * @param portArray
+	 *            Array of {@link Port}s.
+	 */
+	private void createPortList(Map<String, Port> portMap, Port[] portArray) {
+		portMap.clear();
+		for (Port p : portArray) {
+			portMap.put(p.getName(), p);
+		}
+	}
+
 	public void setInports(Port[] ports) {
-		in_ports = ports;
+		createPortList(inputPorts, ports);
 	}
 
 	public void setOutports(Port[] ports) {
-		out_ports = ports;
+		createPortList(outputPorts, ports);
 	}
 
 	public void setName(String newName) {
-		this.name = newName;
+		name = newName;
 	}
 
 	public void setDocUrl(String newDocurl) {
-		this.docurl = newDocurl;
+		docurl = newDocurl;
 	}
 
 	public void setDescription(String newShortdescription) {
-		this.shortdescription = newShortdescription;
+		shortdescription = newShortdescription;
 	}
 
 	public void setManual(String newLongdescription) {
-		this.longdescription = newLongdescription;
+		longdescription = newLongdescription;
 	}
 
 	public void setXml(String newXml) {
-		this.xml = newXml;
+		xml = newXml;
 	}
 
 	public void setCategory(String newCategory) {
-		this.category = newCategory;
+		category = newCategory;
 	}
 
 	public void setVersion(String newVersion) {
-		this.version = newVersion;
+		version = newVersion;
 	}
 
 	public void setCommand(String newCommand) {
-		this.command = newCommand;
+		command = newCommand;
 	}
 
 	public void setCLI(CLI newCli) {
-		this.cli = newCli;
+		cli = newCli;
 	}
 
 	@Override
