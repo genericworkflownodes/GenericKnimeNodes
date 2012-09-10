@@ -18,9 +18,12 @@
  */
 package com.genericworkflownodes.knime.config.reader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.xml.sax.Attributes;
@@ -29,10 +32,15 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
+import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
+import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.util.StringUtils.DoubleRangeExtractor;
 import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
@@ -81,6 +89,12 @@ public class ParamHandler extends DefaultHandler {
 	private Parameter<?> currentParameter;
 
 	/**
+	 * Store the current list entries to finally add them to the created list
+	 * parameter.
+	 */
+	private List<String> listValues;
+
+	/**
 	 * The parent handler that invoked this handler for a sub tree of the XML
 	 * document.
 	 */
@@ -111,7 +125,7 @@ public class ParamHandler extends DefaultHandler {
 			currentPath += PATH_SEPARATOR;
 			System.out.println("Prefix is: " + currentPath);
 		} else if (TAG_ITEM.equals(name)) {
-			String type = attributes.getValue("type");
+			String type = attributes.getValue(ATTR_TYPE);
 			String paramName = attributes.getValue(ATTR_NAME);
 			String paramValue = attributes.getValue(ATTR_VALUE);
 
@@ -125,13 +139,7 @@ public class ParamHandler extends DefaultHandler {
 
 			// did we create a parameter
 			if (currentParameter != null) {
-				// set flags for parameter
-				currentParameter.setAdvanced(isAdvanced(attributes));
-				currentParameter.setIsOptional(isOptional(attributes));
-
-				// extract the description
-				String description = attributes.getValue(ATTR_DESCRIPTION);
-				currentParameter.setDescription(description);
+				setCommonParameters(attributes);
 
 				extractedParameters.put(
 						currentPath + currentParameter.getKey(),
@@ -141,9 +149,93 @@ public class ParamHandler extends DefaultHandler {
 				currentParameter = null;
 			}
 		} else if (TAG_ITEMLIST.equals(name)) {
+			// start the list parameter
+			String type = attributes.getValue(ATTR_TYPE);
+			String paramName = attributes.getValue(ATTR_NAME);
 
+			if (TYPE_INT.equals(type)) {
+				handleIntList(paramName, attributes);
+			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
+				handleDoubleList(paramName, attributes);
+			} else if (TYPE_STRING.equals(type)) {
+				handleStringList(paramName, attributes);
+			}
+			// initialize list for storing the list values
+			listValues = new ArrayList<String>();
+
+			// set extra values for this parameter
+			setCommonParameters(attributes);
 		} else if (TAG_LISTITEM.equals(name)) {
+			String listValue = attributes.getValue(ATTR_VALUE);
+			listValues.add(listValue);
+		}
+	}
 
+	/**
+	 * Extracts common parameters like isAdvanced, isOptional, and description
+	 * from the {@link Attributes} and passes them to the current parameter.
+	 * 
+	 * @param attributes
+	 *            The {@link Attributes} containing the necessary values.
+	 */
+	private void setCommonParameters(Attributes attributes) {
+		// set flags for parameter
+		currentParameter.setAdvanced(isAdvanced(attributes));
+		currentParameter.setIsOptional(isOptional(attributes));
+
+		// extract the description
+		String description = attributes.getValue(ATTR_DESCRIPTION);
+		currentParameter.setDescription(description);
+	}
+
+	private void handleStringList(String paramName, Attributes attributes) {
+		if (isPort(attributes)) {
+			createListPort(paramName, attributes);
+		} else {
+			currentParameter = new StringListParameter(paramName,
+					new ArrayList<String>());
+			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
+			if (restrictions != null) {
+				((StringListParameter) currentParameter).setRestrictions(Arrays
+						.asList(restrictions.split(",")));
+			}
+		}
+	}
+
+	private void createListPort(String paramName, Attributes attributes) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void handleDoubleList(String paramName, Attributes attributes) {
+		currentParameter = new DoubleListParameter(paramName,
+				new ArrayList<Double>());
+
+		// check for restrictions
+		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
+		if (restrs != null) {
+			((DoubleListParameter) currentParameter)
+					.setLowerBound(new DoubleRangeExtractor()
+							.getLowerBound(restrs));
+			((DoubleListParameter) currentParameter)
+					.setUpperBound(new DoubleRangeExtractor()
+							.getUpperBound(restrs));
+		}
+	}
+
+	private void handleIntList(String paramName, Attributes attributes) {
+		currentParameter = new IntegerListParameter(paramName,
+				new ArrayList<Integer>());
+
+		// check for restrictions
+		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
+		if (restrs != null) {
+			((IntegerListParameter) currentParameter)
+					.setLowerBound(new IntegerRangeExtractor()
+							.getLowerBound(restrs));
+			((IntegerListParameter) currentParameter)
+					.setUpperBound(new IntegerRangeExtractor()
+							.getUpperBound(restrs));
 		}
 	}
 
@@ -265,7 +357,24 @@ public class ParamHandler extends DefaultHandler {
 		} else if (TAG_ITEM.equals(name)) {
 
 		} else if (TAG_ITEMLIST.equals(name)) {
+			try {
+				if (listValues.size() > 0) {
+					String[] values = new String[listValues.size()];
+					int i = 0;
+					for (String v : listValues) {
+						values[i++] = v;
+					}
+					((ListParameter) currentParameter).fillFromStrings(values);
+				}
+			} catch (InvalidParameterValueException e) {
+				// should not happen
+				e.printStackTrace();
+			}
+			extractedParameters.put(currentPath + currentParameter.getKey(),
+					currentParameter);
 
+			// reset for the next iteration
+			currentParameter = null;
 		} else if (TAG_LISTITEM.equals(name)) {
 
 		} else if (TAG_PARAMETERS.equals(name)) {
