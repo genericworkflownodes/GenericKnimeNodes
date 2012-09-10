@@ -182,7 +182,7 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		return ret;
 	}
 
-	protected void addParameter(String key, Parameter<?> param) {
+	public void addParameter(String key, Parameter<?> param) {
 		params.put(key, param);
 	}
 

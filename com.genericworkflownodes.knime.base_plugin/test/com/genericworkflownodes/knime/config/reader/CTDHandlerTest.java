@@ -105,4 +105,20 @@ public class CTDHandlerTest {
 				.getConverterProperties().getProperty("prop2"));
 
 	}
+
+	@Test
+	public void testParamHandler() throws ParserConfigurationException,
+			SAXException, IOException {
+		SAXParserFactory spfac = SAXParserFactory.newInstance();
+
+		// Now use the parser factory to create a SAXParser object
+		SAXParser sp = spfac.newSAXParser();
+
+		CTDHandler handler = new CTDHandler(sp.getXMLReader());
+		sp.parse(TestDataSource.class.getResourceAsStream("FileFilter.ctd"),
+				handler);
+
+		INodeConfiguration config = handler.getNodeConfiguration();
+
+	}
 }

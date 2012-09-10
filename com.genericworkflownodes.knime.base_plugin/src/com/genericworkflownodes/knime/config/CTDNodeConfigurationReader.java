@@ -58,7 +58,7 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SchemaProvider;
 import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
-import com.genericworkflownodes.util.StringUtils.DoubleRangeExtracted;
+import com.genericworkflownodes.util.StringUtils.DoubleRangeExtractor;
 import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
 
 /**
@@ -624,9 +624,9 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		DoubleListParameter doubleListParameter = new DoubleListParameter(name,
 				vals);
 
-		doubleListParameter.setLowerBound(new DoubleRangeExtracted()
+		doubleListParameter.setLowerBound(new DoubleRangeExtractor()
 				.getLowerBound(restrs));
-		doubleListParameter.setUpperBound(new DoubleRangeExtracted()
+		doubleListParameter.setUpperBound(new DoubleRangeExtractor()
 				.getUpperBound(restrs));
 
 		return doubleListParameter;
@@ -649,9 +649,9 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 	private Parameter<?> processDoubleParameter(final String name,
 			final String value, final String restrs, final String tags) {
 		DoubleParameter doubleParameter = new DoubleParameter(name, value);
-		doubleParameter.setLowerBound(new DoubleRangeExtracted()
+		doubleParameter.setLowerBound(new DoubleRangeExtractor()
 				.getLowerBound(restrs));
-		doubleParameter.setUpperBound(new DoubleRangeExtracted()
+		doubleParameter.setUpperBound(new DoubleRangeExtractor()
 				.getUpperBound(restrs));
 		return doubleParameter;
 	}

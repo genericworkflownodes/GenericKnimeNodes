@@ -18,6 +18,9 @@
  */
 package com.genericworkflownodes.knime.config.reader;
 
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -28,6 +31,7 @@ import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
  * The main {@link ContentHandler} for the CTD.
@@ -105,6 +109,18 @@ public class CTDHandler extends DefaultHandler {
 		config.setOutputConverters(converters);
 	}
 
+	/**
+	 * Injects a newly parsed {@link Parameter} into the underlying config.
+	 * 
+	 * @param parameters
+	 *            The parsed parameters.
+	 */
+	public void setParameters(LinkedHashMap<String, Parameter<?>> parameters) {
+		for (Entry<String, Parameter<?>> entry : parameters.entrySet()) {
+			config.addParameter(entry.getKey(), entry.getValue());
+		}
+	}
+
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
@@ -116,7 +132,7 @@ public class CTDHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		currentContent.setLength(0);
 		if (TAG_PARAMETERS.equals(name)) {
-
+			xmlReader.setContentHandler(new ParamHandler(xmlReader, this));
 		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
 			xmlReader.setContentHandler(new OutputConverterHandler(xmlReader,
 					this));

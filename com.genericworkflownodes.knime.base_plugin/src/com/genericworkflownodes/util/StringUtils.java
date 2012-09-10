@@ -142,7 +142,7 @@ public final class StringUtils {
 	 * 
 	 * @author aiche
 	 */
-	public static class DoubleRangeExtracted extends RangeExtractor<Double> {
+	public static class DoubleRangeExtractor extends RangeExtractor<Double> {
 
 		@Override
 		protected Double getUpperBoundDefault() {

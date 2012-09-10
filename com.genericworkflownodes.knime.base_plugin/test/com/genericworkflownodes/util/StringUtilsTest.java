@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.genericworkflownodes.util.StringUtils.DoubleRangeExtracted;
+import com.genericworkflownodes.util.StringUtils.DoubleRangeExtractor;
 import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
 
 ;
@@ -48,18 +48,18 @@ public class StringUtilsTest {
 	@Test
 	public void testLowerBoundExtractionDouble() {
 		assertEquals(new Double(2.0),
-				new DoubleRangeExtracted().getLowerBound("2.0:100"));
+				new DoubleRangeExtractor().getLowerBound("2.0:100"));
 		assertEquals(new Double(2.0),
-				new DoubleRangeExtracted().getLowerBound("2.0:"));
+				new DoubleRangeExtractor().getLowerBound("2.0:"));
 		assertEquals(new Double(2.0),
-				new DoubleRangeExtracted().getLowerBound("2.0"));
+				new DoubleRangeExtractor().getLowerBound("2.0"));
 
 		assertEquals(new Double(Double.NEGATIVE_INFINITY),
-				new DoubleRangeExtracted().getLowerBound(":100"));
+				new DoubleRangeExtractor().getLowerBound(":100"));
 		assertEquals(new Double(Double.NEGATIVE_INFINITY),
-				new DoubleRangeExtracted().getLowerBound(":"));
+				new DoubleRangeExtractor().getLowerBound(":"));
 		assertEquals(new Double(Double.NEGATIVE_INFINITY),
-				new DoubleRangeExtracted().getLowerBound(""));
+				new DoubleRangeExtractor().getLowerBound(""));
 	}
 
 	@Test
@@ -82,14 +82,14 @@ public class StringUtilsTest {
 	@Test
 	public void testUpperBoundExtractionDouble() {
 		assertEquals(new Double(2.0),
-				new DoubleRangeExtracted().getUpperBound("2.0:2.0"));
+				new DoubleRangeExtractor().getUpperBound("2.0:2.0"));
 		assertEquals(new Double(2.0),
-				new DoubleRangeExtracted().getUpperBound(":2.0"));
+				new DoubleRangeExtractor().getUpperBound(":2.0"));
 
 		assertEquals(new Double(Double.POSITIVE_INFINITY),
-				new DoubleRangeExtracted().getUpperBound("100:"));
+				new DoubleRangeExtractor().getUpperBound("100:"));
 		assertEquals(new Double(Double.POSITIVE_INFINITY),
-				new DoubleRangeExtracted().getUpperBound(":"));
+				new DoubleRangeExtractor().getUpperBound(":"));
 	}
 
 	@Test
