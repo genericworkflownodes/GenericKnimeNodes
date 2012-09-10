@@ -34,6 +34,10 @@ import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.outputconverter.config.Converter;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
+import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
+import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 /**
@@ -119,6 +123,31 @@ public class CTDHandlerTest {
 				handler);
 
 		INodeConfiguration config = handler.getNodeConfiguration();
+
+		StringParameter mz = (StringParameter) config
+				.getParameter("FileFilter.1.mz");
+		assertEquals("m/z range to extract", mz.getDescription());
+		assertEquals(":", mz.getValue());
+		assertEquals("mz", mz.getKey());
+
+		IntegerListParameter levels = (IntegerListParameter) config
+				.getParameter("FileFilter.1.level");
+		assertEquals("MS levels to extract", levels.getDescription());
+		assertEquals(3, levels.getValue().size());
+		assertEquals(1, levels.getValue().get(0).intValue());
+		assertEquals(2, levels.getValue().get(1).intValue());
+		assertEquals(3, levels.getValue().get(2).intValue());
+		assertEquals(true, levels.isAdvanced());
+
+		StringChoiceParameter int_precision = (StringChoiceParameter) config
+				.getParameter("FileFilter.1.int_precision");
+		assertEquals("32", int_precision.getValue());
+		assertEquals(3, int_precision.getAllowedValues().size());
+
+		BoolParameter no_progress = (BoolParameter) config
+				.getParameter("FileFilter.1.no_progress");
+		assertEquals(false, no_progress.getValue());
+		assertEquals(true, no_progress.isAdvanced());
 
 	}
 }
