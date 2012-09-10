@@ -137,7 +137,7 @@ public class CTDHandlerTest {
 		assertEquals(1, levels.getValue().get(0).intValue());
 		assertEquals(2, levels.getValue().get(1).intValue());
 		assertEquals(3, levels.getValue().get(2).intValue());
-		assertEquals(true, levels.isAdvanced());
+		assertEquals(false, levels.isAdvanced());
 
 		StringChoiceParameter int_precision = (StringChoiceParameter) config
 				.getParameter("FileFilter.1.int_precision");
@@ -148,6 +148,9 @@ public class CTDHandlerTest {
 				.getParameter("FileFilter.1.no_progress");
 		assertEquals(false, no_progress.getValue());
 		assertEquals(true, no_progress.isAdvanced());
+
+		assertEquals(1, config.getInputPorts().length);
+		assertEquals("FileFilter.1.in", config.getInputPorts()[0].getName());
 
 	}
 }

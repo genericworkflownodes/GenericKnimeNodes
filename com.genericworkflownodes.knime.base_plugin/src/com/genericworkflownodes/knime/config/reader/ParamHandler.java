@@ -20,7 +20,6 @@ package com.genericworkflownodes.knime.config.reader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +41,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.util.StringUtils.DoubleRangeExtractor;
 import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
 
@@ -76,7 +76,23 @@ public class ParamHandler extends DefaultHandler {
 	private static String ATTR_RESTRICTIONS = "restrictions";
 	private static String ATTR_OUTPUT_FORMAT_SOURCE = "output_format_source";
 
+	/**
+	 * Tag used to identify input ports.
+	 */
+	private static final String INPUTFILE_TAG = "input file";
+
+	/**
+	 * Tag used to identify output ports.
+	 */
+	private static final String OUTPUTFILE_TAG = "output file";
+
 	private static char PATH_SEPARATOR = '.';
+
+	/**
+	 * List of port/parameter names that will not be created.
+	 */
+	private static final List<String> BLACKLIST = Arrays.asList("write_ini",
+			"write_par", "par", "help", "ini");
 
 	/**
 	 * The list of extracted parameters.
@@ -110,11 +126,32 @@ public class ParamHandler extends DefaultHandler {
 	 */
 	private String currentPath;
 
+	/**
+	 * The output ports recorded for this parameter block.
+	 */
+	private ArrayList<Port> inputPorts;
+
+	/**
+	 * The input ports recorded for this parameter block.
+	 */
+	private ArrayList<Port> outputPorts;
+
+	/**
+	 * C'tor accepting the parent handler and the xml reader.
+	 * 
+	 * @param xmlReader
+	 *            The xml reader of the global document.
+	 * @param parentHandler
+	 *            The parent handler for the global document.
+	 */
 	public ParamHandler(XMLReader xmlReader, CTDHandler parentHandler) {
 		this.xmlReader = xmlReader;
 		this.parentHandler = parentHandler;
 		currentPath = "";
 		extractedParameters = new LinkedHashMap<String, Parameter<?>>();
+
+		inputPorts = new ArrayList<Port>();
+		outputPorts = new ArrayList<Port>();
 	}
 
 	@Override
@@ -123,7 +160,6 @@ public class ParamHandler extends DefaultHandler {
 		if (TAG_NODE.equals(name)) {
 			currentPath += attributes.getValue(ATTR_NAME);
 			currentPath += PATH_SEPARATOR;
-			System.out.println("Prefix is: " + currentPath);
 		} else if (TAG_ITEM.equals(name)) {
 			String type = attributes.getValue(ATTR_TYPE);
 			String paramName = attributes.getValue(ATTR_NAME);
@@ -190,7 +226,7 @@ public class ParamHandler extends DefaultHandler {
 
 	private void handleStringList(String paramName, Attributes attributes) {
 		if (isPort(attributes)) {
-			createListPort(paramName, attributes);
+			createPort(paramName, attributes, true);
 		} else {
 			currentParameter = new StringListParameter(paramName,
 					new ArrayList<String>());
@@ -202,9 +238,22 @@ public class ParamHandler extends DefaultHandler {
 		}
 	}
 
-	private void createListPort(String paramName, Attributes attributes) {
-		// TODO Auto-generated method stub
+	private void createPort(String paramName, Attributes attributes,
+			boolean isList) {
+		Port p = new Port();
+		p.setName(currentPath + paramName);
+		p.setMultiFile(isList);
 
+		String description = attributes.getValue(ATTR_DESCRIPTION);
+		p.setDescription(description);
+
+		p.setOptional(isOptional(attributes));
+
+		if (getTags(attributes).contains(INPUTFILE_TAG)) {
+			inputPorts.add(p);
+		} else {
+			outputPorts.add(p);
+		}
 	}
 
 	private void handleDoubleList(String paramName, Attributes attributes) {
@@ -242,7 +291,7 @@ public class ParamHandler extends DefaultHandler {
 	private void handleStringType(String paramName, String paramValue,
 			Attributes attributes) {
 		if (isPort(attributes)) {
-			createPort(paramName, paramValue, attributes);
+			createPort(paramName, attributes, false);
 		}
 
 		// check if we have a boolean
@@ -258,12 +307,6 @@ public class ParamHandler extends DefaultHandler {
 				currentParameter = new StringParameter(paramName, paramValue);
 			}
 		}
-	}
-
-	private void createPort(String paramName, String paramValue,
-			Attributes attributes) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private boolean isBooleanParameter(final String restrictions) {
@@ -282,7 +325,8 @@ public class ParamHandler extends DefaultHandler {
 
 	private boolean isPort(final Attributes attributes) {
 		Set<String> tagSet = getTags(attributes);
-		return (tagSet.contains("input file") || tagSet.contains("output file"));
+		return (tagSet.contains(INPUTFILE_TAG) || tagSet
+				.contains(OUTPUTFILE_TAG));
 	}
 
 	private void handleIntType(final String paramName, final String paramValue,
@@ -340,7 +384,9 @@ public class ParamHandler extends DefaultHandler {
 		if (tags != null) {
 			String[] tokens = tags.split(",");
 			Set<String> tokenSet = new HashSet<String>();
-			Collections.addAll(tokenSet, tokens);
+			for (String token : tokens) {
+				tokenSet.add(token.trim());
+			}
 			return tokenSet;
 		} else {
 			return new HashSet<String>();
@@ -353,7 +399,6 @@ public class ParamHandler extends DefaultHandler {
 		if (TAG_NODE.equals(name)) {
 			// reduce prefix
 			removeSuffix();
-			System.out.println("Prefix is: " + currentPath);
 		} else if (TAG_ITEM.equals(name)) {
 
 		} else if (TAG_ITEMLIST.equals(name)) {
@@ -380,6 +425,9 @@ public class ParamHandler extends DefaultHandler {
 		} else if (TAG_PARAMETERS.equals(name)) {
 			// TODO: return values to surrounding handler
 			parentHandler.setParameters(extractedParameters);
+			Port[] portArray = new Port[0];
+			parentHandler.setInputPorts(inputPorts.toArray(portArray));
+			parentHandler.setOutputPorts(outputPorts.toArray(portArray));
 			xmlReader.setContentHandler(parentHandler);
 		}
 	}

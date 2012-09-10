@@ -32,6 +32,7 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * The main {@link ContentHandler} for the CTD.
@@ -119,6 +120,14 @@ public class CTDHandler extends DefaultHandler {
 		for (Entry<String, Parameter<?>> entry : parameters.entrySet()) {
 			config.addParameter(entry.getKey(), entry.getValue());
 		}
+	}
+
+	public void setInputPorts(Port[] ports) {
+		config.setInports(ports);
+	}
+
+	public void setOutputPorts(Port[] ports) {
+		config.setOutports(ports);
 	}
 
 	@Override
