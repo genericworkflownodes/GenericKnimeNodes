@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.knime.core.data.url.MIMEType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -244,6 +245,11 @@ public class ParamHandler extends DefaultHandler {
 		p.setName(currentPath + paramName);
 		p.setMultiFile(isList);
 
+		List<MIMEType> mimetypes = extractMIMETypes(attributes);
+		for (MIMEType mt : mimetypes) {
+			p.addMimeType(mt);
+		}
+
 		String description = attributes.getValue(ATTR_DESCRIPTION);
 		p.setDescription(description);
 
@@ -254,6 +260,40 @@ public class ParamHandler extends DefaultHandler {
 		} else {
 			outputPorts.add(p);
 		}
+	}
+
+	/**
+	 * Extract the list of supported {@link MIMEType}s from the given
+	 * attributes.
+	 * 
+	 * @param attributes
+	 *            The attributes containing the {@link MIMEType} information.
+	 * @return A list of supported {@link MIMEType}s.
+	 */
+	private List<MIMEType> extractMIMETypes(Attributes attributes) {
+		ArrayList<MIMEType> mimeTypes = new ArrayList<MIMEType>();
+
+		// always prefer supported_formats
+		if (attributes.getValue(ATTR_SUPPORTED_FORMATS) != null
+				&& attributes.getValue(ATTR_SUPPORTED_FORMATS).length() > 0
+				&& !"false".equals(attributes.getValue(ATTR_SUPPORTED_FORMATS))) {
+			String attrValue = attributes.getValue(ATTR_SUPPORTED_FORMATS);
+			String[] fileExtension = attrValue.split(",");
+			for (String ext : fileExtension) {
+				mimeTypes.add(new MIMEType(ext.trim()));
+			}
+		} else if (attributes.getValue(ATTR_RESTRICTIONS) != null
+				&& attributes.getValue(ATTR_RESTRICTIONS).length() > 0
+				&& !"false".equals(attributes.getValue(ATTR_RESTRICTIONS))) {
+			String attrValue = attributes.getValue(ATTR_RESTRICTIONS);
+			String[] fileExtension = attrValue.split(",");
+			for (String ext : fileExtension) {
+				mimeTypes.add(new MIMEType(ext.replaceAll("^\\s*\\*\\.", "")
+						.trim()));
+			}
+		}
+
+		return mimeTypes;
 	}
 
 	private void handleDoubleList(String paramName, Attributes attributes) {
@@ -399,8 +439,6 @@ public class ParamHandler extends DefaultHandler {
 		if (TAG_NODE.equals(name)) {
 			// reduce prefix
 			removeSuffix();
-		} else if (TAG_ITEM.equals(name)) {
-
 		} else if (TAG_ITEMLIST.equals(name)) {
 			try {
 				if (listValues.size() > 0) {
@@ -420,8 +458,6 @@ public class ParamHandler extends DefaultHandler {
 
 			// reset for the next iteration
 			currentParameter = null;
-		} else if (TAG_LISTITEM.equals(name)) {
-
 		} else if (TAG_PARAMETERS.equals(name)) {
 			// TODO: return values to surrounding handler
 			parentHandler.setParameters(extractedParameters);
@@ -429,6 +465,10 @@ public class ParamHandler extends DefaultHandler {
 			parentHandler.setInputPorts(inputPorts.toArray(portArray));
 			parentHandler.setOutputPorts(outputPorts.toArray(portArray));
 			xmlReader.setContentHandler(parentHandler);
+		} else if (TAG_LISTITEM.equals(name)) {
+			// nothing to do here
+		} else if (TAG_ITEM.equals(name)) {
+			// nothing to do here
 		}
 	}
 

@@ -23,9 +23,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -38,6 +41,7 @@ import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.schemas.SchemaProvider;
 import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 /**
@@ -113,7 +117,13 @@ public class CTDHandlerTest {
 	@Test
 	public void testParamHandler() throws ParserConfigurationException,
 			SAXException, IOException {
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		Schema ctdSchema = schemaFactory.newSchema(SchemaProvider.class
+				.getResource("CTD.xsd"));
 		SAXParserFactory spfac = SAXParserFactory.newInstance();
+		spfac.setValidating(false);
+		spfac.setSchema(ctdSchema);
 
 		// Now use the parser factory to create a SAXParser object
 		SAXParser sp = spfac.newSAXParser();
