@@ -22,7 +22,7 @@ package com.genericworkflownodes.knime.config;
 import java.util.List;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
+import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -91,11 +91,13 @@ public interface INodeConfiguration {
 	public CLI getCLI();
 
 	/**
-	 * Returns the configured output converters.
+	 * Returns the list of all relocators used to find and move files after tool
+	 * execution. See {@link Relocator} for details.
 	 * 
-	 * @return the output converters.
+	 * @return The list of available relocators, if no relocators were set an
+	 *         empty list is returned.
 	 */
-	public OutputConverters getOutputConverters();
+	public List<Relocator> getRelocators();
 
 	public int getNumberOfOutputPorts();
 

@@ -24,25 +24,19 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.genericworkflownodes.knime.config.NodeConfiguration;
-import com.genericworkflownodes.knime.outputconverter.config.Converter;
-import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
+import com.genericworkflownodes.knime.outputconverter.Relocator;
 
 /**
- * Content handler for the output mapping element.
+ * SAX Handler for the relocator part of the CTD.
  * 
  * @author aiche
  */
-public class OutputConverterHandler extends DefaultHandler {
+public class RelocatorHandler extends DefaultHandler {
 
-	private static String ATTR_CLASS = "class";
-	private static String ATTR_REF = "ref";
+	private static String ATTR_REFERENCE = "reference";
+	private static String ATTR_PATTERN = "pattern";
 
-	private static String ATTR_NAME = "name";
-	private static String ATTR_VALUE = "value";
-
-	private static String TAG_CONVERTER = "converter";
-	private static String TAG_OUTPUT_CONVERTERS = "outputConverters";
-	private static String TAG_CONVERTER_PROPERTY = "converterProperty";
+	private static String ELEM_RELOCATORS = "relocators";
 
 	/**
 	 * The parent handler that invoked this handler for a sub tree of the XML
@@ -54,16 +48,6 @@ public class OutputConverterHandler extends DefaultHandler {
 	 * The {@link XMLReader} that processes the entire document.
 	 */
 	private XMLReader xmlReader;
-
-	/**
-	 * The parsed converters.
-	 */
-	private OutputConverters converters;
-
-	/**
-	 * The currently processed converter.
-	 */
-	private Converter currentConverter;
 
 	/**
 	 * The {@link NodeConfiguration} that will be filled while parsing the
@@ -82,38 +66,30 @@ public class OutputConverterHandler extends DefaultHandler {
 	 *            The {@link NodeConfiguration} that will be filled while
 	 *            parsing the document.
 	 */
-	public OutputConverterHandler(XMLReader xmlReader,
-			CTDHandler parentHandler, NodeConfiguration config) {
+	public RelocatorHandler(XMLReader xmlReader, CTDHandler parentHandler,
+			NodeConfiguration config) {
 		this.xmlReader = xmlReader;
 		this.parentHandler = parentHandler;
-		converters = new OutputConverters();
 		this.config = config;
 	}
 
 	@Override
 	public void startElement(String uri, String localName, String name,
 			Attributes attributes) throws SAXException {
-		if (TAG_CONVERTER.equals(name)) {
-			currentConverter = new Converter();
-			currentConverter.setClazz(attributes.getValue(ATTR_CLASS));
-			currentConverter.setRef(attributes.getValue(ATTR_REF));
-		} else if (TAG_CONVERTER_PROPERTY.equals(name)) {
-			String propertyName = attributes.getValue(ATTR_NAME);
-			String propertyValue = attributes.getValue(ATTR_VALUE);
-			currentConverter.getConverterProperties().setProperty(propertyName,
-					propertyValue);
-		}
+		// only relocator can occur
+		String reference = attributes.getValue(ATTR_REFERENCE);
+		String pattern = attributes.getValue(ATTR_PATTERN);
+
+		config.getRelocators().add(new Relocator(reference, pattern));
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
-		if (TAG_OUTPUT_CONVERTERS.equals(name)) {
-			// return to parent scope
-			config.setOutputConverters(converters);
+
+		// get back to the parent handler
+		if (ELEM_RELOCATORS.equals(name)) {
 			xmlReader.setContentHandler(parentHandler);
-		} else if (TAG_CONVERTER.equals(name)) {
-			converters.addConverter(currentConverter);
 		}
 	}
 }

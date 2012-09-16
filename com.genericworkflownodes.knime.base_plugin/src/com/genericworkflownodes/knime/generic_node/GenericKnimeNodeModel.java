@@ -59,8 +59,6 @@ import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.outputconverter.IOutputConverter;
-import com.genericworkflownodes.knime.outputconverter.config.Converter;
-import com.genericworkflownodes.knime.outputconverter.util.OutputConverterHelper;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.ListParameter;
@@ -599,31 +597,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];
 
 		for (int i = 0; i < nOut; i++) {
-			List<IOutputConverter> converters = new ArrayList<IOutputConverter>();
-			if (nodeConfig.getOutputConverters().findConverter(
-					nodeConfig.getOutputPorts()[i].getName()) != null) {
-				// we should transform this port
-				for (Converter conv : nodeConfig
-						.getOutputConverters()
-						.findConverter(nodeConfig.getOutputPorts()[i].getName())) {
-					try {
-						converters.add(OutputConverterHelper
-								.getConfiguredOutputConverter(conv));
-					} catch (Exception ex) {
-						LOGGER.error("Failed to instantiate converter: "
-								+ ex.getMessage());
-					}
-				}
-			}
-
 			List<URIContent> uris = new ArrayList<URIContent>();
 
 			String someFileName = "";
 			// multi output file
 			for (URI filename : outputFileNames.get(i)) {
-				someFileName = filename.getPath();
-				URI convertedUri = applyConverter(converters, filename);
-				uris.add(new URIContent(convertedUri));
+				uris.add(new URIContent(filename));
 			}
 
 			MIMEType mimeType = resolveMIMEType(someFileName);

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
+import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -71,13 +71,15 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	private CLI cli;
 
 	/**
-	 * The output converters stored in the CTD file.
+	 * The relocators for this tool.
 	 */
-	private OutputConverters converters;
+	private List<Relocator> relocators;
 
+	/**
+	 * Creates a new, empty {@link NodeConfiguration}.
+	 */
 	public NodeConfiguration() {
 		cli = new CLI();
-		converters = new OutputConverters();
 
 		params = new LinkedHashMap<String, Parameter<?>>();
 		inputPorts = new LinkedHashMap<String, Port>();
@@ -85,6 +87,8 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 		executableName = null;
 		executablePath = "";
+
+		relocators = new ArrayList<Relocator>();
 	}
 
 	public NodeConfiguration(INodeConfiguration config) {
@@ -156,11 +160,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	@Override
 	public CLI getCLI() {
 		return cli;
-	}
-
-	@Override
-	public OutputConverters getOutputConverters() {
-		return converters;
 	}
 
 	@Override
@@ -258,10 +257,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		cli = newCli;
 	}
 
-	public void setOutputConverters(OutputConverters converters) {
-		this.converters = converters;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -311,5 +306,10 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	public void setExecutablePath(String executablePath) {
 		this.executablePath = executablePath;
+	}
+
+	@Override
+	public List<Relocator> getRelocators() {
+		return relocators;
 	}
 }

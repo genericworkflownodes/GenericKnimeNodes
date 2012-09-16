@@ -44,7 +44,7 @@ import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
-import com.genericworkflownodes.knime.outputconverter.config.Converter;
+import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -757,55 +757,18 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		}
 
 		@SuppressWarnings("unchecked")
-		List<Node> converters = convertersRoot.selectNodes("//converter");
-		for (Node elem : converters) {
-			processConverter(elem);
+		List<Node> relocators = convertersRoot.selectNodes("//relocators");
+		for (Node elem : relocators) {
+			processRelocator(elem);
 		}
 
 	}
 
-	/**
-	 * Creates a converter object from the xml node.
-	 * 
-	 * @param elem
-	 *            The xml node to convert.
-	 * @throws Exception
-	 *             Is thrown if the configuration is invalid.
-	 */
-	private void processConverter(final Node elem) throws Exception {
-		Converter converter = new Converter();
-		converter.setClazz(elem.valueOf("@class"));
-		converter.setRef(elem.valueOf("@ref"));
+	private void processRelocator(final Node elem) {
+		String reference = elem.valueOf("@reference");
+		String pattern = elem.valueOf("@pattern");
 
-		// set mapping
-		@SuppressWarnings("unchecked")
-		List<Node> properties = elem.selectNodes("./converterProperty");
-		for (Node prop : properties) {
-			String name = prop.valueOf("@name");
-			String value = prop.valueOf("@value");
-			converter.getConverterProperties().setProperty(name, value);
-		}
-
-		validateConverter(converter);
-		config.getOutputConverters().addConverter(converter);
-	}
-
-	/**
-	 * Checks if the converter is valid (e.g., if the referenced parameter
-	 * exists and if it is an output parameter).
-	 * 
-	 * @param converter
-	 *            The converter to validate.
-	 * @throws Exception
-	 *             Is thrown if the port points to a non existing output port.
-	 */
-	private void validateConverter(final Converter converter) throws Exception {
-		// check if converter ref exists
-		if (!findInPortList(converter.getRef(), OUTPUT_PORTS)) {
-			throw new Exception(
-					"Invalid Output Converter: No output port with name "
-							+ converter.getRef() + " exists.");
-		}
+		config.getRelocators().add(new Relocator(reference, pattern));
 	}
 
 	/**

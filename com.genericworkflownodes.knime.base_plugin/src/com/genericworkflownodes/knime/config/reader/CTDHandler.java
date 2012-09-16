@@ -41,7 +41,7 @@ public class CTDHandler extends DefaultHandler {
 	private static String TAG_DOCURL = "docurl";
 	private static String TAG_CATEGORY = "category";
 	private static String TAG_CLI = "cli";
-	private static String TAG_OUTPUT_CONVERTERS = "outputConverters";
+	private static String TAG_RELOCATORS = "relocators";
 	private static String TAG_PARAMETERS = "PARAMETERS";
 	private static String TAG_EXECUTABLE_NAME = "executableName";
 	private static String TAG_EXECUTABLE_PATH = "executablePath";
@@ -95,9 +95,9 @@ public class CTDHandler extends DefaultHandler {
 		if (TAG_PARAMETERS.equals(name)) {
 			xmlReader.setContentHandler(new ParamHandler(xmlReader, this,
 					config));
-		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
-			xmlReader.setContentHandler(new OutputConverterHandler(xmlReader,
-					this, config));
+		} else if (TAG_RELOCATORS.equals(name)) {
+			xmlReader.setContentHandler(new RelocatorHandler(xmlReader, this,
+					config));
 		} else if (TAG_CLI.equals(name)) {
 			xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this,
 					config));
@@ -123,7 +123,7 @@ public class CTDHandler extends DefaultHandler {
 			config.setExecutablePath(currentContent.toString());
 		} else if (TAG_EXECUTABLE_NAME.equals(name)) {
 			config.setExecutableName(currentContent.toString());
-		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
+		} else if (TAG_RELOCATORS.equals(name)) {
 			// will not happen since we handle this element in sub handler
 		} else if (TAG_PARAMETERS.equals(name)) {
 			// will not happen since we handle this element in sub handler
