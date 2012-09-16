@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.knime.core.data.url.MIMEType;
 import org.xml.sax.Attributes;
@@ -54,6 +56,12 @@ import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
  * @author aiche
  */
 public class ParamHandler extends DefaultHandler {
+
+	/**
+	 * The logger used to indicate problems.
+	 */
+	private static Logger LOG = Logger.getLogger(ParamHandler.class
+			.getCanonicalName());
 
 	private static String TAG_NODE = "NODE"; // name, description
 	private static String TAG_ITEM = "ITEM"; // name, type, value, description,
@@ -256,6 +264,13 @@ public class ParamHandler extends DefaultHandler {
 
 	private void createPort(String paramName, Attributes attributes,
 			boolean isList) {
+		// check if we want to create this port
+		if (BLACKLIST.contains(paramName)) {
+			LOG.setLevel(Level.ALL);
+			LOG.info("Ignoring port: " + paramName);
+			return;
+		}
+
 		Port p = new Port();
 		p.setName(currentPath + paramName);
 		p.setMultiFile(isList);

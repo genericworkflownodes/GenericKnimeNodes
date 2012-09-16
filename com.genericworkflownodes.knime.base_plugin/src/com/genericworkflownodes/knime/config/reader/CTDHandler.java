@@ -31,7 +31,6 @@ import com.genericworkflownodes.knime.config.NodeConfiguration;
  * The main {@link ContentHandler} for the CTD.
  * 
  * @author aiche
- * 
  */
 public class CTDHandler extends DefaultHandler {
 
