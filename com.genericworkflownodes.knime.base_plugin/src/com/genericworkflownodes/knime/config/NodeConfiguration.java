@@ -35,7 +35,7 @@ import com.genericworkflownodes.knime.port.Port;
  * Note: Two {@link NodeConfiguration}s are equal iff their {@link #getName()
  * names} are equal.
  * 
- * @author bkahlert
+ * @author roettig, bkahlert, aiche
  * 
  */
 public class NodeConfiguration implements INodeConfiguration, Serializable {
@@ -47,14 +47,23 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	private Map<String, Port> inputPorts;
 	private Map<String, Port> outputPorts;
 
-	protected String name;
-	protected String version;
-	protected String command = "";
-	protected String docurl = "";
-	protected String shortdescription = "";
-	protected String longdescription = "";
-	protected String xml = "";
-	protected String category = "";
+	private String name;
+	private String version;
+	private String docurl = "";
+	private String shortdescription = "";
+	private String longdescription = "";
+	private String xml = "";
+	private String category = "";
+
+	/**
+	 * Name of the executable.
+	 */
+	private String executableName;
+
+	/**
+	 * Path to the folder that contains the executable.
+	 */
+	private String executablePath;
 
 	/**
 	 * The CLI element stored in the CTD file.
@@ -73,6 +82,9 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		params = new LinkedHashMap<String, Parameter<?>>();
 		inputPorts = new LinkedHashMap<String, Port>();
 		outputPorts = new LinkedHashMap<String, Port>();
+
+		executableName = null;
+		executablePath = "";
 	}
 
 	public NodeConfiguration(INodeConfiguration config) {
@@ -161,11 +173,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		return category;
 	}
 
-	@Override
-	public String getCommand() {
-		return command;
-	}
-
 	// / protected setters
 
 	@Override
@@ -247,10 +254,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		version = newVersion;
 	}
 
-	public void setCommand(String newCommand) {
-		command = newCommand;
-	}
-
 	public void setCLI(CLI newCli) {
 		cli = newCli;
 	}
@@ -287,5 +290,26 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public String getExecutableName() {
+		if (executableName != null)
+			return executableName;
+		else
+			return name;
+	}
+
+	public void setExecutableName(String executableName) {
+		this.executableName = executableName;
+	}
+
+	@Override
+	public String getExecutablePath() {
+		return executablePath;
+	}
+
+	public void setExecutablePath(String executablePath) {
+		this.executablePath = executablePath;
 	}
 }

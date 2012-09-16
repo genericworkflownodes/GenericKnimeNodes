@@ -406,14 +406,6 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 		}
 		config.setDescription(sdescr);
 
-		node = doc.selectSingleNode("/tool/path");
-		String spath = "";
-		if (node != null) {
-			spath = node.valueOf("text()");
-		}
-
-		config.setCommand(spath);
-
 		node = doc.selectSingleNode("/tool/manual");
 		String ldescr = "";
 		if (node != null) {

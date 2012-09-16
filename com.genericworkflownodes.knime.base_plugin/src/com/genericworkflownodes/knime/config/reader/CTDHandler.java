@@ -40,10 +40,11 @@ public class CTDHandler extends DefaultHandler {
 	private static String TAG_MANUAL = "manual";
 	private static String TAG_DOCURL = "docurl";
 	private static String TAG_CATEGORY = "category";
-	private static String TAG_TYPE = "type";
 	private static String TAG_CLI = "cli";
 	private static String TAG_OUTPUT_CONVERTERS = "outputConverters";
 	private static String TAG_PARAMETERS = "PARAMETERS";
+	private static String TAG_EXECUTABLE_NAME = "executableName";
+	private static String TAG_EXECUTABLE_PATH = "executablePath";
 
 	/**
 	 * The {@link INodeConfiguration} generated while parsing the CTD document.
@@ -118,8 +119,10 @@ public class CTDHandler extends DefaultHandler {
 			config.setDocUrl(currentContent.toString());
 		} else if (TAG_CATEGORY.equals(name)) {
 			config.setCategory(currentContent.toString());
-		} else if (TAG_TYPE.equals(name)) {
-			// we ignore the type tag
+		} else if (TAG_EXECUTABLE_PATH.equals(name)) {
+			config.setExecutablePath(currentContent.toString());
+		} else if (TAG_EXECUTABLE_NAME.equals(name)) {
+			config.setExecutableName(currentContent.toString());
 		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
 			// will not happen since we handle this element in sub handler
 		} else if (TAG_PARAMETERS.equals(name)) {

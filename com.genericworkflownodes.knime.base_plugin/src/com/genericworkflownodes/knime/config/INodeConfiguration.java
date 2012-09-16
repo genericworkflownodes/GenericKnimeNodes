@@ -39,13 +39,28 @@ public interface INodeConfiguration {
 	 */
 	public String getName();
 
-	public String getCommand();
-
 	public String getDescription();
 
 	public String getManual();
 
 	public String getDocUrl();
+
+	/**
+	 * Returns the name of the executable file as it was defined in the CTD. If
+	 * it was not set the tool name will be returned as a proxy.
+	 * 
+	 * @return The name of the tool executable.
+	 */
+	public String getExecutableName();
+
+	/**
+	 * Returns the path to the executable as it was defined in the CTD. Note
+	 * that the path does not contain the actual executable. See
+	 * {@link #getExecutableName()} if you need access to the executable name.
+	 * 
+	 * @return The path to the executable.
+	 */
+	public String getExecutablePath();
 
 	/**
 	 * Returns the version of the node.
