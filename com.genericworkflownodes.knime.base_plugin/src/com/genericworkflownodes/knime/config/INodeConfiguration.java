@@ -73,7 +73,9 @@ public interface INodeConfiguration {
 	 * Returns the xml source of this configuration as {@link String}.
 	 * 
 	 * @return The xml document.
+	 * @deprecated
 	 */
+	@Deprecated
 	public String getXML();
 
 	/**
@@ -103,9 +105,9 @@ public interface INodeConfiguration {
 
 	public int getNumberOfInputPorts();
 
-	public Port[] getInputPorts();
+	public List<Port> getInputPorts();
 
-	public Port[] getOutputPorts();
+	public List<Port> getOutputPorts();
 
 	public Parameter<?> getParameter(String key);
 

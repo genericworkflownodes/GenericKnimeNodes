@@ -106,13 +106,13 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	}
 
 	@Override
-	public Port[] getInputPorts() {
-		return portsToArray(inputPorts);
+	public List<Port> getInputPorts() {
+		return portsToList(inputPorts);
 	}
 
 	@Override
-	public Port[] getOutputPorts() {
-		return portsToArray(outputPorts);
+	public List<Port> getOutputPorts() {
+		return portsToList(outputPorts);
 	}
 
 	/**
@@ -123,13 +123,12 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	 *            The port map to convert.
 	 * @return The port map as array of {@link Port}s.
 	 */
-	private Port[] portsToArray(Map<String, Port> ports) {
-		Port[] portsAsArray = new Port[ports.size()];
-		int i = 0;
+	private List<Port> portsToList(Map<String, Port> ports) {
+		List<Port> portsAsList = new ArrayList<Port>(ports.size());
 		for (Map.Entry<String, Port> entry : ports.entrySet()) {
-			portsAsArray[i++] = entry.getValue();
+			portsAsList.add(entry.getValue());
 		}
-		return portsAsArray;
+		return portsAsList;
 	}
 
 	@Override

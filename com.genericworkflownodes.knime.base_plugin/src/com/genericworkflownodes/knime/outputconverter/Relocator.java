@@ -69,4 +69,13 @@ public class Relocator {
 	public void relocate(INodeConfiguration config) {
 
 	}
+
+	/**
+	 * Returns the name of the parameter that should be relocated.
+	 * 
+	 * @return The parameter name.
+	 */
+	public String getReferencedParamter() {
+		return reference;
+	}
 }

@@ -129,8 +129,8 @@ public class CTDHandlerTest {
 		assertEquals(false, no_progress.getValue());
 		assertEquals(true, no_progress.isAdvanced());
 
-		assertEquals(1, config.getInputPorts().length);
-		assertEquals("FileFilter.1.in", config.getInputPorts()[0].getName());
+		assertEquals(1, config.getInputPorts().size());
+		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
 
 	}
 }

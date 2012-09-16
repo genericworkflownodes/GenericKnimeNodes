@@ -38,6 +38,7 @@ import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
@@ -289,6 +290,17 @@ public class ParamHandler extends DefaultHandler {
 			inputPorts.add(p);
 		} else {
 			outputPorts.add(p);
+
+			// TODO: why do we add output-list parameters in such a special way?
+			if (isList) {
+				FileListParameter param = new FileListParameter(paramName,
+						new ArrayList<String>());
+				param.setPort(p);
+				param.setDescription(p.getDescription());
+				param.setIsOptional(p.isOptional());
+
+				extractedParameters.put(currentPath + param.getKey(), param);
+			}
 		}
 	}
 
@@ -503,9 +515,8 @@ public class ParamHandler extends DefaultHandler {
 			config.addParameter(entry.getKey(), entry.getValue());
 		}
 
-		Port[] portArray = new Port[0];
-		config.setInports(inputPorts.toArray(portArray));
-		config.setOutports(outputPorts.toArray(portArray));
+		config.setInports(inputPorts.toArray(new Port[inputPorts.size()]));
+		config.setOutports(outputPorts.toArray(new Port[outputPorts.size()]));
 	}
 
 	private void removeSuffix() {

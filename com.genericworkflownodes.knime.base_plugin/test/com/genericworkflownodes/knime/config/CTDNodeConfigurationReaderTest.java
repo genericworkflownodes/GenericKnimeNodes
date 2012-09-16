@@ -121,10 +121,12 @@ public class CTDNodeConfigurationReaderTest {
 		Parameter<?> p5 = config.getParameter("1.choice");
 		assertTrue(p5 instanceof StringChoiceParameter);
 
-		List<MIMEType> mimetypes = config.getOutputPorts()[0].getMimeTypes();
+		List<MIMEType> mimetypes = config.getOutputPorts().get(0)
+				.getMimeTypes();
 
-		assertEquals("1.o", config.getOutputPorts()[0].getName());
-		assertEquals("output file", config.getOutputPorts()[0].getDescription());
+		assertEquals("1.o", config.getOutputPorts().get(0).getName());
+		assertEquals("output file", config.getOutputPorts().get(0)
+				.getDescription());
 
 		String[] test = { "mol2", "sdf", "drf" };
 		int idx = 0;
@@ -133,7 +135,7 @@ public class CTDNodeConfigurationReaderTest {
 			idx++;
 		}
 
-		mimetypes = config.getInputPorts()[0].getMimeTypes();
+		mimetypes = config.getInputPorts().get(0).getMimeTypes();
 		String[] test2 = { "mol2", "sdf", "drf", "pdb", "ac", "ent", "brk",
 				"hin", "mol", "xyz", "mol2.gz", "sdf.gz", "drf.gz", "pdb.gz",
 				"ac.gz", "ent.gz", "brk.gz", "hin.gz", "mol.gz", "xyz.gz" };
@@ -144,15 +146,15 @@ public class CTDNodeConfigurationReaderTest {
 		}
 
 		assertEquals("mol2", mimetypes.get(0).getExtension());
-		assertEquals("1.q", config.getInputPorts()[0].getName());
-		assertEquals("query molecules for similarity searching",
-				config.getInputPorts()[0].getDescription());
+		assertEquals("1.q", config.getInputPorts().get(0).getName());
+		assertEquals("query molecules for similarity searching", config
+				.getInputPorts().get(0).getDescription());
 
-		mimetypes = config.getInputPorts()[1].getMimeTypes();
+		mimetypes = config.getInputPorts().get(1).getMimeTypes();
 		assertEquals("txt", mimetypes.get(0).getExtension());
-		assertEquals("1.smarts_file", config.getInputPorts()[1].getName());
-		assertEquals("SMARTS pattern",
-				config.getInputPorts()[1].getDescription());
+		assertEquals("1.smarts_file", config.getInputPorts().get(1).getName());
+		assertEquals("SMARTS pattern", config.getInputPorts().get(1)
+				.getDescription());
 	}
 
 	@Test
@@ -228,10 +230,12 @@ public class CTDNodeConfigurationReaderTest {
 		assertEquals(1, config.getNumberOfInputPorts());
 		assertEquals(1, config.getNumberOfOutputPorts());
 
-		List<MIMEType> mimetypes = config.getOutputPorts()[0].getMimeTypes();
+		List<MIMEType> mimetypes = config.getOutputPorts().get(0)
+				.getMimeTypes();
 
-		assertEquals("1.out", config.getOutputPorts()[0].getName());
-		assertEquals("output file", config.getOutputPorts()[0].getDescription());
+		assertEquals("1.out", config.getOutputPorts().get(0).getName());
+		assertEquals("output file", config.getOutputPorts().get(0)
+				.getDescription());
 
 		String[] test = { "mzML", "featureXML" };
 		int idx = 0;
@@ -240,11 +244,11 @@ public class CTDNodeConfigurationReaderTest {
 			idx++;
 		}
 
-		mimetypes = config.getInputPorts()[0].getMimeTypes();
+		mimetypes = config.getInputPorts().get(0).getMimeTypes();
 
-		assertEquals("1.in", config.getInputPorts()[0].getName());
-		assertEquals("Input files separated by blank",
-				config.getInputPorts()[0].getDescription());
+		assertEquals("1.in", config.getInputPorts().get(0).getName());
+		assertEquals("Input files separated by blank", config.getInputPorts()
+				.get(0).getDescription());
 
 		test = new String[] { "mzData", "mzXML", "mzML", "DTA", "DTA2D", "mgf",
 				"featureXML", "fid" };

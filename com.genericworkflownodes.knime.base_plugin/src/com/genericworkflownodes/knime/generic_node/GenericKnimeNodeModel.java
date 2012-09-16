@@ -122,19 +122,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	}
 
 	protected MIMEType getOutputType(int idx) {
-		return nodeConfig.getOutputPorts()[idx].getMimeTypes().get(
-				selected_output_type[idx]);
+		return nodeConfig.getOutputPorts().get(idx).getMimeTypes()
+				.get(selected_output_type[idx]);
 	}
 
 	protected int getOutputTypeIndex(int idx) {
 		return selected_output_type[idx];
 	}
 
-	private static PortType[] createOPOs(Port[] ports) {
-		PortType[] portTypes = new PortType[ports.length];
+	private static PortType[] createOPOs(List<Port> ports) {
+		PortType[] portTypes = new PortType[ports.size()];
 		Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
-		for (int i = 0; i < ports.length; i++) {
-			if (ports[i].isOptional()) {
+		for (int i = 0; i < ports.size(); i++) {
+			if (ports.get(i).isOptional()) {
 				portTypes[i] = OPTIONAL_PORT_TYPE;
 			}
 		}
@@ -372,7 +372,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			// not connected input ports have nulls in inSpec
 			if (inSpecs[i] == null) {
 				// .. if port is optional everything is fine
-				if (nodeConfig.getInputPorts()[i].isOptional()) {
+				if (nodeConfig.getInputPorts().get(i).isOptional()) {
 					continue;
 				} else {
 					throw new InvalidSettingsException(
@@ -475,7 +475,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				continue;
 			}
 
-			Port port = nodeConfig.getInputPorts()[i];
+			Port port = nodeConfig.getInputPorts().get(i);
 
 			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
 			List<URIContent> uris = po.getURIContents();
@@ -503,9 +503,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		Map<Port, Integer> port2slot = new HashMap<Port, Integer>();
 
 		// .. output files
-		int nOut = nodeConfig.getOutputPorts().length;
+		int nOut = nodeConfig.getOutputPorts().size();
 		for (int i = 0; i < nOut; i++) {
-			Port port = nodeConfig.getOutputPorts()[i];
+			Port port = nodeConfig.getOutputPorts().get(i);
 			String name = port.getName();
 
 			String ext = getOutputType(i).getExtension();
@@ -591,7 +591,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	private PortObject[] processOutput(final List<List<URI>> outputFileNames,
 			final ExecutionContext exec) throws Exception {
-		int nOut = nodeConfig.getOutputPorts().length;
+		int nOut = nodeConfig.getOutputPorts().size();
 
 		// create output tables
 		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];

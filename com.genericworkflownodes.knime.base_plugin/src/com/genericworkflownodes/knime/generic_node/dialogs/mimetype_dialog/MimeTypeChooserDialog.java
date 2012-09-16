@@ -44,7 +44,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 	public MimeTypeChooserDialog(INodeConfiguration config) {
 		this.config = config;
 
-		this.setLayout(new VerticalLayout());
+		setLayout(new VerticalLayout());
 
 		int nCB = this.config.getNumberOfOutputPorts();
 
@@ -52,7 +52,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 		sel_ports = new int[nCB];
 
 		for (int i = 0; i < nCB; i++) {
-			Port port = this.config.getOutputPorts()[i];
+			Port port = this.config.getOutputPorts().get(i);
 
 			this.add(new JLabel(port.getName()));
 
