@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.outputconverter.config.Converter;
 import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
 
@@ -65,17 +66,28 @@ public class OutputConverterHandler extends DefaultHandler {
 	private Converter currentConverter;
 
 	/**
+	 * The {@link NodeConfiguration} that will be filled while parsing the
+	 * document.
+	 */
+	private NodeConfiguration config;
+
+	/**
 	 * C'tor.
 	 * 
 	 * @param xmlReader
 	 *            The xml reader of the global document.
 	 * @param parentHandler
 	 *            The parent handler for the global document.
+	 * @param config
+	 *            The {@link NodeConfiguration} that will be filled while
+	 *            parsing the document.
 	 */
-	public OutputConverterHandler(XMLReader xmlReader, CTDHandler parentHandler) {
+	public OutputConverterHandler(XMLReader xmlReader,
+			CTDHandler parentHandler, NodeConfiguration config) {
 		this.xmlReader = xmlReader;
 		this.parentHandler = parentHandler;
 		converters = new OutputConverters();
+		this.config = config;
 	}
 
 	@Override
@@ -97,7 +109,8 @@ public class OutputConverterHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
 		if (TAG_OUTPUT_CONVERTERS.equals(name)) {
-			parentHandler.setOutputConverters(converters);
+			// return to parent scope
+			config.setOutputConverters(converters);
 			xmlReader.setContentHandler(parentHandler);
 		} else if (TAG_CONVERTER.equals(name)) {
 			converters.addConverter(currentConverter);

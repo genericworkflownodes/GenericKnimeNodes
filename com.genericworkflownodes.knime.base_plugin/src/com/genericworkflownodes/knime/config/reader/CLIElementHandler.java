@@ -28,6 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+import com.genericworkflownodes.knime.config.NodeConfiguration;
 
 /**
  * The {@link ContentHandler} for the CLI element.
@@ -50,7 +51,16 @@ public class CLIElementHandler extends DefaultHandler {
 	 */
 	private CLI readCLI;
 
+	/**
+	 * Current element.
+	 */
 	private CLIElement currentElement;
+
+	/**
+	 * The {@link NodeConfiguration} that will be filled while parsing the
+	 * document.
+	 */
+	private NodeConfiguration config;
 
 	/**
 	 * The parent handler that invoked this handler for a sub tree of the XML
@@ -63,10 +73,23 @@ public class CLIElementHandler extends DefaultHandler {
 	 */
 	private XMLReader xmlReader;
 
-	public CLIElementHandler(XMLReader xmlReader, CTDHandler parentHandler) {
+	/**
+	 * C'tor.
+	 * 
+	 * @param xmlReader
+	 *            The {@link XMLReader} used for parsing the complete document.
+	 * @param parentHandler
+	 *            The parent handler that triggered this handler.
+	 * @param config
+	 *            The {@link NodeConfiguration} that will be filled while
+	 *            parsing the document.
+	 */
+	public CLIElementHandler(XMLReader xmlReader, CTDHandler parentHandler,
+			NodeConfiguration config) {
 		this.xmlReader = xmlReader;
 		this.parentHandler = parentHandler;
 		readCLI = new CLI();
+		this.config = config;
 	}
 
 	@Override
@@ -95,7 +118,7 @@ public class CLIElementHandler extends DefaultHandler {
 			throws SAXException {
 		if (TAG_CLI.equals(name)) {
 			// return to parent scope
-			parentHandler.setCLI(readCLI);
+			config.setCLI(readCLI);
 			xmlReader.setContentHandler(parentHandler);
 		} else if (TAG_CLIELEMENT.equals(name)) {
 			// finished reading this element

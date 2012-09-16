@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.knime.core.data.url.MIMEType;
@@ -31,6 +32,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -138,16 +140,29 @@ public class ParamHandler extends DefaultHandler {
 	private ArrayList<Port> outputPorts;
 
 	/**
+	 * The {@link NodeConfiguration} that will be filled while parsing the
+	 * document.
+	 */
+	private NodeConfiguration config;
+
+	/**
 	 * C'tor accepting the parent handler and the xml reader.
 	 * 
 	 * @param xmlReader
 	 *            The xml reader of the global document.
 	 * @param parentHandler
 	 *            The parent handler for the global document.
+	 * @param config
+	 *            The {@link NodeConfiguration} that will be filled while
+	 *            parsing the document.
 	 */
-	public ParamHandler(XMLReader xmlReader, CTDHandler parentHandler) {
+	public ParamHandler(XMLReader xmlReader, CTDHandler parentHandler,
+			NodeConfiguration config) {
 		this.xmlReader = xmlReader;
 		this.parentHandler = parentHandler;
+		this.config = config;
+
+		// prepare state of SAXHandler
 		currentPath = "";
 		extractedParameters = new LinkedHashMap<String, Parameter<?>>();
 
@@ -459,17 +474,23 @@ public class ParamHandler extends DefaultHandler {
 			// reset for the next iteration
 			currentParameter = null;
 		} else if (TAG_PARAMETERS.equals(name)) {
-			// TODO: return values to surrounding handler
-			parentHandler.setParameters(extractedParameters);
-			Port[] portArray = new Port[0];
-			parentHandler.setInputPorts(inputPorts.toArray(portArray));
-			parentHandler.setOutputPorts(outputPorts.toArray(portArray));
+			transferValuesToConfig();
 			xmlReader.setContentHandler(parentHandler);
 		} else if (TAG_LISTITEM.equals(name)) {
 			// nothing to do here
 		} else if (TAG_ITEM.equals(name)) {
 			// nothing to do here
 		}
+	}
+
+	private void transferValuesToConfig() {
+		for (Entry<String, Parameter<?>> entry : extractedParameters.entrySet()) {
+			config.addParameter(entry.getKey(), entry.getValue());
+		}
+
+		Port[] portArray = new Port[0];
+		config.setInports(inputPorts.toArray(portArray));
+		config.setOutports(outputPorts.toArray(portArray));
 	}
 
 	private void removeSuffix() {

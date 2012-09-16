@@ -18,21 +18,14 @@
  */
 package com.genericworkflownodes.knime.config.reader;
 
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.genericworkflownodes.knime.cliwrapper.CLI;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
-import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
-import com.genericworkflownodes.knime.parameter.Parameter;
-import com.genericworkflownodes.knime.port.Port;
 
 /**
  * The main {@link ContentHandler} for the CTD.
@@ -89,47 +82,6 @@ public class CTDHandler extends DefaultHandler {
 		return config;
 	}
 
-	/**
-	 * Injects a newly parsed {@link CLI} into the underlying config.
-	 * 
-	 * @param cli
-	 *            The parsed {@link CLI}.
-	 */
-	public void setCLI(CLI cli) {
-		config.setCLI(cli);
-	}
-
-	/**
-	 * Injects a newly parsed {@link OutputConverters} into the underlying
-	 * config.
-	 * 
-	 * @param converters
-	 *            The parsed converters.
-	 */
-	public void setOutputConverters(OutputConverters converters) {
-		config.setOutputConverters(converters);
-	}
-
-	/**
-	 * Injects a newly parsed {@link Parameter} into the underlying config.
-	 * 
-	 * @param parameters
-	 *            The parsed parameters.
-	 */
-	public void setParameters(LinkedHashMap<String, Parameter<?>> parameters) {
-		for (Entry<String, Parameter<?>> entry : parameters.entrySet()) {
-			config.addParameter(entry.getKey(), entry.getValue());
-		}
-	}
-
-	public void setInputPorts(Port[] ports) {
-		config.setInports(ports);
-	}
-
-	public void setOutputPorts(Port[] ports) {
-		config.setOutports(ports);
-	}
-
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
@@ -141,12 +93,14 @@ public class CTDHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		currentContent.setLength(0);
 		if (TAG_PARAMETERS.equals(name)) {
-			xmlReader.setContentHandler(new ParamHandler(xmlReader, this));
+			xmlReader.setContentHandler(new ParamHandler(xmlReader, this,
+					config));
 		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
 			xmlReader.setContentHandler(new OutputConverterHandler(xmlReader,
-					this));
+					this, config));
 		} else if (TAG_CLI.equals(name)) {
-			xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this));
+			xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this,
+					config));
 		}
 	}
 
