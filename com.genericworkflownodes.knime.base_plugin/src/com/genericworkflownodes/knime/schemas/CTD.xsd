@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:include schemaLocation="http://page.mi.fu-berlin.de/aiche/schemas/Param_1_3.xsd"/>
+	<xs:include schemaLocation="Param_1_3.xsd"/>
 
 	<xs:element name="tool">
 		<xs:complexType>
