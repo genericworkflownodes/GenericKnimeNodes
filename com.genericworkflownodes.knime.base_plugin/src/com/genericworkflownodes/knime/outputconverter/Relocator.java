@@ -18,6 +18,9 @@
  */
 package com.genericworkflownodes.knime.outputconverter;
 
+import java.io.File;
+import java.net.URI;
+
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 
 /**
@@ -29,12 +32,17 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
  * <ul>
  * <li>%TEMP% - The temporary dirctory obtained from the Java Runtime.</li>
  * <li>%PWD% - The working directory for the tool execution.</li>
- * <li>%BASE% - The base name of the original output file passed to the tool.</li>
+ * <li>%BASE% - The name of the original output file passed to the tool without
+ * extension</li>
  * </ul>
  * 
  * @author aiche
  */
 public class Relocator {
+
+	private static String TEMP = "%TEMP%";
+	private static String PWD = "%PWD%";
+	private static String BASENAME = "%BASENAME[.*]%";
 
 	/**
 	 * The referenced parameter that should be transformed.
@@ -44,19 +52,19 @@ public class Relocator {
 	/**
 	 * The regular expression used to find the parameter.
 	 */
-	private String pattern;
+	private String location;
 
 	/**
 	 * C'tor.
 	 * 
 	 * @param parameter
 	 *            The name of the output parameter that should be transformed
-	 * @param pattern
+	 * @param location
 	 *            The pattern used to find the output file.
 	 */
-	public Relocator(String parameter, String pattern) {
+	public Relocator(String parameter, String location) {
 		reference = parameter;
-		this.pattern = pattern;
+		this.location = location;
 	}
 
 	/**
@@ -65,9 +73,37 @@ public class Relocator {
 	 * 
 	 * @param config
 	 *            The node configuration of the tool at execution time.
+	 * @param target
+	 *            The original output target specified when calling the tool and
+	 *            the place where the found output should be stored.
+	 * @param workingDirectory
+	 *            The directory where the tool was called.
+	 * @throws RelocatorException
+	 *             If the file could not be found.
 	 */
-	public void relocate(INodeConfiguration config) {
+	public void relocate(INodeConfiguration config, URI target,
+			File workingDirectory) throws RelocatorException {
 
+		String updatedLocation = location;
+
+		// replace fixed variables in the pattern with
+		updatedLocation.replace(TEMP, System.getProperty("temp.dir"));
+		updatedLocation.replace(PWD, workingDirectory.getAbsolutePath());
+
+		fixBaseNames(updatedLocation);
+
+		File fileToRelocate = new File(updatedLocation);
+		if (!fileToRelocate.exists()) {
+			throw new RelocatorException(
+					"Could not find file specified by this relocator: "
+							+ location);
+		}
+
+		fileToRelocate.renameTo(new File(target.getPath()));
+	}
+
+	private void fixBaseNames(String updatedLocation) {
+		// TODO implement base name updating
 	}
 
 	/**

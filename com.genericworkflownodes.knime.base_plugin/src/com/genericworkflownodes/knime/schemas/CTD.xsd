@@ -178,13 +178,16 @@
     		</xs:documentation>
     		</xs:annotation>
     		</xs:element>
-    		<xs:element name="pattern" type="xs:string" minOccurs="1" maxOccurs="1">
+    		<xs:element name="location" type="xs:string" minOccurs="1" maxOccurs="1">
     		    	<xs:annotation>
-    	<xs:documentation>
-    	The pattern used to find the output file.  
+    		    		<xs:documentation>The location of the output file defined using following variables: 
+
+%TEMP% - the temporary directory while executing
+%PWD% - the working directory while executing 
+%BASENAME[PARAM]% - the base name of PARAM
     		</xs:documentation>
-    		</xs:annotation>
-    		
+    		    	</xs:annotation>
+
     		</xs:element>
     	</xs:sequence>
     </xs:complexType>
