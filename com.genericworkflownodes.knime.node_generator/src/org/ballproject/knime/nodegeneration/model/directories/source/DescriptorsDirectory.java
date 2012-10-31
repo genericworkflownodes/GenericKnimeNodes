@@ -59,7 +59,7 @@ public class DescriptorsDirectory extends Directory {
 
 		File mimeTypeFile = new File(this, "mimetypes.xml");
 		try {
-			this.mimeTypesFile = new MimeTypesFile(mimeTypeFile);
+			mimeTypesFile = new MimeTypesFile(mimeTypeFile);
 		} catch (JaxenException e) {
 			throw new IOException("Error reading MIME types from "
 					+ mimeTypeFile.getPath(), e);
@@ -68,7 +68,7 @@ public class DescriptorsDirectory extends Directory {
 					+ mimeTypeFile.getPath(), e);
 		}
 
-		this.ctdFiles = new LinkedList<CTDFile>();
+		ctdFiles = new LinkedList<CTDFile>();
 		for (File file : this.listFiles()) {
 			if (file.getName().endsWith(".ctd")) {
 				try {
@@ -81,13 +81,18 @@ public class DescriptorsDirectory extends Directory {
 								+ "\" is invalid.");
 					}
 
-					if (this.ctdFiles.contains(ctdFile)) {
+					if (ctdFiles.contains(ctdFile)) {
 						throw new DuplicateNodeNameException(nodeName);
 					}
 
-					this.ctdFiles.add(ctdFile);
+					ctdFiles.add(ctdFile);
 				} catch (CTDNodeConfigurationReaderException e) {
-					throw new IOException("Error reading " + file.getPath(), e);
+					System.out.println(String.format("Invalid ctd-format: %s",
+							file.getName()));
+					System.out.println(String.format("Reason: %s",
+							e.getMessage()));
+					// throw new IOException("Error reading " + file.getPath(),
+					// e);
 				}
 			}
 		}
