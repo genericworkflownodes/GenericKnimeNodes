@@ -74,8 +74,8 @@
 	</xs:complexType>
 	<xs:complexType name="ITEMLISTType">
 		<xs:sequence>
-			<xs:element minOccurs="0" maxOccurs="unbounded" name="LISTITEM"
-				type="LISTITEMType">
+			<xs:element minOccurs="0" maxOccurs="unbounded"
+				name="LISTITEM" type="LISTITEMType">
 				<xs:annotation></xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -87,7 +87,8 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute use="required" name="type" type="PossibleITEMType">
+		<xs:attribute use="required" name="type"
+			type="PossibleITEMType">
 			<xs:annotation></xs:annotation>
 		</xs:attribute>
 		<xs:attribute default="" name="description" type="xs:string">
@@ -99,6 +100,7 @@
 		<xs:attribute default="" name="restrictions" type="xs:string">
 			<xs:annotation></xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="supported_formats" type="xs:string"></xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="LISTITEMType">
 		<xs:attribute use="required" name="value" type="xs:string">

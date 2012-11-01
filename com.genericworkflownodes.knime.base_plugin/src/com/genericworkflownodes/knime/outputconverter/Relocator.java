@@ -114,4 +114,13 @@ public class Relocator {
 	public String getReferencedParamter() {
 		return reference;
 	}
+
+	/**
+	 * Returns the location information of the relocator.
+	 * 
+	 * @return The location parameter.
+	 */
+	public String getLocation() {
+		return location;
+	}
 }

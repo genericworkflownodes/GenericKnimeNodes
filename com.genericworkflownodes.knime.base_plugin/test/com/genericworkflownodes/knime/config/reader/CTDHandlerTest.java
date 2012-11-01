@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.reader.handler.CTDHandler;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;

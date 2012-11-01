@@ -31,6 +31,7 @@ import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationReader;
+import com.genericworkflownodes.knime.config.reader.handler.CTDHandler;
 import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.port.Port;
@@ -76,8 +77,6 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
 		for (Relocator relocator : config.getRelocators()) {
 			validateRelocator(relocator);
 		}
-
-		// TODO: add the complete XML to the config
 
 		// return parsed and validated config
 		return config;
