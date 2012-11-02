@@ -54,7 +54,10 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="NODEType">
-		<xs:sequence>
+        <xs:annotation>
+        	<xs:documentation></xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
 			<xs:group minOccurs="0" maxOccurs="unbounded" ref="ITEMS">
 				<xs:annotation></xs:annotation>
 			</xs:group>
