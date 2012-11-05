@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,11 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	private static final long serialVersionUID = -5250528380628071121L;
 
+	// The parameters.
 	private Map<String, Parameter<?>> params;
+
+	// The section descriptions for the sections of the paramters.
+	private Map<String, String> sectionDescriptions;
 
 	private Map<String, Port> inputPorts;
 	private Map<String, Port> outputPorts;
@@ -84,6 +89,8 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		params = new LinkedHashMap<String, Parameter<?>>();
 		inputPorts = new LinkedHashMap<String, Port>();
 		outputPorts = new LinkedHashMap<String, Port>();
+
+		sectionDescriptions = new HashMap<String, String>();
 
 		executableName = null;
 		executablePath = "";
@@ -310,5 +317,26 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	@Override
 	public List<Relocator> getRelocators() {
 		return relocators;
+	}
+
+	@Override
+	public String getSectionDescription(String section) {
+		if (sectionDescriptions.containsKey(section)) {
+			return sectionDescriptions.get(section);
+		} else
+			return null;
+	}
+
+	/**
+	 * Adds the given section and the corresponding description to the tool
+	 * configuration.
+	 * 
+	 * @param section
+	 *            The section.
+	 * @param description
+	 *            The description of the section.
+	 */
+	public void setSectionDescription(String section, String description) {
+		sectionDescriptions.put(section, description);
 	}
 }

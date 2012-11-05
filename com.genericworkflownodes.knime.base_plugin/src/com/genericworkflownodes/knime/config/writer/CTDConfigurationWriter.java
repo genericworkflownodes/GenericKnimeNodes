@@ -26,7 +26,7 @@ import java.util.List;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
+import com.genericworkflownodes.knime.config.reader.handler.ParamHandler;
 import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
@@ -47,6 +47,7 @@ public class CTDConfigurationWriter {
 	private BufferedWriter outputWriter;
 	private int currentIndent;
 	private List<String> currentNodeState;
+	private INodeConfiguration currentConfig;
 
 	/**
 	 * 
@@ -91,39 +92,42 @@ public class CTDConfigurationWriter {
 	 * 
 	 * @param config
 	 */
-	private void writeHeader(INodeConfiguration config) throws IOException {
-		streamPut(String.format("<name>%s</name>", config.getName())); // name
-		streamPut(String.format("<version>%s</version>", config.getVersion())); // version
+	private void writeHeader() throws IOException {
+		streamPut(String.format("<name>%s</name>", currentConfig.getName())); // name
+		streamPut(String.format("<version>%s</version>",
+				currentConfig.getVersion())); // version
 		streamPut(String.format("<description>%s</description>",
-				config.getDescription())); // description
-		streamPut(String.format("<manual>%s</manual>", config.getManual())); // manual
-		streamPut(String.format("<docurl>%s</docurl>", config.getDocUrl())); // docurl
-		streamPut(String
-				.format("<category>%s</category>", config.getCategory())); // docurl
+				currentConfig.getDescription())); // description
+		streamPut(String.format("<manual>%s</manual>",
+				currentConfig.getManual())); // manual
+		streamPut(String.format("<docurl>%s</docurl>",
+				currentConfig.getDocUrl())); // docurl
+		streamPut(String.format("<category>%s</category>",
+				currentConfig.getCategory())); // docurl
 
-		if (config.getExecutableName() != null)
+		if (currentConfig.getExecutableName() != null)
 			streamPut(String.format("<executableName>%s</executableName>",
-					config.getExecutableName()));
+					currentConfig.getExecutableName()));
 
-		if (config.getExecutablePath() != null)
+		if (currentConfig.getExecutablePath() != null)
 			streamPut(String.format("<executablePath>%s</executablePath>",
-					config.getExecutablePath()));
+					currentConfig.getExecutablePath()));
 
-		if (config.getCLI() != null
-				|| config.getCLI().getCLIElement().size() == 0) {
-			writeCLI(config);
+		if (currentConfig.getCLI() != null
+				|| currentConfig.getCLI().getCLIElement().size() == 0) {
+			writeCLI();
 		}
 
-		if (config.getRelocators().size() != 0) {
-			writeRelocators(config);
+		if (currentConfig.getRelocators().size() != 0) {
+			writeRelocators();
 		}
 	}
 
-	private void writeRelocators(INodeConfiguration config) throws IOException {
+	private void writeRelocators() throws IOException {
 		streamPut("<relocators>");
 		indent();
 
-		for (Relocator rel : config.getRelocators()) {
+		for (Relocator rel : currentConfig.getRelocators()) {
 			streamPut(String.format(
 					"<relocator reference=\"%s\" locations=\"%s\" />",
 					rel.getReferencedParamter(), rel.getLocation()));
@@ -133,11 +137,11 @@ public class CTDConfigurationWriter {
 		streamPut("</relocators>");
 	}
 
-	private void writeCLI(INodeConfiguration config) throws IOException {
+	private void writeCLI() throws IOException {
 		streamPut("<cli>");
 		indent();
 
-		for (CLIElement elem : config.getCLI().getCLIElement()) {
+		for (CLIElement elem : currentConfig.getCLI().getCLIElement()) {
 			streamPut(String.format(
 					"<clielement optionIdentifier=\"%s\" isList=\"%s\">", elem
 							.getOptionIdentifier(), (elem.isList() ? "true"
@@ -176,8 +180,7 @@ public class CTDConfigurationWriter {
 		return prefixes;
 	}
 
-	private void writeParamXML(INodeConfiguration config,
-			INodeConfigurationStore store) throws IOException {
+	private void writeParamXML() throws IOException {
 
 		currentNodeState = new ArrayList<String>();
 
@@ -186,12 +189,12 @@ public class CTDConfigurationWriter {
 				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 		indent();
 
-		for (String key : config.getParameterKeys()) {
+		for (String key : currentConfig.getParameterKeys()) {
 			List<String> prefix = getPrefix(key);
 			updateNodes(prefix);
 
 			// output the actual parameter
-			Parameter<?> p = config.getParameter(key);
+			Parameter<?> p = currentConfig.getParameter(key);
 			if (p instanceof ListParameter) {
 				StringBuffer item = new StringBuffer();
 				item.append("<ITEMLIST name=\"");
@@ -371,11 +374,27 @@ public class CTDConfigurationWriter {
 			streamPut("</NODE>");
 		}
 		for (int i = commonPrefix; i < prefix.size(); ++i) {
-			streamPut(String.format("<NODE name=\"%s\" descriptions=\"\">",
-					prefix.get(i)));
+			String description = currentConfig
+					.getSectionDescription(concatenate(prefix, i));
+			if (description == null)
+				description = "";
+
+			streamPut(String.format("<NODE name=\"%s\" descriptions=\"%s\">",
+					prefix.get(i), description));
 			indent();
 		}
 		currentNodeState = prefix;
+	}
+
+	private String concatenate(List<String> prefix, int end) {
+		String ret = "";
+		String sep = "";
+		for (int i = 0; i <= end && i < prefix.size(); ++i) {
+			ret += sep;
+			ret += prefix.get(i);
+			sep = String.valueOf(ParamHandler.PATH_SEPARATOR);
+		}
+		return ret;
 	}
 
 	/**
@@ -386,18 +405,18 @@ public class CTDConfigurationWriter {
 	 * @param out
 	 * @throws Exception
 	 */
-	public void write(INodeConfiguration config, INodeConfigurationStore store)
-			throws Exception {
+	public void write(INodeConfiguration config) throws Exception {
 		currentIndent = 0;
+		currentConfig = config;
 
 		// prepare the document
 		openCTDDocument();
 
 		// write the CTD-header information
-		writeHeader(config);
+		writeHeader();
 
 		// add the param-xml part to the file
-		writeParamXML(config, store);
+		writeParamXML();
 
 		closeCTDDocument();
 		outputWriter.close();

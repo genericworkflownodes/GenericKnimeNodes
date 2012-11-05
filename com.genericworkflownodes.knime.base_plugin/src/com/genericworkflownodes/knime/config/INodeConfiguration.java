@@ -166,4 +166,14 @@ public interface INodeConfiguration {
 	 * @return The list of all parameters of this tool.
 	 */
 	public List<Parameter<?>> getParameters();
+
+	/**
+	 * Returns the description of the given section or null if the section is
+	 * not known.
+	 * 
+	 * @param section
+	 *            The section name.
+	 * @return The section description.
+	 */
+	public String getSectionDescription(String section);
 }

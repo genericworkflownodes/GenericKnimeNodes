@@ -54,7 +54,7 @@ public class CTDConfigurationWriterTest {
 		tmp.deleteOnExit();
 		BufferedWriter bWriter = new BufferedWriter(new FileWriter(tmp));
 		CTDConfigurationWriter writer = new CTDConfigurationWriter(bWriter);
-		writer.write(config, null);
+		writer.write(config);
 
 		fail("Not yet implemented");
 	}

@@ -98,7 +98,10 @@ public class ParamHandler extends DefaultHandler {
 	 */
 	private static final String OUTPUTFILE_TAG = "output file";
 
-	private static char PATH_SEPARATOR = '.';
+	/**
+	 * Separates two nodes.
+	 */
+	public static char PATH_SEPARATOR = '.';
 
 	/**
 	 * List of port/parameter names that will not be created.
@@ -183,7 +186,10 @@ public class ParamHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String name,
 			Attributes attributes) throws SAXException {
 		if (TAG_NODE.equals(name)) {
-			currentPath += attributes.getValue(ATTR_NAME);
+			String nodeName = attributes.getValue(ATTR_NAME);
+			String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
+			currentPath += nodeName;
+			config.setSectionDescription(currentPath, nodeDescription);
 			currentPath += PATH_SEPARATOR;
 		} else if (TAG_ITEM.equals(name)) {
 			String type = attributes.getValue(ATTR_TYPE);
