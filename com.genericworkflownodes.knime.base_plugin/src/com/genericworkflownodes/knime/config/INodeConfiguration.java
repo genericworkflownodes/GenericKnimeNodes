@@ -39,10 +39,25 @@ public interface INodeConfiguration {
 	 */
 	public String getName();
 
+	/**
+	 * A short description of the tool.
+	 * 
+	 * @return The description.
+	 */
 	public String getDescription();
 
+	/**
+	 * The manual text that should be displayed in the GUI.
+	 * 
+	 * @return The manual text.
+	 */
 	public String getManual();
 
+	/**
+	 * The link to the online documentation of this tool.
+	 * 
+	 * @return The link to the online documentation.
+	 */
 	public String getDocUrl();
 
 	/**
@@ -101,17 +116,54 @@ public interface INodeConfiguration {
 	 */
 	public List<Relocator> getRelocators();
 
+	/**
+	 * Returns the number of output ports of this tool.
+	 * 
+	 * @return The number of output ports.
+	 */
 	public int getNumberOfOutputPorts();
 
+	/**
+	 * Returns the number of input ports of this tool.
+	 * 
+	 * @return The number of input ports.
+	 */
 	public int getNumberOfInputPorts();
 
+	/**
+	 * The input ports of this tool.
+	 * 
+	 * @return The input ports.
+	 */
 	public List<Port> getInputPorts();
 
+	/**
+	 * The output ports of this tool.
+	 * 
+	 * @return The output ports.
+	 */
 	public List<Port> getOutputPorts();
 
+	/**
+	 * Returns the parameter of this tool having the given key.
+	 * 
+	 * @param key
+	 *            The key of the parameter that should be returned.
+	 * @return The parameter associated with the given key.
+	 */
 	public Parameter<?> getParameter(String key);
 
+	/**
+	 * A list of all parameter names of this tool.
+	 * 
+	 * @return A list of parameter names.
+	 */
 	public List<String> getParameterKeys();
 
+	/**
+	 * The list of all parameters of this tool.
+	 * 
+	 * @return The list of all parameters of this tool.
+	 */
 	public List<Parameter<?>> getParameters();
 }
