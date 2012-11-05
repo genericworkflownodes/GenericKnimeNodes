@@ -339,4 +339,14 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	public void setSectionDescription(String section, String description) {
 		sectionDescriptions.put(section, description);
 	}
+
+	@Override
+	public Port getInputPortByName(String portName) {
+		return inputPorts.get(portName);
+	}
+
+	@Override
+	public Port getOutputPortByName(String portName) {
+		return outputPorts.get(portName);
+	}
 }

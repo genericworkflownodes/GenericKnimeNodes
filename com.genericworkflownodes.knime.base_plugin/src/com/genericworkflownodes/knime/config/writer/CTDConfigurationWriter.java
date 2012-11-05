@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.core.data.url.MIMEType;
+
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -31,6 +33,9 @@ import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.FileParameter;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
@@ -38,6 +43,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * @author aiche
@@ -211,7 +217,7 @@ public class CTDConfigurationWriter {
 		return prefixes;
 	}
 
-	private void writeParamXML() throws IOException {
+	private void writeParamXML() throws Exception {
 
 		currentNodeState = new ArrayList<String>();
 
@@ -234,7 +240,8 @@ public class CTDConfigurationWriter {
 
 				// type
 				item.append(" type=\"");
-				if (p instanceof StringListParameter) {
+				if (p instanceof StringListParameter
+						|| p instanceof FileListParameter) {
 					item.append("string");
 				} else if (p instanceof DoubleListParameter) {
 					item.append("double");
@@ -248,6 +255,17 @@ public class CTDConfigurationWriter {
 
 				item.append(">");
 				streamPut(item.toString());
+
+				// add restrictions
+				if (p instanceof DoubleParameter
+						|| p instanceof IntegerParameter) {
+					addNumberRestrictions(item, p);
+				} else if (p instanceof FileListParameter) {
+					addMimeTypeRestrictions(item, p);
+				}
+
+				// add tags
+				addParameterTags(p, item, key);
 
 				indent();
 				for (String val : ((ListParameter) p).getStrings()) {
@@ -283,15 +301,8 @@ public class CTDConfigurationWriter {
 				// description
 				addDescription(p, item);
 
-				// tags
-				List<String> tags = new ArrayList<String>();
-
-				if (p.isAdvanced()) {
-					tags.add("advanced");
-				}
-				if (!p.isOptional()) {
-					tags.add("required");
-				}
+				// add tags
+				addParameterTags(p, item, key);
 
 				// restrictions
 				if (p instanceof BoolParameter) {
@@ -301,6 +312,8 @@ public class CTDConfigurationWriter {
 					addNumberRestrictions(item, p);
 				} else if (p instanceof StringChoiceParameter) {
 					addStringChoices(item, p);
+				} else if (p instanceof FileParameter) {
+					addMimeTypeRestrictions(item, p);
 				}
 
 				item.append(" />");
@@ -312,6 +325,53 @@ public class CTDConfigurationWriter {
 
 		outdent();
 		streamPut("</PARAMETERS>");
+	}
+
+	private void addMimeTypeRestrictions(StringBuffer item, Parameter<?> p) {
+		Port associatedPort = ((IFileParameter) p).getPort();
+
+		item.append(" restrictions=\"");
+		String sep = "";
+		for (MIMEType mt : associatedPort.getMimeTypes()) {
+			item.append(sep);
+			sep = ",";
+			item.append(String.format("*.%s", mt.getExtension()));
+		}
+		item.append("\"");
+	}
+
+	private void addParameterTags(Parameter<?> p, StringBuffer item, String key)
+			throws Exception {
+		List<String> tags = new ArrayList<String>();
+		if (p instanceof FileParameter || p instanceof FileListParameter) {
+			// check if we have an in- or output port
+			if (currentConfig.getInputPortByName(key) != null) {
+				tags.add("input file");
+			} else if (currentConfig.getOutputPortByName(key) != null) {
+				tags.add("output file");
+			} else {
+				throw new Exception(
+						"Could not find a port for the given parameter: "
+								+ p.getKey());
+			}
+		}
+		if (p.isAdvanced()) {
+			tags.add("advanced");
+		}
+		if (!p.isOptional()) {
+			tags.add("required");
+		}
+
+		if (tags.size() > 0) {
+			item.append(" tags=\"");
+			String sep = "";
+			for (String tag : tags) {
+				item.append(sep);
+				item.append(tag);
+				sep = ",";
+			}
+			item.append("\"");
+		}
 	}
 
 	private void addDescription(Parameter<?> p, StringBuffer item) {
@@ -357,7 +417,7 @@ public class CTDConfigurationWriter {
 				item.append(String.format("%f", dp.getUpperBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
-		} else {
+		} else if (p instanceof IntegerParameter) {
 			IntegerParameter ip = (IntegerParameter) p;
 			boolean lbSet = Integer.MIN_VALUE != ip.getLowerBound()
 					.doubleValue();
@@ -372,7 +432,41 @@ public class CTDConfigurationWriter {
 			if (ubSet) {
 				item.append(String.format("%d", ip.getUpperBound()));
 			}
+		} else if (p instanceof IntegerListParameter) {
+			IntegerListParameter ilp = (IntegerListParameter) p;
+			boolean lbSet = Integer.MIN_VALUE != ilp.getLowerBound()
+					.doubleValue();
+			boolean ubSet = Integer.MAX_VALUE != ilp.getUpperBound()
+					.doubleValue();
+
+			if (lbSet) {
+				item.append(String.format("%d", ilp.getLowerBound()));
+			}
+			if (ubSet || lbSet) {
+				item.append(":");
+			}
+			if (ubSet) {
+				item.append(String.format("%d", ilp.getUpperBound()));
+			}
+		} else if (p instanceof DoubleListParameter) {
+			DoubleListParameter dlp = (DoubleListParameter) p;
+			boolean lbSet = Double.NEGATIVE_INFINITY != dlp.getLowerBound()
+					.doubleValue();
+			boolean ubSet = Double.POSITIVE_INFINITY != dlp.getUpperBound()
+					.doubleValue();
+			if (lbSet) {
+				item.append(String.format("%f", dlp.getLowerBound())
+						.replaceAll("0*$", "").replaceAll("\\.$", ""));
+			}
+			if (ubSet || lbSet) {
+				item.append(":");
+			}
+			if (ubSet) {
+				item.append(String.format("%f", dlp.getUpperBound())
+						.replaceAll("0*$", "").replaceAll("\\.$", ""));
+			}
 		}
+
 		item.append("\"");
 	}
 

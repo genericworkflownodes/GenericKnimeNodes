@@ -145,6 +145,28 @@ public interface INodeConfiguration {
 	public List<Port> getOutputPorts();
 
 	/**
+	 * Returns the specified port if it is a registered input port or null if
+	 * the port does not exist.
+	 * 
+	 * @param portName
+	 *            The name of the port that is searched.
+	 * 
+	 * @return The port object or null if no such port exists.
+	 */
+	public Port getInputPortByName(String portName);
+
+	/**
+	 * Returns the specified port if it is a registered output port or null if
+	 * the port does not exist.
+	 * 
+	 * @param portName
+	 *            The name of the port that is searched.
+	 * 
+	 * @return The port object or null if no such port exists.
+	 */
+	public Port getOutputPortByName(String portName);
+
+	/**
 	 * Returns the parameter of this tool having the given key.
 	 * 
 	 * @param key

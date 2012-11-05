@@ -296,17 +296,17 @@ public class ParamHandler extends DefaultHandler {
 		Parameter<?> portParameter = null;
 		// create port parameter
 		if (isList) {
-			portParameter = new FileParameter(paramName, "");
-			((FileParameter) portParameter).setPort(p);
-			((FileParameter) portParameter).setDescription(p.getDescription());
-			((FileParameter) portParameter).setIsOptional(p.isOptional());
-		} else {
 			portParameter = new FileListParameter(paramName,
 					new ArrayList<String>());
 			((FileListParameter) portParameter).setPort(p);
 			((FileListParameter) portParameter).setDescription(p
 					.getDescription());
 			((FileListParameter) portParameter).setIsOptional(p.isOptional());
+		} else {
+			portParameter = new FileParameter(paramName, "");
+			((FileParameter) portParameter).setPort(p);
+			((FileParameter) portParameter).setDescription(p.getDescription());
+			((FileParameter) portParameter).setIsOptional(p.isOptional());
 		}
 
 		extractedParameters.put(currentPath + portParameter.getKey(),
