@@ -18,17 +18,22 @@
  */
 package com.genericworkflownodes.knime.config.writer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 
 import org.junit.Test;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
+import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
+import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
+import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 /**
@@ -56,6 +61,35 @@ public class CTDConfigurationWriterTest {
 		CTDConfigurationWriter writer = new CTDConfigurationWriter(bWriter);
 		writer.write(config);
 
-		fail("Not yet implemented");
+		// TODO: Add some tests if the the config we write out is valid.
+		config = reader.read(new FileInputStream(tmp));
+
+		StringParameter mz = (StringParameter) config
+				.getParameter("FileFilter.1.mz");
+		assertEquals("m/z range to extract", mz.getDescription());
+		assertEquals(":", mz.getValue());
+		assertEquals("mz", mz.getKey());
+
+		IntegerListParameter levels = (IntegerListParameter) config
+				.getParameter("FileFilter.1.level");
+		assertEquals("MS levels to extract", levels.getDescription());
+		assertEquals(3, levels.getValue().size());
+		assertEquals(1, levels.getValue().get(0).intValue());
+		assertEquals(2, levels.getValue().get(1).intValue());
+		assertEquals(3, levels.getValue().get(2).intValue());
+		assertEquals(false, levels.isAdvanced());
+
+		StringChoiceParameter int_precision = (StringChoiceParameter) config
+				.getParameter("FileFilter.1.int_precision");
+		assertEquals("32", int_precision.getValue());
+		assertEquals(3, int_precision.getAllowedValues().size());
+
+		BoolParameter no_progress = (BoolParameter) config
+				.getParameter("FileFilter.1.no_progress");
+		assertEquals(false, no_progress.getValue());
+		assertEquals(true, no_progress.isAdvanced());
+
+		assertEquals(1, config.getInputPorts().size());
+		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
 	}
 }

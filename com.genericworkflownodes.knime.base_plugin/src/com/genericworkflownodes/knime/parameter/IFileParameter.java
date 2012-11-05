@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -18,50 +18,32 @@
  */
 package com.genericworkflownodes.knime.parameter;
 
-import java.util.List;
+import java.security.Policy.Parameters;
 
 import com.genericworkflownodes.knime.port.Port;
 
 /**
- * The FileListParameter class is used to store lists of filenames.
+ * Describes the interface requirements for {@link Parameters} representing
+ * either files or lists of files.
  * 
- * This is a convenience class to handle user supplied output filenames.
- * 
- * @author roettig
+ * @author aiche
  * 
  */
-public class FileListParameter extends StringListParameter implements
-		IFileParameter {
+public interface IFileParameter {
 
 	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = 3010211738983269403L;
-
-	/**
-	 * The port associated to the file list.
-	 */
-	private Port port;
-
-	/**
-	 * Constructor.
+	 * Sets the port associated to this parameter.
 	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
+	 * @param port
+	 *            The new port.
 	 */
-	public FileListParameter(final String key, final List<String> value) {
-		super(key, value);
-	}
+	public void setPort(final Port port);
 
-	@Override
-	public void setPort(final Port port) {
-		this.port = port;
-	}
+	/**
+	 * Returns the port associated to this parameter.
+	 * 
+	 * @return The port.
+	 */
+	public Port getPort();
 
-	@Override
-	public Port getPort() {
-		return port;
-	}
 }

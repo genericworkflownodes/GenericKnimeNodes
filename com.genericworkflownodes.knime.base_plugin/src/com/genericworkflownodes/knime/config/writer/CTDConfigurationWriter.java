@@ -49,6 +49,36 @@ public class CTDConfigurationWriter {
 	private List<String> currentNodeState;
 	private INodeConfiguration currentConfig;
 
+	private String xmlEscapeText(String t) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < t.length(); i++) {
+			char c = t.charAt(i);
+			switch (c) {
+			case '<':
+				sb.append("&lt;");
+				break;
+			case '>':
+				sb.append("&gt;");
+				break;
+			case '\"':
+				sb.append("&quot;");
+				break;
+			case '&':
+				sb.append("&amp;");
+				break;
+			case '\'':
+				sb.append("&apos;");
+				break;
+			default:
+				if (c > 0x7e) {
+					sb.append("&#" + ((int) c) + ";");
+				} else
+					sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * 
 	 * @param out
@@ -93,25 +123,26 @@ public class CTDConfigurationWriter {
 	 * @param config
 	 */
 	private void writeHeader() throws IOException {
-		streamPut(String.format("<name>%s</name>", currentConfig.getName())); // name
+		streamPut(String.format("<name>%s</name>",
+				xmlEscapeText(currentConfig.getName()))); // name
 		streamPut(String.format("<version>%s</version>",
-				currentConfig.getVersion())); // version
+				xmlEscapeText(currentConfig.getVersion()))); // version
 		streamPut(String.format("<description>%s</description>",
-				currentConfig.getDescription())); // description
+				xmlEscapeText(currentConfig.getDescription()))); // description
 		streamPut(String.format("<manual>%s</manual>",
-				currentConfig.getManual())); // manual
+				xmlEscapeText(currentConfig.getManual()))); // manual
 		streamPut(String.format("<docurl>%s</docurl>",
-				currentConfig.getDocUrl())); // docurl
+				xmlEscapeText(currentConfig.getDocUrl()))); // docurl
 		streamPut(String.format("<category>%s</category>",
-				currentConfig.getCategory())); // docurl
+				xmlEscapeText(currentConfig.getCategory()))); // docurl
 
 		if (currentConfig.getExecutableName() != null)
 			streamPut(String.format("<executableName>%s</executableName>",
-					currentConfig.getExecutableName()));
+					xmlEscapeText(currentConfig.getExecutableName())));
 
 		if (currentConfig.getExecutablePath() != null)
 			streamPut(String.format("<executablePath>%s</executablePath>",
-					currentConfig.getExecutablePath()));
+					xmlEscapeText(currentConfig.getExecutablePath())));
 
 		if (currentConfig.getCLI() != null
 				|| currentConfig.getCLI().getCLIElement().size() == 0) {
@@ -286,7 +317,7 @@ public class CTDConfigurationWriter {
 	private void addDescription(Parameter<?> p, StringBuffer item) {
 		item.append(" description=\"");
 		if (p.getDescription() != null)
-			item.append(p.getDescription());
+			item.append(xmlEscapeText(p.getDescription()));
 		item.append("\"");
 	}
 

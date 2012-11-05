@@ -39,6 +39,7 @@ import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
@@ -292,21 +293,29 @@ public class ParamHandler extends DefaultHandler {
 
 		p.setOptional(isOptional(attributes));
 
+		Parameter<?> portParameter = null;
+		// create port parameter
+		if (isList) {
+			portParameter = new FileParameter(paramName, "");
+			((FileParameter) portParameter).setPort(p);
+			((FileParameter) portParameter).setDescription(p.getDescription());
+			((FileParameter) portParameter).setIsOptional(p.isOptional());
+		} else {
+			portParameter = new FileListParameter(paramName,
+					new ArrayList<String>());
+			((FileListParameter) portParameter).setPort(p);
+			((FileListParameter) portParameter).setDescription(p
+					.getDescription());
+			((FileListParameter) portParameter).setIsOptional(p.isOptional());
+		}
+
+		extractedParameters.put(currentPath + portParameter.getKey(),
+				portParameter);
+
 		if (getTags(attributes).contains(INPUTFILE_TAG)) {
 			inputPorts.add(p);
 		} else {
 			outputPorts.add(p);
-
-			// TODO: why do we add output-list parameters in such a special way?
-			if (isList) {
-				FileListParameter param = new FileListParameter(paramName,
-						new ArrayList<String>());
-				param.setPort(p);
-				param.setDescription(p.getDescription());
-				param.setIsOptional(p.isOptional());
-
-				extractedParameters.put(currentPath + param.getKey(), param);
-			}
 		}
 	}
 
@@ -380,19 +389,21 @@ public class ParamHandler extends DefaultHandler {
 			Attributes attributes) {
 		if (isPort(attributes)) {
 			createPort(paramName, attributes, false);
-		}
-
-		// check if we have a boolean
-		String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
-		if (isBooleanParameter(restrictions)) {
-			currentParameter = new BoolParameter(paramName, paramValue);
 		} else {
-			if (restrictions != null && restrictions.length() > 0) {
-				currentParameter = new StringChoiceParameter(paramName,
-						restrictions.split(","));
-				((StringChoiceParameter) currentParameter).setValue(paramValue);
+			// check if we have a boolean
+			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
+			if (isBooleanParameter(restrictions)) {
+				currentParameter = new BoolParameter(paramName, paramValue);
 			} else {
-				currentParameter = new StringParameter(paramName, paramValue);
+				if (restrictions != null && restrictions.length() > 0) {
+					currentParameter = new StringChoiceParameter(paramName,
+							restrictions.split(","));
+					((StringChoiceParameter) currentParameter)
+							.setValue(paramValue);
+				} else {
+					currentParameter = new StringParameter(paramName,
+							paramValue);
+				}
 			}
 		}
 	}
