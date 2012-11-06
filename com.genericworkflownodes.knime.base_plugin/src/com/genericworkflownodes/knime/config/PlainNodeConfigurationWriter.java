@@ -3,15 +3,16 @@ package com.genericworkflownodes.knime.config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
+import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class PlainNodeConfigurationWriter {
-	private INodeConfigurationStore store;
+	private INodeConfiguration store;
 
 	private static String LINESEP = System.getProperty("line.separator");
 
-	public void init(INodeConfigurationStore store) {
+	public void init(INodeConfiguration store) {
 		this.store = store;
 	}
 
@@ -19,10 +20,15 @@ public class PlainNodeConfigurationWriter {
 		FileWriter out = new FileWriter(new File(filename));
 
 		for (String key : store.getParameterKeys()) {
-			List<String> values = store.getMultiParameterValue(key);
+			Parameter<?> p = store.getParameter(key);
 			StringBuffer sb = new StringBuffer();
-			for (String value : values) {
-				sb.append(String.format("\"%s\"\t", value));
+			if (p instanceof ListParameter) {
+				ListParameter lp = (ListParameter) p;
+				for (String value : lp.getStrings()) {
+					sb.append(String.format("\"%s\"\t", value));
+				}
+			} else {
+				sb.append(String.format("\"%s\"\t", p.getStringRep()));
 			}
 			out.write(key + ":" + sb.toString() + LINESEP);
 		}

@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.execution.impl;
 import java.io.File;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
@@ -130,7 +129,6 @@ public class DummyToolExecutor implements IToolExecutor {
 	 */
 	@Override
 	public void prepareExecution(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		// TODO Auto-generated method stub
 

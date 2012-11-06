@@ -24,9 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.ballproject.knime.base.util.FileStash;
@@ -50,9 +48,7 @@ import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
-import com.genericworkflownodes.knime.config.NodeConfigurationStore;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
@@ -60,8 +56,8 @@ import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.outputconverter.IOutputConverter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
-import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -97,7 +93,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
 			MIMEURIPortObject.class, true);
 
-	protected INodeConfigurationStore store = new NodeConfigurationStore();
+	protected MIMEType[][] mimetypes_in;
+	protected MIMEType[][] mimetypes_out;
+	protected PortObjectSpec[] outspec_;
 
 	/**
 	 * The actual executor used to run the tool.
@@ -147,7 +145,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		instantiateToolExecutor();
 
 		executor.setWorkingDirectory(jobdir);
-		executor.prepareExecution(nodeConfig, store, pluginConfig);
+		executor.prepareExecution(nodeConfig, pluginConfig);
 
 		executeTool(jobdir, exec);
 	}
@@ -244,7 +242,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
+		// TODO Reset all parameters to its defaults .. how
 		// Models build during execute are cleared here.
 		// Also data handled in load/saveInternals will be erased here.
 		/*
@@ -349,10 +347,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			CanceledExecutionException {
 	}
 
-	protected MIMEType[][] mimetypes_in;
-	protected MIMEType[][] mimetypes_out;
-	protected PortObjectSpec[] outspec_;
-
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
@@ -436,10 +430,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				!GenericNodesPlugin.isDebug()));
 		GenericNodesPlugin.log("jobdir=" + jobdir);
 
-		store = new NodeConfigurationStore();
+		// transfer the incoming files into the nodeConfiguration
+		transferIncomingPorts2Config(inObjects);
 
 		// prepare input data and parameter values
-		List<List<URI>> outputFiles = outputParameters(jobdir, inObjects);
+		List<List<URI>> outputFiles = transferOutgoingPorts2Config(jobdir, inObjects);
 
 		// launch executable
 		prepareExecute(jobdir, exec);
@@ -466,15 +461,74 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 * @throws Exception
 	 *             If the input has an invalid configuration.
 	 */
-	private List<List<URI>> outputParameters(final File jobdir,
+	private List<List<URI>> transferOutgoingPorts2Config(final File jobdir,
 			PortObject[] inData) throws Exception {
-		// .. input files
+
+		List<List<URI>> outfiles = new ArrayList<List<URI>>();
+
+		int nOut = nodeConfig.getOutputPorts().size();
+
+		for (int i = 0; i < nOut; i++) {
+			Port port = nodeConfig.getOutputPorts().get(i);
+			String name = port.getName();
+			String ext = getOutputType(i).getExtension();
+
+			Parameter<?> p = nodeConfig.getParameter(name);
+			// used to remember which files we actually generated here
+			List<URI> fileURIs = new ArrayList<URI>();
+			if (p instanceof FileListParameter && port.isMultiFile()) {
+
+				FileListParameter flp = (FileListParameter) p;
+				int numberOfOutputFiles = flp.getStrings().size();
+				List<String> files = new ArrayList<String>();
+
+				for (int f = 0; f < numberOfOutputFiles; ++f) {
+					String filename = FileStash.getInstance().allocateFile(ext);
+					files.add(filename);
+					fileURIs.add(new File(filename).toURI());
+
+					// TODO
+					// URL fileurl =
+					// FileStash.getInstance().allocatePortableFile(ext);
+					// String filename =
+					// fileurl.openConnection().getURL().getFile();
+					// String filename = jobdir.getAbsolutePath() +
+					// File.separator + file + "." + ext;
+				}
+
+				// overwrite existing settings with new values generated by the
+				// stash
+				flp.setValue(files);
+
+			} else if (p instanceof FileParameter && !port.isMultiFile()) {
+				String filename = FileStash.getInstance().allocateFile(ext);
+				((FileParameter) p).setValue(filename);
+				GenericNodesPlugin.log("> setting param " + name + "->"
+						+ filename);
+
+				// remember output file
+				fileURIs.add(new File(filename).toURI());
+			} else {
+				throw new Exception(
+						"Invalid connection between ports and parameters.");
+			}
+
+			outfiles.add(fileURIs);
+		}
+
+		return outfiles;
+	}
+
+	private void transferIncomingPorts2Config(PortObject[] inData)
+			throws Exception {
+		// Transfer settings from the input ports into the configuration object
 		for (int i = 0; i < inData.length; i++) {
 			// skip optional and unconnected inport ports
 			if (inData[i] == null) {
 				continue;
 			}
 
+			// find the internal port for this PortObject
 			Port port = nodeConfig.getInputPorts().get(i);
 
 			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
@@ -489,93 +543,32 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 								+ i);
 			}
 
-			for (URIContent uric : uris) {
-				URI uri = uric.getURI();
+			// find the associated parameter in the configuration
+			Parameter<?> p = nodeConfig.getParameter(name);
+			// check that we are actually referencing a file parameter from this
+			// port
+			if (!(p instanceof FileParameter)) {
+				throw new Exception(
+						"Invalid reference from port to non-file parameter. URI port #"
+								+ i);
+			}
+
+			if (isMultiFile) {
+				// we need to collect all filenames and then set them as a batch
+				// in the config
+				List<String> filenames = new ArrayList<String>();
+				for (URIContent uric : uris) {
+					URI uri = uric.getURI();
+					filenames.add(new File(uri).getAbsolutePath());
+				}
+				((FileListParameter) p).setValue(filenames);
+			} else {
+				// just one filename
+				URI uri = uris.get(0).getURI();
 				String filename = new File(uri).getAbsolutePath();
-				GenericNodesPlugin.log("< setting param " + name + "->"
-						+ filename);
-				store.setParameterValue(name, filename);
+				((FileParameter) p).setValue(filename);
 			}
 		}
-
-		List<List<URI>> outfiles = new ArrayList<List<URI>>();
-
-		Map<Port, Integer> port2slot = new HashMap<Port, Integer>();
-
-		// .. output files
-		int nOut = nodeConfig.getOutputPorts().size();
-		for (int i = 0; i < nOut; i++) {
-			Port port = nodeConfig.getOutputPorts().get(i);
-			String name = port.getName();
-
-			String ext = getOutputType(i).getExtension();
-
-			if (port.isMultiFile()) {
-				// keep this list empty for now ...
-				List<URI> files = new ArrayList<URI>();
-				outfiles.add(files);
-				// but store the slot index for later filling
-				port2slot.put(port, i);
-			} else {
-				List<URI> files = new ArrayList<URI>();
-				String filename = FileStash.getInstance().allocateFile(ext);
-				GenericNodesPlugin.log("> setting param " + name + "->"
-						+ filename);
-				store.setParameterValue(name, filename);
-				files.add(new File(filename).toURI());
-				outfiles.add(files);
-			}
-		}
-
-		// .. node parameters
-		for (String key : nodeConfig.getParameterKeys()) {
-			Parameter<?> param = nodeConfig.getParameter(key);
-			if (param.isNull()) {
-				if (param.isOptional()) {
-					continue;
-				}
-			}
-			if (param instanceof ListParameter) {
-				ListParameter lp = (ListParameter) param;
-				if (param instanceof FileListParameter) {
-					// FIXME
-
-					FileListParameter flp = (FileListParameter) param;
-					List<String> files = lp.getStrings();
-
-					int slot = port2slot.get(flp.getPort());
-
-					String ext = getOutputType(slot).getExtension();
-
-					for (String file : files) {
-						String filename = FileStash.getInstance().allocateFile(
-								ext);
-						// TODO
-						// URL fileurl =
-						// FileStash.getInstance().allocatePortableFile(ext);
-						// String filename =
-						// fileurl.openConnection().getURL().getFile();
-						// String filename = jobdir.getAbsolutePath() +
-						// File.separator + file + "." + ext;
-						outfiles.get(slot).add(new File(filename).toURI());
-						store.setMultiParameterValue(key, filename);
-					}
-
-				} else {
-					for (String val : lp.getStrings()) {
-						GenericNodesPlugin.log("@@ setting param " + key + "->"
-								+ val);
-						store.setMultiParameterValue(key, val);
-					}
-				}
-			} else {
-				GenericNodesPlugin.log("@ setting param " + key + "->"
-						+ param.getValue().toString());
-				store.setParameterValue(key, param.getValue().toString());
-			}
-		}
-
-		return outfiles;
 	}
 
 	/**

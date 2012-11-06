@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.execution;
 import java.io.File;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**
@@ -60,7 +59,6 @@ public interface IToolExecutor {
 	 *             In case of errors.
 	 */
 	void prepareExecution(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception;
 
 	/**

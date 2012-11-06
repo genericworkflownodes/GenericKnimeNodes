@@ -52,6 +52,7 @@ public class StringListParameter extends Parameter<List<String>> implements
 	public StringListParameter(final String key, final List<String> value) {
 		super(key, value);
 		validValues = new ArrayList<String>();
+		validValues.clear();
 	}
 
 	public void setRestrictions(List<String> newRestrictions) {

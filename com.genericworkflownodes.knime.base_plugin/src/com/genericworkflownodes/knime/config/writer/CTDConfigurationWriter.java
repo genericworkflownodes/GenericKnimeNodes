@@ -19,6 +19,8 @@
 package com.genericworkflownodes.knime.config.writer;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +85,12 @@ public class CTDConfigurationWriter {
 			}
 		}
 		return sb.toString();
+	}
+
+	public CTDConfigurationWriter(File target) throws IOException {
+		outputWriter = new BufferedWriter(new FileWriter(target));
+		currentIndent = 0;
+		currentNodeState = null;
 	}
 
 	/**

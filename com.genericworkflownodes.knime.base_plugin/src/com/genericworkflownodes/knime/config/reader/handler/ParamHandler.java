@@ -263,7 +263,7 @@ public class ParamHandler extends DefaultHandler {
 			currentParameter = new StringListParameter(paramName,
 					new ArrayList<String>());
 			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
-			if (restrictions != null) {
+			if (restrictions != null && !"".equals(restrictions.trim())) {
 				((StringListParameter) currentParameter).setRestrictions(Arrays
 						.asList(restrictions.split(",")));
 			}
@@ -293,24 +293,23 @@ public class ParamHandler extends DefaultHandler {
 
 		p.setOptional(isOptional(attributes));
 
-		Parameter<?> portParameter = null;
+		currentParameter = null;
 		// create port parameter
 		if (isList) {
-			portParameter = new FileListParameter(paramName,
+			currentParameter = new FileListParameter(paramName,
 					new ArrayList<String>());
-			((FileListParameter) portParameter).setPort(p);
-			((FileListParameter) portParameter).setDescription(p
+			((FileListParameter) currentParameter).setPort(p);
+			((FileListParameter) currentParameter).setDescription(p
 					.getDescription());
-			((FileListParameter) portParameter).setIsOptional(p.isOptional());
+			((FileListParameter) currentParameter)
+					.setIsOptional(p.isOptional());
 		} else {
-			portParameter = new FileParameter(paramName, "");
-			((FileParameter) portParameter).setPort(p);
-			((FileParameter) portParameter).setDescription(p.getDescription());
-			((FileParameter) portParameter).setIsOptional(p.isOptional());
+			currentParameter = new FileParameter(paramName, "");
+			((FileParameter) currentParameter).setPort(p);
+			((FileParameter) currentParameter).setDescription(p
+					.getDescription());
+			((FileParameter) currentParameter).setIsOptional(p.isOptional());
 		}
-
-		extractedParameters.put(currentPath + portParameter.getKey(),
-				portParameter);
 
 		if (getTags(attributes).contains(INPUTFILE_TAG)) {
 			inputPorts.add(p);
@@ -532,8 +531,8 @@ public class ParamHandler extends DefaultHandler {
 			config.addParameter(entry.getKey(), entry.getValue());
 		}
 
-		config.setInports(inputPorts.toArray(new Port[inputPorts.size()]));
-		config.setOutports(outputPorts.toArray(new Port[outputPorts.size()]));
+		config.setInports(inputPorts);
+		config.setOutports(outputPorts);
 	}
 
 	private void removeSuffix() {

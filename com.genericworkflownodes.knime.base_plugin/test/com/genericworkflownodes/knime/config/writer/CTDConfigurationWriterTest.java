@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -44,8 +45,10 @@ import com.genericworkflownodes.knime.test.data.TestDataSource;
 public class CTDConfigurationWriterTest {
 
 	@Test
-	public void testCTDConfigurationWriter() {
-		CTDConfigurationWriter writer = new CTDConfigurationWriter(null);
+	public void testCTDConfigurationWriter() throws IOException {
+		File tmp = File.createTempFile("testing_", ".ini");
+		tmp.deleteOnExit();
+		CTDConfigurationWriter writer = new CTDConfigurationWriter(tmp);
 		assertNotNull(writer);
 	}
 

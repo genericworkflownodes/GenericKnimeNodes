@@ -32,7 +32,6 @@ import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
@@ -269,12 +268,11 @@ public class LocalToolExecutor implements IToolExecutor {
 	 */
 	@Override
 	public void prepareExecution(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 		findExecutable(nodeConfiguration, pluginConfiguration);
 		addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
 
-		commands = generator.generateCommands(nodeConfiguration, configStore,
+		commands = generator.generateCommands(nodeConfiguration,
 				pluginConfiguration, workingDirectory);
 	}
 

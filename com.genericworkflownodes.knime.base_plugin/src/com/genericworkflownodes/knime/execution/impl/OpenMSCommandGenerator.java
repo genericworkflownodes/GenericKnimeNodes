@@ -19,15 +19,13 @@
 package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
-import com.genericworkflownodes.knime.config.OpenMSNodeConfigurationWriter;
+import com.genericworkflownodes.knime.config.writer.CTDConfigurationWriter;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 
 /**
@@ -48,12 +46,10 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception {
 
-		File iniFile = createINIFile(nodeConfiguration, configStore,
-				workingDirectory);
+		File iniFile = createINIFile(nodeConfiguration, workingDirectory);
 
 		List<String> commands = new ArrayList<String>();
 		commands.add(INI_SWITCH);
@@ -74,17 +70,13 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
 	 *            The directory where the tool will be executed. Make sure that
 	 *            the JVM has access to this directory.
 	 * @return The {@link File} where the ini file was stored.
-	 * @throws IOException
-	 *             In case of i/o problems.
+	 * @throws Exception
 	 */
 	private File createINIFile(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore, File workingDirectory)
-			throws IOException {
+			File workingDirectory) throws Exception {
 		File iniFile = new File(workingDirectory, INI_FILE_NAME);
-		OpenMSNodeConfigurationWriter openMSWriter = new OpenMSNodeConfigurationWriter(
-				nodeConfiguration.getXML());
-		openMSWriter.init(configStore, nodeConfiguration);
-		openMSWriter.write(iniFile);
+		CTDConfigurationWriter writer = new CTDConfigurationWriter(iniFile);
+		writer.write(nodeConfiguration);
 		return iniFile;
 	}
 }

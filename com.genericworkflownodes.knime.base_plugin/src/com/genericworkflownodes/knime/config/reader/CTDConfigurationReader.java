@@ -34,6 +34,10 @@ import com.genericworkflownodes.knime.config.INodeConfigurationReader;
 import com.genericworkflownodes.knime.config.reader.handler.CTDHandler;
 import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.FileParameter;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SchemaProvider;
 
@@ -78,8 +82,58 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
 			validateRelocator(relocator);
 		}
 
+		// validate ports
+		for (Port port : config.getInputPorts()) {
+			validatePort(port, config);
+		}
+
+		for (Port port : config.getOutputPorts()) {
+			validatePort(port, config);
+		}
+
 		// return parsed and validated config
 		return config;
+	}
+
+	/**
+	 * Checks if the constructed port is valid:
+	 * 
+	 * <ul>
+	 * <li>The referenced parameter is a file parameter.</li>
+	 * <li>The referenced parameter is a file list for multi ports and a file if
+	 * it's not a multi-port.</li>
+	 * <li>The port has at least one MIMEType.</li>
+	 * </ul>
+	 * 
+	 * @param port
+	 * @throws Exception
+	 */
+	private void validatePort(final Port port, final INodeConfiguration config)
+			throws Exception {
+		// check if the referenced parameter exists
+		Parameter<?> p = config.getParameter(port.getName());
+		if (p == null)
+			throw new Exception(String.format(
+					"The given port %s has no corresponding parameter.",
+					port.getName()));
+		if (!(p instanceof IFileParameter))
+			throw new Exception(
+					String.format(
+							"The parameter corresponding to port %s is not a IFileParameter.",
+							port.getName()));
+		if (port.isMultiFile() && !(p instanceof FileListParameter))
+			throw new Exception(
+					String.format(
+							"The given port %s is a multifile port but the corresponding parameter is a single file parameter.",
+							port.getName()));
+		if (!port.isMultiFile() && !(p instanceof FileParameter))
+			throw new Exception(
+					String.format(
+							"The given port %s is a singlefile port but the corresponding parameter is a multifile parameter.",
+							port.getName()));
+		if (port.getMimeTypes().size() < 1)
+			throw new Exception(String.format(
+					"The given port %s has no MIMETypes.", port.getName()));
 	}
 
 	/**

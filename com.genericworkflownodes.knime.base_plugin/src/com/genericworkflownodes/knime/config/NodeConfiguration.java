@@ -223,11 +223,26 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		}
 	}
 
+	private void createPortList(Map<String, Port> portMap, List<Port> portArray) {
+		portMap.clear();
+		for (Port p : portArray) {
+			portMap.put(p.getName(), p);
+		}
+	}
+
 	public void setInports(Port[] ports) {
 		createPortList(inputPorts, ports);
 	}
 
+	public void setInports(List<Port> ports) {
+		createPortList(inputPorts, ports);
+	}
+
 	public void setOutports(Port[] ports) {
+		createPortList(outputPorts, ports);
+	}
+
+	public void setOutports(List<Port> ports) {
 		createPortList(outputPorts, ports);
 	}
 

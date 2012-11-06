@@ -134,4 +134,9 @@ public class CTDHandlerTest {
 		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
 
 	}
+
+	@Test
+	public void testComplicatedCases() {
+
+	}
 }

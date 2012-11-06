@@ -66,6 +66,7 @@ import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
  * 
  * @author roettig, aiche
  */
+@Deprecated
 public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 
 	/**
