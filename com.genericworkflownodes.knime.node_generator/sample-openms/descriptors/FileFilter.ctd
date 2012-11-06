@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>FileFilter</name>
 <version>1.10.0</version>
 <description><![CDATA[Extracts or manipulates portions of data from peak, feature or consensus-feature files.]]></description>
 <manual><![CDATA[Extracts or manipulates portions of data from peak, feature or consensus-feature files.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__FileFilter.html</docurl>
 <category>File Handling</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="FileFilter" description="Extracts or manipulates portions of data from peak, feature or consensus-feature files.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FileFilter&apos;">
-      <ITEM name="in" value="" type="string" description="input file " tags="input file,required" restrictions="*.mzML,*.featureXML,*.consensusXML" />
+      <ITEM name="in" value="" type="string" description="input file " tags="input file,required" supported_formats="*.mzML,*.featureXML,*.consensusXML" />
       <ITEM name="in_type" value="" type="string" description="input file type -- default: determined from file extension or content#br#" restrictions="mzML,featureXML,consensusXML" />
-      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" restrictions="*.mzML,*.featureXML,*.consensusXML" />
+      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.mzML,*.featureXML,*.consensusXML" />
       <ITEM name="out_type" value="" type="string" description="output file type -- default: determined from file extension or content#br#" restrictions="mzML,featureXML,consensusXML" />
       <ITEM name="mz" value=":" type="string" description="m/z range to extract" />
       <ITEM name="rt" value=":" type="string" description="retention time range to extract" />
@@ -51,7 +50,7 @@
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
       <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
       <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
-      <NODE name="id" description="id section">
+      <NODE name="id" description="ID options">
         <ITEM name="remove_clashes" value="false" type="string" description="remove features with id clashes (different sequences mapped to one feature)" tags="advanced" restrictions="true,false" />
         <ITEM name="keep_best_score_id" value="false" type="string" description="in case of multiple peptide identifications, keep only the id with best score" restrictions="true,false" />
         <ITEMLIST name="sequences_whitelist" type="string" description="keep only features with white listed sequences, e.g. LYSNLVER or the modification (Oxidation)">
@@ -61,6 +60,10 @@
         <ITEM name="remove_annotated_features" value="false" type="string" description="remove features with annotations" restrictions="true,false" />
         <ITEM name="remove_unannotated_features" value="false" type="string" description="remove features without annotations" restrictions="true,false" />
         <ITEM name="remove_unassigned_ids" value="false" type="string" description="remove unassigned peptide identifications" restrictions="true,false" />
+        <ITEM name="blacklist" value="" type="string" description="Input file containing MS2 identifications whose corresponding MS2 spectra should be removed from the mzML file!#br#Matching tolerances are taken from &apos;id:rt&apos; and &apos;id:mz&apos; options.#br#This tool will require all IDs to be matched to an MS2 spectrum, and quit with error otherwise. Use &apos;id:blacklist_imperfect&apos; to allow for mismatches." tags="input file" supported_formats="*.idXML" />
+        <ITEM name="rt" value="0.1" type="float" description="retention tolerance [s] for precursor to id position" restrictions="0:" />
+        <ITEM name="mz" value="0.001" type="float" description="m/z tolerance [Th] for precursor to id position" restrictions="0:" />
+        <ITEM name="blacklist_imperfect" value="false" type="string" description="Allow for mismatching precursor positions (see &apos;id:blacklist&apos;)" restrictions="true,false" />
       </NODE>
       <NODE name="algorithm" description="S/N algorithm section">
         <NODE name="SignalToNoise" description="">

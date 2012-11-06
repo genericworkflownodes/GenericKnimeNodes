@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>TMTAnalyzer</name>
 <version>1.10.0</version>
 <description><![CDATA[Calculates TMT quantitative values for peptides]]></description>
 <manual><![CDATA[Calculates TMT quantitative values for peptides]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__TMTAnalyzer.html</docurl>
 <category>Quantitation</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="TMTAnalyzer" description="Calculates TMT quantitative values for peptides">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;TMTAnalyzer&apos;">
-      <ITEM name="in" value="" type="string" description="input raw/picked data file " tags="input file,required" restrictions="*.mzML" />
-      <ITEM name="out" value="" type="string" description="output consensusXML file with quantitative information" tags="output file,required" restrictions="*.consensusXML" />
-      <ITEM name="out_mzq" value="" type="string" description="Optional output file of MzQuantML." tags="advanced,output file" restrictions="*.mzq" />
-      <ITEM name="out_stats" value="" type="string" description="output statistics as tab-separated file (readable by R or Excel or ...)" tags="output file" restrictions="*.tsv" />
+      <ITEM name="in" value="" type="string" description="input raw/picked data file " tags="input file,required" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="string" description="output consensusXML file with quantitative information" tags="output file,required" supported_formats="*.consensusXML" />
+      <ITEM name="out_mzq" value="" type="string" description="Optional output file of MzQuantML." tags="advanced,output file" supported_formats="*.mzq" />
+      <ITEM name="out_stats" value="" type="string" description="output statistics as tab-separated file (readable by R or Excel or ...)" tags="output file" supported_formats="*.tsv" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />

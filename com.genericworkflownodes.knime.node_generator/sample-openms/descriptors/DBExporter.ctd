@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>DBExporter</name>
 <version>1.10.0</version>
 <description><![CDATA[Exports data from an OpenMS database to a file.]]></description>
 <manual><![CDATA[Exports data from an OpenMS database to a file.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__DBExporter.html</docurl>
 <category>File Handling</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="DBExporter" description="Exports data from an OpenMS database to a file.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;DBExporter&apos;">

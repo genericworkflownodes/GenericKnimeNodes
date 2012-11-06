@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>MapRTTransformer</name>
 <version>1.10.0</version>
 <description><![CDATA[Applies retention time transformations to maps.]]></description>
 <manual><![CDATA[Applies retention time transformations to maps.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__MapRTTransformer.html</docurl>
 <category>Map Alignment</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="MapRTTransformer" description="Applies retention time transformations to maps.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;MapRTTransformer&apos;">
-      <ITEMLIST name="in" type="string" description="Input files to transform (separated by blanks)" tags="input file" restrictions="*.mzML,*.featureXML,*.consensusXML,*.idXML">
+      <ITEMLIST name="in" type="string" description="Input files to transform (separated by blanks)" tags="input file" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.idXML">
       </ITEMLIST>
-      <ITEMLIST name="out" type="string" description="Output files separated by blanks" tags="output file" restrictions="*.mzML,*.featureXML,*.consensusXML,*.idXML">
+      <ITEMLIST name="out" type="string" description="Output files separated by blanks" tags="output file" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.idXML">
       </ITEMLIST>
-      <ITEMLIST name="trafo_in" type="string" description="Transformations to apply (files separated by blanks)" tags="input file,required" restrictions="*.trafoXML">
+      <ITEMLIST name="trafo_in" type="string" description="Transformations to apply (files separated by blanks)" tags="input file,required" supported_formats="*.trafoXML">
       </ITEMLIST>
-      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks" tags="output file" restrictions="*.trafoXML">
+      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks" tags="output file" supported_formats="*.trafoXML">
       </ITEMLIST>
       <ITEM name="invert" value="false" type="string" description="Invert transformations (approximatively) before applying them" restrictions="true,false" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />

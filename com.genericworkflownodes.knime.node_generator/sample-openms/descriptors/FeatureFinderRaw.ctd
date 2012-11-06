@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>FeatureFinderRaw</name>
 <version>1.10.0</version>
 <description><![CDATA[Determination of peak ratios in LC-MS data]]></description>
 <manual><![CDATA[Determination of peak ratios in LC-MS data]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__FeatureFinderRaw.html</docurl>
 <category>Quantitation</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="FeatureFinderRaw" description="Determination of peak ratios in LC-MS data">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FeatureFinderRaw&apos;">
-      <ITEM name="in" value="" type="string" description="Raw LC-MS data to be analyzed. (Profile data required. Will not work with centroided data!)" tags="input file,required" restrictions="*.mzML" />
-      <ITEM name="out" value="" type="string" description="Set of all identified peptides. The m/z-RT positions correspond to the lightest peptide in each group." tags="output file" restrictions="*.featureXML" />
+      <ITEM name="in" value="" type="string" description="Raw LC-MS data to be analyzed. (Profile data required. Will not work with centroided data!)" tags="input file,required" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="string" description="Set of all identified peptides. The m/z-RT positions correspond to the lightest peptide in each group." tags="output file" supported_formats="*.featureXML" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />

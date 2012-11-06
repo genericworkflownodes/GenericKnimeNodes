@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>INIUpdater</name>
 <version>1.10.0</version>
 <description><![CDATA[Update INI and TOPPAS files to new OpenMS version.]]></description>
 <manual><![CDATA[Update INI and TOPPAS files to new OpenMS version.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__INIUpdater.html</docurl>
 <category></category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="INIUpdater" description="Update INI and TOPPAS files to new OpenMS version.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;INIUpdater&apos;">
-      <ITEMLIST name="in" type="string" description="INI/TOPPAS files that need updating." tags="input file,required" restrictions="*.ini,*.toppas">
+      <ITEMLIST name="in" type="string" description="INI/TOPPAS files that need updating." tags="input file,required" supported_formats="*.ini,*.toppas">
       </ITEMLIST>
       <ITEM name="i" value="false" type="string" description="in-place: Override given INI/TOPPAS files with new content (not compatible with -out)" restrictions="true,false" />
-      <ITEMLIST name="out" type="string" description="Optional list of output files (not compatible with -i)." tags="output file" restrictions="*.ini,*.toppas">
+      <ITEMLIST name="out" type="string" description="Optional list of output files (not compatible with -i)." tags="output file" supported_formats="*.ini,*.toppas">
       </ITEMLIST>
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />

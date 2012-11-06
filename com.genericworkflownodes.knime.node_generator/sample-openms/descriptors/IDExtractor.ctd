@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>IDExtractor</name>
 <version>1.10.0</version>
-<description><![CDATA[Extracts 'n' peptides randomly or best 'n' from IdXML files.]]></description>
-<manual><![CDATA[Extracts 'n' peptides randomly or best 'n' from IdXML files.]]></manual>
+<description><![CDATA[Extracts 'n' peptides randomly or best 'n' from idXML files.]]></description>
+<manual><![CDATA[Extracts 'n' peptides randomly or best 'n' from idXML files.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__IDExtractor.html</docurl>
 <category></category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <NODE name="IDExtractor" description="Extracts &apos;n&apos; peptides randomly or best &apos;n&apos; from IdXML files.">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDExtractor" description="Extracts &apos;n&apos; peptides randomly or best &apos;n&apos; from idXML files.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDExtractor&apos;">
-      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" restrictions="*.idXML" />
-      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" restrictions="*.idXML" />
+      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.idXML" />
       <ITEM name="number_of_peptides" value="10" type="int" description="Number of randomly chosen peptides" restrictions="1:" />
       <ITEM name="number_of_rand_invokations" value="0" type="int" description="Number of rand invocations before random draw" restrictions="0:" />
       <ITEM name="best_hits" value="false" type="string" description="If this flag is set the best n peptides are chosen." restrictions="true,false" />

@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>ConsensusMapNormalizer</name>
 <version>1.10.0</version>
 <description><![CDATA[Normalizes maps of one consensusXML file]]></description>
 <manual><![CDATA[Normalizes maps of one consensusXML file]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__ConsensusMapNormalizer.html</docurl>
 <category>Map Alignment</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="ConsensusMapNormalizer" description="Normalizes maps of one consensusXML file">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;ConsensusMapNormalizer&apos;">
-      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" restrictions="*.consensusXML" />
-      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" restrictions="*.consensusXML" />
+      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" supported_formats="*.consensusXML" />
+      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.consensusXML" />
       <ITEM name="algorithm_type" value="robust_regression" type="string" description="The normalization algorithm that is applied." restrictions="robust_regression,median,quantile" />
       <ITEM name="ratio_threshold" value="0.67" type="float" description="Only for &apos;robust_regression&apos;: the parameter is used to distinguish between non-outliers (ratio_threshold &lt; intensity ratio &lt; 1/ratio_threshold) and outliers." restrictions="0.001:1" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />

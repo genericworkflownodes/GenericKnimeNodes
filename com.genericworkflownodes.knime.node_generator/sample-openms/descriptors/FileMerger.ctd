@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>FileMerger</name>
 <version>1.10.0</version>
 <description><![CDATA[Merges several MS files into one file.]]></description>
 <manual><![CDATA[Merges several MS files into one file.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__FileMerger.html</docurl>
 <category>File Handling</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="FileMerger" description="Merges several MS files into one file.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FileMerger&apos;">
-      <ITEMLIST name="in" type="string" description="Input files separated by blank" tags="input file,required" restrictions="*.mzData,*.mzXML,*.mzML,*.DTA,*.DTA2D,*.mgf,*.featureXML,*.consensusXML,*.fid,*.TraML">
+      <ITEMLIST name="in" type="string" description="Input files separated by blank" tags="input file,required" supported_formats="*.mzData,*.mzXML,*.mzML,*.dta,*.dta2d,*.mgf,*.featureXML,*.consensusXML,*.fid,*.traML">
       </ITEMLIST>
-      <ITEM name="in_type" value="" type="string" description="input file type (default: determined from file extension or content)#br#" restrictions="mzData,mzXML,mzML,DTA,DTA2D,mgf,featureXML,consensusXML,fid,TraML" />
-      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" restrictions="*.mzML,*.featureXML,*.consensusXML,*.TraML" />
+      <ITEM name="in_type" value="" type="string" description="input file type (default: determined from file extension or content)#br#" restrictions="mzData,mzXML,mzML,dta,dta2d,mgf,featureXML,consensusXML,fid,traML" />
+      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.traML" />
       <ITEM name="annotate_file_origin" value="false" type="string" description="Store the original filename in each feature (MetaValue: file_origin)." restrictions="true,false" />
       <ITEM name="rt_auto" value="false" type="string" description="Assign retention times automatically (integers starting at 1)" restrictions="true,false" />
       <ITEMLIST name="rt_custom" type="float" description="List of custom retention times that are assigned to the files.#br#The number of given retention times must be equal to the number of given input file.">
