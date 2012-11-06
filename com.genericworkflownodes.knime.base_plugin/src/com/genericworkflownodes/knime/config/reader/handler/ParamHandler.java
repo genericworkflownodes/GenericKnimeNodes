@@ -336,7 +336,8 @@ public class ParamHandler extends DefaultHandler {
 			String attrValue = attributes.getValue(ATTR_SUPPORTED_FORMATS);
 			String[] fileExtension = attrValue.split(",");
 			for (String ext : fileExtension) {
-				mimeTypes.add(new MIMEType(ext.trim()));
+				mimeTypes.add(new MIMEType(ext.replaceAll("^\\s*\\*\\.", "")
+						.trim()));
 			}
 		} else if (attributes.getValue(ATTR_RESTRICTIONS) != null
 				&& attributes.getValue(ATTR_RESTRICTIONS).length() > 0

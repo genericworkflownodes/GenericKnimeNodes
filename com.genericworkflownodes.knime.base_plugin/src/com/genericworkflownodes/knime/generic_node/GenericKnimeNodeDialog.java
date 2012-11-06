@@ -31,6 +31,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.generic_node.dialogs.mimetype_dialog.MimeTypeChooserDialog;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ParameterDialog;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
@@ -74,6 +75,11 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 			throws InvalidSettingsException {
 		for (String key : config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);
+
+			// skip file parameters
+			if (param instanceof IFileParameter)
+				continue;
+
 			settings.addString(key, param.getStringRep());
 		}
 
@@ -89,6 +95,10 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 			PortObjectSpec[] specs) throws NotConfigurableException {
 		for (String key : config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);
+			// skip file parameters
+			if (param instanceof IFileParameter)
+				continue;
+
 			String value = null;
 			try {
 				value = settings.getString(key);

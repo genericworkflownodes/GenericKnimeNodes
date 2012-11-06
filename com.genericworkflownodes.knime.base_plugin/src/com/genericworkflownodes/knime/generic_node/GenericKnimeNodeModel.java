@@ -57,6 +57,7 @@ import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.outputconverter.IOutputConverter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
@@ -274,6 +275,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// - we know that values are validated and thus are valid
 		// - we xfer the values into the corresponding model objects
 		for (String key : nodeConfig.getParameterKeys()) {
+			// FileParameters are not set by the UI
+			if (nodeConfig.getParameter(key) instanceof IFileParameter)
+				continue;
+
 			String value = settings.getString(key);
 			try {
 				nodeConfig.getParameter(key).fillFromString(value);
@@ -300,6 +305,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 		for (String key : nodeConfig.getParameterKeys()) {
 			Parameter<?> param = nodeConfig.getParameter(key);
+			// FileParameters are not set by the UI
+			if (param instanceof IFileParameter)
+				continue;
 			if (!param.isOptional()) {
 				if (!settings.containsKey(key)) {
 					GenericNodesPlugin
@@ -352,12 +360,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		for (Parameter<?> param : nodeConfig.getParameters()) {
 			// System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
-			if (!param.isOptional() && param.getStringRep().equals("")) {
+			if (!param.isOptional() && param.getValue() != null
+					&& param.getStringRep().equals("")) {
 				// throw new
 				// InvalidSettingsException("not all mandatory parameters are set");
 				setWarningMessage("some mandatory parameters might not be set");
 			}
-
 		}
 
 		int nIn = mimetypes_in.length;
@@ -434,7 +442,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		transferIncomingPorts2Config(inObjects);
 
 		// prepare input data and parameter values
-		List<List<URI>> outputFiles = transferOutgoingPorts2Config(jobdir, inObjects);
+		List<List<URI>> outputFiles = transferOutgoingPorts2Config(jobdir,
+				inObjects);
 
 		// launch executable
 		prepareExecute(jobdir, exec);
