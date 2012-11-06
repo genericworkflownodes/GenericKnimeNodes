@@ -48,8 +48,8 @@ public class PluginActivatorTemplate extends Template {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/PluginActivator.template"));
 
-		this.replace("__BASE__", packageName);
-		this.replace("__NODENAMES__",
-				"\"" + StringUtils.join(nodeNames, "\", \"") + "\"");
+		replace("__BASE__", packageName);
+		replace("__NODENAMES__", "\"" + StringUtils.join(nodeNames, "\", \"")
+				+ "\"");
 	}
 }

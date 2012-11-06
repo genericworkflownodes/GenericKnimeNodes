@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -34,18 +34,34 @@ import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.Paramete
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
+/**
+ * Generic dialog for the tools.
+ * 
+ * @author aiche
+ */
 public class GenericKnimeNodeDialog extends NodeDialogPane {
+	/**
+	 * The node configuration.
+	 */
 	private INodeConfiguration config;
+
+	/**
+	 * The dialog for the parameters.
+	 */
 	private ParameterDialog dialog;
+
+	/**
+	 * The dialog for choosing the MIMEType.
+	 */
 	private MimeTypeChooserDialog mtc;
 
 	public GenericKnimeNodeDialog(INodeConfiguration config) {
 		this.config = config;
 		try {
 			dialog = new ParameterDialog(config);
-			this.addTab("Parameters", dialog);
+			addTab("Parameters", dialog);
 			mtc = new MimeTypeChooserDialog(config);
-			this.addTab("OutputTypes", mtc);
+			addTab("OutputTypes", mtc);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -56,14 +72,14 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings)
 			throws InvalidSettingsException {
-		for (String key : this.config.getParameterKeys()) {
+		for (String key : config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);
 			settings.addString(key, param.getStringRep());
 		}
 
 		int[] sel_ports = mtc.getSelectedTypes();
 
-		for (int i = 0; i < this.config.getNumberOfOutputPorts(); i++) {
+		for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
 			settings.addInt("GENERIC_KNIME_NODES_outtype#" + i, sel_ports[i]);
 		}
 	}
@@ -71,7 +87,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 	@Override
 	protected void loadSettingsFrom(NodeSettingsRO settings,
 			PortObjectSpec[] specs) throws NotConfigurableException {
-		for (String key : this.config.getParameterKeys()) {
+		for (String key : config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);
 			String value = null;
 			try {
@@ -87,7 +103,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 			}
 		}
 
-		int nP = this.config.getNumberOfOutputPorts();
+		int nP = config.getNumberOfOutputPorts();
 		int[] sel_ports = new int[nP];
 
 		for (int i = 0; i < nP; i++) {
