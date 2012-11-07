@@ -87,6 +87,9 @@ public class ParamHandler extends DefaultHandler {
 	private static String ATTR_TAGS = "tags";
 	private static String ATTR_SUPPORTED_FORMATS = "supported_formats";
 	private static String ATTR_RESTRICTIONS = "restrictions";
+
+	// is contained in the schema but currently we do not handle this tag
+	@SuppressWarnings("unused")
 	private static String ATTR_OUTPUT_FORMAT_SOURCE = "output_format_source";
 
 	/**

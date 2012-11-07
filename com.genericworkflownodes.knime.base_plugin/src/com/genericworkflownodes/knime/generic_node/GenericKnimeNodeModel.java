@@ -604,6 +604,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			String someFileName = "";
 			// multi output file
 			for (URI filename : outputFileNames.get(i)) {
+				someFileName = filename.getPath();
 				uris.add(new URIContent(filename));
 			}
 

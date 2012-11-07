@@ -159,7 +159,7 @@ public class CTDConfigurationWriter {
 					xmlEscapeText(currentConfig.getExecutablePath())));
 
 		if (currentConfig.getCLI() != null
-				|| currentConfig.getCLI().getCLIElement().size() == 0) {
+				&& currentConfig.getCLI().getCLIElement().size() > 0) {
 			writeCLI();
 		}
 
@@ -407,7 +407,7 @@ public class CTDConfigurationWriter {
 	}
 
 	private void addNumberRestrictions(StringBuffer item, Parameter<?> p) {
-		item.append(" restrictions=\"");
+		StringBuffer restriction = new StringBuffer();
 		if (p instanceof DoubleParameter) {
 			DoubleParameter dp = (DoubleParameter) p;
 			boolean lbSet = Double.NEGATIVE_INFINITY != dp.getLowerBound()
@@ -415,14 +415,14 @@ public class CTDConfigurationWriter {
 			boolean ubSet = Double.POSITIVE_INFINITY != dp.getUpperBound()
 					.doubleValue();
 			if (lbSet) {
-				item.append(String.format("%f", dp.getLowerBound())
+				restriction.append(String.format("%f", dp.getLowerBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 			if (ubSet || lbSet) {
-				item.append(":");
+				restriction.append(":");
 			}
 			if (ubSet) {
-				item.append(String.format("%f", dp.getUpperBound())
+				restriction.append(String.format("%f", dp.getUpperBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 		} else if (p instanceof IntegerParameter) {
@@ -432,13 +432,13 @@ public class CTDConfigurationWriter {
 			boolean ubSet = Integer.MAX_VALUE != ip.getUpperBound()
 					.doubleValue();
 			if (lbSet) {
-				item.append(String.format("%d", ip.getLowerBound()));
+				restriction.append(String.format("%d", ip.getLowerBound()));
 			}
 			if (ubSet || lbSet) {
-				item.append(":");
+				restriction.append(":");
 			}
 			if (ubSet) {
-				item.append(String.format("%d", ip.getUpperBound()));
+				restriction.append(String.format("%d", ip.getUpperBound()));
 			}
 		} else if (p instanceof IntegerListParameter) {
 			IntegerListParameter ilp = (IntegerListParameter) p;
@@ -448,13 +448,13 @@ public class CTDConfigurationWriter {
 					.doubleValue();
 
 			if (lbSet) {
-				item.append(String.format("%d", ilp.getLowerBound()));
+				restriction.append(String.format("%d", ilp.getLowerBound()));
 			}
 			if (ubSet || lbSet) {
-				item.append(":");
+				restriction.append(":");
 			}
 			if (ubSet) {
-				item.append(String.format("%d", ilp.getUpperBound()));
+				restriction.append(String.format("%d", ilp.getUpperBound()));
 			}
 		} else if (p instanceof DoubleListParameter) {
 			DoubleListParameter dlp = (DoubleListParameter) p;
@@ -463,19 +463,22 @@ public class CTDConfigurationWriter {
 			boolean ubSet = Double.POSITIVE_INFINITY != dlp.getUpperBound()
 					.doubleValue();
 			if (lbSet) {
-				item.append(String.format("%f", dlp.getLowerBound())
+				restriction.append(String.format("%f", dlp.getLowerBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 			if (ubSet || lbSet) {
-				item.append(":");
+				restriction.append(":");
 			}
 			if (ubSet) {
-				item.append(String.format("%f", dlp.getUpperBound())
+				restriction.append(String.format("%f", dlp.getUpperBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 		}
-
-		item.append("\"");
+		if (!"".equals(restriction.toString())) {
+			item.append(" restrictions=\"");
+			item.append(restriction.toString());
+			item.append("\"");
+		}
 	}
 
 	private void addBoolRestrictions(StringBuffer item) {
