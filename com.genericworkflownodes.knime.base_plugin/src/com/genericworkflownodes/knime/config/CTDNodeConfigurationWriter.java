@@ -164,7 +164,7 @@ public class CTDNodeConfigurationWriter implements INodeConfigurationWriter {
 				|| multiPortFound(key, config.getOutputPorts());
 	}
 
-	private boolean multiPortFound(final String key, final Port[] ports) {
+	private boolean multiPortFound(final String key, final List<Port> ports) {
 		for (final Port port : ports) {
 			if (key.equals(port.getName()) && port.isMultiFile()) {
 				return true;

@@ -29,6 +29,7 @@ import java.util.Set;
  * 
  * @author roettig, aiche
  */
+@Deprecated
 public class NodeConfigurationStore implements INodeConfigurationStore {
 
 	/**

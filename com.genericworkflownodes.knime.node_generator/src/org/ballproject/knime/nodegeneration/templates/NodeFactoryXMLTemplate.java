@@ -86,8 +86,10 @@ public class NodeFactoryXMLTemplate extends Template {
 	 *            information.
 	 * @return A {@link String} representing the output port part of the xml
 	 *         config file.
+	 * @throws Exception
 	 */
-	private static String getOutPorts(final INodeConfiguration nodeConfiguration) {
+	private static String getOutPorts(final INodeConfiguration nodeConfiguration)
+			throws IOException {
 		String op = "<outPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outPorts = "";
 		int idx = 0;
@@ -97,7 +99,7 @@ public class NodeFactoryXMLTemplate extends Template {
 			opp = opp.replace("__PORTDESCR__", port.getDescription());
 			opp = opp.replace("__IDX__", String.format("%d", idx++));
 
-			// fix me
+			//
 			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0)
 					.getExtension());
 
@@ -153,9 +155,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 *            The node configuration.
 	 * @param iconPath
 	 *            The path to the icon of the node.
-	 * @throws IOException
-	 *             Throws an {@link IOException} if the associated template
-	 *             cannot be read.
+	 * @throws Exception
 	 */
 	public NodeFactoryXMLTemplate(final String nodeName,
 			final INodeConfiguration nodeConfiguration, final String iconPath)
@@ -163,20 +163,20 @@ public class NodeFactoryXMLTemplate extends Template {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/NodeXMLDescriptor.template"));
 
-		this.replace("__ICON__", iconPath);
-		this.replace("__NODENAME__", nodeName);
-		this.replace("__INPORTS__", getInPorts(nodeConfiguration));
-		this.replace("__OUTPORTS__", getOutPorts(nodeConfiguration));
-		this.replace("__OPTIONS__", getOptions(nodeConfiguration));
-		this.replace("__DESCRIPTION__", nodeConfiguration.getDescription());
+		replace("__ICON__", iconPath);
+		replace("__NODENAME__", nodeName);
+		replace("__INPORTS__", getInPorts(nodeConfiguration));
+		replace("__OUTPORTS__", getOutPorts(nodeConfiguration));
+		replace("__OPTIONS__", getOptions(nodeConfiguration));
+		replace("__DESCRIPTION__", nodeConfiguration.getDescription());
 		String pp = prettyPrint(nodeConfiguration.getManual());
-		this.replace("__MANUAL__", pp);
+		replace("__MANUAL__", pp);
 		if (!nodeConfiguration.getDocUrl().equals("")) {
 			String ahref = "<a href=\"" + nodeConfiguration.getDocUrl()
 					+ "\">Web Documentation for " + nodeName + "</a>";
-			this.replace("__DOCLINK__", ahref);
+			replace("__DOCLINK__", ahref);
 		} else {
-			this.replace("__DOCLINK__", "");
+			replace("__DOCLINK__", "");
 		}
 	}
 

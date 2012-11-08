@@ -30,7 +30,8 @@ import com.genericworkflownodes.knime.port.Port;
  * @author roettig
  * 
  */
-public class FileListParameter extends StringListParameter {
+public class FileListParameter extends StringListParameter implements
+		IFileParameter {
 
 	/**
 	 * The serial version UID.
@@ -54,21 +55,12 @@ public class FileListParameter extends StringListParameter {
 		super(key, value);
 	}
 
-	/**
-	 * Sets the port.
-	 * 
-	 * @param port
-	 *            The new port.
-	 */
+	@Override
 	public void setPort(final Port port) {
 		this.port = port;
 	}
 
-	/**
-	 * Returns the port.
-	 * 
-	 * @return The port.
-	 */
+	@Override
 	public Port getPort() {
 		return port;
 	}

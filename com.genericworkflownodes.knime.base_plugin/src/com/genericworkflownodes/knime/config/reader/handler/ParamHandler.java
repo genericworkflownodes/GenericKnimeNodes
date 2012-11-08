@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config.reader;
+package com.genericworkflownodes.knime.config.reader.handler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +38,8 @@ import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
@@ -85,6 +87,9 @@ public class ParamHandler extends DefaultHandler {
 	private static String ATTR_TAGS = "tags";
 	private static String ATTR_SUPPORTED_FORMATS = "supported_formats";
 	private static String ATTR_RESTRICTIONS = "restrictions";
+
+	// is contained in the schema but currently we do not handle this tag
+	@SuppressWarnings("unused")
 	private static String ATTR_OUTPUT_FORMAT_SOURCE = "output_format_source";
 
 	/**
@@ -97,7 +102,10 @@ public class ParamHandler extends DefaultHandler {
 	 */
 	private static final String OUTPUTFILE_TAG = "output file";
 
-	private static char PATH_SEPARATOR = '.';
+	/**
+	 * Separates two nodes.
+	 */
+	public static char PATH_SEPARATOR = '.';
 
 	/**
 	 * List of port/parameter names that will not be created.
@@ -182,7 +190,10 @@ public class ParamHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String name,
 			Attributes attributes) throws SAXException {
 		if (TAG_NODE.equals(name)) {
-			currentPath += attributes.getValue(ATTR_NAME);
+			String nodeName = attributes.getValue(ATTR_NAME);
+			String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
+			currentPath += nodeName;
+			config.setSectionDescription(currentPath, nodeDescription);
 			currentPath += PATH_SEPARATOR;
 		} else if (TAG_ITEM.equals(name)) {
 			String type = attributes.getValue(ATTR_TYPE);
@@ -255,7 +266,7 @@ public class ParamHandler extends DefaultHandler {
 			currentParameter = new StringListParameter(paramName,
 					new ArrayList<String>());
 			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
-			if (restrictions != null) {
+			if (restrictions != null && !"".equals(restrictions.trim())) {
 				((StringListParameter) currentParameter).setRestrictions(Arrays
 						.asList(restrictions.split(",")));
 			}
@@ -285,6 +296,24 @@ public class ParamHandler extends DefaultHandler {
 
 		p.setOptional(isOptional(attributes));
 
+		currentParameter = null;
+		// create port parameter
+		if (isList) {
+			currentParameter = new FileListParameter(paramName,
+					new ArrayList<String>());
+			((FileListParameter) currentParameter).setPort(p);
+			((FileListParameter) currentParameter).setDescription(p
+					.getDescription());
+			((FileListParameter) currentParameter)
+					.setIsOptional(p.isOptional());
+		} else {
+			currentParameter = new FileParameter(paramName, "");
+			((FileParameter) currentParameter).setPort(p);
+			((FileParameter) currentParameter).setDescription(p
+					.getDescription());
+			((FileParameter) currentParameter).setIsOptional(p.isOptional());
+		}
+
 		if (getTags(attributes).contains(INPUTFILE_TAG)) {
 			inputPorts.add(p);
 		} else {
@@ -310,7 +339,8 @@ public class ParamHandler extends DefaultHandler {
 			String attrValue = attributes.getValue(ATTR_SUPPORTED_FORMATS);
 			String[] fileExtension = attrValue.split(",");
 			for (String ext : fileExtension) {
-				mimeTypes.add(new MIMEType(ext.trim()));
+				mimeTypes.add(new MIMEType(ext.replaceAll("^\\s*\\*\\.", "")
+						.trim()));
 			}
 		} else if (attributes.getValue(ATTR_RESTRICTIONS) != null
 				&& attributes.getValue(ATTR_RESTRICTIONS).length() > 0
@@ -362,19 +392,21 @@ public class ParamHandler extends DefaultHandler {
 			Attributes attributes) {
 		if (isPort(attributes)) {
 			createPort(paramName, attributes, false);
-		}
-
-		// check if we have a boolean
-		String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
-		if (isBooleanParameter(restrictions)) {
-			currentParameter = new BoolParameter(paramName, paramValue);
 		} else {
-			if (restrictions != null && restrictions.length() > 0) {
-				currentParameter = new StringChoiceParameter(paramName,
-						restrictions.split(","));
-				((StringChoiceParameter) currentParameter).setValue(paramValue);
+			// check if we have a boolean
+			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
+			if (isBooleanParameter(restrictions)) {
+				currentParameter = new BoolParameter(paramName, paramValue);
 			} else {
-				currentParameter = new StringParameter(paramName, paramValue);
+				if (restrictions != null && restrictions.length() > 0) {
+					currentParameter = new StringChoiceParameter(paramName,
+							restrictions.split(","));
+					((StringChoiceParameter) currentParameter)
+							.setValue(paramValue);
+				} else {
+					currentParameter = new StringParameter(paramName,
+							paramValue);
+				}
 			}
 		}
 	}
@@ -503,9 +535,8 @@ public class ParamHandler extends DefaultHandler {
 			config.addParameter(entry.getKey(), entry.getValue());
 		}
 
-		Port[] portArray = new Port[0];
-		config.setInports(inputPorts.toArray(portArray));
-		config.setOutports(outputPorts.toArray(portArray));
+		config.setInports(inputPorts);
+		config.setOutports(outputPorts);
 	}
 
 	private void removeSuffix() {

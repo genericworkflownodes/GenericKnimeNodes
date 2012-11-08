@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -24,31 +24,69 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
+/**
+ * Wraps the Parameters of an {@link INodeConfiguration} into a tree of
+ * parameters.
+ * 
+ * @author aiche
+ */
 public class ConfigWrapper {
+
+	/**
+	 * The wrapped configuration.
+	 */
 	private INodeConfiguration config;
 
+	/**
+	 * The root node of the parameter tree.
+	 */
+	private ParameterNode root;
+
+	/**
+	 * C'tor.
+	 * 
+	 * @param config
+	 *            The {@link INodeConfiguration} to wrap.
+	 */
 	public ConfigWrapper(INodeConfiguration config) {
 		this.config = config;
+		root = new ParameterNode(null, null, "root");
 		init();
 	}
 
-	private ParameterNode root = new ParameterNode(null, null, "root");
-
+	/**
+	 * Returns the root of the Parameter tree.
+	 * 
+	 * @return The root.
+	 */
 	public ParameterNode getRoot() {
 		return root;
 	}
 
+	/**
+	 * Constructs a list of prefixes from a given strin.
+	 * 
+	 * @param key
+	 *            The string to process.
+	 * @return
+	 */
 	private static List<String> getPrefixes(String key) {
 		List<String> ret = new ArrayList<String>();
 		String[] toks = key.split("\\.");
 		String pref = "";
+		int currentToken = 0;
 		for (String tok : toks) {
-			pref += tok + ".";
-			ret.add(pref.substring(0, pref.length() - 1));
+			// skip the "1" node in OpenMS/CADDSuite
+			if (currentToken == 1 && "1".equals(tok))
+				continue;
+			pref += tok;
+			ret.add(pref);
+			pref += ".";
+			++currentToken;
 		}
 		return ret;
 	}
@@ -62,19 +100,25 @@ public class ConfigWrapper {
 		Map<String, ParameterNode> key2node = new HashMap<String, ParameterNode>();
 
 		for (String key : config.getParameterKeys()) {
+			Parameter<?> p = config.getParameter(key);
+
+			// we do not show file parameters in the gui
+			if (p instanceof IFileParameter)
+				continue;
+
 			List<String> prefixes = getPrefixes(key);
 
-			// OpenMS/CADDSuite workaround for leading '1' NODE
-			if (prefixes.get(0).equals("1")) {
+			// OpenMS/CADDSuite workaround for leading/second '1' NODE
+			if (prefixes.size() > 0 && prefixes.get(0).equals("1")) {
 				prefixes.remove(0);
 			}
 
 			ParameterNode last = root;
+
 			for (int i = 0; i < prefixes.size() - 1; i++) {
 				String prefix = prefixes.get(i);
 
 				if (!key2node.containsKey(prefix)) {
-
 					ParameterNode nn = new ParameterNode(last, null,
 							getSuffix(prefix));
 					last.addChild(nn);
@@ -85,7 +129,6 @@ public class ConfigWrapper {
 				}
 			}
 
-			Parameter<?> p = config.getParameter(key);
 			ParameterNode n = new ParameterNode(last, p, p.getKey());
 			last.addChild(n);
 		}

@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>SILACAnalyzer</name>
 <version>1.10.0</version>
 <description><![CDATA[Determination of peak ratios in LC-MS data]]></description>
 <manual><![CDATA[Determination of peak ratios in LC-MS data]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__SILACAnalyzer.html</docurl>
 <category>Quantitation</category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="SILACAnalyzer" description="Determination of peak ratios in LC-MS data">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;SILACAnalyzer&apos;">
-      <ITEM name="in" value="" type="string" description="Raw LC-MS data to be analyzed. (Profile data required. Will not work with centroided data!)" tags="input file,required" restrictions="*.mzML" />
-      <ITEM name="out" value="" type="string" description="Set of all identified peptide groups (i.e. peptide pairs or triplets or singlets or ..). The m/z-RT positions correspond to the lightest peptide in each group." tags="output file" restrictions="*.consensusXML" />
-      <ITEM name="out_clusters" value="" type="string" description="Optional debug output containing data points passing all filters, hence belonging to a SILAC pattern. Points of the same colour correspond to the mono-isotopic peak of the lightest peptide in a pattern." tags="advanced,output file" restrictions="*.consensusXML" />
-      <ITEM name="out_features" value="" type="string" description="Optional output file containing the individual peptide features in &apos;out&apos;." tags="advanced,output file" restrictions="*.featureXML" />
-      <ITEM name="out_mzq" value="" type="string" description="Optional output file of MzQuantML." tags="advanced,output file" restrictions="*.mzq" />
-      <ITEM name="out_filters" value="" type="string" description="Optional output file containing all points that passed the filters as txt. Suitable as input for &apos;in_filters&apos; to perform clustering without preceding filtering process." tags="advanced,output file" restrictions="*.consensusXML" />
-      <ITEM name="in_filters" value="" type="string" description="Optional input file containing all points that passed the filters as txt. Use output from &apos;out_filters&apos; to perform clustering only." tags="advanced,input file" restrictions="*.consensusXML" />
+      <ITEM name="in" value="" type="string" description="Raw LC-MS data to be analyzed. (Profile data required. Will not work with centroided data!)" tags="input file,required" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="string" description="Set of all identified peptide groups (i.e. peptide pairs or triplets or singlets or ..). The m/z-RT positions correspond to the lightest peptide in each group." tags="output file" supported_formats="*.consensusXML" />
+      <ITEM name="out_clusters" value="" type="string" description="Optional debug output containing data points passing all filters, hence belonging to a SILAC pattern. Points of the same colour correspond to the mono-isotopic peak of the lightest peptide in a pattern." tags="advanced,output file" supported_formats="*.consensusXML" />
+      <ITEM name="out_features" value="" type="string" description="Optional output file containing the individual peptide features in &apos;out&apos;." tags="advanced,output file" supported_formats="*.featureXML" />
+      <ITEM name="out_mzq" value="" type="string" description="Optional output file of MzQuantML." tags="advanced,output file" supported_formats="*.mzq" />
+      <ITEM name="out_filters" value="" type="string" description="Optional output file containing all points that passed the filters as txt. Suitable as input for &apos;in_filters&apos; to perform clustering without preceding filtering process." tags="advanced,output file" supported_formats="*.consensusXML" />
+      <ITEM name="in_filters" value="" type="string" description="Optional input file containing all points that passed the filters as txt. Use output from &apos;out_filters&apos; to perform clustering only." tags="advanced,input file" supported_formats="*.consensusXML" />
       <ITEM name="out_debug" value="" type="string" description="Filename base for debug output." tags="advanced" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />

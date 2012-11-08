@@ -26,6 +26,7 @@ import java.util.Set;
  * 
  * @author roettig, aiche
  */
+@Deprecated
 public interface INodeConfigurationStore {
 
 	/**

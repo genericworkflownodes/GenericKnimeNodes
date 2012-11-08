@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>Digestor</name>
 <version>1.10.0</version>
 <description><![CDATA[Digests a protein database in-silico.]]></description>
 <manual><![CDATA[Digests a protein database in-silico.]]></manual>
 <docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__Digestor.html</docurl>
 <category></category>
-<type></type>
-<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="Digestor" description="Digests a protein database in-silico.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;Digestor&apos;">
-      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" restrictions="*.FASTA" />
-      <ITEM name="out" value="" type="string" description="Output file (peptides)" tags="output file,required" restrictions="*.idXML,*.FASTA" />
-      <ITEM name="out_type" value="" type="string" description="Set this if you cannot control the filename of &apos;out&apos;, e.g., in TOPPAS." restrictions="idXML,FASTA" />
+      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" supported_formats="*.fasta" />
+      <ITEM name="out" value="" type="string" description="Output file (peptides)" tags="output file,required" supported_formats="*.idXML,*.fasta" />
+      <ITEM name="out_type" value="" type="string" description="Set this if you cannot control the filename of &apos;out&apos;, e.g., in TOPPAS." restrictions="idXML,fasta" />
       <ITEM name="missed_cleavages" value="1" type="int" description="The number of allowed missed cleavages" restrictions="0:" />
       <ITEM name="min_length" value="6" type="int" description="Minimum length of peptide" />
       <ITEM name="max_length" value="40" type="int" description="Maximum length of peptide" />

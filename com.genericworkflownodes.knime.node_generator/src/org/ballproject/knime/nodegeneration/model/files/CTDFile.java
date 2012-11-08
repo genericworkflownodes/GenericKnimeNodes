@@ -2,12 +2,9 @@ package org.ballproject.knime.nodegeneration.model.files;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
-
-import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
-import com.genericworkflownodes.knime.config.CTDNodeConfigurationReaderException;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 
 public class CTDFile extends File implements INodeConfigurationFile {
 
@@ -15,12 +12,18 @@ public class CTDFile extends File implements INodeConfigurationFile {
 
 	private INodeConfiguration nodeConfiguration;
 
-	public CTDFile(File file) throws FileNotFoundException,
-			CTDNodeConfigurationReaderException {
+	public CTDFile(File file) throws Exception {
 		super(file.getPath());
 
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader();
-		this.nodeConfiguration = reader.read(new FileInputStream(file));
+		try {
+			CTDConfigurationReader reader = new CTDConfigurationReader();
+			nodeConfiguration = reader.read(new FileInputStream(file));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println("Error while reading file: "
+					+ file.getAbsolutePath());
+			throw e;
+		}
 	}
 
 	@Override

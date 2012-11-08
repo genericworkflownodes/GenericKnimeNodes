@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="internal">
+<tool>
 <name>FileMerger</name>
 <version>1.9.0</version>
 <description>Merges several MS files into one file.</description>
 <manual>(TODO) More description here (within CDATA).</manual>
 <docurl>(TODO) http://www.openms.de/path/to/docs/of/right/version.html</docurl>
 <category>OpenMS/File Handling/FileMerger</category>
-<type></type>
 <PARAMETERS version="1.3">
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FileMerger&apos;">
       <ITEMLIST name="in" type="string" description="Input files separated by blank" tags="input file,required" restrictions="*.mzData,*.mzXML,*.mzML,*.DTA,*.DTA2D,*.mgf,*.featureXML,*.fid">

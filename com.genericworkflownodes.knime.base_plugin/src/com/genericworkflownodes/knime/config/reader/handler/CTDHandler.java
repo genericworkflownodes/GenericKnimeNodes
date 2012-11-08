@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config.reader;
+package com.genericworkflownodes.knime.config.reader.handler;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -40,10 +40,11 @@ public class CTDHandler extends DefaultHandler {
 	private static String TAG_MANUAL = "manual";
 	private static String TAG_DOCURL = "docurl";
 	private static String TAG_CATEGORY = "category";
-	private static String TAG_TYPE = "type";
 	private static String TAG_CLI = "cli";
-	private static String TAG_OUTPUT_CONVERTERS = "outputConverters";
+	private static String TAG_RELOCATORS = "relocators";
 	private static String TAG_PARAMETERS = "PARAMETERS";
+	private static String TAG_EXECUTABLE_NAME = "executableName";
+	private static String TAG_EXECUTABLE_PATH = "executablePath";
 
 	/**
 	 * The {@link INodeConfiguration} generated while parsing the CTD document.
@@ -94,9 +95,9 @@ public class CTDHandler extends DefaultHandler {
 		if (TAG_PARAMETERS.equals(name)) {
 			xmlReader.setContentHandler(new ParamHandler(xmlReader, this,
 					config));
-		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
-			xmlReader.setContentHandler(new OutputConverterHandler(xmlReader,
-					this, config));
+		} else if (TAG_RELOCATORS.equals(name)) {
+			xmlReader.setContentHandler(new RelocatorHandler(xmlReader, this,
+					config));
 		} else if (TAG_CLI.equals(name)) {
 			xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this,
 					config));
@@ -118,9 +119,11 @@ public class CTDHandler extends DefaultHandler {
 			config.setDocUrl(currentContent.toString());
 		} else if (TAG_CATEGORY.equals(name)) {
 			config.setCategory(currentContent.toString());
-		} else if (TAG_TYPE.equals(name)) {
-			// we ignore the type tag
-		} else if (TAG_OUTPUT_CONVERTERS.equals(name)) {
+		} else if (TAG_EXECUTABLE_PATH.equals(name)) {
+			config.setExecutablePath(currentContent.toString());
+		} else if (TAG_EXECUTABLE_NAME.equals(name)) {
+			config.setExecutableName(currentContent.toString());
+		} else if (TAG_RELOCATORS.equals(name)) {
 			// will not happen since we handle this element in sub handler
 		} else if (TAG_PARAMETERS.equals(name)) {
 			// will not happen since we handle this element in sub handler

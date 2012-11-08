@@ -1,12 +1,12 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
-import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.genericworkflownodes.knime.config.CTDNodeConfigurationReader;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.PluginConfiguration;
+import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeFactory;
 
 import __BASE__.knime.PluginActivator;
 
@@ -16,7 +16,7 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 	public __NODENAME__NodeFactory() 
 	{
 		// read NodeConfig from CTD
-		CTDNodeConfigurationReader reader = new CTDNodeConfigurationReader(); 
+		CTDConfigurationReader reader = new CTDConfigurationReader(); 
 		try
 		{
 			config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));

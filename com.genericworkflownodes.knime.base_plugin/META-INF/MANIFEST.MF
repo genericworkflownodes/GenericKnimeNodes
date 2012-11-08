@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.repository,
  org.knime.base
 Export-Package: com.genericworkflownodes.knime.config,
+ com.genericworkflownodes.knime.config.reader,
  com.genericworkflownodes.knime.custom,
  com.genericworkflownodes.knime.generic_node,
  com.genericworkflownodes.knime.mime.demangler,

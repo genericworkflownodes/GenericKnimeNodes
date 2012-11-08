@@ -22,13 +22,11 @@ import java.io.File;
 import java.util.List;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**
- * Create based on a {@link INodeConfiguration} and a
- * {@link INodeConfigurationStore} a list of arguments that should be send to a
- * custom tool executor.
+ * Create based on a {@link INodeConfiguration} and list of arguments that
+ * should be send to a custom tool executor.
  * 
  * @author aiche
  */
@@ -39,7 +37,6 @@ public interface ICommandGenerator {
 	 * node.
 	 * 
 	 * @param nodeConfiguration
-	 * @param configStore
 	 * @param pluginConfiguration
 	 * @param workingDirectory
 	 *            The directory where the tool will be executed. Make sure that
@@ -50,7 +47,6 @@ public interface ICommandGenerator {
 	 *             An exception is thrown if the construction fails.
 	 */
 	List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception;
 

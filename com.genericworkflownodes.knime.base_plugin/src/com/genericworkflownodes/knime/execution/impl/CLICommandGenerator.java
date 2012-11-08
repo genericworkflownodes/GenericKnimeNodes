@@ -10,11 +10,12 @@ import org.knime.core.node.NodeLogger;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.INodeConfigurationStore;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.PlainNodeConfigurationWriter;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class CLICommandGenerator implements ICommandGenerator {
 
@@ -22,21 +23,18 @@ public class CLICommandGenerator implements ICommandGenerator {
 			.getLogger(CLICommandGenerator.class);
 
 	private INodeConfiguration nodeConfig;
-	private INodeConfigurationStore configStore;
 
 	@Override
 	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			INodeConfigurationStore configStore,
 			IPluginConfiguration pluginConfiguration, File workingDirectory)
 			throws Exception {
 
 		// export the node configuration as plain text, for debugging and
 		// logging
-		exportPlainConfiguration(configStore, workingDirectory);
+		exportPlainConfiguration(workingDirectory);
 
 		// ease the passing around of variables
-		this.nodeConfig = nodeConfiguration;
-		this.configStore = configStore;
+		nodeConfig = nodeConfiguration;
 
 		List<String> commands;
 
@@ -45,8 +43,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			this.nodeConfig = null;
-			this.configStore = null;
+			nodeConfig = null;
 		}
 
 		return commands;
@@ -163,10 +160,19 @@ public class CLICommandGenerator implements ICommandGenerator {
 		List<List<String>> extractedParameterValues = new ArrayList<List<String>>();
 
 		for (CLIMapping cliMapping : cliElement.getMapping()) {
-			if (configStore.getParameterKeys()
-					.contains(cliMapping.getReferenceName())) {
-				extractedParameterValues.add(configStore
-						.getMultiParameterValue(cliMapping.getReferenceName()));
+			if (nodeConfig.getParameterKeys().contains(
+					cliMapping.getReferenceName())) {
+
+				Parameter<?> p = nodeConfig.getParameter(cliMapping
+						.getReferenceName());
+				if (p instanceof ListParameter) {
+					extractedParameterValues.add(((ListParameter) p)
+							.getStrings());
+				} else {
+					List<String> l = new ArrayList<String>();
+					l.add(p.getStringRep());
+					extractedParameterValues.add(l);
+				}
 			}
 		}
 
@@ -208,12 +214,10 @@ public class CLICommandGenerator implements ICommandGenerator {
 	 * @param configStore
 	 * @throws IOException
 	 */
-	private void exportPlainConfiguration(INodeConfigurationStore configStore,
-			File workingDirectory) throws IOException {
+	private void exportPlainConfiguration(File workingDirectory)
+			throws IOException {
 		PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
-		configStore.setParameterValue("jobdir",
-				workingDirectory.getCanonicalPath());
-		writer.init(configStore);
+		writer.init(nodeConfig);
 		writer.write(workingDirectory.getAbsolutePath() + File.separator
 				+ "params.ini");
 	}

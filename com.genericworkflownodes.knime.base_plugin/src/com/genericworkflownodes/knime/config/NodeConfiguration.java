@@ -20,12 +20,13 @@ package com.genericworkflownodes.knime.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.outputconverter.config.OutputConverters;
+import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -35,26 +36,39 @@ import com.genericworkflownodes.knime.port.Port;
  * Note: Two {@link NodeConfiguration}s are equal iff their {@link #getName()
  * names} are equal.
  * 
- * @author bkahlert
+ * @author roettig, bkahlert, aiche
  * 
  */
 public class NodeConfiguration implements INodeConfiguration, Serializable {
 
 	private static final long serialVersionUID = -5250528380628071121L;
 
+	// The parameters.
 	private Map<String, Parameter<?>> params;
+
+	// The section descriptions for the sections of the paramters.
+	private Map<String, String> sectionDescriptions;
 
 	private Map<String, Port> inputPorts;
 	private Map<String, Port> outputPorts;
 
-	protected String name;
-	protected String version;
-	protected String command = "";
-	protected String docurl = "";
-	protected String shortdescription = "";
-	protected String longdescription = "";
-	protected String xml = "";
-	protected String category = "";
+	private String name;
+	private String version;
+	private String docurl = "";
+	private String shortdescription = "";
+	private String longdescription = "";
+	private String xml = "";
+	private String category = "";
+
+	/**
+	 * Name of the executable.
+	 */
+	private String executableName;
+
+	/**
+	 * Path to the folder that contains the executable.
+	 */
+	private String executablePath;
 
 	/**
 	 * The CLI element stored in the CTD file.
@@ -62,17 +76,26 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	private CLI cli;
 
 	/**
-	 * The output converters stored in the CTD file.
+	 * The relocators for this tool.
 	 */
-	private OutputConverters converters;
+	private List<Relocator> relocators;
 
+	/**
+	 * Creates a new, empty {@link NodeConfiguration}.
+	 */
 	public NodeConfiguration() {
 		cli = new CLI();
-		converters = new OutputConverters();
 
 		params = new LinkedHashMap<String, Parameter<?>>();
 		inputPorts = new LinkedHashMap<String, Port>();
 		outputPorts = new LinkedHashMap<String, Port>();
+
+		sectionDescriptions = new HashMap<String, String>();
+
+		executableName = null;
+		executablePath = "";
+
+		relocators = new ArrayList<Relocator>();
 	}
 
 	public NodeConfiguration(INodeConfiguration config) {
@@ -90,13 +113,13 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	}
 
 	@Override
-	public Port[] getInputPorts() {
-		return portsToArray(inputPorts);
+	public List<Port> getInputPorts() {
+		return portsToList(inputPorts);
 	}
 
 	@Override
-	public Port[] getOutputPorts() {
-		return portsToArray(outputPorts);
+	public List<Port> getOutputPorts() {
+		return portsToList(outputPorts);
 	}
 
 	/**
@@ -107,13 +130,12 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	 *            The port map to convert.
 	 * @return The port map as array of {@link Port}s.
 	 */
-	private Port[] portsToArray(Map<String, Port> ports) {
-		Port[] portsAsArray = new Port[ports.size()];
-		int i = 0;
+	private List<Port> portsToList(Map<String, Port> ports) {
+		List<Port> portsAsList = new ArrayList<Port>(ports.size());
 		for (Map.Entry<String, Port> entry : ports.entrySet()) {
-			portsAsArray[i++] = entry.getValue();
+			portsAsList.add(entry.getValue());
 		}
-		return portsAsArray;
+		return portsAsList;
 	}
 
 	@Override
@@ -147,11 +169,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	}
 
 	@Override
-	public OutputConverters getOutputConverters() {
-		return converters;
-	}
-
-	@Override
 	public String getXML() {
 		return xml;
 	}
@@ -159,11 +176,6 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 	@Override
 	public String getCategory() {
 		return category;
-	}
-
-	@Override
-	public String getCommand() {
-		return command;
 	}
 
 	// / protected setters
@@ -211,11 +223,26 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		}
 	}
 
+	private void createPortList(Map<String, Port> portMap, List<Port> portArray) {
+		portMap.clear();
+		for (Port p : portArray) {
+			portMap.put(p.getName(), p);
+		}
+	}
+
 	public void setInports(Port[] ports) {
 		createPortList(inputPorts, ports);
 	}
 
+	public void setInports(List<Port> ports) {
+		createPortList(inputPorts, ports);
+	}
+
 	public void setOutports(Port[] ports) {
+		createPortList(outputPorts, ports);
+	}
+
+	public void setOutports(List<Port> ports) {
 		createPortList(outputPorts, ports);
 	}
 
@@ -247,16 +274,8 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 		version = newVersion;
 	}
 
-	public void setCommand(String newCommand) {
-		command = newCommand;
-	}
-
 	public void setCLI(CLI newCli) {
 		cli = newCli;
-	}
-
-	public void setOutputConverters(OutputConverters converters) {
-		this.converters = converters;
 	}
 
 	@Override
@@ -287,5 +306,62 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public String getExecutableName() {
+		if (executableName != null)
+			return executableName;
+		else
+			return name;
+	}
+
+	public void setExecutableName(String executableName) {
+		this.executableName = executableName;
+	}
+
+	@Override
+	public String getExecutablePath() {
+		return executablePath;
+	}
+
+	public void setExecutablePath(String executablePath) {
+		this.executablePath = executablePath;
+	}
+
+	@Override
+	public List<Relocator> getRelocators() {
+		return relocators;
+	}
+
+	@Override
+	public String getSectionDescription(String section) {
+		if (sectionDescriptions.containsKey(section)) {
+			return sectionDescriptions.get(section);
+		} else
+			return null;
+	}
+
+	/**
+	 * Adds the given section and the corresponding description to the tool
+	 * configuration.
+	 * 
+	 * @param section
+	 *            The section.
+	 * @param description
+	 *            The description of the section.
+	 */
+	public void setSectionDescription(String section, String description) {
+		sectionDescriptions.put(section, description);
+	}
+
+	@Override
+	public Port getInputPortByName(String portName) {
+		return inputPorts.get(portName);
+	}
+
+	@Override
+	public Port getOutputPortByName(String portName) {
+		return outputPorts.get(portName);
 	}
 }
