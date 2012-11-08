@@ -52,6 +52,7 @@ import org.ballproject.knime.nodegeneration.templates.NodeFactoryXMLTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeModelTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeViewTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
+import org.ballproject.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginXMLTemplate;
 import org.ballproject.knime.nodegeneration.templates.ProjectTemplate;
 import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
@@ -142,9 +143,9 @@ public class NodeGenerator {
 					"plugin.properties")).write(new HashMap<String, String>() {
 				private static final long serialVersionUID = 1L;
 				{
-					put("executor",
+					this.put("executor",
 							srcDir.getProperty("executor", "CLIExecutor"));
-					put("commandGenerator",
+					this.put("commandGenerator",
 							srcDir.getProperty("commandGenerator", ""));
 				}
 			});
@@ -179,11 +180,19 @@ public class NodeGenerator {
 					.write(new File(buildDir.getKnimeDirectory(),
 							"PluginActivator.java"));
 
+			// src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
+			new PluginPreferencePageTemplate(meta.getPackageRoot())
+					.write(new File(new File(buildDir.getKnimeDirectory(),
+							"preferences"), "PluginPreferencePage.java"));
+
 			// icons/*
 			copyFolderIcon(srcDir.getIconsDirectory(),
 					buildDir.getIconsDirectory());
 			registerSplashIcon(meta, pluginXML, srcDir.getIconsDirectory(),
 					buildDir.getIconsDirectory());
+
+			// register preference page
+			pluginXML.registerPreferencePage(meta);
 
 			// plugin.xml
 			pluginXML.saveTo(buildDir.getPluginXml());
@@ -203,7 +212,7 @@ public class NodeGenerator {
 			}
 
 			// copy assets
-			copyAsset(".classpath");
+			this.copyAsset(".classpath");
 
 			LOGGER.info("KNIME plugin sources successfully created in:\n\t"
 					+ buildDir);

@@ -36,8 +36,7 @@
    </extension>
    
    <extension point="org.eclipse.ui.preferencePages">
-      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.GKNPreferences" name="Generic KNIME Nodes"/>
-      <page category="com.genericworkflownodes.knime.preferences.GKNPreferences" class="com.genericworkflownodes.knime.preferences.ExternalToolsPage" id="com.genericworkflownodes.knime.preferences.GKNExternalTools" name="Tool DB"/>
+      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.PreferencePage" name="Generic KNIME Nodes"/>
    </extension>
    <extension point="org.eclipse.ui.services">
       <serviceFactory factoryClass="com.genericworkflownodes.knime.toolfinderservice.ToolLocatorServiceFactory">

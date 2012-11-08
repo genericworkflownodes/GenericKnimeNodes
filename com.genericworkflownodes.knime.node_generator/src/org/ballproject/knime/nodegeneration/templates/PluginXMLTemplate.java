@@ -23,8 +23,8 @@ public class PluginXMLTemplate {
 	private static final Logger LOGGER = Logger
 			.getLogger(PluginXMLTemplate.class.getCanonicalName());
 
-	private Document doc;
-	private Set<String> registeredPrefixed = new HashSet<String>();
+	private final Document doc;
+	private final Set<String> registeredPrefixed = new HashSet<String>();
 
 	/**
 	 * Constructs a new copy of a template plugin.xml and returns its
@@ -131,5 +131,23 @@ public class PluginXMLTemplate {
 
 		elem.addElement("node").addAttribute("factory-class", clazz)
 				.addAttribute("id", clazz).addAttribute("category-path", path);
+	}
+
+	public void registerPreferencePage(KNIMEPluginMeta meta) {
+		Node node = this.doc
+				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
+
+		String category = "com.genericworkflownodes.knime.preferences.PreferencePage";
+		String clazz = meta.getPackageRoot()
+				+ ".knime.preferences.PluginPreferencePage";
+		String id = clazz;
+		String name = meta.getName();
+
+		Element preferencePageExtensionPoint = (Element) node;
+		preferencePageExtensionPoint.addElement("page")
+				.addAttribute("category", category)
+				.addAttribute("class", clazz).addAttribute("id", id)
+				.addAttribute("name", name);
+
 	}
 }

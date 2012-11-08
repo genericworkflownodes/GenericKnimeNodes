@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
+ * Copyright (c) 2012, Stephan Aiche, Björn Kahlert.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -42,33 +41,36 @@ import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 /**
- * Preferences page for to manage tool installations.
+ * This class provides a base implementation of a plugin defaults preference
+ * page for derived plugins. It gives the opportunity to define the paths to the
+ * plugin's tool executables.
  * 
- * @author aiche
+ * @author aiche, bkahlert
  */
-public class ExternalToolsPage extends PreferencePage implements
+public abstract class BasePluginPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	/**
 	 * The list of all available tool pathes.
 	 */
-	private List<ToolFieldEditor> toolPathes = new ArrayList<ToolFieldEditor>();
+	private final List<ToolFieldEditor> toolPaths = new ArrayList<ToolFieldEditor>();
 
-	/**
-	 * Default c'tor.
-	 */
-	public ExternalToolsPage() {
+	private final String pluginName;
+
+	public BasePluginPreferencePage(String pluginName) {
 		super();
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
-		setPreferenceStore(store);
+		this.setPreferenceStore(store);
 		// we do not need the apply key and do not support the restore default
 		// key
 		this.noDefaultAndApplyButton();
+		this.pluginName = pluginName;
 	}
 
 	@Override
-	public void init(IWorkbench wb) {
+	public void init(IWorkbench workbench) {
+
 	}
 
 	@Override
@@ -93,31 +95,23 @@ public class ExternalToolsPage extends PreferencePage implements
 			Map<String, List<ExternalTool>> plugin2tools = toolLocator
 					.getToolsByPlugin();
 
-			for (String pluginname : plugin2tools.keySet()) {
-				// create a new group for each plugin
-				Group group = new Group(c, SWT.SHADOW_ETCHED_IN);
-				group.setText(pluginname);
+			List<ExternalTool> tools = plugin2tools.get(pluginName);
 
-				List<ExternalTool> tools = plugin2tools.get(pluginname);
-
-				// sort each plugin by name
-				Collections.sort(tools, new Comparator<ExternalTool>() {
-					@Override
-					public int compare(final ExternalTool o1,
-							final ExternalTool o2) {
-						return o1.getToolName().compareToIgnoreCase(
-								o2.getToolName());
-					}
-				});
-
-				// add each tool shipped with the current plugin to the GUI
-				// group
-				for (ExternalTool tool : tools) {
-					ToolFieldEditor gToolEditor = new ToolFieldEditor(tool,
-							group);
-					gToolEditor.load();
-					toolPathes.add(gToolEditor);
+			// sort each plugin by name
+			Collections.sort(tools, new Comparator<ExternalTool>() {
+				@Override
+				public int compare(final ExternalTool o1, final ExternalTool o2) {
+					return o1.getToolName().compareToIgnoreCase(
+							o2.getToolName());
 				}
+			});
+
+			// add each tool shipped with the current plugin to the GUI
+			// group
+			for (ExternalTool tool : tools) {
+				ToolFieldEditor gToolEditor = new ToolFieldEditor(tool, c);
+				gToolEditor.load();
+				toolPaths.add(gToolEditor);
 			}
 		}
 
@@ -126,7 +120,7 @@ public class ExternalToolsPage extends PreferencePage implements
 
 	@Override
 	public boolean performOk() {
-		saveToPreferenceStore();
+		this.saveToPreferenceStore();
 
 		// Return true to allow dialog to close
 		return true;
@@ -134,14 +128,14 @@ public class ExternalToolsPage extends PreferencePage implements
 
 	@Override
 	protected void performApply() {
-		saveToPreferenceStore();
+		this.saveToPreferenceStore();
 	}
 
 	/**
 	 * Saves the entries of the FileFieldEditor.
 	 */
 	private void saveToPreferenceStore() {
-		for (ToolFieldEditor gFieldEditor : toolPathes) {
+		for (ToolFieldEditor gFieldEditor : toolPaths) {
 			gFieldEditor.store();
 		}
 	}
