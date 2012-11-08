@@ -65,7 +65,10 @@ public class StringListParameter extends Parameter<List<String>> implements
 	}
 
 	public String[] getRestrictions() {
-		return (String[]) validValues.toArray();
+		if (!validValues.isEmpty())
+			return (String[]) validValues.toArray();
+		else
+			return null;
 	}
 
 	@Override
