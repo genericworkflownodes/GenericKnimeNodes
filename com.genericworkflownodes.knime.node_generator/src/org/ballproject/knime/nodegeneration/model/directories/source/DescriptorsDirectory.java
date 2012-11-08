@@ -93,7 +93,6 @@ public class DescriptorsDirectory extends Directory {
 							e.getMessage()));
 					// throw new IOException("Error reading " + file.getPath(),
 					// e);
-					throw new IOException("Error reading " + file.getPath(), e);
 				} catch (Exception e) {
 					throw new IOException("Error reading " + file.getPath(), e);
 				}
