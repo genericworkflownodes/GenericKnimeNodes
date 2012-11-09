@@ -78,10 +78,10 @@ public abstract class Parameter<T> implements Serializable {
 		this.key = key;
 		this.value = value;
 
-		setDescription("");
-		setSection("default");
-		setIsOptional(true);
-		setAdvanced(false);
+		this.setDescription("");
+		this.setSection("default");
+		this.setIsOptional(true);
+		this.setAdvanced(false);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public abstract class Parameter<T> implements Serializable {
 	 * @return special string representation of parameter
 	 */
 	public String getStringRep() {
-		return toString();
+		return this.toString();
 	}
 
 	/**
@@ -258,6 +258,6 @@ public abstract class Parameter<T> implements Serializable {
 	/**
 	 * Separator token.
 	 */
-	protected static String SEPARATOR_TOKEN = "@@@__@@@";
+	public static String SEPARATOR_TOKEN = "@@@__@@@";
 
 }

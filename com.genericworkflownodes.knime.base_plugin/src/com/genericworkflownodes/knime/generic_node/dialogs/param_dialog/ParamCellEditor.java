@@ -22,15 +22,14 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ItemListFillerDialog;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ListParameterModel;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -40,6 +39,7 @@ import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
+import com.genericworkflownodes.util.StringUtils;
 
 /**
  * The cell editor for the {@link ParameterDialog}.
@@ -55,7 +55,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
 		/**
 		 * The underlying parameter.
 		 */
-		private T representedParametere;
+		private final T representedParametere;
 
 		/**
 		 * C'tor.
@@ -98,19 +98,14 @@ public class ParamCellEditor extends AbstractCellEditor implements
 	private JTextField field;
 
 	/**
-	 * The {@link JLabel} used for {@link ListParameter}.
+	 * The {@link JListEditorComponent} used for {@link ListParameter}.
 	 */
-	private JLabel listParameterLabel = new JLabel("");
+	private JListEditorComponent listEditorComponent;
 
 	/**
 	 * The {@link Parameter} represented by this {@link ParamCellEditor}.
 	 */
 	private Parameter<?> param;
-
-	/**
-	 * A {@link String} representation of the parameter value.
-	 */
-	private String rep;
 
 	@Override
 	public Object getCellEditorValue() {
@@ -137,8 +132,11 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			}
 		}
 		if (param instanceof ListParameter) {
+			String workaround = StringUtils.join(Arrays
+					.asList(listEditorComponent.getModel().getSelectedItems()),
+					Parameter.SEPARATOR_TOKEN);
 			try {
-				param.fillFromString(rep);
+				param.fillFromString(workaround);
 			} catch (InvalidParameterValueException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -188,20 +186,10 @@ public class ParamCellEditor extends AbstractCellEditor implements
 					param);
 			listParameterModel.setSetLike(true);
 
-			String[] sel = listParameterModel.getSelectedItems();
-			ListParameter lp = (ListParameter) param;
-			try {
-				lp.fillFromStrings(sel);
-			} catch (InvalidParameterValueException ex) {
-				// should not happen
-			}
-
-			ItemListFillerDialog sd = new ItemListFillerDialog(
+			this.listEditorComponent = new JListEditorComponent(
 					listParameterModel);
-			sd.setVisible(true);
 
-			rep = param.getStringRep();
-			return listParameterLabel;
+			return this.listEditorComponent;
 		}
 		return null;
 	}
