@@ -28,10 +28,16 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -56,15 +62,16 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	private final List<ToolFieldEditor> toolPaths = new ArrayList<ToolFieldEditor>();
 
 	private final String pluginName;
+	private Composite c;
 
 	public BasePluginPreferencePage(String pluginName) {
 		super();
 		IPreferenceStore store = GenericNodesPlugin.getDefault()
 				.getPreferenceStore();
-		this.setPreferenceStore(store);
+		setPreferenceStore(store);
 		// we do not need the apply key and do not support the restore default
 		// key
-		this.noDefaultAndApplyButton();
+		noDefaultAndApplyButton();
 		this.pluginName = pluginName;
 	}
 
@@ -78,15 +85,36 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		ScrolledComposite sc = new ScrolledComposite(parent, SWT.V_SCROLL);
 		sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		Composite c = new Composite(sc, SWT.NONE);
+		c = new Composite(sc, SWT.NONE);
+
 		FillLayout fillLayout = new FillLayout();
-		fillLayout.type = SWT.VERTICAL;
-		c.setLayout(fillLayout);
+		fillLayout.type = SWT.V_SCROLL;
+
+		GridLayout gl_c = new GridLayout();
+		c.setLayout(gl_c);
 
 		sc.setContent(c);
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 
+		// auto discover executables
+		addExecutablesButtons(c);
+
+		addAllExecutables(c);
+
+		return sc;
+	}
+
+	private void addAllExecutables(Composite parent) {
+
+		Label horizontalBar = new Label(c, SWT.SEPARATOR | SWT.HORIZONTAL);
+		horizontalBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
+				false, 1, 1));
+
+		Composite executableComposite = new Composite(parent, NONE);
+		executableComposite.setLayout(new RowLayout());
+
+		// the tool dialogs
 		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
 				.getWorkbench().getService(IToolLocatorService.class);
 
@@ -109,18 +137,66 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 			// add each tool shipped with the current plugin to the GUI
 			// group
 			for (ExternalTool tool : tools) {
-				ToolFieldEditor gToolEditor = new ToolFieldEditor(tool, c);
+				ToolFieldEditor gToolEditor = new ToolFieldEditor(tool,
+						executableComposite);
 				gToolEditor.load();
 				toolPaths.add(gToolEditor);
 			}
 		}
+	}
 
-		return sc;
+	private void addExecutablesButtons(Composite parent) {
+
+		GridLayout groupCompositeGridLayout = new GridLayout(3, false);
+		groupCompositeGridLayout.marginWidth = 0;
+		groupCompositeGridLayout.marginHeight = 0;
+		groupCompositeGridLayout.verticalSpacing = 0;
+		groupCompositeGridLayout.horizontalSpacing = 0;
+
+		Composite groupComposite = new Composite(parent, SWT.NONE);
+		groupComposite.setLayout(groupCompositeGridLayout);
+		groupComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				false));
+
+		Label lblNewLabel = new Label(groupComposite, SWT.NONE);
+		lblNewLabel.setText("Find executables");
+		new Label(groupComposite, SWT.NONE);
+
+		Composite buttonComposite = new Composite(groupComposite, SWT.NONE);
+		buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false,
+				false, 1, 1));
+		buttonComposite.setLayout(new GridLayout(2, false));
+
+		Button searchInPath = new Button(buttonComposite, SWT.PUSH);
+		searchInPath
+				.setToolTipText("Searchs the PATH variable for executables for the tools shipped with this plugin.");
+		searchInPath.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false,
+				false, 1, 1));
+		searchInPath.setText("Search in PATH");
+		searchInPath.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("searchInPath");
+			}
+		});
+
+		Button searchInDirectory = new Button(buttonComposite, SWT.PUSH);
+		searchInDirectory
+				.setToolTipText("Lets you specify a directory where to search for the executables.");
+		searchInDirectory.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL,
+				false, false, 1, 1));
+		searchInDirectory.setText("Search in Directory");
+		searchInDirectory.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("searchInDirectory");
+			}
+		});
 	}
 
 	@Override
 	public boolean performOk() {
-		this.saveToPreferenceStore();
+		saveToPreferenceStore();
 
 		// Return true to allow dialog to close
 		return true;
@@ -128,7 +204,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 
 	@Override
 	protected void performApply() {
-		this.saveToPreferenceStore();
+		saveToPreferenceStore();
 	}
 
 	/**
