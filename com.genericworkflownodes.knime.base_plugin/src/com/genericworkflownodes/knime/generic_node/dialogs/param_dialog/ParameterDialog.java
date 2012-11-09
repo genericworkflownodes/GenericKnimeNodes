@@ -21,9 +21,12 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.io.FileNotFoundException;
 
 import javax.swing.JPanel;
@@ -44,7 +47,6 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterDialog extends JPanel implements ListSelectionListener {
@@ -59,19 +61,19 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 
 	public ParameterDialog(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
-		setLayout(new GridBagLayout());
+		this.setLayout(new GridBagLayout());
 
 		model = new ParameterDialogModel(config);
 
-		JXTreeTable treeTable = new JXTreeTable(model);
-		table = treeTable;
+		table = new JXTreeTable(model);
+		table.setMinimumSize(new Dimension(1000, 500));
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		treeTable.getColumn(1).setCellEditor(model.getCellEditor());
-		treeTable.getSelectionModel().addListSelectionListener(this);
+		table.getColumn(1).setCellEditor(model.getCellEditor());
+		table.getSelectionModel().addListSelectionListener(this);
 
-		treeTable.setHighlighters(new Highlighter() {
+		table.setHighlighters(new Highlighter() {
 
 			@Override
 			public void addChangeListener(ChangeListener arg0) {
@@ -119,13 +121,21 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		});
 
 		// expand full tree by default
-		treeTable.expandAll();
+		table.expandAll();
 
-		UIHelper.addComponent(this, new JScrollPane(treeTable), 0, 0, 1, 1,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH, 2.0f);
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		size.width /= 1.5;
+		size.height /= 1.5;
+		this.setMinimumSize(size);
+		this.setPreferredSize(size);
+
+		this.add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1,
+				1.0, 2.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+				new Insets(2, 2, 2, 2), 0, 0));
 		help = new JTextPane();
-		UIHelper.addComponent(this, new JScrollPane(help), 0, 1, 1, 1,
-				GridBagConstraints.CENTER, GridBagConstraints.BOTH, 1.0f);
+		this.add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 1, 1.0,
+				1.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+				new Insets(2, 2, 2, 2), 0, 0));
 		/*
 		 * toggle = new JButton("Toggle adv. Parameters");
 		 * toggle.addActionListener(new ActionListener(){
