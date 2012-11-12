@@ -1,5 +1,6 @@
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
+
 import javax.swing.JLabel;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
@@ -22,9 +23,10 @@ public class JListEditorComponent extends JLabel {
 
 		this.listParameterModel = listParameterModel;
 
-		ItemListFillerDialog sd = new ItemListFillerDialog(
+		ItemListFillerDialog itemListFillerDialog = new ItemListFillerDialog(
 				this.listParameterModel);
-		sd.setVisible(true);
+		UIHelper.resizeAndCenter(itemListFillerDialog, 0.5);
+		itemListFillerDialog.setVisible(true);
 
 		UIHelper.simulateEnterKeyPressed(this, 50);
 	}

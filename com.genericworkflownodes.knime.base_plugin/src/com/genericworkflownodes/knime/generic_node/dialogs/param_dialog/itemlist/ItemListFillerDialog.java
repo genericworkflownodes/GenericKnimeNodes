@@ -59,7 +59,6 @@ public class ItemListFillerDialog extends JDialog {
 		this.model = mdl;
 
 		final JList list = new JList(model);
-		list.setFixedCellWidth(200);
 		JScrollPane listScrollPane = new JScrollPane(list);
 
 		UIHelper.addComponent(pane, listScrollPane, 0, 0, 1, 1,
@@ -169,7 +168,6 @@ public class ItemListFillerDialog extends JDialog {
 
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		this.setSize(400, 400);
 		this.pack();
 	}
 

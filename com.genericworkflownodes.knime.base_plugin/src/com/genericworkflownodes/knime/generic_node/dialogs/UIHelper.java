@@ -3,11 +3,14 @@ package com.genericworkflownodes.knime.generic_node.dialogs;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
 public class UIHelper {
@@ -74,5 +77,19 @@ public class UIHelper {
 					}
 				}
 			}).start();
+	}
+
+	/**
+	 * Resizes a {@link JDialog} by a given factor based on the client's screen
+	 * size. The screen is centered afterwards.
+	 * 
+	 * @param dialog
+	 * @param factor
+	 */
+	public static void resizeAndCenter(JDialog dialog, double factor) {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		dialog.setSize((int) Math.round(screenSize.width * factor),
+				(int) Math.round(screenSize.height * factor));
+		dialog.setLocationRelativeTo(null);
 	}
 }
