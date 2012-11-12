@@ -6,8 +6,12 @@ import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.SwingUtilities;
 
 public class UIHelper {
+
 	private static final Insets insets = new Insets(2, 2, 2, 2);
 
 	public static void addComponent(Container container, Component component,
@@ -55,17 +59,19 @@ public class UIHelper {
 		};
 
 		if (delayInMilliseconds == 0)
-			pressEnter.run();
+			SwingUtilities.invokeLater(pressEnter);
 		else
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						Thread.sleep(delayInMilliseconds);
+						SwingUtilities.invokeAndWait(pressEnter);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
 					}
-					pressEnter.run();
 				}
 			}).start();
 	}
