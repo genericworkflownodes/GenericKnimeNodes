@@ -32,16 +32,13 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 
-public class ItemListFillerDialog extends JDialog implements ActionListener {
+public class ItemListFillerDialog extends JDialog {
 	private static final long serialVersionUID = -3296308108315788626L;
-	private JList list;
-	private JButton addButton;
-	private JButton delButton;
-	private JButton okButton;
 
 	private final ItemListFillerDialogModel model;
 
@@ -50,10 +47,10 @@ public class ItemListFillerDialog extends JDialog implements ActionListener {
 	public ItemListFillerDialog(ItemListFillerDialogModel mdl) {
 		super();
 
-		this.setTitle("List editor");
+		this.setTitle("List Editor");
 
 		if (mdl.hasRestrictedValues()) {
-			choices = mdl.getRestrictedValues();
+			this.choices = mdl.getRestrictedValues();
 		}
 
 		Container pane = this.getContentPane();
@@ -61,69 +58,117 @@ public class ItemListFillerDialog extends JDialog implements ActionListener {
 
 		this.model = mdl;
 
-		list = new JList(model);
-		list.setFixedCellWidth(200);
+		final JList list = new JList(model);
 		JScrollPane listScrollPane = new JScrollPane(list);
 
 		UIHelper.addComponent(pane, listScrollPane, 0, 0, 1, 1,
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH, 2, 2);
 
-		addButton = new JButton("Add");
-		addButton.addActionListener(this);
+		JButton addButton = new JButton("Add");
+		addButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (model.hasRestrictedValues()) {
+					Object choice = ChoiceDialog.showDialog(
+							"Please select ...", choices);
+					String text = choice.toString();
+					if (text != null) {
+						model.addItem(text);
+					}
+				} else {
+					String text = JOptionPane.showInputDialog("Enter value ("
+							+ model.getValidatorName() + "):");
 
-		delButton = new JButton("Del");
-		delButton.addActionListener(this);
+					if (text != null) {
+						boolean valid = model.addItem(text);
 
-		okButton = new JButton("OK");
-		okButton.addActionListener(this);
+						if (!valid) {
+							JOptionPane.showMessageDialog(
+									null,
+									"entered value is not a valid "
+											+ model.getValidatorName()
+											+ ". reason: "
+											+ model.getValidatorReason());
+						}
+					}
+				}
+			}
+		});
 
-		makeButtonWidthEqual(addButton, delButton, okButton);
+		final JButton modifyButton = new JButton("Modify");
+		modifyButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (list.getSelectedValue() == null)
+					return;
+
+				if (model.hasRestrictedValues()) {
+					Object choice = ChoiceDialog.showDialog(
+							"Please select ...", choices);
+					String text = choice.toString();
+					if (text != null) {
+						model.replaceItem(list.getSelectedIndex(), text);
+					}
+				} else {
+					String text = JOptionPane.showInputDialog(
+							"Enter new value (" + model.getValidatorName()
+									+ "):", list.getSelectedValue());
+
+					if (text != null) {
+						boolean valid = model.replaceItem(
+								list.getSelectedIndex(), text);
+
+						if (!valid) {
+							JOptionPane.showMessageDialog(
+									null,
+									"entered value is not a valid "
+											+ model.getValidatorName()
+											+ ". reason: "
+											+ model.getValidatorReason());
+						}
+					}
+				}
+			}
+		});
+		list.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				modifyButton.setEnabled(list.getSelectedValue() != null);
+			}
+		});
+		list.setSelectedIndex(0);
+
+		JButton removeButton = new JButton("Delete");
+		removeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.removeItems(list.getSelectedIndices());
+			}
+		});
+
+		JButton okButton = new JButton("OK");
+		okButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ItemListFillerDialog.this.dispose();
+			}
+		});
+
+		makeButtonWidthEqual(addButton, modifyButton, removeButton, okButton);
 
 		Box box = Box.createVerticalBox();
 		box.add(addButton);
-		box.add(delButton);
+		box.add(modifyButton);
+		box.add(removeButton);
 		box.add(okButton);
 		box.add(Box.createVerticalGlue());
 
 		UIHelper.addComponent(pane, box, 1, 0, 1, 1, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, 0, 0);
 
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setModalityType(ModalityType.APPLICATION_MODAL);
-		setSize(300, 200);
-		pack();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent ev) {
-		Object source = ev.getSource();
-		if (source == addButton) {
-			if (model.hasRestrictedValues()) {
-				Object choice = ChoiceDialog.showDialog("Please select ...",
-						choices);
-				String text = choice.toString();
-				model.addItem(text);
-			} else {
-				String text = JOptionPane.showInputDialog("Enter value ("
-						+ model.getValidatorName() + "):");
-
-				boolean valid = model.addItem(text);
-
-				if (!valid) {
-					JOptionPane.showMessageDialog(
-							null,
-							"entered value is not a valid "
-									+ model.getValidatorName() + ". reason: "
-									+ model.getValidatorReason());
-				}
-			}
-		}
-		if (source == delButton) {
-			model.removeItems(list.getSelectedIndices());
-		}
-		if (source == okButton) {
-			dispose();
-		}
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.setModalityType(ModalityType.APPLICATION_MODAL);
+		this.pack();
 	}
 
 	public static void makeButtonWidthEqual(JButton... buttons) {
@@ -140,22 +185,6 @@ public class ItemListFillerDialog extends JDialog implements ActionListener {
 			button.setMinimumSize(size);
 			button.setMaximumSize(size);
 		}
-	}
-
-	public static void main(String[] args) {
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				ItemListFillerDialogModel mdl = new ItemListFillerDialogModel(
-						new String[] { "A", "B", "D" });
-				// mdl.setValidator(new DoubleValidator());
-				mdl.restrictValues("A", "B", "C", "D");
-				mdl.setSetLike(true);
-
-				ItemListFillerDialog sd = new ItemListFillerDialog(mdl);
-				sd.setVisible(true);
-			}
-		});
 	}
 
 }

@@ -40,15 +40,15 @@ public class ParameterDialogModel implements
 	/**
 	 * The node configuration represented by this dialog model.
 	 */
-	private INodeConfiguration nodeConfig;
+	private final INodeConfiguration nodeConfig;
 	private ConfigWrapper wrapper;
 	private boolean showAdvanced = true;
-	private Object root;
+	private final Object root;
 
 	/**
 	 * The {@link ParamCellEditor} instance for this DialogModel.
 	 */
-	private ParamCellEditor paramCellEditor;
+	private final ParamCellEditor paramCellEditor;
 
 	public ParameterDialogModel(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
