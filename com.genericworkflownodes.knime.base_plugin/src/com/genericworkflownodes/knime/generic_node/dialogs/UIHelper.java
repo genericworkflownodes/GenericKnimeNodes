@@ -7,8 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JComponent;
-
 public class UIHelper {
 	private static final Insets insets = new Insets(2, 2, 2, 2);
 
@@ -29,7 +27,7 @@ public class UIHelper {
 		container.add(component, gbc);
 	}
 
-	public static void simulateEnterKeyPressed(final JComponent component,
+	public static void simulateEnterKeyPressed(final Component component,
 			final int delayInMilliseconds) {
 		final Runnable pressEnter = new Runnable() {
 			@Override
