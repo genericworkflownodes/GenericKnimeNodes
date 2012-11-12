@@ -18,6 +18,7 @@
  */
 package com.genericworkflownodes.knime.mime;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.knime.core.data.url.MIMEType;
+import org.knime.core.data.uri.URIContent;
+
 
 /**
  * Default implementation of {@link IMIMEtypeRegistry}.
@@ -33,7 +36,7 @@ import org.knime.core.data.url.MIMEType;
  * @author roettig, aiche
  */
 public class DefaultMIMEtypeRegistry implements IMIMEtypeRegistry {
-
+	
 	/**
 	 * Internal mapping of known file extensions to the associated
 	 * {@link MIMEType}.
