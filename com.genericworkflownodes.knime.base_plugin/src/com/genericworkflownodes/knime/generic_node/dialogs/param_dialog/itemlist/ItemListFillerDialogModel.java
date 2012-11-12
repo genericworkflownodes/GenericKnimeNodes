@@ -76,7 +76,7 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 
 	public String getValidatorName() {
 		if (validator == null) {
-			return "Null";
+			return "no validator";
 		}
 		return validator.getName();
 	}
@@ -114,7 +114,7 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 	}
 
 	public boolean addItem(String item) {
-		boolean valid = isValid(item);
+		boolean valid = this.isValid(item);
 		if (valid) {
 			if (setLike) {
 				if (data.contains(item)) {
@@ -129,10 +129,25 @@ public class ItemListFillerDialogModel extends AbstractListModel {
 		return valid;
 	}
 
+	public boolean replaceItem(int idx, String item) {
+		boolean valid = this.isValid(item);
+		if (valid) {
+			if (setLike) {
+				if (data.contains(item)) {
+					return false;
+				}
+			}
+
+			data.set(idx, item);
+			this.fireContentsChanged(this, idx, idx);
+		}
+		return valid;
+	}
+
 	public void removeItems(int[] idx) {
 		Arrays.sort(idx);
 		for (int i = idx.length; i > 0; i--) {
-			removeItem(idx[i - 1]);
+			this.removeItem(idx[i - 1]);
 		}
 	}
 
