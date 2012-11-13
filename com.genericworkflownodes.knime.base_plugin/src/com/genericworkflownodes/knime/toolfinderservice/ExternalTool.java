@@ -27,10 +27,19 @@ package com.genericworkflownodes.knime.toolfinderservice;
 public final class ExternalTool {
 	private String toolName;
 	private String pluginName;
+	private String executableName;
 
-	public ExternalTool(String pluginname, String toolname) {
-		this.pluginName = pluginname;
-		this.toolName = toolname;
+	public ExternalTool(String pluginName, String toolName) {
+		this.pluginName = pluginName;
+		this.toolName = toolName;
+		executableName = toolName;
+	}
+
+	public ExternalTool(String pluginName, String toolName,
+			String executableName) {
+		this.pluginName = pluginName;
+		this.toolName = toolName;
+		this.executableName = executableName;
 	}
 
 	public String getToolName() {
@@ -41,8 +50,12 @@ public final class ExternalTool {
 		return pluginName;
 	}
 
+	public String getExecutableName() {
+		return executableName;
+	}
+
 	public String getKey() {
-		return String.format("%s_%s", this.pluginName, this.toolName);
+		return String.format("%s_%s", pluginName, toolName);
 	}
 
 	@Override
@@ -54,8 +67,9 @@ public final class ExternalTool {
 			return false;
 		}
 		ExternalTool eTool = (ExternalTool) obj;
-		return (pluginName.equals(eTool.pluginName) && toolName
-				.equals(eTool.toolName));
+		return (pluginName.equals(eTool.pluginName)
+				&& toolName.equals(eTool.toolName) && executableName
+				.equals(eTool.executableName));
 	}
 
 	@Override
@@ -63,6 +77,7 @@ public final class ExternalTool {
 		return pluginName.hashCode() ^ toolName.hashCode();
 	}
 
+	@Override
 	public String toString() {
 		return String.format("%s_%s", pluginName, toolName);
 	}

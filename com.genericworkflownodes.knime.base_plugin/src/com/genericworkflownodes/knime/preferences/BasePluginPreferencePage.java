@@ -40,6 +40,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -83,7 +84,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	private Button btnFindInDirectory;
 	private Button btnUse;
 
-	private final static String[] TABLE_TITLES = { "Toolname",
+	private final static String[] TABLE_HEADERS = { "Toolname",
 			"Local executable", "Use Local" };
 	private final int COL_TOOLNAME = 0;
 	private final int COL_LOCAL_EXECUTABLE = 1;
@@ -157,7 +158,6 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		Composite executablesComposite = createExecutablesComposite();
 
 		addExecutableTable(executablesComposite);
-		fillExecutableTable();
 		updateTableLayout();
 		addButtons(executablesComposite);
 
@@ -184,10 +184,6 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 			@Override
 			public void handleEvent(Event event) {
 				updateSelected();
-
-				// get selected row
-				// find tool
-				// check if it is executable
 			}
 		});
 
@@ -219,9 +215,15 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		btnUse = new Button(buttonComposite, SWT.NONE);
 		btnUse.setText("Use");
 		btnUse.setEnabled(false);
+		btnUse.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				System.out.println("Use");
+			}
+		});
 	}
 
-	protected void updateSelected() {
+	private void updateSelected() {
 		FileDialog dialog = new FileDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(), SWT.OPEN);
 		String selection = dialog.open();
@@ -233,16 +235,11 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 			if (f.exists() && f.canExecute()) {
 				ExternalToolSettings settings = currentSelection();
 
-				try {
-					settings.setLocalToolPath(f.getAbsolutePath());
-					if (settings.getSelectedToolPathType() == ToolPathType.UNKNOWN) {
-						settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
-					}
-					executableViewer.refresh();
-				} catch (Exception e) {
-					// we already check the prerequisites of setLocalToolPath
-					// => ignore exception
+				settings.setLocalToolPath(f.getAbsolutePath());
+				if (settings.getSelectedToolPathType() == ToolPathType.UNKNOWN) {
+					settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
 				}
+				refresh();
 			}
 		}
 	}
@@ -252,7 +249,28 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	}
 
 	private void findInDirectory() {
-		System.out.println("Find in directory");
+		DirectoryDialog dirDialog = new DirectoryDialog(PlatformUI
+				.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN);
+
+		String directory = dirDialog.open();
+		if (directory != null) {
+			File executableDirectory = new File(directory);
+
+			for (Map.Entry<String, ExternalToolSettings> settingsEntry : toolSettings
+					.entrySet()) {
+				File executable = new File(executableDirectory, settingsEntry
+						.getValue().getTool().getExecutableName());
+				if (executable.exists() && executable.canExecute()) {
+					settingsEntry.getValue().setLocalToolPath(
+							executable.getAbsolutePath());
+					if (settingsEntry.getValue().getSelectedToolPathType() == ToolPathType.UNKNOWN) {
+						settingsEntry.getValue().setSelectedToolPathType(
+								ToolPathType.USER_DEFINED);
+					}
+				}
+			}
+		}
+		refresh();
 	}
 
 	private void updateTableLayout() {
@@ -260,20 +278,6 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		for (int i = 0; i < tbl.getColumnCount(); i++) {
 			tbl.getColumn(i).pack();
 		}
-	}
-
-	private void fillExecutableTable() {
-		/*
-		 * for (int i = 0; i < TABLE_TITLES.length; i++) { TableColumn column =
-		 * new TableColumn(executableTable, SWT.NONE);
-		 * column.setText(TABLE_TITLES[i]); } for (Map.Entry<String,
-		 * ExternalToolSettings> settingsEntry : toolSettings .entrySet()) {
-		 * TableItem item = new TableItem(executableTable, SWT.NONE);
-		 * item.setText(COL_TOOLNAME, settingsEntry.getValue().getToolName());
-		 * item.setText(COL_LOCAL_EXECUTABLE, settingsEntry.getValue()
-		 * .getLocalToolPath()); item.setText(COL_USE_LOCAL,
-		 * settingsEntry.getValue() .getSelectedToolPathType().toString()); }
-		 */
 	}
 
 	private void addExecutableTable(Composite parent) {
@@ -289,12 +293,13 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 				.setLabelProvider(new ExternalToolSettingsLabelProvider());
 		executableViewer.setInput(toolSettings);
 		Table table = executableViewer.getTable();
-		new TableColumn(table, SWT.LEFT).setText("First Name");
-		new TableColumn(table, SWT.LEFT).setText("Last Name");
-		new TableColumn(table, SWT.LEFT).setText("E-mail Address");
+		new TableColumn(table, SWT.LEFT).setText(TABLE_HEADERS[COL_TOOLNAME]);
+		new TableColumn(table, SWT.LEFT)
+				.setText(TABLE_HEADERS[COL_LOCAL_EXECUTABLE]);
+		new TableColumn(table, SWT.LEFT).setText(TABLE_HEADERS[COL_USE_LOCAL]);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		executableViewer.refresh();
+		refresh();
 
 		executableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
@@ -356,6 +361,11 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		}
 	}
 
+	/**
+	 * Extracts the currently selected toolsettings object.
+	 * 
+	 * @return
+	 */
 	private ExternalToolSettings currentSelection() {
 		TableItem[] item = executableViewer.getTable().getSelection();
 
@@ -365,6 +375,12 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 			return null;
 	}
 
+	/**
+	 * Checks if at least one of the plugin executables has a local path.
+	 * 
+	 * @return True if a local path was configured for at least one executable,
+	 *         false otherwise.
+	 */
 	private boolean hasLocalPaths() {
 		for (Map.Entry<String, ExternalToolSettings> settingsEntry : toolSettings
 				.entrySet()) {
@@ -374,6 +390,13 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		return false;
 	}
 
+	/**
+	 * If some of the settings would be overwritten by a full-search, the user
+	 * gets a warning message box and can abort the full-search.
+	 * 
+	 * @return True if the user accepts overwrite (or no overwrite will happen),
+	 *         false otherwise.
+	 */
 	private boolean checkOverwrite() {
 		if (hasLocalPaths()) {
 			MessageBox messageBox = new MessageBox(PlatformUI.getWorkbench()
@@ -381,12 +404,21 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 					| SWT.YES | SWT.NO);
 
 			messageBox.setText("Warning");
-			messageBox
-					.setMessage("You already have configured local paths. All existing settings will be overwritten! Proceed?");
+			messageBox.setMessage("You already have configured local paths. "
+					+ "All existing settings will be overwritten! "
+					+ "Proceed?");
 			int buttonID = messageBox.open();
 			return buttonID == SWT.YES;
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Refreshs the local table.
+	 */
+	private void refresh() {
+		executableViewer.refresh();
+		updateTableLayout();
 	}
 }

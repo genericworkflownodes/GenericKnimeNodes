@@ -96,7 +96,7 @@ public class ExternalToolSettingsLabelProvider implements ITableLabelProvider {
 		ExternalToolSettings settings = (ExternalToolSettings) element;
 		switch (columnIndex) {
 		case 0:
-			return settings.getToolName();
+			return settings.getTool().getToolName();
 		case 1:
 			return settings.getLocalToolPath();
 		case 2:

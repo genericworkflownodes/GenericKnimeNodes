@@ -127,18 +127,9 @@ public class ExternalToolSettings {
 	/**
 	 * @param localToolPath
 	 *            the localToolPath to set
-	 * @throws Exception
-	 *             If the given executable does not exist or cannot be executed.
 	 */
-	public void setLocalToolPath(String localToolPath) throws Exception {
-		if ((new File(localToolPath)).exists()
-				&& (new File(localToolPath)).canExecute())
-			this.localToolPath = localToolPath;
-		else
-			throw new Exception(
-					String.format(
-							"The given executable %s either does not exist or is not executable.",
-							localToolPath));
+	public void setLocalToolPath(String localToolPath) {
+		this.localToolPath = localToolPath;
 	}
 
 	/**
@@ -177,7 +168,7 @@ public class ExternalToolSettings {
 	 * 
 	 * @return The tool name.
 	 */
-	public String getToolName() {
-		return tool.getToolName();
+	public ExternalTool getTool() {
+		return tool;
 	}
 }
