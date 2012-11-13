@@ -93,6 +93,36 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		// key
 		noDefaultAndApplyButton();
 		this.pluginName = pluginName;
+
+		createToolList();
+	}
+
+	private void createToolList() {
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
+
+		if (toolLocator != null) {
+
+			Map<String, List<ExternalTool>> plugin2tools = toolLocator
+					.getToolsByPlugin();
+
+			List<ExternalTool> tools = plugin2tools.get(pluginName);
+
+			// sort each plugin by name
+			Collections.sort(tools, new Comparator<ExternalTool>() {
+				@Override
+				public int compare(final ExternalTool o1, final ExternalTool o2) {
+					return o1.getToolName().compareToIgnoreCase(
+							o2.getToolName());
+				}
+			});
+
+			// add each tool shipped with the current plugin to the GUI
+			for (ExternalTool tool : tools) {
+				toolSettings.put(tool.getToolName(), new ExternalToolSettings(
+						tool));
+			}
+		}
 	}
 
 	@Override
@@ -229,38 +259,16 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 			TableColumn column = new TableColumn(executableTable, SWT.NONE);
 			column.setText(TABLE_TITLES[i]);
 		}
-		// the tool dialogs
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-		if (toolLocator != null) {
-
-			Map<String, List<ExternalTool>> plugin2tools = toolLocator
-					.getToolsByPlugin();
-
-			List<ExternalTool> tools = plugin2tools.get(pluginName);
-
-			// sort each plugin by name
-			Collections.sort(tools, new Comparator<ExternalTool>() {
-				@Override
-				public int compare(final ExternalTool o1, final ExternalTool o2) {
-					return o1.getToolName().compareToIgnoreCase(
-							o2.getToolName());
-				}
-			});
-
-			// add each tool shipped with the current plugin to the GUI
-			for (ExternalTool tool : tools) {
-				ExternalToolSettings settings = new ExternalToolSettings(tool);
-
-				TableItem item = new TableItem(executableTable, SWT.NONE);
-				item.setText(COL_TOOLNAME, tool.getToolName());
-				item.setText(COL_LOCAL_EXECUTABLE, settings.getLocalToolPath());
-				item.setText(COL_USE_LOCAL, settings.getSelectedToolPathType()
-						.toString());
-
-				toolSettings.put(tool.getToolName(), settings);
-			}
+		for (Map.Entry<String, ExternalToolSettings> settingsEntry : toolSettings
+				.entrySet()) {
+			TableItem item = new TableItem(executableTable, SWT.NONE);
+			item.setText(COL_TOOLNAME, settingsEntry.getValue().getToolName());
+			item.setText(COL_LOCAL_EXECUTABLE, settingsEntry.getValue()
+					.getLocalToolPath());
+			item.setText(COL_USE_LOCAL, settingsEntry.getValue()
+					.getSelectedToolPathType().toString());
 		}
+
 	}
 
 	private void addExecutableTable(Composite parent) {

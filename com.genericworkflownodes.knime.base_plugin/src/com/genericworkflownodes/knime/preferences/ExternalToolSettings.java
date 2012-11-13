@@ -172,4 +172,12 @@ public class ExternalToolSettings {
 		this.selectedToolPathType = selectedToolPathType;
 	}
 
+	/**
+	 * Get the tool name.
+	 * 
+	 * @return The tool name.
+	 */
+	public String getToolName() {
+		return tool.getToolName();
+	}
 }
