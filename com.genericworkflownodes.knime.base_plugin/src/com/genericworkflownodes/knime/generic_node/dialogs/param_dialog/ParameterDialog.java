@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -26,11 +26,11 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.io.FileNotFoundException;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeListener;
@@ -48,14 +48,16 @@ import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 
+/**
+ * 
+ * @author roettig, aiche, bkahlert
+ */
 public class ParameterDialog extends JPanel implements ListSelectionListener {
 	private static final long serialVersionUID = 8098990326681120709L;
 	private JXTreeTable table;
 	private JTextPane help;
 	// private JButton toggle;
 	private ParameterDialogModel model;
-
-	private final INodeConfiguration config;
 
 	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
 	private static Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
@@ -64,7 +66,6 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 			throws FileNotFoundException, Exception {
 		setLayout(new GridBagLayout());
 
-		this.config = config;
 		model = new ParameterDialogModel(config);
 
 		table = new JXTreeTable(model);
@@ -74,6 +75,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getColumn(1).setCellEditor(model.getCellEditor());
 		table.getSelectionModel().addListSelectionListener(this);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		table.setHighlighters(new Highlighter() {
 
@@ -125,11 +127,9 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		// expand full tree by default
 		table.expandAll();
 
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		size.width /= 1.5;
-		size.height /= 1.5;
-		setMinimumSize(size);
-		setPreferredSize(size);
+		// adjust size of columns to fit the screen
+		TableColumnAdjuster tca = new TableColumnAdjuster(table);
+		tca.adjustColumns();
 
 		this.add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1,
 				1.0, 2.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
