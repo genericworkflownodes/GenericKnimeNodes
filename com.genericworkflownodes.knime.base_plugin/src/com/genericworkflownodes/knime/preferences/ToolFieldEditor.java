@@ -91,7 +91,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 			checkBox.setText(CHECK_BOX_UNAVAILABLE_EMBEDDED_TEXT);
 		}
 		checkBox.setSelection(isShippedSelected());
-		this.setEnabled(!isShippedSelected(), parent);
+		setEnabled(!isShippedSelected(), parent);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 						ToolPathType.USER_DEFINED);
 				if (executable != null && executable.exists()
 						&& executable.isFile() && executable.canExecute()) {
-					this.setStringValue(executable.getAbsolutePath());
+					setStringValue(executable.getAbsolutePath());
 				}
 			} catch (Exception e) {
 				GenericNodesPlugin
@@ -199,7 +199,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 	 */
 	private void changeToolType() {
 		// boolean useShipped = checkBox.getSelection();
-		this.setEnabled(!checkBox.getSelection(), parent);
+		setEnabled(!checkBox.getSelection(), parent);
 		/*
 		 * IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
 		 * .getWorkbench().getService(IToolLocatorService.class);
@@ -255,7 +255,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 	 * @return True if the user provided executable is valid, false otherwise.
 	 */
 	private boolean isValidUserDefinedExecutable() {
-		File userDefinedExecutable = new File(this.getStringValue());
+		File userDefinedExecutable = new File(getStringValue());
 		return (userDefinedExecutable != null && userDefinedExecutable.exists() && userDefinedExecutable
 				.canExecute());
 	}
@@ -265,7 +265,7 @@ public class ToolFieldEditor extends FileFieldEditor {
 	 * {@link IToolLocatorService}.
 	 */
 	private void updateUserDefinedExecutable() {
-		File userDefinedExecutable = new File(this.getStringValue());
+		File userDefinedExecutable = new File(getStringValue());
 		if (isValidUserDefinedExecutable()) {
 			IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
 					.getWorkbench().getService(IToolLocatorService.class);
