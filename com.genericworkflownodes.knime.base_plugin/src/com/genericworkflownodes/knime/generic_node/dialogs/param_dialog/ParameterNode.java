@@ -8,8 +8,14 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 public class ParameterNode extends Node<Parameter<?>> {
 	protected List<Node<Parameter<?>>> children2 = new ArrayList<Node<Parameter<?>>>();
 
-	public ParameterNode(Node<Parameter<?>> p, Parameter<?> payload, String name) {
-		super(p, payload, name);
+	public ParameterNode(Node<Parameter<?>> parent, Parameter<?> payload,
+			String name) {
+		super(parent, payload, name, "");
+	}
+
+	public ParameterNode(Node<Parameter<?>> parent, Parameter<?> payload,
+			String name, String description) {
+		super(parent, payload, name, description);
 	}
 
 	@Override
@@ -22,14 +28,14 @@ public class ParameterNode extends Node<Parameter<?>> {
 
 	@Override
 	public Node<Parameter<?>> getChild(int idx) {
-		return (ParameterNode) super.getChild(idx);
+		return super.getChild(idx);
 	}
 
 	public Node<Parameter<?>> getChild(int idx, boolean showAdvanced) {
 		if (showAdvanced) {
-			return (ParameterNode) super.getChild(idx);
+			return super.getChild(idx);
 		} else {
-			return (ParameterNode) children2.get(idx);
+			return children2.get(idx);
 		}
 	}
 

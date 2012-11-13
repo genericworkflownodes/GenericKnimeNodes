@@ -96,6 +96,10 @@ public class ConfigWrapper {
 		return toks[toks.length - 1];
 	}
 
+	private String getSection(String key) {
+		return key.substring(0, key.lastIndexOf('.'));
+	}
+
 	private void init() {
 		Map<String, ParameterNode> key2node = new HashMap<String, ParameterNode>();
 
@@ -120,7 +124,8 @@ public class ConfigWrapper {
 
 				if (!key2node.containsKey(prefix)) {
 					ParameterNode nn = new ParameterNode(last, null,
-							getSuffix(prefix));
+							getSuffix(prefix),
+							config.getSectionDescription(getSection(key)));
 					last.addChild(nn);
 					last = nn;
 					key2node.put(prefix, last);
@@ -129,7 +134,8 @@ public class ConfigWrapper {
 				}
 			}
 
-			ParameterNode n = new ParameterNode(last, p, p.getKey());
+			ParameterNode n = new ParameterNode(last, p, p.getKey(),
+					p.getDescription());
 			last.addChild(n);
 		}
 	}

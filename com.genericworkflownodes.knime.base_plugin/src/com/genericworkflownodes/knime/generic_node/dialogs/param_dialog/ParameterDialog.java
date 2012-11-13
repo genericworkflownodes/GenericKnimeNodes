@@ -47,7 +47,6 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterDialog extends JPanel implements ListSelectionListener {
 	private static final long serialVersionUID = 8098990326681120709L;
@@ -56,13 +55,16 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 	// private JButton toggle;
 	private ParameterDialogModel model;
 
+	private final INodeConfiguration config;
+
 	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
 	private static Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
 
 	public ParameterDialog(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 
+		this.config = config;
 		model = new ParameterDialogModel(config);
 
 		table = new JXTreeTable(model);
@@ -126,8 +128,8 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		size.width /= 1.5;
 		size.height /= 1.5;
-		this.setMinimumSize(size);
-		this.setPreferredSize(size);
+		setMinimumSize(size);
+		setPreferredSize(size);
 
 		this.add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1,
 				1.0, 2.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -157,23 +159,24 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		}
 		if (evt.getSource() == table.getSelectionModel()) {
 			int row = table.getSelectedRow();
-			Object val = table.getModel().getValueAt(row, 1);
-			if (val instanceof Parameter<?>) {
-				Parameter<?> param = (Parameter<?>) val;
-
-				StyledDocument doc = (StyledDocument) help.getDocument();
-				Style style = doc.addStyle("StyleName", null);
-				StyleConstants.setFontFamily(style, "SansSerif");
-
-				try {
-					doc.remove(0, doc.getLength());
-					doc.insertString(0, param.getDescription(), style);
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
+			Object val = table.getModel().getValueAt(row, 3);
+			if (val != null && val instanceof String) {
+				updateDocumentationSection((String) val);
 			}
 		}
+	}
 
+	private void updateDocumentationSection(String description) {
+		StyledDocument doc = (StyledDocument) help.getDocument();
+		Style style = doc.addStyle("StyleName", null);
+		StyleConstants.setFontFamily(style, "SansSerif");
+
+		try {
+			doc.remove(0, doc.getLength());
+			doc.insertString(0, description, style);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

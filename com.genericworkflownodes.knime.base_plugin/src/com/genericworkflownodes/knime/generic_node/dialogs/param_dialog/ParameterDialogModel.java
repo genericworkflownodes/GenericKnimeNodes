@@ -53,15 +53,15 @@ public class ParameterDialogModel implements
 	public ParameterDialogModel(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
 
-		this.nodeConfig = config;
-		wrapper = new ConfigWrapper(this.nodeConfig);
-		this.root = wrapper.getRoot();
+		nodeConfig = config;
+		wrapper = new ConfigWrapper(nodeConfig);
+		root = wrapper.getRoot();
 
 		paramCellEditor = new ParamCellEditor();
 	}
 
 	public void refresh() {
-		wrapper = new ConfigWrapper(this.nodeConfig);
+		wrapper = new ConfigWrapper(nodeConfig);
 	}
 
 	@Override
@@ -148,27 +148,26 @@ public class ParameterDialogModel implements
 
 		if (column == -1) {
 			return n.getName();
-		}
-		if (column == 0) {
+		} else if (column == 0) {
 			if (n.getPayload() == null) {
 				return n.getName();
 			} else {
 				return n.getPayload().getKey();
 			}
-		}
-		if (column == 1) {
+		} else if (column == 1) {
 			if (n.getPayload() == null) {
 				return "";
 			} else {
 				return n.getPayload();
 			}
-		}
-		if (column == 2) {
+		} else if (column == 2) {
 			if (n.getPayload() == null) {
 				return "";
 			} else {
 				return n.getPayload().getMnemonic();
 			}
+		} else if (column == 3) {
+			return n.getDescription();
 		}
 		return null;
 	}

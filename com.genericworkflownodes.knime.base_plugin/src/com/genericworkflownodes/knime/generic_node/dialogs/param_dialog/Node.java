@@ -32,22 +32,48 @@ import java.util.List;
  *            The data represented by this node.
  */
 public class Node<T> {
+	/**
+	 * Pointer to parent node.
+	 */
 	protected Node<T> parent;
+
+	/**
+	 * The actual data collected at this node.
+	 */
 	protected T payload;
 
+	/**
+	 * A list of child nodes.
+	 */
 	protected List<Node<T>> children = new ArrayList<Node<T>>();
 
+	/**
+	 * The name of the node.
+	 */
 	protected String name;
+
+	/**
+	 * Description of this node.
+	 */
+	protected String description;
 
 	public Node() {
 		parent = null;
 		name = "root";
+		description = "";
 	}
 
-	public Node(Node<T> p, T payload, String name) {
-		parent = p;
+	public Node(Node<T> parent, T payload, String name) {
+		this.parent = parent;
 		this.payload = payload;
 		this.name = name;
+	}
+
+	public Node(Node<T> parent, T payload, String name, String description) {
+		this.parent = parent;
+		this.payload = payload;
+		this.name = name;
+		this.description = description;
 	}
 
 	public void addChild(Node<T> child) {
@@ -89,7 +115,12 @@ public class Node<T> {
 		return name;
 	}
 
+	@Override
 	public String toString() {
 		return name;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }
