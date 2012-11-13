@@ -68,6 +68,10 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.Tool
 public abstract class BasePluginPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
+	private static final String USE_SHIPPED_TEXT = "Use shipped";
+
+	private static final String USE_LOCAL_TEXT = "Use local";
+
 	/**
 	 * The list of all available tool pathes.
 	 */
@@ -142,17 +146,14 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 
 		baseComposite = new Composite(sc, SWT.NONE);
 
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.type = SWT.V_SCROLL;
-
-		GridLayout gl_c = new GridLayout();
-		baseComposite.setLayout(gl_c);
+		baseComposite.setLayout(new GridLayout(1, false));
+		baseComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+				false, 1, 1));
 
 		sc.setContent(baseComposite);
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 
-		// auto discover executables
 		addTopLabel();
 
 		Composite executablesComposite = createExecutablesComposite();
@@ -168,7 +169,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		Composite executablesComposite = new Composite(baseComposite, SWT.NONE);
 		executablesComposite.setLayout(new GridLayout(2, false));
 		executablesComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP,
-				false, false, 1, 1));
+				true, true, 1, 1));
 		return executablesComposite;
 	}
 
@@ -213,12 +214,20 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		});
 
 		btnUse = new Button(buttonComposite, SWT.NONE);
-		btnUse.setText("Use");
+		btnUse.setText(USE_LOCAL_TEXT);
 		btnUse.setEnabled(false);
 		btnUse.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				System.out.println("Use");
+				ExternalToolSettings settings = currentSelection();
+				if (settings.getSelectedToolPathType() == ToolPathType.SHIPPED) {
+					settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
+					btnUse.setText(USE_SHIPPED_TEXT);
+				} else {
+					settings.setSelectedToolPathType(ToolPathType.SHIPPED);
+					btnUse.setText(USE_LOCAL_TEXT);
+				}
+				refresh();
 			}
 		});
 	}
@@ -307,20 +316,15 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		return false;
 	}
 
-	private void updateTableLayout() {
-		Table tbl = executableViewer.getTable();
-		for (int i = 0; i < tbl.getColumnCount(); i++) {
-			tbl.getColumn(i).pack();
-		}
-	}
-
 	private void addExecutableTable(Composite parent) {
 		Composite tableComposite = new Composite(parent, SWT.NONE);
 		tableComposite.setLayout(new GridLayout(1, false));
-		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
+		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
 				false, 1, 1));
 
-		executableViewer = new TableViewer(tableComposite);
+		executableViewer = new TableViewer(
+				tableComposite,
+				(SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER));
 		executableViewer
 				.setContentProvider(new ExternalToolSettingsContentProvider());
 		executableViewer
@@ -349,23 +353,39 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 					public void selectionChanged(SelectionChangedEvent event) {
 						btnModify.setEnabled(true);
 						ExternalToolSettings settings = currentSelection();
-						btnUse.setEnabled(settings.hasShippedBinary());
+						if (settings != null) {
+							btnUse.setEnabled(settings.hasShippedBinary());
+
+							if (settings.getSelectedToolPathType() == ToolPathType.SHIPPED) {
+								btnUse.setText(USE_LOCAL_TEXT);
+							} else {
+								btnUse.setText(USE_SHIPPED_TEXT);
+							}
+						} else {
+							// if we have no selection we disable the selection
+							// specific buttons again
+							btnUse.setEnabled(false);
+							btnModify.setEnabled(false);
+						}
 					}
 				});
+
+		// we want some min/max height here
+		int minHeight = 20 * table.getItemHeight();
+
+		GridData gridData = new GridData();
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.heightHint = minHeight;
+		executableViewer.getControl().setLayoutData(gridData);
 	}
 
 	private void addTopLabel() {
 
-		GridLayout groupCompositeGridLayout = new GridLayout(1, false);
-		groupCompositeGridLayout.marginWidth = 0;
-		groupCompositeGridLayout.marginHeight = 0;
-		groupCompositeGridLayout.verticalSpacing = 0;
-		groupCompositeGridLayout.horizontalSpacing = 0;
-
 		Composite groupComposite = new Composite(baseComposite, SWT.NONE);
-		groupComposite.setLayout(groupCompositeGridLayout);
-		groupComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
+		groupComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		Label lblDescription = new Label(groupComposite, SWT.NONE);
 		lblDescription
@@ -454,5 +474,12 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	private void refresh() {
 		executableViewer.refresh();
 		updateTableLayout();
+	}
+
+	private void updateTableLayout() {
+		Table tbl = executableViewer.getTable();
+		for (int i = 0; i < tbl.getColumnCount(); i++) {
+			tbl.getColumn(i).pack();
+		}
 	}
 }
