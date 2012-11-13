@@ -27,10 +27,13 @@ import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,6 +55,7 @@ import org.eclipse.ui.PlatformUI;
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
 
 /**
  * This class provides a base implementation of a plugin defaults preference
@@ -71,7 +75,8 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	private final String pluginName;
 	private Composite baseComposite;
 
-	private Table executableTable;
+	// private Table executableTable;
+	private TableViewer executableViewer;
 
 	private Button btnModify;
 	private Button btnFindInPath;
@@ -230,8 +235,10 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 
 				try {
 					settings.setLocalToolPath(f.getAbsolutePath());
-					// update ui
-					executableTable.getSelectionIndex();
+					if (settings.getSelectedToolPathType() == ToolPathType.UNKNOWN) {
+						settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
+					}
+					executableViewer.refresh();
 				} catch (Exception e) {
 					// we already check the prerequisites of setLocalToolPath
 					// => ignore exception
@@ -249,26 +256,24 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	}
 
 	private void updateTableLayout() {
-		for (int i = 0; i < TABLE_TITLES.length; i++) {
-			executableTable.getColumn(i).pack();
+		Table tbl = executableViewer.getTable();
+		for (int i = 0; i < tbl.getColumnCount(); i++) {
+			tbl.getColumn(i).pack();
 		}
 	}
 
 	private void fillExecutableTable() {
-		for (int i = 0; i < TABLE_TITLES.length; i++) {
-			TableColumn column = new TableColumn(executableTable, SWT.NONE);
-			column.setText(TABLE_TITLES[i]);
-		}
-		for (Map.Entry<String, ExternalToolSettings> settingsEntry : toolSettings
-				.entrySet()) {
-			TableItem item = new TableItem(executableTable, SWT.NONE);
-			item.setText(COL_TOOLNAME, settingsEntry.getValue().getToolName());
-			item.setText(COL_LOCAL_EXECUTABLE, settingsEntry.getValue()
-					.getLocalToolPath());
-			item.setText(COL_USE_LOCAL, settingsEntry.getValue()
-					.getSelectedToolPathType().toString());
-		}
-
+		/*
+		 * for (int i = 0; i < TABLE_TITLES.length; i++) { TableColumn column =
+		 * new TableColumn(executableTable, SWT.NONE);
+		 * column.setText(TABLE_TITLES[i]); } for (Map.Entry<String,
+		 * ExternalToolSettings> settingsEntry : toolSettings .entrySet()) {
+		 * TableItem item = new TableItem(executableTable, SWT.NONE);
+		 * item.setText(COL_TOOLNAME, settingsEntry.getValue().getToolName());
+		 * item.setText(COL_LOCAL_EXECUTABLE, settingsEntry.getValue()
+		 * .getLocalToolPath()); item.setText(COL_USE_LOCAL,
+		 * settingsEntry.getValue() .getSelectedToolPathType().toString()); }
+		 */
 	}
 
 	private void addExecutableTable(Composite parent) {
@@ -277,38 +282,37 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
 				false, 1, 1));
 
-		// addAllExecutables(c);
-		executableTable = new Table(tableComposite, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		executableTable.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-				false, 1, 1));
-		executableTable.setLinesVisible(true);
-		executableTable.setHeaderVisible(true);
+		executableViewer = new TableViewer(tableComposite);
+		executableViewer
+				.setContentProvider(new ExternalToolSettingsContentProvider());
+		executableViewer
+				.setLabelProvider(new ExternalToolSettingsLabelProvider());
+		executableViewer.setInput(toolSettings);
+		Table table = executableViewer.getTable();
+		new TableColumn(table, SWT.LEFT).setText("First Name");
+		new TableColumn(table, SWT.LEFT).setText("Last Name");
+		new TableColumn(table, SWT.LEFT).setText("E-mail Address");
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		executableViewer.refresh();
 
-		executableTable.addSelectionListener(new SelectionListener() {
-
+		executableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Table source = (Table) e.getSource();
-				TableItem[] item = source.getSelection();
-
-				// get the selected settings object
-				ExternalToolSettings settings = toolSettings.get(item[0]
-						.getText());
-
-				// we can only toggle between binary types if we have a shipped
-				// binary
-				btnUse.setEnabled(settings.hasShippedBinary());
-
-				// allow changes to the currently selected item
-				btnModify.setEnabled(true);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				System.out.println("Table double click on " + e.item);
+			public void doubleClick(DoubleClickEvent event) {
+				updateSelected();
 			}
 		});
+
+		executableViewer
+				.addSelectionChangedListener(new ISelectionChangedListener() {
+
+					@Override
+					public void selectionChanged(SelectionChangedEvent event) {
+						btnModify.setEnabled(true);
+						ExternalToolSettings settings = currentSelection();
+						btnUse.setEnabled(settings.hasShippedBinary());
+					}
+				});
 	}
 
 	private void addTopLabel() {
@@ -353,7 +357,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	}
 
 	private ExternalToolSettings currentSelection() {
-		TableItem[] item = executableTable.getSelection();
+		TableItem[] item = executableViewer.getTable().getSelection();
 
 		if (item != null && item.length > 0)
 			return toolSettings.get(item[0].getText());
