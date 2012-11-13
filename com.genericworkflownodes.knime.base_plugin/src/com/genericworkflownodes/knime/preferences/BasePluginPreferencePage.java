@@ -244,10 +244,28 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		}
 	}
 
+	/**
+	 * Iterate through all entries in the path to find the executables.
+	 */
 	private void findInPath() {
-		System.out.println("Find in PATH");
+		String systemPath = System.getenv("PATH");
+		String[] pathEntries = systemPath.split(File.pathSeparator);
+
+		for (Map.Entry<String, ExternalToolSettings> settingsEntry : toolSettings
+				.entrySet()) {
+			for (String path : pathEntries) {
+				boolean found = updateToolWithDirectory(new File(path),
+						settingsEntry.getValue());
+				if (found)
+					break;
+			}
+		}
+		refresh();
 	}
 
+	/**
+	 * Ask the user for a directory where to search for the executables.
+	 */
 	private void findInDirectory() {
 		DirectoryDialog dirDialog = new DirectoryDialog(PlatformUI
 				.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.OPEN);
@@ -258,19 +276,35 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 
 			for (Map.Entry<String, ExternalToolSettings> settingsEntry : toolSettings
 					.entrySet()) {
-				File executable = new File(executableDirectory, settingsEntry
-						.getValue().getTool().getExecutableName());
-				if (executable.exists() && executable.canExecute()) {
-					settingsEntry.getValue().setLocalToolPath(
-							executable.getAbsolutePath());
-					if (settingsEntry.getValue().getSelectedToolPathType() == ToolPathType.UNKNOWN) {
-						settingsEntry.getValue().setSelectedToolPathType(
-								ToolPathType.USER_DEFINED);
-					}
-				}
+				updateToolWithDirectory(executableDirectory,
+						settingsEntry.getValue());
 			}
 		}
 		refresh();
+	}
+
+	/**
+	 * Searches the tool described by setting in the given directory and returns
+	 * true if it found the executable, false otherwise.
+	 * 
+	 * @param executableDirectory
+	 *            The directory where to search for the tool.
+	 * @param setting
+	 *            The settings object describing the tool to search for.
+	 * @return True if it found the executable, false otherwise.
+	 */
+	private boolean updateToolWithDirectory(File executableDirectory,
+			ExternalToolSettings setting) {
+		File executable = new File(executableDirectory, setting.getTool()
+				.getExecutableName());
+		if (executable.exists() && executable.canExecute()) {
+			setting.setLocalToolPath(executable.getAbsolutePath());
+			if (setting.getSelectedToolPathType() == ToolPathType.UNKNOWN) {
+				setting.setSelectedToolPathType(ToolPathType.USER_DEFINED);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private void updateTableLayout() {
