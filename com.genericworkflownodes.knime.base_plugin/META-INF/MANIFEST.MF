@@ -6,7 +6,7 @@ Bundle-Version: 0.7.0
 Bundle-ClassPath: ., 
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
- lib/swingx-core-1.6.2.jar,
+ lib/swingx-all-1.6.4.jar,
  lib/bsh-2.0b4.jar,
  lib/org.knime.core.data.urltype.jar
 Bundle-Vendor: The GenericWorkflowNodes Project

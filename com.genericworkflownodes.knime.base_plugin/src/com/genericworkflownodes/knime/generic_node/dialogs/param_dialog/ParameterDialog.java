@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -26,16 +26,22 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -47,13 +53,16 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.parameter.Parameter;
 
-public class ParameterDialog extends JPanel implements ListSelectionListener {
+/**
+ * 
+ * @author roettig, aiche, bkahlert
+ */
+public class ParameterDialog extends JPanel {
 	private static final long serialVersionUID = 8098990326681120709L;
 	private JXTreeTable table;
 	private JTextPane help;
-	// private JButton toggle;
+	private JCheckBox toggle;
 	private ParameterDialogModel model;
 
 	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
@@ -61,18 +70,90 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 
 	public ParameterDialog(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 
+		// create the data model for the table
+		createModel(config);
+
+		// create the JXTreeTable
+		createTable();
+
+		// adjust size of columns initially to fit the screen
+		updateTableView();
+
+		// create the sub controls (documentation and toggle for advanced)
+		createHelpPane();
+		createShowAdvancedToggle();
+
+		// finally add controls to panel
+		addControlsToPanel();
+	}
+
+	private void createModel(INodeConfiguration config)
+			throws FileNotFoundException, Exception {
 		model = new ParameterDialogModel(config);
+		model.addTreeModelListener(new TreeModelListener() {
+			@Override
+			public void treeStructureChanged(TreeModelEvent e) {
+				// defer column adjustment till all the recreation events are
+				// handled
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						TableColumnAdjuster tca = new TableColumnAdjuster(table);
+						tca.adjustColumns();
+					}
+				});
+			}
 
+			@Override
+			public void treeNodesRemoved(TreeModelEvent e) {
+			}
+
+			@Override
+			public void treeNodesInserted(TreeModelEvent e) {
+			}
+
+			@Override
+			public void treeNodesChanged(TreeModelEvent e) {
+			}
+		});
+	}
+
+	private void createTable() {
 		table = new JXTreeTable(model);
 		table.setMinimumSize(new Dimension(1000, 500));
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getColumn(1).setCellEditor(model.getCellEditor());
-		table.getSelectionModel().addListSelectionListener(this);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+		addHighlighter();
+		addSelectionListener();
+	}
+
+	private void addSelectionListener() {
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+
+					@Override
+					public void valueChanged(ListSelectionEvent event) {
+						if (event.getValueIsAdjusting()) {
+							return;
+						}
+						if (event.getSource() == table.getSelectionModel()) {
+							int row = table.getSelectedRow();
+							Object val = table.getModel().getValueAt(row, 3);
+							if (val != null && val instanceof String) {
+								updateDocumentationSection((String) val);
+							}
+						}
+					}
+				});
+	}
+
+	private void addHighlighter() {
 		table.setHighlighters(new Highlighter() {
 
 			@Override
@@ -119,61 +200,55 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 			}
 
 		});
+	}
 
+	private void addControlsToPanel() {
+		add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1, 1.0,
+				.79f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+				new Insets(2, 2, 2, 2), 0, 0));
+		add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 2, 1.0, .2f,
+				GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
+						2, 2, 2, 2), 0, 0));
+		add(toggle, new GridBagConstraints(0, 3, 1, 1, 1.0, .01f,
+				GridBagConstraints.SOUTHEAST, GridBagConstraints.VERTICAL,
+				new Insets(2, 2, 2, 2), 0, 0));
+	}
+
+	private void createHelpPane() {
+		help = new JTextPane();
+		help.setPreferredSize(new Dimension(table.getWidth(), 50));
+	}
+
+	private void createShowAdvancedToggle() {
+		toggle = new JCheckBox("Show advanced parameter");
+		toggle.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setShowAdvanced(toggle.isSelected());
+				model.refresh();
+				updateTableView();
+			}
+		});
+	}
+
+	private void updateTableView() {
 		// expand full tree by default
 		table.expandAll();
-
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		size.width /= 1.5;
-		size.height /= 1.5;
-		this.setMinimumSize(size);
-		this.setPreferredSize(size);
-
-		this.add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1,
-				1.0, 2.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(2, 2, 2, 2), 0, 0));
-		help = new JTextPane();
-		this.add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 1, 1.0,
-				1.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(2, 2, 2, 2), 0, 0));
-		/*
-		 * toggle = new JButton("Toggle adv. Parameters");
-		 * toggle.addActionListener(new ActionListener(){
-		 * 
-		 * @Override public void actionPerformed(ActionEvent arg0) {
-		 * model.toggleAdvanced(); }} ); UIHelper.addComponent(this, toggle, 0,
-		 * 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
-		 */
+		TableColumnAdjuster tca = new TableColumnAdjuster(table);
+		tca.adjustColumns();
 	}
 
-	public ParameterDialogModel getModel() {
-		return model;
-	}
+	private void updateDocumentationSection(String description) {
+		StyledDocument doc = (StyledDocument) help.getDocument();
+		Style style = doc.addStyle("StyleName", null);
+		StyleConstants.setFontFamily(style, "SansSerif");
 
-	@Override
-	public void valueChanged(ListSelectionEvent evt) {
-		if (evt.getValueIsAdjusting()) {
-			return;
+		try {
+			doc.remove(0, doc.getLength());
+			doc.insertString(0, description, style);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
 		}
-		if (evt.getSource() == table.getSelectionModel()) {
-			int row = table.getSelectedRow();
-			Object val = table.getModel().getValueAt(row, 1);
-			if (val instanceof Parameter<?>) {
-				Parameter<?> param = (Parameter<?>) val;
-
-				StyledDocument doc = (StyledDocument) help.getDocument();
-				Style style = doc.addStyle("StyleName", null);
-				StyleConstants.setFontFamily(style, "SansSerif");
-
-				try {
-					doc.remove(0, doc.getLength());
-					doc.insertString(0, param.getDescription(), style);
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
 	}
 
 }
