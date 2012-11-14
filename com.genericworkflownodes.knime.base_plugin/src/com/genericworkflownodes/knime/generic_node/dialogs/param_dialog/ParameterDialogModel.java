@@ -21,10 +21,9 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.io.FileNotFoundException;
 
-import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellEditor;
-import javax.swing.tree.TreePath;
 
+import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -35,15 +34,25 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * 
  * @author roettig, aiche
  */
-public class ParameterDialogModel implements
-		org.jdesktop.swingx.treetable.TreeTableModel {
+public class ParameterDialogModel extends AbstractTreeTableModel implements
+		TreeTableModel {
+
+	/**
+	 * Type information for the individual columns.
+	 */
+	private static Class<?>[] cTypes = { TreeTableModel.class, String.class,
+			String.class };
+
+	/**
+	 * Column name/header information.
+	 */
+	private static String[] cNames = { "Parameter", "Value", "Type" };
+
 	/**
 	 * The node configuration represented by this dialog model.
 	 */
-	private final INodeConfiguration nodeConfig;
-	private ConfigWrapper wrapper;
-	private boolean showAdvanced = true;
-	private final Object root;
+	private NodeConfigurationTree wrapper;
+	private boolean showAdvanced = false;
 
 	/**
 	 * The {@link ParamCellEditor} instance for this DialogModel.
@@ -52,28 +61,20 @@ public class ParameterDialogModel implements
 
 	public ParameterDialogModel(INodeConfiguration config)
 			throws FileNotFoundException, Exception {
-
-		nodeConfig = config;
-		wrapper = new ConfigWrapper(nodeConfig);
+		NodeConfigurationTree wrapper = new NodeConfigurationTree(config, false);
 		root = wrapper.getRoot();
-
+		this.wrapper = wrapper;
 		paramCellEditor = new ParamCellEditor();
 	}
 
 	public void refresh() {
-		wrapper = new ConfigWrapper(nodeConfig);
+		wrapper.setShowAdvanced(showAdvanced);
+		wrapper.update();
+		modelSupport.fireNewRoot();
 	}
 
-	@Override
-	public void addTreeModelListener(TreeModelListener arg0) {
-	}
-
-	public void showAdvanced(boolean flag) {
-		showAdvanced = flag;
-	}
-
-	public void toggleAdvanced() {
-		showAdvanced = !showAdvanced;
+	public void setShowAdvanced(boolean showAdvanced) {
+		this.showAdvanced = showAdvanced;
 	}
 
 	@Override
@@ -96,29 +97,10 @@ public class ParameterDialogModel implements
 	}
 
 	@Override
-	public Object getRoot() {
-		return root;
-	}
-
-	@Override
 	public boolean isLeaf(Object parent) {
 		ParameterNode par = (ParameterNode) parent;
 		return par.isLeaf();
 	}
-
-	@Override
-	public void removeTreeModelListener(TreeModelListener arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void valueForPathChanged(TreePath arg0, Object arg1) {
-
-	}
-
-	protected static Class<?>[] cTypes = { TreeTableModel.class, String.class,
-			String.class };
 
 	@Override
 	public Class<?> getColumnClass(int column) {
@@ -129,8 +111,6 @@ public class ParameterDialogModel implements
 	public int getColumnCount() {
 		return cNames.length;
 	}
-
-	private static String[] cNames = { "Parameter", "Value", "Type" };
 
 	@Override
 	public String getColumnName(int idx) {
@@ -192,4 +172,5 @@ public class ParameterDialogModel implements
 	public TableCellEditor getCellEditor() {
 		return paramCellEditor;
 	}
+
 }

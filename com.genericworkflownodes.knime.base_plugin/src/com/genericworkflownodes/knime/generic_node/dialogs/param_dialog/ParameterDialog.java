@@ -26,6 +26,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 
 import javax.swing.JCheckBox;
@@ -34,9 +36,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -53,7 +58,7 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
  * 
  * @author roettig, aiche, bkahlert
  */
-public class ParameterDialog extends JPanel implements ListSelectionListener {
+public class ParameterDialog extends JPanel {
 	private static final long serialVersionUID = 8098990326681120709L;
 	private JXTreeTable table;
 	private JTextPane help;
@@ -67,17 +72,88 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 			throws FileNotFoundException, Exception {
 		setLayout(new GridBagLayout());
 
-		model = new ParameterDialogModel(config);
+		// create the data model for the table
+		createModel(config);
 
+		// create the JXTreeTable
+		createTable();
+
+		// adjust size of columns initially to fit the screen
+		updateTableView();
+
+		// create the sub controls (documentation and toggle for advanced)
+		createHelpPane();
+		createShowAdvancedToggle();
+
+		// finally add controls to panel
+		addControlsToPanel();
+	}
+
+	private void createModel(INodeConfiguration config)
+			throws FileNotFoundException, Exception {
+		model = new ParameterDialogModel(config);
+		model.addTreeModelListener(new TreeModelListener() {
+			@Override
+			public void treeStructureChanged(TreeModelEvent e) {
+				// defer column adjustment till all the recreation events are
+				// handled
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						TableColumnAdjuster tca = new TableColumnAdjuster(table);
+						tca.adjustColumns();
+					}
+				});
+			}
+
+			@Override
+			public void treeNodesRemoved(TreeModelEvent e) {
+			}
+
+			@Override
+			public void treeNodesInserted(TreeModelEvent e) {
+			}
+
+			@Override
+			public void treeNodesChanged(TreeModelEvent e) {
+			}
+		});
+	}
+
+	private void createTable() {
 		table = new JXTreeTable(model);
 		table.setMinimumSize(new Dimension(1000, 500));
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getColumn(1).setCellEditor(model.getCellEditor());
-		table.getSelectionModel().addListSelectionListener(this);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+		addHighlighter();
+		addSelectionListener();
+	}
+
+	private void addSelectionListener() {
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+
+					@Override
+					public void valueChanged(ListSelectionEvent event) {
+						if (event.getValueIsAdjusting()) {
+							return;
+						}
+						if (event.getSource() == table.getSelectionModel()) {
+							int row = table.getSelectedRow();
+							Object val = table.getModel().getValueAt(row, 3);
+							if (val != null && val instanceof String) {
+								updateDocumentationSection((String) val);
+							}
+						}
+					}
+				});
+	}
+
+	private void addHighlighter() {
 		table.setHighlighters(new Highlighter() {
 
 			@Override
@@ -124,55 +200,42 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 			}
 
 		});
+	}
 
-		// expand full tree by default
-		table.expandAll();
-
-		// adjust size of columns to fit the screen
-		TableColumnAdjuster tca = new TableColumnAdjuster(table);
-		tca.adjustColumns();
-
-		this.add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1,
-				1.0, .79f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+	private void addControlsToPanel() {
+		add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1, 1.0,
+				.79f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(2, 2, 2, 2), 0, 0));
-		help = new JTextPane();
-		help.setPreferredSize(new Dimension(table.getWidth(), 50));
-		this.add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 2, 1.0,
-				.2f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-				new Insets(2, 2, 2, 2), 0, 0));
-
-		toggle = new JCheckBox("Show advanced parameter");
+		add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 2, 1.0, .2f,
+				GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
+						2, 2, 2, 2), 0, 0));
 		add(toggle, new GridBagConstraints(0, 3, 1, 1, 1.0, .01f,
 				GridBagConstraints.SOUTHEAST, GridBagConstraints.VERTICAL,
 				new Insets(2, 2, 2, 2), 0, 0));
-		// UIHelper.addComponent(this, toggle, 0, 2, 1, 1,
-		// GridBagConstraints.EAST, GridBagConstraints.BOTH, 1.0f);
-		/*
-		 * toggle = new JButton("Toggle adv. Parameters");
-		 * toggle.addActionListener(new ActionListener(){
-		 * 
-		 * @Override public void actionPerformed(ActionEvent arg0) {
-		 * model.toggleAdvanced(); }} ); UIHelper.addComponent(this, toggle, 0,
-		 * 2, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,1.0f);
-		 */
 	}
 
-	public ParameterDialogModel getModel() {
-		return model;
+	private void createHelpPane() {
+		help = new JTextPane();
+		help.setPreferredSize(new Dimension(table.getWidth(), 50));
 	}
 
-	@Override
-	public void valueChanged(ListSelectionEvent evt) {
-		if (evt.getValueIsAdjusting()) {
-			return;
-		}
-		if (evt.getSource() == table.getSelectionModel()) {
-			int row = table.getSelectedRow();
-			Object val = table.getModel().getValueAt(row, 3);
-			if (val != null && val instanceof String) {
-				updateDocumentationSection((String) val);
+	private void createShowAdvancedToggle() {
+		toggle = new JCheckBox("Show advanced parameter");
+		toggle.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.setShowAdvanced(toggle.isSelected());
+				model.refresh();
+				updateTableView();
 			}
-		}
+		});
+	}
+
+	private void updateTableView() {
+		// expand full tree by default
+		table.expandAll();
+		TableColumnAdjuster tca = new TableColumnAdjuster(table);
+		tca.adjustColumns();
 	}
 
 	private void updateDocumentationSection(String description) {

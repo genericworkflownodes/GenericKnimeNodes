@@ -13,6 +13,8 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -35,7 +37,7 @@ import javax.swing.table.TableModel;
  * see: http://tips4java.wordpress.com/2008/11/10/table-column-adjuster/
  */
 public class TableColumnAdjuster implements PropertyChangeListener,
-		TableModelListener {
+		TableModelListener, TreeModelListener {
 	private JTable table;
 	private int spacing;
 	private boolean isColumnHeaderIncluded;
@@ -398,5 +400,27 @@ public class TableColumnAdjuster implements PropertyChangeListener,
 				return;
 			}
 		}
+	}
+
+	// TreeModelListener
+
+	@Override
+	public void treeNodesChanged(TreeModelEvent e) {
+		adjustColumns();
+	}
+
+	@Override
+	public void treeNodesInserted(TreeModelEvent e) {
+		adjustColumns();
+	}
+
+	@Override
+	public void treeNodesRemoved(TreeModelEvent e) {
+		adjustColumns();
+	}
+
+	@Override
+	public void treeStructureChanged(TreeModelEvent e) {
+		adjustColumns();
 	}
 }

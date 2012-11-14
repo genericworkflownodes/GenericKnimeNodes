@@ -57,18 +57,44 @@ public class Node<T> {
 	 */
 	protected String description;
 
+	/**
+	 * C'tor for an empty node.
+	 */
 	public Node() {
 		parent = null;
 		name = "root";
 		description = "";
 	}
 
+	/**
+	 * Node with a pointer to the parent, a value (payload) and a name.
+	 * 
+	 * @param parent
+	 *            The parent of this node.
+	 * @param payload
+	 *            The actual value located at this node.
+	 * @param name
+	 *            The name of the node.
+	 */
 	public Node(Node<T> parent, T payload, String name) {
 		this.parent = parent;
 		this.payload = payload;
 		this.name = name;
 	}
 
+	/**
+	 * Node with a pointer to the parent, a value (payload), a name, and a
+	 * description.
+	 * 
+	 * @param parent
+	 *            The parent of this node.
+	 * @param payload
+	 *            The actual value located at this node.
+	 * @param name
+	 *            The name of the node.
+	 * @param description
+	 *            The description of the node.
+	 */
 	public Node(Node<T> parent, T payload, String name, String description) {
 		this.parent = parent;
 		this.payload = payload;
@@ -76,18 +102,39 @@ public class Node<T> {
 		this.description = description;
 	}
 
+	/**
+	 * Adds a child to this node.
+	 * 
+	 * @param child
+	 *            The new child.
+	 */
 	public void addChild(Node<T> child) {
 		children.add(child);
 	}
 
-	public Node<T> getChild(int idx) {
-		return children.get(idx);
+	/**
+	 * Returns the ith child of this node.
+	 * 
+	 * @param i
+	 *            The number of the requested child.
+	 * @return The ith child or null if no ith child exists.
+	 */
+	public Node<T> getChild(int i) {
+		return children.get(i);
 	}
 
 	public int getNumChildren() {
 		return children.size();
 	}
 
+	/**
+	 * Given a child returns the number of this child.
+	 * 
+	 * @param child
+	 *            The child.
+	 * @return The number of the child or -1 if the given {@link Node} is not a
+	 *         child of this node.
+	 */
 	public int getChildIndex(Node<T> child) {
 		int idx = 0;
 		for (Node<T> c : children) {
@@ -99,20 +146,50 @@ public class Node<T> {
 		return -1;
 	}
 
+	/**
+	 * True if this node has no children.
+	 * 
+	 * @return True if it is a leaf, false otherwise.
+	 */
 	public boolean isLeaf() {
 		return (children.size() == 0);
 	}
 
+	/**
+	 * Returns the value stored at this node.
+	 * 
+	 * @return The value stored at the node.
+	 */
 	public T getPayload() {
 		return payload;
 	}
 
+	/**
+	 * Overwrite the value at the node.
+	 * 
+	 * @param payload
+	 *            The new value stored at the node.
+	 */
 	public void setPayload(T payload) {
 		this.payload = payload;
 	}
 
+	/**
+	 * Returns the name of the node.
+	 * 
+	 * @return The name of the node.
+	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Returns the description of the node.
+	 * 
+	 * @return The description of the node.
+	 */
+	public String getDescription() {
+		return description;
 	}
 
 	@Override
@@ -120,7 +197,10 @@ public class Node<T> {
 		return name;
 	}
 
-	public String getDescription() {
-		return description;
+	/**
+	 * Removes all children of this node.
+	 */
+	public void clear() {
+		children.clear();
 	}
 }
