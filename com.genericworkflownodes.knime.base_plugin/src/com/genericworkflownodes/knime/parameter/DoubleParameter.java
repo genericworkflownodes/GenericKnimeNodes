@@ -60,7 +60,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 		if (getValue() == null) {
 			return null;
 		}
-		return String.format("%f", getValue());
+		return String.format("%s", getValue());
 	}
 
 	@Override
@@ -73,13 +73,12 @@ public class DoubleParameter extends NumberParameter<Double> {
 		try {
 			setValue(Double.parseDouble(s));
 		} catch (NumberFormatException e) {
-			throw new InvalidParameterValueException("parameter "
-					+ this.getKey() + " value is not a double", e);
+			throw new InvalidParameterValueException("parameter " + getKey()
+					+ " value is not a double", e);
 		}
-		if (getValue() < this.getLowerBound()
-				|| getValue() > this.getUpperBound()) {
-			throw new InvalidParameterValueException("parameter "
-					+ this.getKey() + " value is out of bounds");
+		if (getValue() < getLowerBound() || getValue() > getUpperBound()) {
+			throw new InvalidParameterValueException("parameter " + getKey()
+					+ " value is out of bounds");
 		}
 	}
 
@@ -88,7 +87,7 @@ public class DoubleParameter extends NumberParameter<Double> {
 		if (isNull()) {
 			return true;
 		}
-		if (val >= this.getLowerBound() && val <= this.getUpperBound()) {
+		if (val >= getLowerBound() && val <= getUpperBound()) {
 			return true;
 		}
 		return false;
@@ -96,10 +95,10 @@ public class DoubleParameter extends NumberParameter<Double> {
 
 	@Override
 	public String getMnemonic() {
-		String lb = (this.getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%f", this.getLowerBound()));
-		String ub = (this.getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%f", this.getUpperBound()));
+		String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
+				: String.format("%f", getLowerBound()));
+		String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
+				: String.format("%f", getUpperBound()));
 		return String.format("double [%s:%s]", lb, ub);
 	}
 }

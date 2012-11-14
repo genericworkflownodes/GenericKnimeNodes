@@ -138,7 +138,6 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			try {
 				param.fillFromString(workaround);
 			} catch (InvalidParameterValueException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

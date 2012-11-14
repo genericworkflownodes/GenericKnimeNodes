@@ -72,8 +72,8 @@ public class StringChoiceParameter extends Parameter<String> {
 	 */
 	public StringChoiceParameter(final String key, final List<String> values) {
 		super(key, values.get(0));
-		this.allowedValues = values;
-		this.labels = values;
+		allowedValues = values;
+		labels = values;
 
 		// for optional value we use the empty string as default value
 		if (isOptional()) {
@@ -106,7 +106,7 @@ public class StringChoiceParameter extends Parameter<String> {
 	public StringChoiceParameter(final String key, final List<String> values,
 			final List<String> labels) {
 		super(key, values.get(0));
-		this.allowedValues = values;
+		allowedValues = values;
 		this.labels = labels;
 
 		// for optional value we use null=unselected as default value
@@ -185,9 +185,9 @@ public class StringChoiceParameter extends Parameter<String> {
 			super.setValue(null);
 			return;
 		}
-		if (!this.getAllowedValues().contains(s)) {
-			throw new InvalidParameterValueException("parameter "
-					+ this.getKey() + " value is invalid");
+		if (!getAllowedValues().contains(s)) {
+			throw new InvalidParameterValueException("parameter " + getKey()
+					+ " value is invalid");
 		}
 		setValue(s);
 	}

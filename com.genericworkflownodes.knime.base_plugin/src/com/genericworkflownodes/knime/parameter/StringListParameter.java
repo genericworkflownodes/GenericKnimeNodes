@@ -80,23 +80,23 @@ public class StringListParameter extends Parameter<List<String>> implements
 	public void fillFromString(final String s)
 			throws InvalidParameterValueException {
 		if (s == null || s.equals("")) {
-			this.setValue(new ArrayList<String>());
+			setValue(new ArrayList<String>());
 			return;
 		}
-		this.setValue(new ArrayList<String>());
+		setValue(new ArrayList<String>());
 		String[] toks = s.split(SEPARATOR_TOKEN);
 		for (int i = 0; i < toks.length; i++) {
-			this.getValue().add(toks[i]);
+			getValue().add(toks[i]);
 		}
 	}
 
 	@Override
 	public String getStringRep() {
-		if (this.getValue() == null) {
+		if (getValue() == null) {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (String s : this.getValue()) {
+		for (String s : getValue()) {
 			sb.append(s + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
@@ -113,17 +113,17 @@ public class StringListParameter extends Parameter<List<String>> implements
 
 	@Override
 	public String toString() {
-		if (this.getValue() == null) {
+		if (getValue() == null) {
 			return "[]";
 		}
-		String[] values = this.getValue().toArray(new String[0]);
+		String[] values = getValue().toArray(new String[0]);
 		return Arrays.toString(values);
 	}
 
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (String s : this.getValue()) {
+		for (String s : getValue()) {
 			ret.add(s);
 		}
 		return ret;
@@ -132,10 +132,10 @@ public class StringListParameter extends Parameter<List<String>> implements
 	@Override
 	public void fillFromStrings(final String[] values)
 			throws InvalidParameterValueException {
-		this.setValue(new ArrayList<String>());
-		if (this.validate(Arrays.asList(values))) {
+		setValue(new ArrayList<String>());
+		if (validate(Arrays.asList(values))) {
 			for (int i = 0; i < values.length; i++) {
-				this.getValue().add(values[i]);
+				getValue().add(values[i]);
 			}
 		} else {
 			throw new InvalidParameterValueException(
