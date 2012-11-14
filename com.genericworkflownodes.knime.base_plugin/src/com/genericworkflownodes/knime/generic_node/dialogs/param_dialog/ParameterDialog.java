@@ -28,6 +28,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.FileNotFoundException;
 
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -56,7 +57,7 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 	private static final long serialVersionUID = 8098990326681120709L;
 	private JXTreeTable table;
 	private JTextPane help;
-	// private JButton toggle;
+	private JCheckBox toggle;
 	private ParameterDialogModel model;
 
 	private static Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
@@ -132,12 +133,20 @@ public class ParameterDialog extends JPanel implements ListSelectionListener {
 		tca.adjustColumns();
 
 		this.add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1,
-				1.0, 2.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+				1.0, .79f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(2, 2, 2, 2), 0, 0));
 		help = new JTextPane();
-		this.add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 1, 1.0,
-				1.0f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+		help.setPreferredSize(new Dimension(table.getWidth(), 50));
+		this.add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 2, 1.0,
+				.2f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(2, 2, 2, 2), 0, 0));
+
+		toggle = new JCheckBox("Show advanced parameter");
+		add(toggle, new GridBagConstraints(0, 3, 1, 1, 1.0, .01f,
+				GridBagConstraints.SOUTHEAST, GridBagConstraints.VERTICAL,
+				new Insets(2, 2, 2, 2), 0, 0));
+		// UIHelper.addComponent(this, toggle, 0, 2, 1, 1,
+		// GridBagConstraints.EAST, GridBagConstraints.BOTH, 1.0f);
 		/*
 		 * toggle = new JButton("Toggle adv. Parameters");
 		 * toggle.addActionListener(new ActionListener(){
