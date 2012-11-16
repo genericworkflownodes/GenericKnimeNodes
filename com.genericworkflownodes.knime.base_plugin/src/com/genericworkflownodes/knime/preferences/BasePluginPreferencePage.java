@@ -68,6 +68,18 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.Tool
 public abstract class BasePluginPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
+	private static final String TOOLTIP_TABLE = "List of binaries shipped with the %s plugin.";
+
+	private static final String TOOLTIP_CHANGE_EXECUTABLE = "Change the executable associated to the selected node.";
+
+	private static final String TOOLTIP_SEARCH_IN_PATH = "Searches the systems PATH for the executables.";
+
+	private static final String TOOLTIP_SWITCH_TO_SHIPPED = "Switch to shipped binary.";
+
+	private static final String TOOLTIP_SWITCH_TO_LOCAL = "Switch to local binary.";
+
+	private static final String TOOLTIP_SEARCH_DIRECTORY = "Searches a user defined directory for the executables.";
+
 	private static final String USE_SHIPPED_TEXT = "Use shipped";
 
 	private static final String USE_LOCAL_TEXT = "Use local";
@@ -179,6 +191,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false,
 				false, 1, 1));
 		btnModify = new Button(buttonComposite, SWT.NONE);
+		btnModify.setToolTipText(TOOLTIP_CHANGE_EXECUTABLE);
 		btnModify.setText("Change");
 		btnModify.addListener(SWT.Selection, new Listener() {
 
@@ -192,6 +205,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		btnModify.setEnabled(false);
 
 		btnFindInPath = new Button(buttonComposite, SWT.NONE);
+		btnFindInPath.setToolTipText(TOOLTIP_SEARCH_IN_PATH);
 		btnFindInPath.setText("Find in PATH");
 		btnFindInPath.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -203,6 +217,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		});
 
 		btnFindInDirectory = new Button(buttonComposite, SWT.NONE);
+		btnFindInDirectory.setToolTipText(TOOLTIP_SEARCH_DIRECTORY);
 		btnFindInDirectory.setText("Find in directory");
 		btnFindInDirectory.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -214,6 +229,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 		});
 
 		btnUse = new Button(buttonComposite, SWT.NONE);
+		btnUse.setToolTipText(TOOLTIP_SWITCH_TO_LOCAL);
 		btnUse.setText(USE_LOCAL_TEXT);
 		btnUse.setEnabled(false);
 		btnUse.addListener(SWT.Selection, new Listener() {
@@ -223,9 +239,11 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 				if (settings.getSelectedToolPathType() == ToolPathType.SHIPPED) {
 					settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
 					btnUse.setText(USE_SHIPPED_TEXT);
+					btnUse.setToolTipText(TOOLTIP_SWITCH_TO_SHIPPED);
 				} else {
 					settings.setSelectedToolPathType(ToolPathType.SHIPPED);
 					btnUse.setText(USE_LOCAL_TEXT);
+					btnUse.setToolTipText(TOOLTIP_SWITCH_TO_LOCAL);
 				}
 				refresh();
 			}
@@ -331,6 +349,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 				.setLabelProvider(new ExternalToolSettingsLabelProvider());
 		executableViewer.setInput(toolSettings);
 		Table table = executableViewer.getTable();
+		table.setToolTipText(String.format(TOOLTIP_TABLE, pluginName));
 		new TableColumn(table, SWT.LEFT).setText(TABLE_HEADERS[COL_TOOLNAME]);
 		new TableColumn(table, SWT.LEFT)
 				.setText(TABLE_HEADERS[COL_LOCAL_EXECUTABLE]);

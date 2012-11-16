@@ -53,6 +53,7 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
  * 
@@ -126,8 +127,12 @@ public class ParameterDialog extends JPanel {
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getColumn(1).setCellEditor(model.getCellEditor());
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+		table.getColumn(1).setCellEditor(model.getCellEditor());
+		// under some circumstances the cellEditor gets lost, therefore we
+		// register a default for parameter objects
+		table.setDefaultEditor(Parameter.class, model.getCellEditor());
 
 		addHighlighter();
 		addSelectionListener();

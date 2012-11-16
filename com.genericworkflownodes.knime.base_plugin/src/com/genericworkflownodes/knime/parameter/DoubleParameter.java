@@ -96,9 +96,9 @@ public class DoubleParameter extends NumberParameter<Double> {
 	@Override
 	public String getMnemonic() {
 		String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%f", getLowerBound()));
+				: String.format("%s", getLowerBound()));
 		String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%f", getUpperBound()));
+				: String.format("%s", getUpperBound()));
 		return String.format("double [%s:%s]", lb, ub);
 	}
 }

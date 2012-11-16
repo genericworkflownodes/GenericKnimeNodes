@@ -40,7 +40,7 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
 	/**
 	 * Type information for the individual columns.
 	 */
-	private static Class<?>[] cTypes = { TreeTableModel.class, String.class,
+	private static Class<?>[] cTypes = { TreeTableModel.class, Parameter.class,
 			String.class };
 
 	/**
