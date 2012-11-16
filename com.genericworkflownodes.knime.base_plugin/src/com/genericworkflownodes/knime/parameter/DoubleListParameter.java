@@ -50,9 +50,9 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 	@Override
 	public String getMnemonic() {
 		String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%f", getLowerBound()));
+				: String.format("%s", getLowerBound()));
 		String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%f", getUpperBound()));
+				: String.format("%s", getUpperBound()));
 		return String.format("double list [%s:%s]", lb, ub);
 	}
 
@@ -98,7 +98,7 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 			return "";
 		}
 		StringBuffer sb = new StringBuffer();
-		for (Double d : this.getValue()) {
+		for (Double d : getValue()) {
 			sb.append(String.format("%f", d) + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
@@ -107,7 +107,7 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 	@Override
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
-		for (Double d : this.getValue()) {
+		for (Double d : getValue()) {
 			ret.add(String.format("%f", d));
 		}
 		return ret;
@@ -115,7 +115,7 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 
 	@Override
 	public void fillFromStrings(final String[] values) {
-		this.setValue(new ArrayList<Double>());
+		setValue(new ArrayList<Double>());
 		for (int i = 0; i < values.length; i++) {
 			getValue().add(Double.parseDouble(values[i]));
 		}
@@ -126,7 +126,7 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 		if (getValue() == null) {
 			return "[]";
 		}
-		String[] ret = new String[this.getValue().size()];
+		String[] ret = new String[getValue().size()];
 		int idx = 0;
 		for (Double i : getValue()) {
 			ret[idx++] = i.toString();
