@@ -112,7 +112,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		// initialize the payload directory
 		payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
 
-		final IPreferenceStore pStore = this.getPreferenceStore();
+		final IPreferenceStore pStore = getPreferenceStore();
 		pStore.setValue("binaries_path", payloadDirectory.getPath()
 				.getCanonicalPath());
 
@@ -301,26 +301,10 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				.getWorkbench().getService(IToolLocatorService.class);
 
 		if (toolLocator != null) {
-			String knimelessPackageName = getKNIMELessPackageName();
-
-			for (String nodeName : this.getNodeNames()) {
-				toolLocator.registerTool(new ExternalTool(knimelessPackageName,
-						nodeName));
+			for (ExternalTool tool : getTools()) {
+				toolLocator.registerTool(tool);
 			}
 		}
-	}
-
-	/**
-	 * Extracts the package name from the plugin data.
-	 * 
-	 * @return A string of the package name for the plugin classes, where the
-	 *         last index of knime was removed.
-	 */
-	private String getKNIMELessPackageName() {
-		String packageName = this.getClass().getPackage().getName();
-		String knimelessPackageName = packageName.substring(0,
-				packageName.lastIndexOf(".knime"));
-		return knimelessPackageName;
 	}
 
 	/**
@@ -336,23 +320,19 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 			// get binary path
 			File binaryDirectory = payloadDirectory.getExecutableDirectory();
 
-			// get package name
-			String knimelessPackageName = getKNIMELessPackageName();
-
 			// for each node find the executable
-			for (String node : getNodeNames()) {
-				File executable = getExecutableName(binaryDirectory, node);
+			for (ExternalTool tool : getTools()) {
+				File executable = getExecutableName(binaryDirectory,
+						tool.getExecutableName());
 				if (executable != null) {
-					ExternalTool currentNode = new ExternalTool(
-							knimelessPackageName, node);
 					// register executalbe in the ToolFinder
-					toolLocator.setToolPath(currentNode, executable,
+					toolLocator.setToolPath(tool, executable,
 							ToolPathType.SHIPPED);
 
 					try {
 						// check if we need to adjust the type
-						if (toolLocator.getConfiguredToolPathType(currentNode) == ToolPathType.UNKNOWN) {
-							toolLocator.updateToolPathType(currentNode,
+						if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
+							toolLocator.updateToolPathType(tool,
 									ToolPathType.SHIPPED);
 						}
 					} catch (Exception e) {
@@ -396,7 +376,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @return The properties loaded for this plugin.
 	 */
 	public final Properties getProperties() {
-		return this.props;
+		return props;
 	}
 
 	/**
@@ -411,11 +391,10 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns the list of nodes that the plugin provides.
 	 * 
-	 * @return Returns the list of nodes that the plugin provides.
+	 * @return
 	 */
-	public abstract List<String> getNodeNames();
+	public abstract List<ExternalTool> getTools();
 
 	/**
 	 * Returns the list of {@link MIMEType}s provided by the plugin.
