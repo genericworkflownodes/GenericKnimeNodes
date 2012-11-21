@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,9 +144,9 @@ public class NodeGenerator {
 					"plugin.properties")).write(new HashMap<String, String>() {
 				private static final long serialVersionUID = 1L;
 				{
-					this.put("executor",
+					put("executor",
 							srcDir.getProperty("executor", "CLIExecutor"));
-					this.put("commandGenerator",
+					put("commandGenerator",
 							srcDir.getProperty("commandGenerator", ""));
 				}
 			});
@@ -158,11 +159,13 @@ public class NodeGenerator {
 
 			PluginXMLTemplate pluginXML = new PluginXMLTemplate();
 			List<String> nodeNames = new LinkedList<String>();
+			List<INodeConfiguration> configurations = new ArrayList<INodeConfiguration>();
 
 			// src/[PACKAGE]/knime/nodes/*/*
 			for (CTDFile ctdFile : descriptorsDirectory.getCTDFiles()) {
 				LOGGER.info("Start processing ctd file: " + ctdFile.getName());
 
+				configurations.add(ctdFile.getNodeConfiguration());
 				nodeNames.add(ctdFile.getNodeConfiguration().getName());
 
 				String factoryClass = copyNodeSources(ctdFile,
@@ -176,7 +179,7 @@ public class NodeGenerator {
 			}
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new PluginActivatorTemplate(meta.getPackageRoot(), nodeNames)
+			new PluginActivatorTemplate(meta.getPackageRoot(), configurations)
 					.write(new File(buildDir.getKnimeDirectory(),
 							"PluginActivator.java"));
 
@@ -212,7 +215,7 @@ public class NodeGenerator {
 			}
 
 			// copy assets
-			this.copyAsset(".classpath");
+			copyAsset(".classpath");
 
 			LOGGER.info("KNIME plugin sources successfully created in:\n\t"
 					+ buildDir);
