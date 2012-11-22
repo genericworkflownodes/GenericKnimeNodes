@@ -32,6 +32,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.parameter.ListParameter;
@@ -121,12 +123,14 @@ public class ListEditorDialog extends JDialog {
 			}
 		});
 
-		JButton removeButton = new JButton("Delete");
+		final JButton removeButton = new JButton("Delete");
 		removeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				model.removeRow(table.getSelectedRow());
 			}
 		});
+		removeButton.setEnabled(false);
 
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(new ActionListener() {
@@ -153,6 +157,19 @@ public class ListEditorDialog extends JDialog {
 		box.add(okButton);
 		box.add(cancelButton);
 		box.add(Box.createVerticalGlue());
+
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+					@Override
+					public void valueChanged(ListSelectionEvent event) {
+						if (event.getValueIsAdjusting()) {
+							return;
+						}
+						if (event.getSource() == table.getSelectionModel()) {
+							removeButton.setEnabled((table.getSelectedRow() != -1));
+						}
+					}
+				});
 
 		UIHelper.addComponent(pane, box, 1, 0, 1, 1, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH, 0, 0);

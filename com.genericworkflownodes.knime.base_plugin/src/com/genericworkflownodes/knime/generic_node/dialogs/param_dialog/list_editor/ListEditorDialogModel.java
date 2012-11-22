@@ -121,4 +121,9 @@ public class ListEditorDialogModel extends AbstractTableModel {
 			e.printStackTrace();
 		}
 	}
+
+	public void removeRow(int row) {
+		values.remove(row);
+		fireTableDataChanged();
+	}
 }
