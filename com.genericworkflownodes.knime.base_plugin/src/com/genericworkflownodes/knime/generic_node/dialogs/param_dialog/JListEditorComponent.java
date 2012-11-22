@@ -49,6 +49,7 @@ public class JListEditorComponent extends JLabel {
 		 */
 		ListEditorDialog led = new ListEditorDialog(p);
 		led.setVisible(true);
+
 		UIHelper.simulateEnterKeyPressed(this, 50);
 	}
 

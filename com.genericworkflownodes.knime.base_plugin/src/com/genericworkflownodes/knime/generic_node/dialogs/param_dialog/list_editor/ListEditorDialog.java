@@ -37,6 +37,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
  * ListEditor dialog for StringList and NumericalList parameters.
@@ -52,7 +53,7 @@ public class ListEditorDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = 9130341015527518732L;
 	private ListParameter parameter;
-	private final static String TITLE = "List Editor";
+	private final static String TITLE = "List Editor <%s> (%s)";
 	private ListEditorDialogModel model;
 	private JTable table;
 	private ListCellEditor cellEditor;
@@ -62,7 +63,8 @@ public class ListEditorDialog extends JDialog {
 	 */
 	public ListEditorDialog(ListParameter p) {
 		super();
-		setTitle(TITLE);
+		setTitle(String.format(TITLE, ((Parameter<?>) p).getKey(),
+				((Parameter<?>) p).getMnemonic()));
 		init(p);
 	}
 
@@ -136,7 +138,8 @@ public class ListEditorDialog extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				table.getCellEditor().stopCellEditing();
+				if (table.isEditing())
+					table.getCellEditor().stopCellEditing();
 				model.transferToParameter();
 				ListEditorDialog.this.dispose();
 			}
