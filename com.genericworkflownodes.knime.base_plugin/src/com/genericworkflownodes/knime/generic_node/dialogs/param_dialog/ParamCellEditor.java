@@ -22,15 +22,16 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ListParameterModel;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier.ParameterVerifier;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
@@ -39,7 +40,6 @@ import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
-import com.genericworkflownodes.util.StringUtils;
 
 /**
  * The cell editor for the {@link ParameterDialog}.
@@ -48,6 +48,12 @@ import com.genericworkflownodes.util.StringUtils;
  */
 public class ParamCellEditor extends AbstractCellEditor implements
 		TableCellEditor {
+
+	/**
+	 * Remember the pre-edit value to allow safe restore if restrictions are
+	 * violated.
+	 */
+	private String oldValue;
 
 	private final class ChoiceParamActionListener<T extends Parameter<?>>
 			implements ActionListener {
@@ -113,7 +119,13 @@ public class ParamCellEditor extends AbstractCellEditor implements
 				|| param instanceof DoubleParameter
 				|| param instanceof IntegerParameter) {
 			try {
-				param.fillFromString(field.getText());
+				if ((new ParameterVerifier(param)).verify(field)) {
+					param.fillFromString(field.getText());
+				} else {
+					JOptionPane.showMessageDialog(null, String.format(
+							"Value restrictions not met: %s",
+							param.getMnemonic()));
+				}
 			} catch (InvalidParameterValueException e) {
 				e.printStackTrace();
 			}
@@ -132,9 +144,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			}
 		}
 		if (param instanceof ListParameter) {
-			String workaround = StringUtils.join(Arrays
-					.asList(listEditorComponent.getModel().getSelectedItems()),
-					Parameter.SEPARATOR_TOKEN);
+			String workaround = listEditorComponent.getParameterValue();
 			try {
 				param.fillFromString(workaround);
 			} catch (InvalidParameterValueException e) {
@@ -169,7 +179,9 @@ public class ParamCellEditor extends AbstractCellEditor implements
 		if (value instanceof StringParameter
 				|| value instanceof DoubleParameter
 				|| value instanceof IntegerParameter) {
+			oldValue = value.toString();
 			field = new JTextField(value.toString());
+			field.setInputVerifier(new ParameterVerifier(param));
 			return field;
 		}
 		if (value instanceof BoolParameter) {
@@ -181,14 +193,15 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			return choiceComboBox;
 		}
 		if (value instanceof ListParameter) {
+
 			ListParameterModel listParameterModel = new ListParameterModel(
 					param);
 			listParameterModel.setSetLike(true);
 
-			this.listEditorComponent = new JListEditorComponent(
-					listParameterModel);
+			listEditorComponent = new JListEditorComponent(listParameterModel,
+					(ListParameter) param);
 
-			return this.listEditorComponent;
+			return listEditorComponent;
 		}
 		return null;
 	}

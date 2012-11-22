@@ -90,6 +90,15 @@ public class UIHelper {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		dialog.setSize((int) Math.round(screenSize.width * factor),
 				(int) Math.round(screenSize.height * factor));
+		centerDialog(dialog);
+	}
+
+	/**
+	 * Centers the dialog on the screen.
+	 * 
+	 * @param dialog
+	 */
+	public static void centerDialog(JDialog dialog) {
 		dialog.setLocationRelativeTo(null);
 	}
 }
