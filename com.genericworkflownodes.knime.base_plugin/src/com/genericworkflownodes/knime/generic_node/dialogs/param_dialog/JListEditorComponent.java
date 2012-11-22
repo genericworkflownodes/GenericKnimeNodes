@@ -21,8 +21,9 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 import javax.swing.JLabel;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ItemListFillerDialog;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ListParameterModel;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_editor.ListEditorDialog;
+import com.genericworkflownodes.knime.parameter.ListParameter;
 
 /**
  * This component allows to edit lists of values in a separate window.
@@ -34,16 +35,19 @@ public class JListEditorComponent extends JLabel {
 	private static final long serialVersionUID = 1L;
 	private final ListParameterModel listParameterModel;
 
-	public JListEditorComponent(ListParameterModel listParameterModel) {
+	public JListEditorComponent(ListParameterModel listParameterModel,
+			ListParameter p) {
 		super("Editing...");
 
 		this.listParameterModel = listParameterModel;
-
-		ItemListFillerDialog itemListFillerDialog = new ItemListFillerDialog(
-				this.listParameterModel);
-		UIHelper.resizeAndCenter(itemListFillerDialog, 0.5);
-		itemListFillerDialog.setVisible(true);
-
+		/*
+		 * ItemListFillerDialog itemListFillerDialog = new ItemListFillerDialog(
+		 * this.listParameterModel);
+		 * UIHelper.resizeAndCenter(itemListFillerDialog, 0.5);
+		 * itemListFillerDialog.setVisible(true);
+		 */
+		ListEditorDialog led = new ListEditorDialog(p);
+		led.setVisible(true);
 		UIHelper.simulateEnterKeyPressed(this, 50);
 	}
 

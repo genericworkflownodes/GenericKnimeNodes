@@ -181,14 +181,15 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			return choiceComboBox;
 		}
 		if (value instanceof ListParameter) {
+
 			ListParameterModel listParameterModel = new ListParameterModel(
 					param);
 			listParameterModel.setSetLike(true);
 
-			this.listEditorComponent = new JListEditorComponent(
-					listParameterModel);
+			listEditorComponent = new JListEditorComponent(listParameterModel,
+					(ListParameter) param);
 
-			return this.listEditorComponent;
+			return listEditorComponent;
 		}
 		return null;
 	}
