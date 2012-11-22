@@ -117,6 +117,7 @@ public class ListCellEditor extends AbstractCellEditor implements
 					&& slp.getRestrictions().length > 0) {
 				choiceComboBox = new JComboBox(slp.getRestrictions());
 				choiceComboBox.setSelectedItem(value);
+
 				return choiceComboBox;
 			} else {
 				field = new JTextField(value.toString());

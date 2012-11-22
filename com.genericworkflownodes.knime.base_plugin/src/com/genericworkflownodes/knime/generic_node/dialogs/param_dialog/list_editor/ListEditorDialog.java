@@ -136,6 +136,7 @@ public class ListEditorDialog extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				table.getCellEditor().stopCellEditing();
 				model.transferToParameter();
 				ListEditorDialog.this.dispose();
 			}
