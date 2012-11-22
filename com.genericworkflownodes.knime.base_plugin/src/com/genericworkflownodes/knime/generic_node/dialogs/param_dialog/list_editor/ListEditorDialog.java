@@ -32,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.table.TableColumn;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.parameter.ListParameter;
@@ -80,6 +79,7 @@ public class ListEditorDialog extends JDialog {
 
 		cellEditor = new ListCellEditor(p);
 		table.setCellEditor(cellEditor);
+		table.getColumnModel().getColumn(0).setCellEditor(cellEditor);
 
 		table.setMinimumSize(new Dimension(COLUMN_WIDTH, TABLE_HEIGHT));
 
@@ -103,15 +103,7 @@ public class ListEditorDialog extends JDialog {
 	}
 
 	private void adjustColumnSize() {
-		// TODO: Fix column width
-		TableColumn tableColumn = table.getColumnModel().getColumn(0);
-		int tableWidth = table.getVisibleRect().width;
-		// table.getTableHeader().setResizingColumn(tableColumn);
-		// tableColumn.setWidth(tableWidth);
 		table.doLayout();
-		// tableColumn.setPreferredWidth(table.getPreferredSize().width);
-		// tableColumn.setMinWidth(table.getWidth());
-		// tableColumn.setMaxWidth(table.getWidth());
 	}
 
 	private void addButtons(Container pane) {
@@ -158,6 +150,7 @@ public class ListEditorDialog extends JDialog {
 		box.add(addButton);
 		box.add(removeButton);
 		box.add(okButton);
+		box.add(cancelButton);
 		box.add(Box.createVerticalGlue());
 
 		UIHelper.addComponent(pane, box, 1, 0, 1, 1, GridBagConstraints.CENTER,

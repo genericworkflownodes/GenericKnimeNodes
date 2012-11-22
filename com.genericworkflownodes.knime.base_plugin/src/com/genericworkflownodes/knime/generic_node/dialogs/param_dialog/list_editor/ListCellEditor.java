@@ -27,7 +27,9 @@ import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
 import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
@@ -46,6 +48,12 @@ public class ListCellEditor extends AbstractCellEditor implements
 	 */
 	private ListParameter parameter;
 
+	/**
+	 * C'tor.
+	 * 
+	 * @param parameter
+	 *            The parameter to represent.
+	 */
 	public ListCellEditor(ListParameter parameter) {
 		this.parameter = parameter;
 	}
@@ -63,14 +71,42 @@ public class ListCellEditor extends AbstractCellEditor implements
 	private JTextField field;
 
 	/**
-	 * 
+	 * The serialVersionUID.
 	 */
 	private static final long serialVersionUID = -3482419372241324327L;
 
+	/**
+	 * Check if the added value is valid w.r.t. to possible restrictions.
+	 * 
+	 * @return
+	 */
+	private boolean validate() {
+		if (parameter instanceof DoubleListParameter) {
+			return true; // TODO: Handle restrictions
+		} else if (parameter instanceof IntegerListParameter) {
+			return true; // TODO: Handle restrictions
+		} else {
+			return true;
+		}
+	}
+
 	@Override
 	public Object getCellEditorValue() {
-		// TODO Auto-generated method stub
-		return null;
+		if (parameter instanceof StringListParameter) {
+			StringListParameter slp = (StringListParameter) parameter;
+			if (slp.getRestrictions() != null
+					&& slp.getRestrictions().length > 0) {
+				return choiceComboBox.getSelectedItem();
+			} else {
+				return field.getText();
+			}
+		} else {
+			if (validate()) {
+				return field.getText();
+			} else {
+				return null;
+			}
+		}
 	}
 
 	@Override
@@ -79,10 +115,15 @@ public class ListCellEditor extends AbstractCellEditor implements
 
 		if (parameter instanceof StringListParameter) {
 			StringListParameter slp = (StringListParameter) parameter;
-			slp.getRestrictions();
-			choiceComboBox = new JComboBox(slp.getRestrictions());
-			choiceComboBox.setSelectedItem(value);
-			return choiceComboBox;
+			if (slp.getRestrictions() != null
+					&& slp.getRestrictions().length > 0) {
+				choiceComboBox = new JComboBox(slp.getRestrictions());
+				choiceComboBox.setSelectedItem(value);
+				return choiceComboBox;
+			} else {
+				field = new JTextField(value.toString());
+				return field;
+			}
 		} else {
 			field = new JTextField(value.toString());
 			return field;

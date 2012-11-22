@@ -23,7 +23,10 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.genericworkflownodes.knime.parameter.DoubleListParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.StringListParameter;
 
 public class ListEditorDialogModel extends AbstractTableModel {
 
@@ -66,8 +69,45 @@ public class ListEditorDialogModel extends AbstractTableModel {
 	}
 
 	public int addValue() {
-		values.add("");
+		// choose reasonable value to insert
+		String newValue = "";
+		if (parameter instanceof DoubleListParameter) {
+			DoubleListParameter dlp = (DoubleListParameter) parameter;
+			if (dlp.getLowerBound() != Double.NEGATIVE_INFINITY
+					|| dlp.getUpperBound() != Double.POSITIVE_INFINITY) {
+				newValue = (dlp.getLowerBound() != Double.NEGATIVE_INFINITY ? dlp
+						.getLowerBound().toString() : dlp.getUpperBound()
+						.toString());
+			} else {
+				newValue = "0.0";
+			}
+		} else if (parameter instanceof IntegerListParameter) {
+			IntegerListParameter ilp = (IntegerListParameter) parameter;
+			if (ilp.getLowerBound() != Integer.MIN_VALUE
+					|| ilp.getUpperBound() != Integer.MAX_VALUE) {
+				newValue = (ilp.getLowerBound() != Integer.MIN_VALUE ? ilp
+						.getLowerBound().toString() : ilp.getUpperBound()
+						.toString());
+			} else {
+				newValue = "0";
+			}
+		} else if (parameter instanceof StringListParameter
+				&& ((StringListParameter) parameter).getRestrictions() != null) {
+			String[] validValues = ((StringListParameter) parameter)
+					.getRestrictions();
+			int i = 0;
+			while ("".equals(newValue) && i < validValues.length) {
+				newValue = validValues[i];
+				++i;
+			}
+		}
+		values.add(newValue);
 		fireTableRowsInserted(values.size(), values.size());
 		return values.size() - 1;
+	}
+
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		values.set(rowIndex, aValue.toString());
 	}
 }
