@@ -22,16 +22,17 @@ import java.awt.Component;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier.ParameterVerifier;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
-import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
-import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
@@ -71,24 +72,15 @@ public class ListCellEditor extends AbstractCellEditor implements
 	private JTextField field;
 
 	/**
+	 * Remember the pre-edit value to allow safe restore if restrictions are
+	 * violated.
+	 */
+	private String oldValue;
+
+	/**
 	 * The serialVersionUID.
 	 */
 	private static final long serialVersionUID = -3482419372241324327L;
-
-	/**
-	 * Check if the added value is valid w.r.t. to possible restrictions.
-	 * 
-	 * @return
-	 */
-	private boolean validate() {
-		if (parameter instanceof DoubleListParameter) {
-			return true; // TODO: Handle restrictions
-		} else if (parameter instanceof IntegerListParameter) {
-			return true; // TODO: Handle restrictions
-		} else {
-			return true;
-		}
-	}
 
 	@Override
 	public Object getCellEditorValue() {
@@ -101,10 +93,13 @@ public class ListCellEditor extends AbstractCellEditor implements
 				return field.getText();
 			}
 		} else {
-			if (validate()) {
+			if (new ParameterVerifier((Parameter<?>) parameter).verify(field)) {
 				return field.getText();
 			} else {
-				return null;
+				JOptionPane.showMessageDialog(null, String.format(
+						"Value restrictions not met: %s",
+						((Parameter<?>) parameter).getMnemonic()));
+				return oldValue;
 			}
 		}
 	}
@@ -112,6 +107,9 @@ public class ListCellEditor extends AbstractCellEditor implements
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
+
+		// store old value
+		oldValue = value.toString();
 
 		if (parameter instanceof StringListParameter) {
 			StringListParameter slp = (StringListParameter) parameter;

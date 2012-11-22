@@ -25,11 +25,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ListParameterModel;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier.ParameterVerifier;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
@@ -46,6 +48,12 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
  */
 public class ParamCellEditor extends AbstractCellEditor implements
 		TableCellEditor {
+
+	/**
+	 * Remember the pre-edit value to allow safe restore if restrictions are
+	 * violated.
+	 */
+	private String oldValue;
 
 	private final class ChoiceParamActionListener<T extends Parameter<?>>
 			implements ActionListener {
@@ -111,7 +119,13 @@ public class ParamCellEditor extends AbstractCellEditor implements
 				|| param instanceof DoubleParameter
 				|| param instanceof IntegerParameter) {
 			try {
-				param.fillFromString(field.getText());
+				if ((new ParameterVerifier(param)).verify(field)) {
+					param.fillFromString(field.getText());
+				} else {
+					JOptionPane.showMessageDialog(null, String.format(
+							"Value restrictions not met: %s",
+							param.getMnemonic()));
+				}
 			} catch (InvalidParameterValueException e) {
 				e.printStackTrace();
 			}
@@ -165,7 +179,9 @@ public class ParamCellEditor extends AbstractCellEditor implements
 		if (value instanceof StringParameter
 				|| value instanceof DoubleParameter
 				|| value instanceof IntegerParameter) {
+			oldValue = value.toString();
 			field = new JTextField(value.toString());
+			field.setInputVerifier(new ParameterVerifier(param));
 			return field;
 		}
 		if (value instanceof BoolParameter) {
