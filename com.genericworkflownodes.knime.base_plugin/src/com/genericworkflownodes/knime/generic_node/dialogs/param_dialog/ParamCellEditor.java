@@ -22,7 +22,6 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
@@ -39,7 +38,6 @@ import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
-import com.genericworkflownodes.util.StringUtils;
 
 /**
  * The cell editor for the {@link ParameterDialog}.
@@ -132,9 +130,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			}
 		}
 		if (param instanceof ListParameter) {
-			String workaround = StringUtils.join(Arrays
-					.asList(listEditorComponent.getModel().getSelectedItems()),
-					Parameter.SEPARATOR_TOKEN);
+			String workaround = listEditorComponent.getParameterValue();
 			try {
 				param.fillFromString(workaround);
 			} catch (InvalidParameterValueException e) {

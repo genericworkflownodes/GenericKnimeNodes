@@ -25,6 +25,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
+import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 
@@ -109,5 +110,15 @@ public class ListEditorDialogModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		values.set(rowIndex, aValue.toString());
+	}
+
+	public void transferToParameter() {
+		try {
+			parameter
+					.fillFromStrings(values.toArray(new String[values.size()]));
+		} catch (InvalidParameterValueException e) {
+			// we validated the values before so this should not happen
+			e.printStackTrace();
+		}
 	}
 }

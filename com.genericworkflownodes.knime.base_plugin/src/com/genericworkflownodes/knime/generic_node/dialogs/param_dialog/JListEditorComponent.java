@@ -24,6 +24,8 @@ import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ListParameterModel;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_editor.ListEditorDialog;
 import com.genericworkflownodes.knime.parameter.ListParameter;
+import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.util.StringUtils;
 
 /**
  * This component allows to edit lists of values in a separate window.
@@ -33,13 +35,12 @@ import com.genericworkflownodes.knime.parameter.ListParameter;
 public class JListEditorComponent extends JLabel {
 
 	private static final long serialVersionUID = 1L;
-	private final ListParameterModel listParameterModel;
+	private final ListParameter parameter;
 
 	public JListEditorComponent(ListParameterModel listParameterModel,
 			ListParameter p) {
 		super("Editing...");
-
-		this.listParameterModel = listParameterModel;
+		parameter = p;
 		/*
 		 * ItemListFillerDialog itemListFillerDialog = new ItemListFillerDialog(
 		 * this.listParameterModel);
@@ -51,8 +52,8 @@ public class JListEditorComponent extends JLabel {
 		UIHelper.simulateEnterKeyPressed(this, 50);
 	}
 
-	public ListParameterModel getModel() {
-		return listParameterModel;
+	public String getParameterValue() {
+		return StringUtils.join(parameter.getStrings(),
+				Parameter.SEPARATOR_TOKEN);
 	}
-
 }
