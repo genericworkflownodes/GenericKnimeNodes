@@ -53,6 +53,8 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.Highlighter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ui_helper.TableColumnAdjuster;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**

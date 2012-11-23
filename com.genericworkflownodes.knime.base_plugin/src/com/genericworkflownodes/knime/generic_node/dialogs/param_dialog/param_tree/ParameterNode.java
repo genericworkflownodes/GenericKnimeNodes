@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree;
 
 import com.genericworkflownodes.knime.parameter.Parameter;
 

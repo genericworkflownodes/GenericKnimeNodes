@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree;
 
 import java.util.ArrayList;
 import java.util.List;

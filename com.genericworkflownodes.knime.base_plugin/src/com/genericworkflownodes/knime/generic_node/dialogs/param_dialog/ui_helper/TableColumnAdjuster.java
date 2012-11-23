@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ui_helper;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

@@ -61,15 +61,20 @@ public class UIHelper {
 			}
 		};
 
+		invokeDelayed(delayInMilliseconds, pressEnter);
+	}
+
+	public static void invokeDelayed(final int delayInMilliseconds,
+			final Runnable action) {
 		if (delayInMilliseconds == 0)
-			SwingUtilities.invokeLater(pressEnter);
+			SwingUtilities.invokeLater(action);
 		else
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					try {
 						Thread.sleep(delayInMilliseconds);
-						SwingUtilities.invokeAndWait(pressEnter);
+						SwingUtilities.invokeAndWait(action);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					} catch (InvocationTargetException e) {

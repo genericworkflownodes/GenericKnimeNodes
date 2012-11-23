@@ -30,7 +30,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.itemlist.ListParameterModel;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_editor.ListEditorComponent;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier.ParameterVerifier;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -48,12 +48,6 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
  */
 public class ParamCellEditor extends AbstractCellEditor implements
 		TableCellEditor {
-
-	/**
-	 * Remember the pre-edit value to allow safe restore if restrictions are
-	 * violated.
-	 */
-	private String oldValue;
 
 	private final class ChoiceParamActionListener<T extends Parameter<?>>
 			implements ActionListener {
@@ -104,9 +98,9 @@ public class ParamCellEditor extends AbstractCellEditor implements
 	private JTextField field;
 
 	/**
-	 * The {@link JListEditorComponent} used for {@link ListParameter}.
+	 * The {@link ListEditorComponent} used for {@link ListParameter}.
 	 */
-	private JListEditorComponent listEditorComponent;
+	private ListEditorComponent listEditorComponent;
 
 	/**
 	 * The {@link Parameter} represented by this {@link ParamCellEditor}.
@@ -179,7 +173,6 @@ public class ParamCellEditor extends AbstractCellEditor implements
 		if (value instanceof StringParameter
 				|| value instanceof DoubleParameter
 				|| value instanceof IntegerParameter) {
-			oldValue = value.toString();
 			field = new JTextField(value.toString());
 			field.setInputVerifier(new ParameterVerifier(param));
 			return field;
@@ -193,13 +186,8 @@ public class ParamCellEditor extends AbstractCellEditor implements
 			return choiceComboBox;
 		}
 		if (value instanceof ListParameter) {
-
-			ListParameterModel listParameterModel = new ListParameterModel(
-					param);
-			listParameterModel.setSetLike(true);
-
-			listEditorComponent = new JListEditorComponent(listParameterModel,
-					(ListParameter) param);
+			listEditorComponent = new ListEditorComponent(
+					(ListParameter) param, this);
 
 			return listEditorComponent;
 		}
