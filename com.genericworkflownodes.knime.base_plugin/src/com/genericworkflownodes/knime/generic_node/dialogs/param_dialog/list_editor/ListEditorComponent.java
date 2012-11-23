@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_editor;
 
 import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_editor.ListEditorDialog;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ParamCellEditor;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.util.StringUtils;

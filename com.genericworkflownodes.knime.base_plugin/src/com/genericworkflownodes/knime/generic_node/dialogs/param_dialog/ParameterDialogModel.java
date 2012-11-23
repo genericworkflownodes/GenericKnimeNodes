@@ -27,6 +27,8 @@ import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.NodeConfigurationTree;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
