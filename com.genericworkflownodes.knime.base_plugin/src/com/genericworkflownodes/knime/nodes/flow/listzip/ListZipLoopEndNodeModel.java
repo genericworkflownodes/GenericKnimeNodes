@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -45,11 +44,11 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 	}
 
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-			MIMEURIPortObject.class, true);
+			URIPortObject.class, true);
 
 	private static PortType[] createIPOs() {
 		PortType[] portTypes = new PortType[NinPorts];
-		Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
+		Arrays.fill(portTypes, URIPortObject.TYPE);
 		portTypes[1] = OPTIONAL_PORT_TYPE;
 		portTypes[2] = OPTIONAL_PORT_TYPE;
 		portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -58,7 +57,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
 	private static PortType[] createOPOs() {
 		PortType[] portTypes = new PortType[NinPorts];
-		Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
+		Arrays.fill(portTypes, URIPortObject.TYPE);
 		portTypes[1] = OPTIONAL_PORT_TYPE;
 		portTypes[2] = OPTIONAL_PORT_TYPE;
 		portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -72,13 +71,13 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		List<MIMEURIPortObjectSpec> specs = new ArrayList<MIMEURIPortObjectSpec>();
+		List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
 
 		for (int i = 0; i < NinPorts; i++) {
 			if (inSpecs[i] == null) {
 				break;
 			}
-			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
+			URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
 			specs.add(spec);
 		}
 
@@ -87,7 +86,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 		return outspec;
 	}
 
-	private PortObjectSpec[] getOutSpec(List<MIMEURIPortObjectSpec> specs) {
+	private PortObjectSpec[] getOutSpec(List<URIPortObjectSpec> specs) {
 		K = specs.size();
 
 		PortObjectSpec[] ret = new PortObjectSpec[NinPorts];
@@ -125,27 +124,24 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 			}
 		}
 
-		MIMEType[] mts = new MIMEType[NinPorts];
-
 		for (int i = 0; i < K; i++) {
-			MIMEURIPortObject po = (MIMEURIPortObject) inObjects[i];
-			MIMEType mt = po.getSpec().getMIMEType();
+			URIPortObject po = (URIPortObject) inObjects[i];
+			// TODO check numbers
 			uris.get(i).add(po.getURIContents().get(0));
-			mts[i] = mt;
 		}
 
 		boolean terminateLoop = ((LoopStartNodeTerminator) this
 				.getLoopStartNode()).terminateLoop();
 
 		if (terminateLoop) {
-			MIMEURIPortObject[] ret = new MIMEURIPortObject[NinPorts];
+			URIPortObject[] ret = new URIPortObject[NinPorts];
 
 			for (int i = 0; i < NinPorts; i++) {
 				if (i < K) {
-					ret[i] = new MIMEURIPortObject(uris.get(i), mts[i]);
+					ret[i] = new URIPortObject(uris.get(i));
 				} else {
 					List<URIContent> uriC = new ArrayList<URIContent>();
-					ret[i] = new MIMEURIPortObject(uriC, MIMEType.getType(""));
+					ret[i] = new URIPortObject(uriC);
 				}
 			}
 

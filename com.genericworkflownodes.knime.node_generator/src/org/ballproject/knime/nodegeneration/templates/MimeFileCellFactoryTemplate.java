@@ -20,7 +20,7 @@ public class MimeFileCellFactoryTemplate extends Template {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/MimeFileCellFactory.template"));
 
-		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(new MIMEType(\"__EXT__\"));\n";
+		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(\"__EXT__\");\n";
 		String mimeTypeAddCode = "";
 
 		Set<MimeType> processedMimeTypes = new HashSet<MimeType>();

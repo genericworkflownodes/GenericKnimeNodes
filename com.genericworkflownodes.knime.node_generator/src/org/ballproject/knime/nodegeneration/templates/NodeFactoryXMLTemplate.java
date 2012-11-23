@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.ballproject.knime.nodegeneration.NodeGenerator;
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.Parameter;
@@ -67,8 +66,8 @@ public class NodeFactoryXMLTemplate extends Template {
 			// ipp = ipp.replace("__MIMETYPE__",
 			// port.getMimeTypes().get(0).getExt());
 			List<String> mts = new ArrayList<String>();
-			for (MIMEType mt : port.getMimeTypes()) {
-				mts.add(mt.getExtension());
+			for (String mt : port.getMimeTypes()) {
+				mts.add(mt);
 			}
 			ipp = ipp.replace("__MIMETYPE__", join(mts, ","));
 
@@ -100,8 +99,7 @@ public class NodeFactoryXMLTemplate extends Template {
 			opp = opp.replace("__IDX__", String.format("%d", idx++));
 
 			//
-			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0)
-					.getExtension());
+			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0));
 
 			outPorts += opp + "\n";
 		}

@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.NodeLogger;
 
 /**
@@ -49,7 +48,7 @@ public class DemanglerRegistry implements IDemanglerRegistry {
 			.getLogger(DemanglerRegistry.class);
 
 	@Override
-	public List<IDemangler> getDemangler(final MIMEType mType) {
+	public List<IDemangler> getDemangler(final String mType) {
 		List<IDemangler> availableDemangler = getAvailableDemangler();
 		List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
 

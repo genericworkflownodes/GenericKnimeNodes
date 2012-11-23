@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.knime.core.data.url.MIMEType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -286,8 +285,8 @@ public class ParamHandler extends DefaultHandler {
 		p.setName(currentPath + paramName);
 		p.setMultiFile(isList);
 
-		List<MIMEType> mimetypes = extractMIMETypes(attributes);
-		for (MIMEType mt : mimetypes) {
+		List<String> mimetypes = extractMIMETypes(attributes);
+		for (String mt : mimetypes) {
 			p.addMimeType(mt);
 		}
 
@@ -322,15 +321,15 @@ public class ParamHandler extends DefaultHandler {
 	}
 
 	/**
-	 * Extract the list of supported {@link MIMEType}s from the given
+	 * Extract the list of supported FileExtensions from the given
 	 * attributes.
 	 * 
 	 * @param attributes
-	 *            The attributes containing the {@link MIMEType} information.
-	 * @return A list of supported {@link MIMEType}s.
+	 *            The attributes containing the FileExtension information.
+	 * @return A list of supported FileExtensions.
 	 */
-	private List<MIMEType> extractMIMETypes(Attributes attributes) {
-		ArrayList<MIMEType> mimeTypes = new ArrayList<MIMEType>();
+	private List<String> extractMIMETypes(Attributes attributes) {
+		ArrayList<String> mimeTypes = new ArrayList<String>();
 
 		// always prefer supported_formats
 		if (attributes.getValue(ATTR_SUPPORTED_FORMATS) != null
@@ -339,8 +338,8 @@ public class ParamHandler extends DefaultHandler {
 			String attrValue = attributes.getValue(ATTR_SUPPORTED_FORMATS);
 			String[] fileExtension = attrValue.split(",");
 			for (String ext : fileExtension) {
-				mimeTypes.add(new MIMEType(ext.replaceAll("^\\s*\\*\\.", "")
-						.trim()));
+				mimeTypes.add(ext.replaceAll("^\\s*\\*\\.", "")
+						.trim());
 			}
 		} else if (attributes.getValue(ATTR_RESTRICTIONS) != null
 				&& attributes.getValue(ATTR_RESTRICTIONS).length() > 0
@@ -348,8 +347,8 @@ public class ParamHandler extends DefaultHandler {
 			String attrValue = attributes.getValue(ATTR_RESTRICTIONS);
 			String[] fileExtension = attrValue.split(",");
 			for (String ext : fileExtension) {
-				mimeTypes.add(new MIMEType(ext.replaceAll("^\\s*\\*\\.", "")
-						.trim()));
+				mimeTypes.add(ext.replaceAll("^\\s*\\*\\.", "")
+						.trim());
 			}
 		}
 

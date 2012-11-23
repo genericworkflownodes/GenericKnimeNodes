@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.mime;
 
-import org.knime.core.data.url.MIMEType;
 
 /**
  * The interface {@link IMIMEtypeRegistry} defines methods needed to build a
@@ -36,7 +35,7 @@ public interface IMIMEtypeRegistry {
 	 * 
 	 * @return MIMEtype
 	 */
-	MIMEType getMIMEtype(String filename);
+	String getMIMEtype(String filename);
 
 	/**
 	 * Returns the {@link MIMEType} for the given extension (if it is
@@ -47,7 +46,7 @@ public interface IMIMEtypeRegistry {
 	 * @return The {@link MIMEType} for the given extension if it is registered,
 	 *         {@code null} otherwise.
 	 */
-	MIMEType getMIMETypeByExtension(String extension);
+	String getMIMETypeByExtension(String extension);
 
 	/**
 	 * Adds a new {@link MIMEType} to the registry.
@@ -55,5 +54,5 @@ public interface IMIMEtypeRegistry {
 	 * @param mt
 	 *            The {@link MIMEType} to add.
 	 */
-	void registerMIMEtype(MIMEType mt);
+	void registerMIMEtype(String mt);
 }

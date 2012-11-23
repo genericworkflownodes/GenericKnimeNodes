@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.url.MIMEType;
-
 /**
  * The Port class represents a incoming or outgoing port of a KNIME node.
  * 
@@ -32,21 +30,43 @@ import org.knime.core.data.url.MIMEType;
  * <ul>
  * <li>name of the port</li>
  * <li>description for the port</li>
- * <li>list of MIMEtypes supported by this port</li>
+ * <li>list of file extensions supported by this port</li>
  * </ul>
  * 
- * @author roettig
+ * @author roettig, aiche
  * 
  */
 public class Port implements Serializable {
 
-	private static final long serialVersionUID = 5932681718132094413L;
+	/**
+	 * The serialVersionUID.
+	 */
+	private static final long serialVersionUID = -3038975820102785198L;
+	
+	/**
+	 * Flag to show if the port is optional for the tool.
+	 */
 	protected boolean isOptional;
+	
+	/**
+	 * The name of the port.
+	 */
 	protected String name;
+	
+	/**
+	 * The description of the port.
+	 */
 	protected String description;
+	
+	/**
+	 * Flag to indicate if this port can handle lists of files. 
+	 */
 	protected boolean isMultiFile;
 
-	protected List<MIMEType> types = new ArrayList<MIMEType>();
+	/**
+	 * The list of supported file extensions.
+	 */
+	protected List<String> types = new ArrayList<String>();
 
 	/**
 	 * Adds a supported {@link MIMEType} to the port.
@@ -54,7 +74,7 @@ public class Port implements Serializable {
 	 * @param MIMEtype
 	 *            A new {@link MIMEType} supported by this port.
 	 */
-	public void addMimeType(MIMEType type) {
+	public void addMimeType(String type) {
 		types.add(type);
 	}
 
@@ -63,7 +83,7 @@ public class Port implements Serializable {
 	 * 
 	 * @return List of all {@link MIMEType}s supported by this port.
 	 */
-	public List<MIMEType> getMimeTypes() {
+	public List<String> getMimeTypes() {
 		return types;
 	}
 

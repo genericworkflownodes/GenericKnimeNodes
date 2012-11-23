@@ -39,7 +39,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.eclipse.ui.PlatformUI;
-import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
@@ -365,7 +364,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 	 */
 	private void updateModel() throws InvalidSettingsException {
 		String[] filenames = new String[listbox.getModel().getSize()];
-		MIMEType[] mts = new MIMEType[listbox.getModel().getSize()];
+		String[] mts = new String[listbox.getModel().getSize()];
 
 		int idx = 0;
 
@@ -389,7 +388,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 		// this works only if we have at least one mimetype and only makes sense
 		// if there are at least 2 mimetypes
 		if (mts.length > 1) {
-			MIMEType first = mts[0];
+			String first = mts[0];
 			for (int i = 1; i < mts.length; i++) {
 				if (!first.equals(mts[i])) {
 					throw new InvalidSettingsException(

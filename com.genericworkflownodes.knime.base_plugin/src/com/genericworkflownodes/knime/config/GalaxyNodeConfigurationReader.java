@@ -29,7 +29,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
@@ -40,6 +39,7 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 
+@Deprecated
 public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 	protected Document doc;
 	protected NodeConfiguration config = new NodeConfiguration();
@@ -195,7 +195,7 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		port.setDescription(portdescr);
 
 		String extension = DOMHelper.valueOf(portnode, "@format");
-		port.addMimeType(new MIMEType(extension));
+		port.addMimeType(extension);
 
 		String portname = DOMHelper.valueOf(portnode, "@name");
 		port.setName(portname);
@@ -214,7 +214,7 @@ public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
 		port.setDescription("");
 
 		String extension = DOMHelper.valueOf(portnode, "@format");
-		port.addMimeType(new MIMEType(extension));
+		port.addMimeType(extension);
 
 		String portname = DOMHelper.valueOf(portnode, "@name");
 		port.setName(portname);

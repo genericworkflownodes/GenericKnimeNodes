@@ -27,10 +27,9 @@ import java.util.List;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -74,13 +73,13 @@ public class DemanglerNodeModel extends NodeModel {
 	/**
 	 * The currently configured {@link MIMEType}.
 	 */
-	private MIMEType configuredMIMEType;
+	private String configuredMIMEType;
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected DemanglerNodeModel() {
-		super(new PortType[] { new PortType(MIMEURIPortObject.class) },
+		super(new PortType[] { new PortType(URIPortObject.class) },
 				new PortType[] { new PortType(BufferedDataTable.class) });
 	}
 
@@ -140,8 +139,7 @@ public class DemanglerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		settings.addString(CONFIGURED_MIMETYPE_SETTINGNAME,
-				configuredMIMEType.getExtension());
+		settings.addString(CONFIGURED_MIMETYPE_SETTINGNAME, configuredMIMEType);
 		settings.addStringArray(SELECTED_DEMANGLER_SETTINGNAME, demangler
 				.getClass().getName());
 	}
@@ -208,13 +206,13 @@ public class DemanglerNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		if (!(inSpecs[0] instanceof MIMEURIPortObjectSpec)) {
+		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
 			throw new InvalidSettingsException(
 					"no MIMEURIPortObject compatible port object at port 0");
 		}
 
-		MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[0];
-		configuredMIMEType = spec.getMIMEType();
+		URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[0];
+		configuredMIMEType = spec.getFileExtensions().get(0);
 
 		// try to find a demangler for the data type ...
 		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
@@ -257,7 +255,7 @@ public class DemanglerNodeModel extends NodeModel {
 		BufferedDataContainer container = exec.createDataContainer(demangler
 				.getTableSpec());
 
-		MIMEURIPortObject obj = (MIMEURIPortObject) inObjects[0];
+		URIPortObject obj = (URIPortObject) inObjects[0];
 		List<URIContent> uris = obj.getURIContents();
 		if (uris.size() == 0) {
 			throw new Exception(

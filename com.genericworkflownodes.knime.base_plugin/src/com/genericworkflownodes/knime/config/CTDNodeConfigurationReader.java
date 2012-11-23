@@ -39,7 +39,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.knime.core.data.url.MIMEType;
 import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
@@ -294,7 +293,7 @@ public class CTDNodeConfigurationReader implements INodeConfigurationReader {
 			port.setOptional(optional);
 
 			for (String mt : fileExtensions) {
-				port.addMimeType(new MIMEType(mt.trim()));
+				port.addMimeType(mt.trim());
 			}
 
 		}

@@ -3,12 +3,10 @@ package __BASE__.knime.nodes.mimetypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.url.MIMEType;
-
 public class MimeFileCellFactory {
 	private static MimeFileCellFactory inst;
 
-	private List<MIMEType> mimetypes = new ArrayList<MIMEType>();
+	private List<String> mimetypes = new ArrayList<String>();
 
 	public static MimeFileCellFactory getInstance() {
 		if (inst == null)
@@ -20,7 +18,7 @@ public class MimeFileCellFactory {
 		__MIMETYPES__
 	}
 
-	public List<MIMEType> getMimeTypes() {
+	public List<String> getMimeTypes() {
 		return mimetypes;
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, aiche.
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -24,8 +24,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
@@ -340,10 +338,10 @@ public class CTDConfigurationWriter {
 
 		item.append(" restrictions=\"");
 		String sep = "";
-		for (MIMEType mt : associatedPort.getMimeTypes()) {
+		for (String mt : associatedPort.getMimeTypes()) {
 			item.append(sep);
 			sep = ",";
-			item.append(String.format("*.%s", mt.getExtension()));
+			item.append(String.format("*.%s", mt));
 		}
 		item.append("\"");
 	}

@@ -24,7 +24,6 @@ import java.util.Iterator;
 
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 
@@ -42,7 +41,7 @@ public interface IDemangler extends Serializable {
 	 * 
 	 * @return The convertible {@link MIMEType}.
 	 */
-	MIMEType getMIMEType();
+	String getMIMEType();
 
 	/**
 	 * Returns the {@link DataTableSpec} which will be created by the

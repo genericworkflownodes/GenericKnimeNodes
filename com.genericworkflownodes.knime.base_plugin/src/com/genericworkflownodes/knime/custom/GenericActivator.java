@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.knime.core.data.url.MIMEType;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
@@ -283,7 +282,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
 				.getWorkbench().getService(IMIMEtypeRegistry.class);
 		if (registry != null) {
-			for (MIMEType mimeType : getMIMETypes()) {
+			for (String mimeType : getMIMETypes()) {
 				registry.registerMIMEtype(mimeType);
 			}
 		}
@@ -401,7 +400,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * 
 	 * @return Returns the list of {@link MIMEType}s provided by the plugin.
 	 */
-	public abstract List<MIMEType> getMIMETypes();
+	public abstract List<String> getMIMETypes();
 
 	/**
 	 * Returns the {@link Class} where the binaries are located.
