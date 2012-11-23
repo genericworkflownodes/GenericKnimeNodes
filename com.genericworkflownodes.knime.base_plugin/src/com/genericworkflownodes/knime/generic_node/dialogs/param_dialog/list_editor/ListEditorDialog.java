@@ -115,6 +115,8 @@ public class ListEditorDialog extends JDialog {
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				if (table.isEditing())
+					table.getCellEditor().stopCellEditing();
 				final int addedIndex = model.addValue();
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
@@ -129,6 +131,8 @@ public class ListEditorDialog extends JDialog {
 		removeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (table.isEditing())
+					table.getCellEditor().stopCellEditing();
 				model.removeRow(table.getSelectedRow());
 			}
 		});
