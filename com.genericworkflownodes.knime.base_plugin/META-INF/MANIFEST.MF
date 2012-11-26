@@ -3,12 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: GenericKnimeNodes
 Bundle-SymbolicName: com.genericworkflownodes.knime;singleton:=true
 Bundle-Version: 0.7.0
-Bundle-ClassPath: ., 
+Bundle-ClassPath: .,
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
  lib/swingx-all-1.6.4.jar,
- lib/bsh-2.0b4.jar,
- lib/org.knime.core.data.urltype.jar
+ lib/bsh-2.0b4.jar
 Bundle-Vendor: The GenericWorkflowNodes Project
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
