@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>ProteinResolver</name>
+<version>1.10.0</version>
+<description><![CDATA[protein inference]]></description>
+<manual><![CDATA[protein inference]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="ProteinResolver" description="protein inference">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;ProteinResolver&apos;">
+      <ITEM name="fasta" value="" type="string" description="Input database file" tags="input file,required" supported_formats="*.fasta" />
+      <ITEM name="in" value="" type="string" description="Input file holding experimental data" tags="input file" supported_formats="*.idXML,*.consensusXML" />
+      <ITEMLIST name="in_list" type="string" description="Input files holding the experimental data. Ignored if parameter &apos;in&apos; is given" tags="input file" supported_formats="*.idXML,*.consensusXML">
+      </ITEMLIST>
+      <ITEM name="in_path" value="" type="string" description="Path to idXMLs or consensusXMLs files. Ignored if either &apos;in&apos; or &apos;in_list&apos; is given." />
+      <ITEM name="design" value="" type="string" description="Text file containing the experimental design. See documentation for specific format requirements" tags="input file" supported_formats="*.txt" />
+      <ITEM name="protein_groups" value="" type="string" description="output file. Contains all protein groups" tags="output file,required" supported_formats="*.csv" />
+      <ITEM name="peptide_table" value="" type="string" description="output file. Contains one peptide per line and all proteins which contain that peptide" tags="output file,required" supported_formats="*.csv" />
+      <ITEM name="protein_table" value="" type="string" description="output file. Contains one protein per line" tags="output file,required" supported_formats="*.csv" />
+      <ITEM name="additional_info" value="" type="string" description="output file for additional info" tags="advanced,output file" supported_formats="*.csv" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="resolver" description="Additional options for algorithm">
+        <ITEM name="missed_cleavages" value="2" type="int" description="Number of allowed missed cleavages" restrictions="0:" />
+        <ITEM name="min_length" value="6" type="int" description="Minimum length of peptide" restrictions="1:" />
+        <ITEM name="enzyme" value="Trypsin" type="string" description="Digestion enzyme" restrictions="Trypsin" />
+      </NODE>
+      <NODE name="designer" description="Additional options for quantitative experimental design">
+        <ITEM name="experiment" value="ExperimentalSetting" type="string" description="Identifier for the experimental design." />
+        <ITEM name="file" value="File" type="string" description="Identifier for the file name." />
+        <ITEM name="separator" value="tab" type="string" description="Separator, which should be used to split a row into columns" restrictions="tab,semi-colon,comma,whitespace" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

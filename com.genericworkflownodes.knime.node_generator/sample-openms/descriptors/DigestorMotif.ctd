@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>DigestorMotif</name>
+<version>1.10.0</version>
+<description><![CDATA[digests a protein database in-silico]]></description>
+<manual><![CDATA[digests a protein database in-silico]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="DigestorMotif" description="digests a protein database in-silico">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;DigestorMotif&apos;">
+      <ITEM name="in" value="" type="string" description="FASTA input file" tags="input file,required" supported_formats="*.fasta" />
+      <ITEM name="out" value="" type="string" description="output file (peptides)#br#" tags="output file,required" supported_formats="*.idXML" />
+      <ITEM name="missed_cleavages" value="1" type="int" description="the number of allowed missed cleavages" restrictions="0:" />
+      <ITEM name="mass_accuracy" value="1000" type="int" description="give your mass accuracy in ppb" />
+      <ITEM name="min_length" value="6" type="int" description="minimum length of peptide" />
+      <ITEM name="out_option" value="1" type="int" description="indicate 1 (peptide table only), 2 (statistics only) or (both peptide table + statistics)" />
+      <ITEM name="enzyme" value="Trypsin" type="string" description="the digestion enzyme" />
+      <ITEM name="motif" value="M" type="string" description="the motif for the restricted peptidome" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

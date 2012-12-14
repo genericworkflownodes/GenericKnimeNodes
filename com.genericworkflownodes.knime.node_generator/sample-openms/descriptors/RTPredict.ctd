@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>RTPredict</name>
+<version>1.10.0</version>
+<description><![CDATA[Predicts retention times for peptides using a model trained by RTModel.]]></description>
+<manual><![CDATA[Predicts retention times for peptides using a model trained by RTModel.]]></manual>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__RTPredict.html</docurl>
+<category>Peptide property prediction</category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="RTPredict" description="Predicts retention times for peptides using a model trained by RTModel.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;RTPredict&apos;">
+      <ITEM name="in_id" value="" type="string" description="peptides with precursor information" tags="input file" supported_formats="*.idXML" />
+      <ITEM name="in_text" value="" type="string" description="peptides as text-based file" tags="input file" supported_formats="*.txt" />
+      <ITEM name="svm_model" value="" type="string" description="svm model in libsvm format (can be produced by RTModel)" tags="input file,required" supported_formats="*.txt" />
+      <ITEM name="total_gradient_time" value="1" type="float" description="the time (in seconds) of the gradient (peptide RT prediction)" restrictions="1e-05:" />
+      <ITEM name="max_number_of_peptides" value="100000" type="int" description="the maximum number of peptides considered at once (bigger number will lead to faster results but needs more memory).#br#" tags="advanced" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="out_id" description="Output files in idXML format">
+        <ITEM name="file" value="" type="string" description="Output file with peptide RT prediction" tags="output file" supported_formats="*.idXML" />
+        <ITEM name="positive" value="" type="string" description="Output file in idXML format containing positive predictions (peptide separation prediction - requires negative file to be present as well)#br#" tags="output file" supported_formats="*.idXML" />
+        <ITEM name="negative" value="" type="string" description="Output file in idXML format containing negative predictions (peptide separation prediction - requires positive file to be present as well)#br#" tags="output file" supported_formats="*.idXML" />
+        <ITEM name="rewrite_peptideidentification_rtmz" value="false" type="string" description="rewrites each peptideidentification&apos;s rt and mz from prediction and calculation (according to the best hit)" tags="advanced" restrictions="true,false" />
+      </NODE>
+      <NODE name="out_text" description="Output files in text format">
+        <ITEM name="file" value="" type="string" description="Output file with predicted RT values" tags="output file" supported_formats="*.csv" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

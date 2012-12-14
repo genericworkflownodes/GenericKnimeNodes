@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>OpenSwathConfidenceScoring</name>
+<version>1.10.0</version>
+<description><![CDATA[Compute confidence scores for OpenSwath results]]></description>
+<manual><![CDATA[Compute confidence scores for OpenSwath results]]></manual>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__OpenSwathConfidenceScoring.html</docurl>
+<category>Targeted Experiments</category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="OpenSwathConfidenceScoring" description="Compute confidence scores for OpenSwath results">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;OpenSwathConfidenceScoring&apos;">
+      <ITEM name="in" value="" type="string" description="Input file (OpenSwath results)" tags="input file,required" supported_formats="*.featureXML" />
+      <ITEM name="lib" value="" type="string" description="Assay library" tags="input file,required" supported_formats="*.traML" />
+      <ITEM name="out" value="" type="string" description="Output file (results with confidence scores)" tags="output file,required" supported_formats="*.featureXML" />
+      <ITEM name="trafo" value="" type="string" description="Retention time transformation" tags="input file" supported_formats="*.trafoXML" />
+      <ITEM name="decoys" value="1000" type="int" description="Number of decoy assays to select from the library for every true assay (0 for &quot;all&quot;)" restrictions="0:" />
+      <ITEM name="transitions" value="6" type="int" description="Number of transitions per feature to consider (highest intensities first; 0 for &quot;all&quot;)" restrictions="0:" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="GLM" description="Parameters of the binomial GLM">
+        <ITEM name="intercept" value="3.87333466" type="float" description="Intercept term" tags="advanced" />
+        <ITEM name="delta_rt" value="-0.02898629" type="float" description="Coefficient of retention time difference" tags="advanced" />
+        <ITEM name="dist_int" value="-7.75880768" type="float" description="Coefficient of intensity distance" tags="advanced" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

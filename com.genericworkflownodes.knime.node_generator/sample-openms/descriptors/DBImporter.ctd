@@ -4,7 +4,7 @@
 <version>1.10.0</version>
 <description><![CDATA[Imports data to an OpenMS database.]]></description>
 <manual><![CDATA[Imports data to an OpenMS database.]]></manual>
-<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__DBImporter.html</docurl>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__DBImporter.html</docurl>
 <category>File Handling</category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="DBImporter" description="Imports data to an OpenMS database.">

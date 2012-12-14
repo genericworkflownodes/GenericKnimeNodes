@@ -4,7 +4,7 @@
 <version>1.10.0</version>
 <description><![CDATA[Applies thresholdfilter to peak spectra.]]></description>
 <manual><![CDATA[Applies thresholdfilter to peak spectra.]]></manual>
-<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__SpectraFilterNormalizer.html</docurl>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__SpectraFilterNormalizer.html</docurl>
 <category>Identification</category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="SpectraFilterNormalizer" description="Applies thresholdfilter to peak spectra.">

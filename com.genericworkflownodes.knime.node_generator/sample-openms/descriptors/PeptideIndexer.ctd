@@ -4,8 +4,8 @@
 <version>1.10.0</version>
 <description><![CDATA[Refreshes the protein references for all peptide hits.]]></description>
 <manual><![CDATA[Refreshes the protein references for all peptide hits.]]></manual>
-<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__PeptideIndexer.html</docurl>
-<category>ID Processing</category>
+<docurl></docurl>
+<category></category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="PeptideIndexer" description="Refreshes the protein references for all peptide hits.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />

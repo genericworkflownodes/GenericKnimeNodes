@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>TransformationEvaluation</name>
+<version>1.10.0</version>
+<description><![CDATA[Applies a transformation to a range of values]]></description>
+<manual><![CDATA[Applies a transformation to a range of values]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="TransformationEvaluation" description="Applies a transformation to a range of values">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;TransformationEvaluation&apos;">
+      <ITEM name="in" value="" type="string" description="Input file containing the transformation description" tags="input file,required" supported_formats="*.trafoXML" />
+      <ITEM name="out" value="" type="string" description="Output file containing original and transformed values; if empty, output is written to the screen" tags="output file" supported_formats="*.trafoXML" />
+      <ITEM name="min" value="0" type="float" description="Minimum value to transform" />
+      <ITEM name="max" value="0" type="float" description="Maximum value to transform (if at or below &apos;min&apos;, select a suitable maximum based on the transformation description)" />
+      <ITEM name="step" value="1" type="float" description="Step size between &apos;min&apos; and &apos;max&apos;" restrictions="0.001:" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

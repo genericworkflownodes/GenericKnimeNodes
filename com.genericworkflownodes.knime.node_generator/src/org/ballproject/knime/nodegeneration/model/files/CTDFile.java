@@ -22,7 +22,7 @@ public class CTDFile extends File implements INodeConfigurationFile {
 			System.out.println(e.getMessage());
 			System.out.println("Error while reading file: "
 					+ file.getAbsolutePath());
-			throw e;
+//			throw e;
 		}
 	}
 

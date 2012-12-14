@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>ExecutePipeline</name>
+<version>1.10.0</version>
+<description><![CDATA[Executes workflows created by TOPPAS.]]></description>
+<manual><![CDATA[Executes workflows created by TOPPAS.]]></manual>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__ExecutePipeline.html</docurl>
+<category>Misc</category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="ExecutePipeline" description="Executes workflows created by TOPPAS.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;ExecutePipeline&apos;">
+      <ITEM name="in" value="" type="string" description="The workflow to be executed." tags="input file,required" supported_formats="*.toppas" />
+      <ITEM name="out_dir" value="" type="string" description="Directory for output files (default: user&apos;s home directory)" />
+      <ITEM name="resource_file" value="" type="string" description="A TOPPAS resource file (*.trf) specifying the files this workflow is to be applied to" />
+      <ITEM name="num_jobs" value="1" type="int" description="Maximum number of jobs running in parallel" restrictions="1:" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

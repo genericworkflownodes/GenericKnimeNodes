@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>GenericWrapper</name>
+<version>1.10.0</version>
+<description><![CDATA[Allows the generic wrapping of external tools.]]></description>
+<manual><![CDATA[Allows the generic wrapping of external tools.]]></manual>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__GenericWrapper.html</docurl>
+<category>EXTERNAL</category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="GenericWrapper" description="Allows the generic wrapping of external tools.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;GenericWrapper&apos;">
+      <ITEM name="type" value="QCMLExport" type="string" description="Which external tool configuration to load?! See &apos;/Users/aiche/dev/openms/openms-src/share/OpenMS//TOOLS/EXTERNAL&apos;." restrictions="hardklor,RAWFileConvert,QCMLExport,Rscript_qcfigures_acc,Rscript_qcfigures_spec,Rscript_qcfigures_tic,TPP_RefreshParser,mail,TPP_ProteinProphet" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="ETool" description="tool specific parameters">
+        <ITEM name="scriptpath" value="." type="string" description="input script path, this should point to share/OpenMS/SCRIPTS of your OpenMS installation" />
+        <ITEM name="inML" value="" type="string" description="input file in mzML format(valid formats: &apos;mzML&apos;)" tags="input file" />
+        <ITEM name="inID" value="" type="string" description="input file in id format(valid formats: &apos;idXML&apos;)" tags="input file" />
+        <ITEM name="inTSVspec" value="" type="string" description="tabular input data for precursor stats(valid formats: &apos;unknown,tsv&apos;)" tags="input file" />
+        <ITEM name="inTSVtic" value="" type="string" description="tabular input data for tic stats(valid formats: &apos;unknown,tsv&apos;)" tags="input file" />
+        <ITEM name="inTSVacc" value="" type="string" description="tabular input data for accuracy stats(valid formats: &apos;unknown,tsv&apos;)" tags="input file" />
+        <ITEM name="inFIGspec" value="" type="string" description="R figure for precursor stats(valid formats: &apos;unknown,tsv&apos;)" tags="input file" />
+        <ITEM name="inFIGtic" value="" type="string" description="R figure for tic stats(valid formats: &apos;unknown,tsv&apos;)" tags="input file" />
+        <ITEM name="inFIGacc" value="" type="string" description="R figure for accuracy stats(valid formats: &apos;unknown,tsv&apos;)" tags="input file" />
+        <ITEM name="out" value="" type="string" description="output file in qcML format(valid formats: &apos;qcML&apos;)" tags="output file" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

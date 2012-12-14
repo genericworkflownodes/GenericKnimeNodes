@@ -94,7 +94,13 @@ public class DescriptorsDirectory extends Directory {
 					// throw new IOException("Error reading " + file.getPath(),
 					// e);
 				} catch (Exception e) {
-					throw new IOException("Error reading " + file.getPath(), e);
+					// throw new IOException("Error reading " + file.getPath(),
+					// e);
+					System.out.println(String.format("Invalid ctd-format: %s",
+							file.getName()));
+					System.out.println(String.format("Reason: %s",
+							e.getMessage()));
+
 				}
 			}
 		}

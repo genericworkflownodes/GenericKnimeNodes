@@ -4,7 +4,7 @@
 <version>1.10.0</version>
 <description><![CDATA[Determination of peak ratios in LC-MS data]]></description>
 <manual><![CDATA[Determination of peak ratios in LC-MS data]]></manual>
-<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__SILACAnalyzer.html</docurl>
+<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__SILACAnalyzer.html</docurl>
 <category>Quantitation</category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="SILACAnalyzer" description="Determination of peak ratios in LC-MS data">

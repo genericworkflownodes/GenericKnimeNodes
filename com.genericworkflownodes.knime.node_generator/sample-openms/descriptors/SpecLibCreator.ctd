@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>SpecLibCreator</name>
+<version>1.10.0</version>
+<description><![CDATA[Creates an MSP formated spectral library.]]></description>
+<manual><![CDATA[Creates an MSP formated spectral library.]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="SpecLibCreator" description="Creates an MSP formated spectral library.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;SpecLibCreator&apos;">
+      <ITEM name="info" value="" type="string" description="Holds id, peptide, retention time etc." tags="input file,required" supported_formats="*.csv" />
+      <ITEM name="itemseperator" value="," type="string" description=" Seperator between items. e.g. ," />
+      <ITEM name="itemenclosed" value="false" type="string" description="&apos;true&apos; or &apos;false&apos; if true every item is enclosed e.g. &apos;$peptide$,$run$..." restrictions="true,false" />
+      <ITEM name="spec" value="" type="string" description="spectra" tags="input file,required" supported_formats="*.mzData,*.mzXML" />
+      <ITEM name="out" value="" type="string" description="output MSP formated spectra library" tags="output file,required" supported_formats="*.msp" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

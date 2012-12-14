@@ -49,7 +49,7 @@ public class Template {
 	 * @throws IOException
 	 */
 	public Template(File file) throws IOException {
-		this.data = FileUtils.readFileToString(file);
+		data = FileUtils.readFileToString(file);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class Template {
 	public Template(InputStream inputStream) throws IOException {
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(inputStream, writer, "UTF-8");
-		this.data = writer.toString();
+		data = writer.toString();
 	}
 
 	/**

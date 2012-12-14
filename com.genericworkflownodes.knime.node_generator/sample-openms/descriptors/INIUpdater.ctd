@@ -4,7 +4,7 @@
 <version>1.10.0</version>
 <description><![CDATA[Update INI and TOPPAS files to new OpenMS version.]]></description>
 <manual><![CDATA[Update INI and TOPPAS files to new OpenMS version.]]></manual>
-<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__INIUpdater.html</docurl>
+<docurl></docurl>
 <category></category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="INIUpdater" description="Update INI and TOPPAS files to new OpenMS version.">

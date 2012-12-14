@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>QCCalculator</name>
+<version>1.10.0</version>
+<description><![CDATA[produces table data dedicted for R import. These data is produced based on mzML, featureXMl and/ or idXML files]]></description>
+<manual><![CDATA[produces table data dedicted for R import. These data is produced based on mzML, featureXMl and/ or idXML files]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="QCCalculator" description="produces table data dedicted for R import. These data is produced based on mzML, featureXMl and/ or idXML files">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;QCCalculator&apos;">
+      <ITEM name="in_id" value="" type="string" description="Input idXML file containing the identifications. Your identifications will be exported in an easy-to-read format" tags="input file" supported_formats="*.idXML" />
+      <ITEM name="feature" value="" type="string" description="feature input file (this is relevant for most QC issues)" tags="input file" supported_formats="*.featureXML" />
+      <ITEM name="consensus" value="" type="string" description="consensus input file (this is only used for charge state deconvoluted output. Use the consensusXML output form the DeCharger)" tags="input file" supported_formats="*.consensusXML" />
+      <ITEM name="raw" value="" type="string" description="raw data input file (this is relevant if you want to look at MS1, MS2 and precursor peak information)" tags="input file" supported_formats="*.mzML" />
+      <ITEM name="out_id" value="" type="string" description="Your export file for id stats." tags="advanced,output file" supported_formats="*._id.tsv" />
+      <ITEM name="out_consensus" value="" type="string" description="Your export file for consensus stats." tags="advanced,output file" supported_formats="*._consensus.tsv" />
+      <ITEM name="out_feature" value="" type="string" description="Your export file for feature stats." tags="advanced,output file" supported_formats="*.tsv" />
+      <ITEM name="out_precursor" value="" type="string" description="Your export file for precursor stats." tags="advanced,output file" supported_formats="*._PRECURSOR.tsv" />
+      <ITEM name="out_MS2" value="" type="string" description="Your export file for MS2 stats." tags="advanced,output file" supported_formats="*._MS2.tsv" />
+      <ITEM name="out_MS1" value="" type="string" description="Your export file for MS1 stats." tags="advanced,output file" supported_formats="*._MS1.tsv" />
+      <ITEM name="out_TIC" value="" type="string" description="Your export file for TIC stats,if you are exporting MS1 and MS2 data, but you want to have TIC intensities instead of the MS1 table. Note that TICs, in this case are the sums of all intensities per spectrum." tags="advanced,output file" supported_formats="*._TIC.tsv" />
+      <ITEM name="AllHits" value="false" type="string" description="If set, the exporter takes all peptide candidates per spectrum into account." restrictions="true,false" />
+      <ITEM name="remove_duplicate_features" value="false" type="string" description="This flag should be set, if you work with a set of merged features." restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

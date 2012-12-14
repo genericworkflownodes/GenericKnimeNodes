@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>IDDecoyProbability</name>
+<version>1.10.0</version>
+<description><![CDATA[Estimates peptide probabilities using a decoy search strategy.
+WARNING: This util is deprecated.]]></description>
+<manual><![CDATA[Estimates peptide probabilities using a decoy search strategy.
+WARNING: This util is deprecated.]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDDecoyProbability" description="Estimates peptide probabilities using a decoy search strategy.#br#WARNING: This util is deprecated.">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDDecoyProbability&apos;">
+      <ITEM name="in" value="" type="string" description="Identification input of combined forward decoy search (reindex with PeptideIndexer first)" tags="input file" supported_formats="*.idXML" />
+      <ITEM name="fwd_in" value="" type="string" description="Identification input of forward run" tags="input file" supported_formats="*.idXML" />
+      <ITEM name="rev_in" value="" type="string" description="Identification input of decoy run" tags="input file" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="string" description="Identification output with forward scores converted to probabilities" tags="output file,required" supported_formats="*.idXML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="decoy_algorithm" description="Algorithm parameter subsection">
+        <ITEM name="number_of_bins" value="40" type="int" description="Number of bins used for the fitting, if sparse datasets are used, this number should be smaller" tags="advanced" />
+        <ITEM name="lower_score_better_default_value_if_zero" value="50" type="float" description="This value is used if e.g. a E-value score is 0 and cannot be transformed in a real number (log of E-value)" tags="advanced" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

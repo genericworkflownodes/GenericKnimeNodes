@@ -4,7 +4,7 @@
 <version>1.10.0</version>
 <description><![CDATA[Evaluates alignment results against a ground truth.]]></description>
 <manual><![CDATA[Evaluates alignment results against a ground truth.]]></manual>
-<docurl>http://www-bs2.informatik.uni-tuebingen.de/services/OpenMS/OpenMS-release/html/TOPP__MapAlignmentEvaluation.html</docurl>
+<docurl></docurl>
 <category></category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="MapAlignmentEvaluation" description="Evaluates alignment results against a ground truth.">

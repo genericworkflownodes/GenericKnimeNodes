@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>ConvertTraMLToTSV</name>
+<version>1.10.0</version>
+<description><![CDATA[Converts a TraML file into TSV]]></description>
+<manual><![CDATA[Converts a TraML file into TSV]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="ConvertTraMLToTSV" description="Converts a TraML file into TSV">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;ConvertTraMLToTSV&apos;">
+      <ITEM name="in" value="" type="string" description="transition file" tags="input file,required" supported_formats="*.TraML" />
+      <ITEM name="out" value="" type="string" description="output file csv" tags="output file,required" supported_formats="*.csv" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

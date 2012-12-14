@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+<name>MassCalculator</name>
+<version>1.10.0</version>
+<description><![CDATA[Calculates masses and mass-to-charge ratios of peptide sequences]]></description>
+<manual><![CDATA[Calculates masses and mass-to-charge ratios of peptide sequences]]></manual>
+<docurl></docurl>
+<category></category>
+<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="MassCalculator" description="Calculates masses and mass-to-charge ratios of peptide sequences">
+    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;MassCalculator&apos;">
+      <ITEM name="in" value="" type="string" description="Input file with peptide sequences and optionally charge numbers (mutually exclusive to &apos;in_seq&apos;)" tags="input file" supported_formats="*.txt" />
+      <ITEMLIST name="in_seq" type="string" description="List of peptide sequences (mutually exclusive to &apos;in&apos;)">
+      </ITEMLIST>
+      <ITEM name="out" value="" type="string" description="Output file; if empty, output is written to the screen" tags="output file" supported_formats="*.txt" />
+      <ITEMLIST name="charge" type="int" description="List of charge states; required if &apos;in_seq&apos; is given">
+      </ITEMLIST>
+      <ITEM name="format" value="list" type="string" description="Output format (&apos;list&apos;: human-readable list, &apos;table&apos;: CSV-like table, &apos;mass_only&apos;: mass values only, &apos;mz_only&apos;: m/z values only)#br#" restrictions="list,table,mass_only,mz_only" />
+      <ITEM name="average_mass" value="false" type="string" description="Compute average (instead of monoisotopic) peptide masses" restrictions="true,false" />
+      <ITEM name="fragment_type" value="full" type="string" description="For what type of sequence/fragment the mass should be computed#br#" restrictions="full,internal,N-terminal,C-terminal,a-ion,b-ion,c-ion,x-ion,y-ion,z-ion" />
+      <ITEM name="separator" value="" type="string" description="Field separator for &apos;table&apos; output format; by default, the &apos;tab&apos; character is used" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>
