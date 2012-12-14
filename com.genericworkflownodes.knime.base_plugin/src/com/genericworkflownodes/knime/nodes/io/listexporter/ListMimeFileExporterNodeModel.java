@@ -24,9 +24,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.ballproject.knime.base.util.Helper;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -56,7 +56,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 	 * Constructor for the node model.
 	 */
 	protected ListMimeFileExporterNodeModel() {
-		super(new PortType[] { new PortType(MIMEURIPortObject.class) },
+		super(new PortType[] { new PortType(URIPortObject.class) },
 				new PortType[] {});
 	}
 
@@ -117,7 +117,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		if (!(inSpecs[0] instanceof MIMEURIPortObjectSpec)) {
+		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
 			throw new InvalidSettingsException(
 					"no MIMEURIPortObject compatible port object at port 0");
 		}
@@ -127,7 +127,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 	@Override
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
-		MIMEURIPortObject obj = (MIMEURIPortObject) inObjects[0];
+		URIPortObject obj = (URIPortObject) inObjects[0];
 		List<URIContent> uris = obj.getURIContents();
 
 		if (uris.size() == 0) {
@@ -144,7 +144,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 			}
 
 			String outfilename = insertIndex(m_filename.getStringValue(), obj
-					.getSpec().getMIMEType().getExtension(), idx++);
+					.getSpec().getFileExtensions().get(0), idx++);
 			File out = new File(outfilename);
 
 			// if(!out.canWrite())

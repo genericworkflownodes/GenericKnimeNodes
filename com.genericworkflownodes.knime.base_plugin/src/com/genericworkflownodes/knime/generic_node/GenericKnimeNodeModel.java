@@ -29,11 +29,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
-import org.eclipse.ui.PlatformUI;
-import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -53,7 +51,6 @@ import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.outputconverter.IOutputConverter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
@@ -92,10 +89,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	private final IPluginConfiguration pluginConfig;
 
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-			MIMEURIPortObject.class, true);
+			URIPortObject.class, true);
 
-	protected MIMEType[][] mimetypes_in;
-	protected MIMEType[][] mimetypes_out;
+	protected String[][] mimetypes_in;
+	protected String[][] mimetypes_out;
 	protected PortObjectSpec[] outspec_;
 
 	/**
@@ -120,7 +117,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		selected_output_type = new int[nodeConfig.getNumberOfOutputPorts()];
 	}
 
-	protected MIMEType getOutputType(int idx) {
+	protected String getOutputType(int idx) {
 		return nodeConfig.getOutputPorts().get(idx).getMimeTypes()
 				.get(selected_output_type[idx]);
 	}
@@ -131,7 +128,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	private static PortType[] createOPOs(List<Port> ports) {
 		PortType[] portTypes = new PortType[ports.size()];
-		Arrays.fill(portTypes, MIMEURIPortObject.TYPE);
+		Arrays.fill(portTypes, URIPortObject.TYPE);
 		for (int i = 0; i < ports.size(); i++) {
 			if (ports.get(i).isOptional()) {
 				portTypes[i] = OPTIONAL_PORT_TYPE;
@@ -382,10 +379,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				}
 			}
 
-			MIMEURIPortObjectSpec spec = (MIMEURIPortObjectSpec) inSpecs[i];
+			URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
 
 			// get input MIMEType
-			MIMEType mt = spec.getMIMEType();
+			// TODO: why do we have more then one
+			String mt = spec.getFileExtensions().get(0);
 
 			// check whether input MIMEType is in list of allowed MIMETypes
 			boolean ok = false;
@@ -420,7 +418,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		for (int i = 0; i < nOut; i++) {
 			// selected output MIMEType
 			int selectedMIMETypeIndex = getOutputTypeIndex(i);
-			out_spec[i] = new MIMEURIPortObjectSpec(
+			// TODO: check
+			out_spec[i] = new URIPortObjectSpec(
 					mimetypes_out[i][selectedMIMETypeIndex]);
 		}
 
@@ -480,7 +479,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		for (int i = 0; i < nOut; i++) {
 			Port port = nodeConfig.getOutputPorts().get(i);
 			String name = port.getName();
-			String ext = getOutputType(i).getExtension();
+			String ext = getOutputType(i);
 
 			Parameter<?> p = nodeConfig.getParameter(name);
 			// used to remember which files we actually generated here
@@ -540,7 +539,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			// find the internal port for this PortObject
 			Port port = nodeConfig.getInputPorts().get(i);
 
-			MIMEURIPortObject po = (MIMEURIPortObject) inData[i];
+			URIPortObject po = (URIPortObject) inData[i];
 			List<URIContent> uris = po.getURIContents();
 
 			String name = port.getName();
@@ -596,7 +595,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		int nOut = nodeConfig.getOutputPorts().size();
 
 		// create output tables
-		MIMEURIPortObject[] outports = new MIMEURIPortObject[nOut];
+		URIPortObject[] outports = new URIPortObject[nOut];
 
 		for (int i = 0; i < nOut; i++) {
 			List<URIContent> uris = new ArrayList<URIContent>();
@@ -605,16 +604,25 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			// multi output file
 			for (URI filename : outputFileNames.get(i)) {
 				someFileName = filename.getPath();
-				uris.add(new URIContent(filename));
+				uris.add(new URIContent(filename, getExtension(filename
+						.getPath())));
 			}
 
-			MIMEType mimeType = resolveMIMEType(someFileName);
+			String mimeType = getExtension(someFileName);
 			if (mimeType == null)
 				throw new NonExistingMimeTypeException(someFileName);
-			outports[i] = new MIMEURIPortObject(uris, mimeType);
+			outports[i] = new URIPortObject(uris);
 		}
 
 		return outports;
+	}
+
+	private String getExtension(String path) {
+		if (path.lastIndexOf('.') == -1) {
+			return "";
+		} else {
+			return path.substring(path.lastIndexOf('.') + 1);
+		}
 	}
 
 	/**
@@ -633,15 +641,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			finalConverterdUri = converter.convert(finalConverterdUri);
 		}
 		return finalConverterdUri;
-	}
-
-	private MIMEType resolveMIMEType(String filename) {
-		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-				.getWorkbench().getService(IMIMEtypeRegistry.class);
-		if (registry != null)
-			return registry.getMIMEtype(filename);
-		else
-			return null;
 	}
 
 }

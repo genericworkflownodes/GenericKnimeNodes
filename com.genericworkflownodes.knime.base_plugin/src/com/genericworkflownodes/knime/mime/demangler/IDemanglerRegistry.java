@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.mime.demangler;
 import java.util.List;
 
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.url.MIMEType;
 
 /**
  * Provides central access to registered {@link IDemangler}s and helps in
@@ -39,7 +38,7 @@ public interface IDemanglerRegistry {
 	 *            The requested {@link MIMEType}.
 	 * @return A {@link List} of available {@link IDemangler}.
 	 */
-	List<IDemangler> getDemangler(MIMEType mType);
+	List<IDemangler> getDemangler(String mType);
 
 	/**
 	 * Given a {@link DataTableSpec} returns a {@link List} of

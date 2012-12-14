@@ -26,7 +26,6 @@ import javax.swing.DefaultComboBoxModel;
 import org.ballproject.knime.base.ui.choice.ChoiceDialog;
 import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
 import org.eclipse.ui.PlatformUI;
-import org.knime.core.data.url.MIMEType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -65,7 +64,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 	/**
 	 * The currently configured {@link MIMEType}.
 	 */
-	private MIMEType configuredMIMEType;
+	private String configuredMIMEType;
 
 	/**
 	 * Default c'tor.
@@ -90,7 +89,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 		settings.addString(DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
 				demanglerClassName);
 		settings.addString(DemanglerNodeModel.CONFIGURED_MIMETYPE_SETTINGNAME,
-				configuredMIMEType.getExtension());
+				configuredMIMEType);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.knime.core.data.url.port.MIMEURIPortObject;
+import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -69,7 +69,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
 	 * Constructor for the node model.
 	 */
 	protected MimeFileViewerNodeModel() {
-		super(new PortType[] { new PortType(MIMEURIPortObject.class) },
+		super(new PortType[] { new PortType(URIPortObject.class) },
 				new PortType[] {});
 	}
 
@@ -166,7 +166,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
 	@Override
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
-		MIMEURIPortObject po = (MIMEURIPortObject) inObjects[0];
+		URIPortObject po = (URIPortObject) inObjects[0];
 		File file = new File(po.getURIContents().get(0).getURI());
 
 		int maxLines = max_num_lines.getIntValue();

@@ -24,10 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ui.PlatformUI;
-import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -65,7 +64,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	 */
 	protected ListMimeFileImporterNodeModel() {
 		super(new PortType[] {}, new PortType[] { new PortType(
-				MIMEURIPortObject.class) });
+				URIPortObject.class) });
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	/**
 	 * The {@link MIMEType} of the imported files.
 	 */
-	private MIMEType mt = null;
+	private String mt = null;
 
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
@@ -136,7 +135,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 			return new PortObjectSpec[] { null };
 		}
 
-		List<MIMEType> mts = new ArrayList<MIMEType>();
+		List<String> mts = new ArrayList<String>();
 
 		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
 				.getWorkbench().getService(IMIMEtypeRegistry.class);
@@ -153,14 +152,14 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 			mts.add(mt);
 		}
 
-		for (MIMEType mimeType : mts) {
+		for (String mimeType : mts) {
 			if (!mimeType.equals(mt)) {
 				throw new InvalidSettingsException(
 						"Files with mixed MIMEType loaded");
 			}
 		}
 
-		return new PortObjectSpec[] { new MIMEURIPortObjectSpec(mt) };
+		return new PortObjectSpec[] { new URIPortObjectSpec(mt) };
 	}
 
 	@Override
@@ -177,9 +176,18 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 						+ in.getAbsolutePath());
 			}
 
-			uris.add(new URIContent(new File(filename).toURI()));
+			uris.add(new URIContent(new File(filename).toURI(),
+					getExtension(filename)));
 		}
 
-		return new PortObject[] { new MIMEURIPortObject(uris, mt) };
+		return new PortObject[] { new URIPortObject(uris) };
+	}
+
+	private String getExtension(String path) {
+		if (path.lastIndexOf('.') == -1) {
+			return "";
+		} else {
+			return path.substring(path.lastIndexOf('.') + 1);
+		}
 	}
 }

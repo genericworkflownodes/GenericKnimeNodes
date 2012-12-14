@@ -26,10 +26,9 @@ import java.util.List;
 import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -82,7 +81,7 @@ public class ManglerNodeModel extends NodeModel {
 	 */
 	protected ManglerNodeModel() {
 		super(new PortType[] { new PortType(BufferedDataTable.class) },
-				new PortType[] { new PortType(MIMEURIPortObject.class) });
+				new PortType[] { new PortType(URIPortObject.class) });
 	}
 
 	/**
@@ -98,10 +97,11 @@ public class ManglerNodeModel extends NodeModel {
 
 		// create a file where we can write to
 		String filename = FileStash.getInstance().allocateFile(
-				demangler.getMIMEType().getExtension());
+				demangler.getMIMEType());
 
 		// translate the filename to a URIContent
-		URIContent outputURI = new URIContent(new File(filename).toURI());
+		URIContent outputURI = new URIContent(new File(filename).toURI(),
+				demangler.getMIMEType());
 
 		// write file
 		demangler.mangle(table, outputURI.getURI());
@@ -110,8 +110,7 @@ public class ManglerNodeModel extends NodeModel {
 		List<URIContent> uriList = new ArrayList<URIContent>();
 		uriList.add(outputURI);
 
-		return new MIMEURIPortObject[] { new MIMEURIPortObject(uriList,
-				demangler.getMIMEType()) };
+		return new URIPortObject[] { new URIPortObject(uriList) };
 	}
 
 	/**
@@ -153,7 +152,7 @@ public class ManglerNodeModel extends NodeModel {
 				demangler = availableMangler.get(0);
 			}
 
-			return new MIMEURIPortObjectSpec[] { new MIMEURIPortObjectSpec(
+			return new URIPortObjectSpec[] { new URIPortObjectSpec(
 					demangler.getMIMEType()) };
 		} else {
 			throw new InvalidSettingsException("Cannot handle non-table input");

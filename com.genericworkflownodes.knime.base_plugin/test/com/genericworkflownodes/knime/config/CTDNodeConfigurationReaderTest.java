@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
@@ -121,7 +120,7 @@ public class CTDNodeConfigurationReaderTest {
 		Parameter<?> p5 = config.getParameter("1.choice");
 		assertTrue(p5 instanceof StringChoiceParameter);
 
-		List<MIMEType> mimetypes = config.getOutputPorts().get(0)
+		List<String> mimetypes = config.getOutputPorts().get(0)
 				.getMimeTypes();
 
 		assertEquals("1.o", config.getOutputPorts().get(0).getName());
@@ -130,8 +129,8 @@ public class CTDNodeConfigurationReaderTest {
 
 		String[] test = { "mol2", "sdf", "drf" };
 		int idx = 0;
-		for (MIMEType mt : mimetypes) {
-			assertEquals(test[idx], mt.getExtension());
+		for (String mt : mimetypes) {
+			assertEquals(test[idx], mt);
 			idx++;
 		}
 
@@ -140,18 +139,18 @@ public class CTDNodeConfigurationReaderTest {
 				"hin", "mol", "xyz", "mol2.gz", "sdf.gz", "drf.gz", "pdb.gz",
 				"ac.gz", "ent.gz", "brk.gz", "hin.gz", "mol.gz", "xyz.gz" };
 		idx = 0;
-		for (MIMEType mt : mimetypes) {
-			assertEquals(test2[idx], mt.getExtension());
+		for (String mt : mimetypes) {
+			assertEquals(test2[idx], mt);
 			idx++;
 		}
 
-		assertEquals("mol2", mimetypes.get(0).getExtension());
+		assertEquals("mol2", mimetypes.get(0));
 		assertEquals("1.q", config.getInputPorts().get(0).getName());
 		assertEquals("query molecules for similarity searching", config
 				.getInputPorts().get(0).getDescription());
 
 		mimetypes = config.getInputPorts().get(1).getMimeTypes();
-		assertEquals("txt", mimetypes.get(0).getExtension());
+		assertEquals("txt", mimetypes.get(0));
 		assertEquals("1.smarts_file", config.getInputPorts().get(1).getName());
 		assertEquals("SMARTS pattern", config.getInputPorts().get(1)
 				.getDescription());
@@ -230,7 +229,7 @@ public class CTDNodeConfigurationReaderTest {
 		assertEquals(1, config.getNumberOfInputPorts());
 		assertEquals(1, config.getNumberOfOutputPorts());
 
-		List<MIMEType> mimetypes = config.getOutputPorts().get(0)
+		List<String> mimetypes = config.getOutputPorts().get(0)
 				.getMimeTypes();
 
 		assertEquals("1.out", config.getOutputPorts().get(0).getName());
@@ -239,8 +238,8 @@ public class CTDNodeConfigurationReaderTest {
 
 		String[] test = { "mzML", "featureXML" };
 		int idx = 0;
-		for (MIMEType mt : mimetypes) {
-			assertEquals(test[idx], mt.getExtension());
+		for (String mt : mimetypes) {
+			assertEquals(test[idx], mt);
 			idx++;
 		}
 
@@ -253,8 +252,8 @@ public class CTDNodeConfigurationReaderTest {
 		test = new String[] { "mzData", "mzXML", "mzML", "DTA", "DTA2D", "mgf",
 				"featureXML", "fid" };
 		idx = 0;
-		for (MIMEType mt : mimetypes) {
-			assertEquals(test[idx], mt.getExtension());
+		for (String mt : mimetypes) {
+			assertEquals(test[idx], mt);
 			idx++;
 		}
 

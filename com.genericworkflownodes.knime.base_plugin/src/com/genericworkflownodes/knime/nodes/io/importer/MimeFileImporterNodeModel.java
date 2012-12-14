@@ -33,10 +33,9 @@ import javax.activation.MimeType;
 
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.url.MIMEType;
-import org.knime.core.data.url.URIContent;
-import org.knime.core.data.url.port.MIMEURIPortObject;
-import org.knime.core.data.url.port.MIMEURIPortObjectSpec;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -89,7 +88,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	 */
 	protected MimeFileImporterNodeModel() {
 		super(new PortType[] {}, new PortType[] { new PortType(
-				MIMEURIPortObject.class) });
+				URIPortObject.class) });
 	}
 
 	/**
@@ -198,7 +197,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	/**
 	 * {@link MimeType} of the loaded file.
 	 */
-	private MIMEType mt = null;
+	private String mt = null;
 
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
@@ -217,7 +216,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 			return new DataTableSpec[] { null };
 		}
 
-		return new PortObjectSpec[] { new MIMEURIPortObjectSpec(mt) };
+		return new PortObjectSpec[] { new URIPortObjectSpec(mt) };
 	}
 
 	@Override
@@ -232,11 +231,20 @@ public class MimeFileImporterNodeModel extends NodeModel {
 					+ file.getAbsolutePath());
 		}
 
-		uris.add(new URIContent(file.toURI()));
+		uris.add(new URIContent(file.toURI(), getExtension(file
+				.getAbsolutePath())));
 
 		data = MimeFileViewerNodeModel.readFileSummary(file, 50);
 
-		return new PortObject[] { new MIMEURIPortObject(uris, mt) };
+		return new PortObject[] { new URIPortObject(uris) };
+	}
+
+	private String getExtension(String path) {
+		if (path.lastIndexOf('.') == -1) {
+			return "";
+		} else {
+			return path.substring(path.lastIndexOf('.') + 1);
+		}
 	}
 
 }

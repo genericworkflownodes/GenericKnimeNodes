@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.knime.core.data.url.MIMEType;
-
 /**
  * Default implementation of {@link IMIMEtypeRegistry}.
  * 
@@ -38,26 +36,26 @@ public class DefaultMIMEtypeRegistry implements IMIMEtypeRegistry {
 	 * Internal mapping of known file extensions to the associated
 	 * {@link MIMEType}.
 	 */
-	private Map<String, MIMEType> fileExtensionToMIMEType;
+	private Map<String, String> fileExtensionToMIMEType;
 
 	/**
 	 * Default constructor.
 	 */
 	public DefaultMIMEtypeRegistry() {
-		fileExtensionToMIMEType = new HashMap<String, MIMEType>();
+		fileExtensionToMIMEType = new HashMap<String, String>();
 	}
 
 	@Override
-	public void registerMIMEtype(final MIMEType mt) {
-		String extension = mt.getExtension();
+	public void registerMIMEtype(final String mt) {
+		String extension = mt;
 		fileExtensionToMIMEType.put(extension, mt);
 	}
 
 	@Override
-	public MIMEType getMIMEtype(final String fileName) {
-		MIMEType mt = null;
+	public String getMIMEtype(final String fileName) {
+		String mt = null;
 
-		List<MIMEType> candidates = new ArrayList<MIMEType>();
+		List<String> candidates = new ArrayList<String>();
 
 		for (String ext : fileExtensionToMIMEType.keySet()) {
 			if (fileName.toLowerCase().endsWith(ext)) {
@@ -65,11 +63,10 @@ public class DefaultMIMEtypeRegistry implements IMIMEtypeRegistry {
 			}
 		}
 
-		Collections.sort(candidates, new Comparator<MIMEType>() {
+		Collections.sort(candidates, new Comparator<String>() {
 			@Override
-			public int compare(final MIMEType lhs, final MIMEType rhs) {
-				return lhs.getExtension().compareToIgnoreCase(
-						rhs.getExtension());
+			public int compare(final String lhs, final String rhs) {
+				return lhs.compareToIgnoreCase(rhs);
 			}
 		});
 
@@ -80,7 +77,7 @@ public class DefaultMIMEtypeRegistry implements IMIMEtypeRegistry {
 	}
 
 	@Override
-	public MIMEType getMIMETypeByExtension(final String extension) {
+	public String getMIMETypeByExtension(final String extension) {
 		if (fileExtensionToMIMEType.containsKey(extension)) {
 			return fileExtensionToMIMEType.get(extension);
 		} else {

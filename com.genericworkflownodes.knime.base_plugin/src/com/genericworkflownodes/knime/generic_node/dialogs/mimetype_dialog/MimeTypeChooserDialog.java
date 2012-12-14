@@ -28,7 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.jdesktop.swingx.VerticalLayout;
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.port.Port;
@@ -56,12 +55,12 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 
 			this.add(new JLabel(port.getName()));
 
-			List<MIMEType> types = port.getMimeTypes();
+			List<String> types = port.getMimeTypes();
 			String[] strs = new String[types.size()];
 
 			int idx = 0;
-			for (MIMEType type : types) {
-				strs[idx++] = type.getExtension();
+			for (String type : types) {
+				strs[idx++] = type;
 			}
 
 			JComboBox cb = new JComboBox(strs);

@@ -1,7 +1,6 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
@@ -11,7 +10,7 @@ public class __NODENAME__NodeModel extends GenericKnimeNodeModel {
 			IPluginConfiguration pluginConfig) {
 		super(config, pluginConfig);
 		
-		this.mimetypes_in  = new MIMEType[][]{__INCLAZZEZ__};
-		this.mimetypes_out = new MIMEType[][]{__OUTCLAZZEZ__};
+		this.mimetypes_in  = new String[][]{__INCLAZZEZ__};
+		this.mimetypes_out = new String[][]{__OUTCLAZZEZ__};
 	}
 }

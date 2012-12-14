@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.ballproject.knime.nodegeneration.NodeGenerator;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
-import org.knime.core.data.url.MIMEType;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.port.Port;
@@ -28,8 +27,8 @@ public class NodeModelTemplate extends Template {
 		String clazzez = "";
 		for (Port port : config.getInputPorts()) {
 			String tmp = "{";
-			for (MIMEType type : port.getMimeTypes()) {
-				String ext = type.getExtension().toLowerCase();
+			for (String type : port.getMimeTypes()) {
+				String ext = type.toLowerCase();
 				if (ext == null) {
 					throw new UnknownMimeTypeException(type);
 				}
@@ -39,7 +38,7 @@ public class NodeModelTemplate extends Template {
 				 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
 				 * "FileCell.class),";
 				 */
-				tmp += "new MIMEType(\"" + ext + "\"),";
+				tmp += "\"" + ext + "\",";
 			}
 			tmp = tmp.substring(0, tmp.length() - 1);
 			tmp += "},";
@@ -56,8 +55,8 @@ public class NodeModelTemplate extends Template {
 		clazzez = "";
 		for (Port port : config.getOutputPorts()) {
 			String tmp = "{";
-			for (MIMEType type : port.getMimeTypes()) {
-				String ext = type.getExtension().toLowerCase();
+			for (String type : port.getMimeTypes()) {
+				String ext = type.toLowerCase();
 				if (ext == null) {
 					throw new UnknownMimeTypeException(type);
 				}
@@ -67,7 +66,7 @@ public class NodeModelTemplate extends Template {
 				 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
 				 * "FileCell.class),";
 				 */
-				tmp += "new MIMEType(\"" + ext + "\"),";
+				tmp += "\"" + ext + "\",";
 			}
 			tmp = tmp.substring(0, tmp.length() - 1);
 			tmp += "},";

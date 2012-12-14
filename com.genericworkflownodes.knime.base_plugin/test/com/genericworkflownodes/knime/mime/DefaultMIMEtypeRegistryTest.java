@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.knime.core.data.url.MIMEType;
 
 /**
  * Test for {@link DefaultMIMEtypeRegistry}.
@@ -43,9 +42,9 @@ public class DefaultMIMEtypeRegistryTest {
 	@Test
 	public void testRegisterMIMEtype() {
 		IMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
-		registry.registerMIMEtype(new MIMEType("fa"));
-		registry.registerMIMEtype(new MIMEType("fasta"));
-		registry.registerMIMEtype(new MIMEType("mock"));
+		registry.registerMIMEtype("fa");
+		registry.registerMIMEtype("fasta");
+		registry.registerMIMEtype("mock");
 
 		assertNotNull(registry.getMIMEtype("fa"));
 		assertNotNull(registry.getMIMEtype("fasta"));
@@ -57,9 +56,9 @@ public class DefaultMIMEtypeRegistryTest {
 	@Test
 	public void testGetMIMEtype() {
 		IMIMEtypeRegistry registry = new DefaultMIMEtypeRegistry();
-		registry.registerMIMEtype(new MIMEType("fa"));
-		registry.registerMIMEtype(new MIMEType("fasta"));
-		registry.registerMIMEtype(new MIMEType("mock"));
+		registry.registerMIMEtype("fa");
+		registry.registerMIMEtype("fasta");
+		registry.registerMIMEtype("mock");
 
 		assertNotNull(registry.getMIMEtype("fa"));
 		assertNotNull(registry.getMIMEtype("fasta"));
