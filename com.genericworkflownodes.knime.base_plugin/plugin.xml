@@ -24,7 +24,8 @@
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
-   <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
+   	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
+	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
 </extension>
    
    <extension point="org.knime.product.splashExtension">
@@ -43,28 +44,17 @@
          <service serviceClass="com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService">
          </service>
       </serviceFactory>
-      <serviceFactory
-            factoryClass="com.genericworkflownodes.knime.mime.servicefactory.MIMETypeRegistryServiceFactory">
-         <service
-               serviceClass="com.genericworkflownodes.knime.mime.IMIMEtypeRegistry"></service>
+      <serviceFactory factoryClass="com.genericworkflownodes.knime.mime.servicefactory.MIMETypeRegistryServiceFactory">
+         <service serviceClass="com.genericworkflownodes.knime.mime.IMIMEtypeRegistry"/>
       </serviceFactory>
-      <serviceFactory
-            factoryClass="com.genericworkflownodes.knime.mime.servicefactory.DemanglerRegistryServiceFactory">
-         <service
-               serviceClass="com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry"></service>
+      <serviceFactory factoryClass="com.genericworkflownodes.knime.mime.servicefactory.DemanglerRegistryServiceFactory">
+         <service serviceClass="com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry"/>
       </serviceFactory>
    </extension>
-   <extension
-         point="com.genericworkflownodes.knime.outputconverter.OutputConverter">
-      <outputconverter
-            converter-id="DefaultOutputConverter"
-            factoryclass="com.genericworkflownodes.knime.outputconverter.impl.DefaultOutputConverterFactory"
-            identifier="DefaultOutputConverter">
+   <extension point="com.genericworkflownodes.knime.outputconverter.OutputConverter">
+      <outputconverter converter-id="DefaultOutputConverter" factoryclass="com.genericworkflownodes.knime.outputconverter.impl.DefaultOutputConverterFactory" identifier="DefaultOutputConverter">
       </outputconverter>
-      <outputconverter
-            converter-id="FileNameExtender"
-            factoryclass="com.genericworkflownodes.knime.outputconverter.impl.FileNameExtenderFactory"
-            identifier="FileNameExtender">
+      <outputconverter converter-id="FileNameExtender" factoryclass="com.genericworkflownodes.knime.outputconverter.impl.FileNameExtenderFactory" identifier="FileNameExtender">
       </outputconverter>
    </extension>
    
