@@ -19,6 +19,7 @@
 package com.genericworkflownodes.knime.custom;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +215,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 			// load the associated properties and store them as environment
 			// variable
-			loadEnvironmentVariables(os, dataModel);
+			loadEnvironmentVariables(nodeBinariesDir, os, dataModel);
 			return true;
 		} else {
 			return false;
@@ -232,11 +233,22 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @throws IOException
 	 *             I thrown in case of IO errors.
 	 */
-	private void loadEnvironmentVariables(final OperatingSystem os,
-			final String dataModel) throws IOException {
+	private void loadEnvironmentVariables(final File targetDirectory,
+			final OperatingSystem os, final String dataModel)
+			throws IOException {
 		Properties envProperites = new Properties();
-		envProperites.load(getBinaryLocation().getResourceAsStream(
-				getINIFileName(os, dataModel)));
+
+		File iniFile = new File(targetDirectory, getINIFileName(os, dataModel));
+
+		// check if we extracted also an ini file
+		if (!iniFile.exists()) {
+			throw new IOException("No ini found at location: "
+					+ iniFile.getAbsolutePath());
+		}
+
+		// load the properties file
+		envProperites.load(new FileInputStream(iniFile));
+
 		for (Object key : envProperites.keySet()) {
 			String k = key.toString();
 			String v = envProperites.getProperty(k);
