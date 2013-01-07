@@ -52,7 +52,7 @@ public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 	@Override
 	public NodeView<FileMergerNodeModel> createNodeView(final int viewIndex,
 			final FileMergerNodeModel nodeModel) {
-		return new FileMergerNodeView(nodeModel);
+		return null;
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new FileMergerNodeDialog();
+		return null;
 	}
 
 }
