@@ -2,7 +2,7 @@
 
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 
-<knimeNode icon="floppy.png" type="Sink">
+<knimeNode icon="exporter.png" type="Sink">
 
     <name>Output File</name>
     
