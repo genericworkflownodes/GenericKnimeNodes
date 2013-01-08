@@ -1,6 +1,6 @@
 This package provides the source code for the KNIME plugin
 
-  org.ballproject.kime
+  com.genericworkflownodes.knime
 
 providing basic functionality for further plugins depending 
 on the GenericKnimeNodes mechanism.
