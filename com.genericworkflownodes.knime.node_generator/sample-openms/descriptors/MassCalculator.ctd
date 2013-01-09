@@ -15,6 +15,7 @@
       </ITEMLIST>
       <ITEM name="out" value="" type="string" description="Output file; if empty, output is written to the screen" tags="output file" supported_formats="*.txt" />
       <ITEMLIST name="charge" type="int" description="List of charge states; required if &apos;in_seq&apos; is given">
+        <LISTITEM value="0"/>
       </ITEMLIST>
       <ITEM name="format" value="list" type="string" description="Output format (&apos;list&apos;: human-readable list, &apos;table&apos;: CSV-like table, &apos;mass_only&apos;: mass values only, &apos;mz_only&apos;: m/z values only)#br#" restrictions="list,table,mass_only,mz_only" />
       <ITEM name="average_mass" value="false" type="string" description="Compute average (instead of monoisotopic) peptide masses" restrictions="true,false" />

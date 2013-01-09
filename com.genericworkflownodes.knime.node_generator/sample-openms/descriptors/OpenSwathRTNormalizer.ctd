@@ -2,12 +2,12 @@
 <tool>
 <name>OpenSwathRTNormalizer</name>
 <version>1.10.0</version>
-<description><![CDATA[This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.  ]]></description>
-<manual><![CDATA[This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.  ]]></manual>
+<description><![CDATA[This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.]]></description>
+<manual><![CDATA[This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.]]></manual>
 <docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__OpenSwathRTNormalizer.html</docurl>
 <category>Targeted Experiments</category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <NODE name="OpenSwathRTNormalizer" description="This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.  ">
+  <NODE name="OpenSwathRTNormalizer" description="This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;OpenSwathRTNormalizer&apos;">
       <ITEMLIST name="in" type="string" description="Input files separated by blank" tags="input file,required" supported_formats="*.mzML">

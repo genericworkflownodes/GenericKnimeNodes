@@ -12,7 +12,6 @@
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDPosteriorErrorProbability&apos;">
       <ITEM name="in" value="" type="string" description="input file " tags="input file,required" supported_formats="*.idXML" />
       <ITEM name="out" value="" type="string" description="output file " tags="output file,required" supported_formats="*.idXML" />
-      <ITEM name="output_name" value="" type="string" description="gnuplot file as txt" tags="output file,required" supported_formats="*.txt" />
       <ITEM name="smallest_e_value" value="1e-19" type="float" description="This value gives a lower bound to E-Values. It should not be 0, as transformation in a real number (log of E-value) is not possible for certain values then." tags="advanced" />
       <ITEM name="split_charge" value="false" type="string" description="The search engine scores are split by charge if this flag is set. Thus, for each charge state a new model will be computed." restrictions="true,false" />
       <ITEM name="top_hits_only" value="false" type="string" description="If set only the top hits of every PeptideIdentification will be used" restrictions="true,false" />
@@ -27,7 +26,6 @@
       <NODE name="fit_algorithm" description="Algorithm parameter subsection">
         <ITEM name="number_of_bins" value="100" type="int" description="Number of bins used for visualization. Only needed if each iteration step of the EM-Algorithm will be visualized" tags="advanced" />
         <ITEM name="output_plots" value="false" type="string" description="If true every step of the EM-algorithm will be written to a file as a gnuplot formula" tags="advanced" restrictions="true,false" />
-<!--        <ITEM name="output_name" value="" type="string" description="If output_plots is on, the output files will be saved in the following manner: &lt;output_name&gt;scores.txt for the scores and &lt;output_name&gt; which contains each step of the EM-algorithm e.g. output_name = /usr/home/OMSSA123 then /usr/home/OMSSA123_scores.txt, /usr/home/OMSSA123 will be written. If no directory is specified, e.g. instead of &apos;/usr/home/OMSSA123&apos; just OMSSA123, the files will be written into the working directory." tags="advanced,output file" /> -->
         <ITEM name="incorrectly_assigned" value="Gumbel" type="string" description="for &apos;Gumbel&apos;, the Gumbel distribution is used to plot incorrectly assigned sequences. For &apos;Gauss&apos;, the Gauss distribution is used." tags="advanced" restrictions="Gumbel,Gauss" />
       </NODE>
     </NODE>

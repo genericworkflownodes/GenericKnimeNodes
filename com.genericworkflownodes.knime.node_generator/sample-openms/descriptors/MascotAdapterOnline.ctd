@@ -55,6 +55,7 @@
         <ITEM name="username" value="" type="string" description="Name of the user if login is used (Mascot security must be enabled!)" />
         <ITEM name="password" value="" type="string" description="Password of the user if login is used (Mascot security must be enabled!)" />
         <ITEM name="query_master" value="false" type="string" description="If this option is set to true, query peptides will be returned with non-truncated lists, however, protein references of peptides will not be correct." tags="advanced" restrictions="true,false" />
+        <ITEM name="max_hits" value="0" type="int" description="Maximum number of hits to be exported from the server to XML (0 = AUTO)" restrictions="0:" />
       </NODE>
     </NODE>
   </NODE>
