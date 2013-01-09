@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.genericworkflownodes.knime.base"
+      label="GKN BasePlugin"
+      version="0.7.0.qualifier"
+      provider-name="GENERICWORKFLOWNODES">
+
+   <description url="http://www.genericworkflownodes.com">
+      [Enter description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.knime.workbench.core"/>
+      <import plugin="org.knime.workbench.repository"/>
+      <import plugin="org.knime.base"/>
+      <import plugin="org.knime.core.data.uritype" version="2.7.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="com.genericworkflownodes.knime"
+         download-size="0"
+         install-size="0"
+         version="0.7.0"
+         unpack="false"/>
+
+</feature>
