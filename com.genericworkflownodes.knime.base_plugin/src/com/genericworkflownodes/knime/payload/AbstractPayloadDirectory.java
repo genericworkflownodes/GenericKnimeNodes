@@ -39,6 +39,6 @@ abstract class AbstractPayloadDirectory implements IPayloadDirectory {
 
 	@Override
 	public boolean isEmpty() {
-		return (getPath().list().length == 0);
+		return (getExecutableDirectory().list().length == 0);
 	}
 }
