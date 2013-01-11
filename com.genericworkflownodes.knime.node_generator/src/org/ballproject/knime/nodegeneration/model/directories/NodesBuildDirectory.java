@@ -33,12 +33,8 @@ public class NodesBuildDirectory extends Directory {
 
 	public NodesBuildDirectory(File buildDir, String packageRoot)
 			throws FileNotFoundException {
-		super(buildDir);
-		init(packageRoot);
-	}
-
-	public NodesBuildDirectory(String packageRoot) throws FileNotFoundException {
-		super("GKN-pluginsource");
+		// we create subfolders for the package and the fragments
+		super(new File(buildDir, packageRoot));
 		init(packageRoot);
 	}
 
@@ -51,29 +47,27 @@ public class NodesBuildDirectory extends Directory {
 				+ File.separator + "binres").mkdirs();
 		new File(this, "META-INF").mkdirs();
 
-		this.iconsDirectory = new NodesBuildIconsDirectory(new File(this,
-				"icons"));
+		iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
 
-		this.srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
+		srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
 
-		this.packageRootDirectory = new NodesBuildPackageRootDirectory(
-				new File(this.srcDirectory, packageRootPath));
+		packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
+				srcDirectory, packageRootPath));
 
-		this.knimeDirectory = new NodesBuildKnimeDirectory(new File(
-				this.packageRootDirectory, "knime"));
+		knimeDirectory = new NodesBuildKnimeDirectory(new File(
+				packageRootDirectory, "knime"));
 
-		this.knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
-				this.knimeDirectory, "nodes"));
+		knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
+				knimeDirectory, "nodes"));
 
-		this.binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
-				new File(this.knimeNodesDirectory, "binres"));
+		binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
+				new File(knimeNodesDirectory, "binres"));
 
-		this.buildProperties = new File(this, "build.properties");
-		this.pluginXml = new File(this, "plugin.xml");
-		this.manifestMf = new File(this, "META-INF" + File.separator
-				+ "MANIFEST.MF");
+		buildProperties = new File(this, "build.properties");
+		pluginXml = new File(this, "plugin.xml");
+		manifestMf = new File(this, "META-INF" + File.separator + "MANIFEST.MF");
 
-		this.projectFile = new File(this, ".project");
+		projectFile = new File(this, ".project");
 	}
 
 	/**

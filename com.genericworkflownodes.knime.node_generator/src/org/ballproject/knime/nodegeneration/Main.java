@@ -15,10 +15,12 @@ public class Main {
 	/**
 	 * 
 	 * @param args
-	 *            #1: directory in which the plugin's sources reside; #2:
-	 *            directory to where to put the package
+	 *            <li>#1: directory in which the plugin's sources reside;</li>
+	 *            <li>#2: directory to where to put the plugins (base + payload
+	 *            fragments)</li>
 	 *            <p>
-	 *            Note: The built plugin will not be packaged to jar file.
+	 *            Note: The built plugin will neither be compiled nor be
+	 *            packaged to a jar file.
 	 */
 	public static void main(String[] args) throws IOException {
 		File srcDir = new File((args.length > 0) ? args[0] : ".")

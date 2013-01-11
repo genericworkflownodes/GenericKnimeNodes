@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
@@ -56,7 +57,6 @@ import org.ballproject.knime.nodegeneration.templates.PluginActivatorTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import org.ballproject.knime.nodegeneration.templates.PluginXMLTemplate;
 import org.ballproject.knime.nodegeneration.templates.ProjectTemplate;
-import org.ballproject.knime.nodegeneration.util.NodeDescriptionUtils;
 import org.ballproject.knime.nodegeneration.util.Utils;
 import org.ballproject.knime.nodegeneration.writer.PropertiesWriter;
 
@@ -82,33 +82,43 @@ public class NodeGenerator {
 		private NodeGeneratorException(String message, Throwable t) {
 			super(message, t);
 		}
+
+		private NodeGeneratorException(String message) {
+			super(message);
+		}
 	}
 
 	private final NodesSourceDirectory srcDir;
 	private final KNIMEPluginMeta meta;
-	private NodesBuildDirectory buildDir;
+	private NodesBuildDirectory pluginBuildDir;
+
+	/**
+	 * The directory where all the individual, generated plugins will be
+	 * located.
+	 */
+	private final Directory baseBinaryDirectory;
 
 	/**
 	 * Initializes a new {@link NodeGenerator} instance.
 	 * 
-	 * @param srcDir
+	 * @param sourceDir
 	 *            directory that contains the plugin's sources.
 	 * @param buildDir
 	 *            directory that will contain the generated plugin (the
 	 *            directory will not be flushed before the generation)
 	 * @throws NodeGeneratorException
 	 */
-	public NodeGenerator(File srcDir, File buildDir)
+	public NodeGenerator(File sourceDir, File buildDir)
 			throws NodeGeneratorException {
 		try {
-			this.srcDir = new NodesSourceDirectory(srcDir);
-			meta = new KNIMEPluginMeta(this.srcDir.getProperties());
-			if (buildDir != null) {
-				this.buildDir = new NodesBuildDirectory(buildDir,
-						meta.getPackageRoot());
-			} else {
-				this.buildDir = new NodesBuildDirectory(meta.getPackageRoot());
-			}
+			if (buildDir == null)
+				throw new NodeGeneratorException("buildDir must not be null");
+
+			srcDir = new NodesSourceDirectory(sourceDir);
+			meta = new KNIMEPluginMeta(srcDir.getProperties());
+			pluginBuildDir = new NodesBuildDirectory(buildDir,
+					meta.getPackageRoot());
+			baseBinaryDirectory = new Directory(buildDir);
 		} catch (Exception e) {
 			throw new NodeGeneratorException(e);
 		}
@@ -116,31 +126,23 @@ public class NodeGenerator {
 
 	public void generate() throws NodeGeneratorException {
 		LOGGER.info("Creating KNIME plugin sources\n\tFrom: " + srcDir
-				+ "\n\tTo: " + buildDir);
+				+ "\n\tTo: " + pluginBuildDir);
 
 		try {
-			boolean dynamicCTDs = NodeDescriptionUtils
-					.createCTDsIfNecessary(srcDir);
-			DescriptorsDirectory descriptorsDirectory = (dynamicCTDs) ? new DescriptorsDirectory(
-					srcDir.getExecutablesDirectory()) : srcDir
+			DescriptorsDirectory descriptorsDirectory = srcDir
 					.getDescriptorsDirectory();
-
-			if (dynamicCTDs) {
-				LOGGER.info("Using dynamically created ctd files");
-			} else {
-				LOGGER.info("Using static ctd files");
-			}
 
 			// build.properties - only useful if you re-import the generated
 			// node in
 			// Eclipse
-			new BuildPropertiesTemplate().write(buildDir.getBuildProperties());
+			new BuildPropertiesTemplate().write(pluginBuildDir
+					.getBuildProperties());
 
 			// META-INF/MANIFEST.MF
-			new ManifestMFTemplate(meta).write(buildDir.getManifestMf());
+			new ManifestMFTemplate(meta).write(pluginBuildDir.getManifestMf());
 
 			// src/[PACKAGE]/knime/plugin.properties
-			new PropertiesWriter(new File(buildDir.getKnimeDirectory(),
+			new PropertiesWriter(new File(pluginBuildDir.getKnimeDirectory(),
 					"plugin.properties")).write(new HashMap<String, String>() {
 				private static final long serialVersionUID = 1L;
 				{
@@ -153,7 +155,7 @@ public class NodeGenerator {
 
 			// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
 			new MimeFileCellFactoryTemplate(meta.getPackageRoot(),
-					srcDir.getMimeTypes()).write(new File(buildDir
+					srcDir.getMimeTypes()).write(new File(pluginBuildDir
 					.getKnimeNodesDirectory(), "mimetypes" + File.separator
 					+ "MimeFileCellFactory.java"));
 
@@ -170,7 +172,7 @@ public class NodeGenerator {
 
 				String factoryClass = copyNodeSources(ctdFile,
 						srcDir.getIconsDirectory(),
-						buildDir.getKnimeNodesDirectory(), meta);
+						pluginBuildDir.getKnimeNodesDirectory(), meta);
 
 				String absoluteCategory = "/" + meta.getNodeRepositoryRoot()
 						+ "/" + meta.getName() + "/"
@@ -180,58 +182,78 @@ public class NodeGenerator {
 
 			// src/[PACKAGE]/knime/PluginActivator.java
 			new PluginActivatorTemplate(meta.getPackageRoot(), configurations)
-					.write(new File(buildDir.getKnimeDirectory(),
+					.write(new File(pluginBuildDir.getKnimeDirectory(),
 							"PluginActivator.java"));
 
 			// src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
 			new PluginPreferencePageTemplate(meta.getPackageRoot())
-					.write(new File(new File(buildDir.getKnimeDirectory(),
-							"preferences"), "PluginPreferencePage.java"));
+					.write(new File(new File(
+							pluginBuildDir.getKnimeDirectory(), "preferences"),
+							"PluginPreferencePage.java"));
 
 			// icons/*
 			copyFolderIcon(srcDir.getIconsDirectory(),
-					buildDir.getIconsDirectory());
+					pluginBuildDir.getIconsDirectory());
 			registerSplashIcon(meta, pluginXML, srcDir.getIconsDirectory(),
-					buildDir.getIconsDirectory());
+					pluginBuildDir.getIconsDirectory());
 
 			// register preference page
 			pluginXML.registerPreferencePage(meta);
 
 			// plugin.xml
-			pluginXML.saveTo(buildDir.getPluginXml());
+			pluginXML.saveTo(pluginBuildDir.getPluginXml());
 
 			// .project
-			new ProjectTemplate(meta).write(buildDir.getProjectFile());
+			new ProjectTemplate(meta).write(pluginBuildDir.getProjectFile());
 
 			// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
 			new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
-					buildDir.getBinaryResourcesDirectory(),
+					pluginBuildDir.getBinaryResourcesDirectory(),
 					"BinaryResources.java"));
 
 			// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
 			if (srcDir.getPayloadDirectory() != null) {
-				srcDir.getPayloadDirectory().copyPayloadTo(
-						buildDir.getBinaryResourcesDirectory());
+				// create payload fragments
+				createPayloadFragments();
 			}
 
 			// copy assets
 			copyAsset(".classpath");
 
 			LOGGER.info("KNIME plugin sources successfully created in:\n\t"
-					+ buildDir);
+					+ pluginBuildDir);
 		} catch (Exception e) {
 			LOGGER.info("KNIME plugin source creation failed");
 			throw new NodeGeneratorException(e);
 		}
 	}
 
-	private void copyAsset(String assetResourcePath) throws IOException {
+	/**
+	 * Creates a separate fragment for each binaries_..zip file found in the
+	 * payload directory.
+	 */
+	private void createPayloadFragments() {
+		for (String payload : srcDir.getPayloadDirectory().list()) {
+			LOGGER.info("Create payload fragment for " + payload);
+
+			// srcDir.getPayloadDirectory().copyPayloadTo(
+			// buildDir.getBinaryResourcesDirectory());
+
+		}
+	}
+
+	private void copyAsset(String assetResourcePath, String targetPath)
+			throws IOException {
 		InputStream in = NodeGenerator.class.getResourceAsStream("assets/"
 				+ assetResourcePath);
-		FileWriter fileWriter = new FileWriter(new File(buildDir,
+		FileWriter fileWriter = new FileWriter(new File(targetPath,
 				assetResourcePath));
 		IOUtils.copy(in, fileWriter, "UTF-8");
 		fileWriter.close();
+	}
+
+	private void copyAsset(String assetResourcePath) throws IOException {
+		copyAsset(assetResourcePath, pluginBuildDir.getAbsolutePath());
 	}
 
 	public File getSourceDirectory() {
@@ -239,7 +261,7 @@ public class NodeGenerator {
 	}
 
 	public File getBuildDirectory() {
-		return buildDir;
+		return pluginBuildDir;
 	}
 
 	public String getPluginName() {
