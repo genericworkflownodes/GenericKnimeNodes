@@ -136,27 +136,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 *             In case of IO errors.
 	 */
 	private void extractBinaries() throws IOException {
-
-		// get platform and architecture identifiers
-		OperatingSystem os = OperatingSystem.getOS();
-		Architecture arch = Architecture.getArchitecture();
-
-		if (arch == Architecture.UNKNOWN) {
-			LOGGER.warning("Unexpected architecure detected: falling back to 32 bit");
-			arch = Architecture.X86;
-		}
-
-		boolean extracted64bitVersion = false;
-		if (arch == Architecture.X86_64) {
-			extracted64bitVersion = tryExtractPayloadZIP(
-					payloadDirectory.getPath(), os, arch.toString());
-		}
-
-		// check if previous attempt worked or the OS is 32bit only
-		if (!extracted64bitVersion) {
-			tryExtractPayloadZIP(payloadDirectory.getPath(), os,
-					Architecture.X86.toString());
-		}
+		tryExtractPayloadZIP(payloadDirectory.getPath());
 	}
 
 	/**
@@ -189,33 +169,26 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Tests if a zip file with the name binaries_{@p OperatingSystem}_{@p
-	 * data_model}.zip is available and extracts it.
+	 * Tests if a zip file with the name binaries.zip is available and extracts
+	 * it.
 	 * 
 	 * @param nodeBinariesDir
 	 *            Target directory where it should be extracted to
-	 * @param os
-	 *            Identifier of the operating system to extract the appropriate
-	 *            zip file
-	 * @param dataModel
-	 *            Identifier for the datamodel that should be extracted.
 	 * @return true if the specified zip file was found and extracted correctly.
 	 * @throws IOException
 	 *             Exception is thrown in case of io problems.
 	 */
-	private boolean tryExtractPayloadZIP(final File nodeBinariesDir,
-			final OperatingSystem os, final String dataModel)
+	private boolean tryExtractPayloadZIP(final File nodeBinariesDir)
 			throws IOException {
 		// check if a zip file for that combination of OS and data model exists
-		if (getBinaryLocation().getResourceAsStream(
-				getZipFileName(os, dataModel)) != null) {
+		if (getBinaryLocation().getResourceAsStream(getZipFileName()) != null) {
 			// extract it
 			ZipUtils.decompressTo(nodeBinariesDir, getBinaryLocation()
-					.getResourceAsStream(getZipFileName(os, dataModel)));
+					.getResourceAsStream(getZipFileName()));
 
 			// load the associated properties and store them as environment
 			// variable
-			loadEnvironmentVariables(nodeBinariesDir, os, dataModel);
+			loadEnvironmentVariables(nodeBinariesDir);
 			return true;
 		} else {
 			return false;
@@ -233,12 +206,11 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @throws IOException
 	 *             I thrown in case of IO errors.
 	 */
-	private void loadEnvironmentVariables(final File targetDirectory,
-			final OperatingSystem os, final String dataModel)
+	private void loadEnvironmentVariables(final File targetDirectory)
 			throws IOException {
 		Properties envProperites = new Properties();
 
-		File iniFile = new File(targetDirectory, getINIFileName(os, dataModel));
+		File iniFile = new File(targetDirectory, getINIFileName());
 
 		// check if we extracted also an ini file
 		if (!iniFile.exists()) {
@@ -266,24 +238,17 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 *            The data model (32 or 64 bit).
 	 * @return Returns a string like binaries_win_32.ini.
 	 */
-	private String getINIFileName(final OperatingSystem os,
-			final String dataModel) {
-		return "binaries_" + os + "_" + dataModel + ".ini";
+	private String getINIFileName() {
+		return "binaries.ini";
 	}
 
 	/**
-	 * Returns a correctly formated zip file name for the given combination of
-	 * os and dataModel.
+	 * Returns the zip file name in the binres package.
 	 * 
-	 * @param os
-	 *            The operating system.
-	 * @param dataModel
-	 *            The data model (32 or 64 bit).
-	 * @return Returns a string like binaries_win_32.zip.
+	 * @return Returns a string like binaries.zip.
 	 */
-	private String getZipFileName(final OperatingSystem os,
-			final String dataModel) {
-		return "binaries_" + os + "_" + dataModel + ".zip";
+	private String getZipFileName() {
+		return "binaries.zip";
 	}
 
 	/**

@@ -7,7 +7,7 @@ import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import __BASE__.knime.nodes.binres.BinaryResources;
+import __BASE__.knime.binres.BinaryResources;
 import __BASE__.knime.nodes.mimetypes.MimeFileCellFactory;
 
 public class PluginActivator extends GenericActivator {

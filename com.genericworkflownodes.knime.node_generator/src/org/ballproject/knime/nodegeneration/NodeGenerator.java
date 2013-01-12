@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -37,6 +39,7 @@ import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.base.util.Helper;
 import org.ballproject.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import org.ballproject.knime.nodegeneration.model.KNIMEPluginMeta;
+import org.ballproject.knime.nodegeneration.model.directories.FragmentDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.NodesSourceDirectory;
 import org.ballproject.knime.nodegeneration.model.directories.build.NodesBuildIconsDirectory;
@@ -46,6 +49,8 @@ import org.ballproject.knime.nodegeneration.model.directories.source.IconsDirect
 import org.ballproject.knime.nodegeneration.model.files.CTDFile;
 import org.ballproject.knime.nodegeneration.templates.BinaryResourcesTemplate;
 import org.ballproject.knime.nodegeneration.templates.BuildPropertiesTemplate;
+import org.ballproject.knime.nodegeneration.templates.FragmentBuildPropertiesTemplate;
+import org.ballproject.knime.nodegeneration.templates.FragmentManifestMFTemplate;
 import org.ballproject.knime.nodegeneration.templates.ManifestMFTemplate;
 import org.ballproject.knime.nodegeneration.templates.MimeFileCellFactoryTemplate;
 import org.ballproject.knime.nodegeneration.templates.NodeDialogTemplate;
@@ -61,6 +66,8 @@ import org.ballproject.knime.nodegeneration.util.Utils;
 import org.ballproject.knime.nodegeneration.writer.PropertiesWriter;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.custom.Architecture;
+import com.genericworkflownodes.knime.custom.OperatingSystem;
 
 /**
  * This class is responsible for generating KNIME plugins.
@@ -204,7 +211,8 @@ public class NodeGenerator {
 			pluginXML.saveTo(pluginBuildDir.getPluginXml());
 
 			// .project
-			new ProjectTemplate(meta).write(pluginBuildDir.getProjectFile());
+			new ProjectTemplate(meta.getPackageRoot()).write(pluginBuildDir
+					.getProjectFile());
 
 			// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
 			new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
@@ -231,13 +239,53 @@ public class NodeGenerator {
 	/**
 	 * Creates a separate fragment for each binaries_..zip file found in the
 	 * payload directory.
+	 * 
+	 * @throws NodeGeneratorException
 	 */
-	private void createPayloadFragments() {
+	private void createPayloadFragments() throws NodeGeneratorException {
+		Pattern payloadFormat = Pattern
+				.compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
+
 		for (String payload : srcDir.getPayloadDirectory().list()) {
 			LOGGER.info("Create payload fragment for " + payload);
 
-			// srcDir.getPayloadDirectory().copyPayloadTo(
-			// buildDir.getBinaryResourcesDirectory());
+			Matcher m = payloadFormat.matcher(payload);
+			if (!m.find()) {
+				LOGGER.warning("Ignoring incompatible file " + payload
+						+ " in payload directory.");
+			}
+
+			OperatingSystem sys = OperatingSystem.fromString(m.group(1));
+			Architecture arch = Architecture.fromString(m.group(2));
+
+			try {
+				FragmentDirectory fragmentDir = new FragmentDirectory(
+						baseBinaryDirectory, arch, sys, meta.getPackageRoot());
+
+				// create project file
+				new ProjectTemplate(meta.getPackageRoot() + "."
+						+ sys.toOSGIOS() + "." + arch.toOSGIArch())
+						.write(fragmentDir.getProjectFile());
+
+				// build.properties
+				new FragmentBuildPropertiesTemplate().write(fragmentDir
+						.getBuildProperties());
+
+				// manifest.mf
+				new FragmentManifestMFTemplate(meta, sys, arch)
+						.write(fragmentDir.getManifestMf());
+
+				// copy assets
+				copyAsset(".classpath", fragmentDir.getAbsolutePath());
+
+				// copy the binaries
+				fragmentDir.getBinaryResourcesDirectory().copyPayload(
+						new File(srcDir.getPayloadDirectory(), payload));
+
+			} catch (Exception e) {
+				throw new NodeGeneratorException(
+						"Could not create project for payload " + payload, e);
+			}
 
 		}
 	}

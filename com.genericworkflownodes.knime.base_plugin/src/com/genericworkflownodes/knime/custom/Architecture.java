@@ -26,7 +26,7 @@ package com.genericworkflownodes.knime.custom;
  * @author aiche
  * 
  */
-enum Architecture {
+public enum Architecture {
 	/**
 	 * The enum values.
 	 */
@@ -51,6 +51,16 @@ enum Architecture {
 		return thisArch;
 	}
 
+	public static Architecture fromString(final String arch) {
+		if ("64".equals(arch)) {
+			return X86_64;
+		} else if ("32".equals(arch)) {
+			return X86;
+		} else {
+			return UNKNOWN;
+		}
+	}
+
 	@Override
 	public String toString() {
 		String archAsString = "";
@@ -67,5 +77,21 @@ enum Architecture {
 		}
 
 		return archAsString;
+	}
+
+	public String toOSGIArch() {
+		String osgiArch = "";
+
+		switch (this) {
+		case X86:
+			osgiArch = "x86";
+			break;
+		case X86_64:
+			osgiArch = "x86_64";
+		default:
+			break;
+		}
+
+		return osgiArch;
 	}
 }

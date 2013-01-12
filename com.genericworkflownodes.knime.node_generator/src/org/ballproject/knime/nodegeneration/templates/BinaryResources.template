@@ -1,4 +1,4 @@
-package __BASE__.knime.nodes.binres;
+package __BASE__.knime.binres;
 
 public class BinaryResources {
 }

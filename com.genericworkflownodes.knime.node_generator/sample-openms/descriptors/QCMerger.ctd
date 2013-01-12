@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tool>
-<name>QCExporter</name>
+<name>QCMerger</name>
 <version>1.10.0</version>
 <description><![CDATA[produces qcml files]]></description>
 <manual><![CDATA[produces qcml files]]></manual>
 <docurl></docurl>
 <category></category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <NODE name="QCExporter" description="produces qcml files">
+  <NODE name="QCMerger" description="produces qcml files">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
-    <NODE name="1" description="Instance &apos;1&apos; section for &apos;QCExporter&apos;">
-      <ITEM name="in" value="" type="string" description="Input qcml file" tags="input file,required" supported_formats="*.qcML" />
-      <ITEM name="qp" value="" type="string" description="Target QualityParameter. (&apos;ticpoints&apos;: total ion current stats, &apos;precursorpoints&apos;: stats about the precursors from the rawfile, &apos;pepidpoints&apos;: identifications from the rawfile, &apos;featurepoints&apos;: stats about features from the rawfile, &apos;consensusstats&apos;: stats about consensus features from the rawfile)#br#" tags="required" restrictions="ticpoints,precursorpoints,pepidpoints,featurepoints,consensuspoints" />
-      <ITEM name="msrun_filename" value="" type="string" description="The name of the target raw file of the respective quality parameter." tags="required" />
-      <ITEM name="out_csv" value="" type="string" description="Output csv formated quality parameter or extended qcML file" tags="output file,required" supported_formats="*.csv" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;QCMerger&apos;">
+      <ITEMLIST name="in" type="string" description="List of qcml files to be merged." tags="input file,required" supported_formats="*.qcML">
+      </ITEMLIST>
+      <ITEM name="out" value="" type="string" description="Output extended/reduced qcML file" tags="output file,required" supported_formats="*.qcML" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />

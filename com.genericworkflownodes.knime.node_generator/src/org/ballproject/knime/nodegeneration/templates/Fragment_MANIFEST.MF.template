@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Generic Workflow Nodes - KNIME plugin @@pluginName@@ - Platform @@os@@-@@arch@@ Fragment  
+Bundle-SymbolicName: @@packageName@@.@@os@@.@@arch@@;singleton:=true
+Bundle-Version: @@pluginVersion@@
+Fragment-Host: @@packageName@@;bundle-version="@@pluginVersion@@"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-PlatformFilter: (& (osgi.arch=@@arch@@) (osgi.os=@@os@@))

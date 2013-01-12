@@ -3,27 +3,16 @@ The plugins built using the GenericKnimeNodes functionality need the binary prog
 executed by each node to reside in a payload directory containing special zip archives.
 For each target platform (mac, lnx, win) there has to be a zip archive.
 
-For each supported platform the payload directory should contain two files :
+For each supported platform the payload directory should contain such a file :
 
-- binaries_<platform>_<wordsize>.ini - a ini file containing needed environment variables
 - binaries_<platform>_<wordsize>.zip - a zip file containing a bin folder with executable 
-  binaries, a lib folder with needed libraries and an optional data directory
+  binaries, a lib folder with needed libraries, an ini-file and an optional data directory
   
 Where <platform> is either: win, mac or lnx and <wordsize> 32 or 64.  
 
+As an example the binaries_lnx_64.zip content could look like this :
 
-
-For Linux 64 bit systems as target a ini-file named 
-
-binaries_lnx_64.ini
-
-might look like :
-
-LD_LIBRARY_PATH=$ROOT/lib/
-DATA_PATH=$ROOT/data/
- 
-The corresponding binaries_lnx_64.zip content would look like this :
-
+ binaries.ini
  bin/
   |
   +---  foo
@@ -35,15 +24,19 @@ The corresponding binaries_lnx_64.zip content would look like this :
  data/
   |
   +---- data.dat 
-  
+ 
  where foo and bar are executable binaries placed in the bin directory, baz.so is 
  a needed library that is placed in the lib directory. The data directory contains
- a file with some addtional data foo or bar might need during execution.
+ a file with some additional data foo or bar might need during execution.
  
+ The binaries.ini file might look like:
+
+LD_LIBRARY_PATH=$ROOT/lib/
+DATA_PATH=$ROOT/data/
+
  
-So fo each target OS and word size you need to prepare a corresponding pair of files
-(binaries_<platform>_<wordsize>.ini,binaries_<platform>_<wordsize>.zip) that all reside
-in a payload directory. The contents of the whole payload directory will be packaged
-into the final plugin jar and (depending on the execution platform) will be extracted
-upon execution on a host system.
+So fo each target OS and word size you need to prepare a corresponding zip file
+(binaries_<platform>_<wordsize>.zip) that resides in a payload directory. The contents
+of the whole payload directory will be packaged into individual fragments which will be
+specific for the execution platform and will be extracted upon execution on a host system.
 
