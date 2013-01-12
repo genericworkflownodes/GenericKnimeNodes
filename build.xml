@@ -229,7 +229,7 @@
 
 	<target name="custom.plugin.generate_sources" description="run node generator">
 		<echo message="${toString:nodegenerator.exec.classpath}" />
-		<java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
+		<java classname="com.genericworkflownodes.knime.nodegeneration.Main" failonerror="true" fork="true">
 			<!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
 			<!-- handle the to long classpath -->
 			<env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}" />

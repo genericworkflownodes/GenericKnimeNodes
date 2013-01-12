@@ -1,0 +1,24 @@
+package __BASE__.knime.nodes.mimetypes;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MimeFileCellFactory {
+	private static MimeFileCellFactory inst;
+
+	private List<String> mimetypes = new ArrayList<String>();
+
+	public static MimeFileCellFactory getInstance() {
+		if (inst == null)
+			inst = new MimeFileCellFactory();
+		return inst;
+	}
+
+	private MimeFileCellFactory() {
+		__MIMETYPES__
+	}
+
+	public List<String> getMimeTypes() {
+		return mimetypes;
+	}
+}
