@@ -18,7 +18,7 @@
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
       <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="id_pool" value="" type="string" description="ID pool file to DocumentID&apos;s for all generated output files. Disabled by default. (Set to &apos;main&apos; to use /Users/aiche/dev/openms/openms-src/share/OpenMS//IDPool/IDPool.txt)" />
+      <ITEM name="id_pool" value="" type="string" description="ID pool file to DocumentID&apos;s for all generated output files. Disabled by default. (Set to &apos;main&apos; to use /Users/aiche/dev/openms/openms-src/share/OpenMS/IDPool/IDPool.txt)" />
       <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
       <NODE name="algorithm" description="Algorithm parameters section">
         <NODE name="Extraction" description="">

@@ -24,7 +24,7 @@ package com.genericworkflownodes.knime.custom;
  * 
  * @author aiche
  */
-enum OperatingSystem {
+public enum OperatingSystem {
 	/**
 	 * The enum values.
 	 */
@@ -49,6 +49,16 @@ enum OperatingSystem {
 		return thisOS;
 	}
 
+	public static OperatingSystem fromString(final String os) {
+		if ("win".equals(os)) {
+			return WIN;
+		} else if ("mac".equals(os)) {
+			return MAC;
+		} else {
+			return UNIX;
+		}
+	}
+
 	@Override
 	public String toString() {
 		String osAsString = "unknown";
@@ -66,5 +76,23 @@ enum OperatingSystem {
 			break;
 		}
 		return osAsString;
+	}
+
+	public String toOSGIOS() {
+		String osgiOSString = "unknown";
+		switch (this) {
+		case WIN:
+			osgiOSString = "win32";
+			break;
+		case UNIX:
+			osgiOSString = "linux";
+			break;
+		case MAC:
+			osgiOSString = "macosx";
+			break;
+		default:
+			break;
+		}
+		return osgiOSString;
 	}
 }

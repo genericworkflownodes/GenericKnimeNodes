@@ -1,0 +1,43 @@
+package __BASE__.knime;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.osgi.framework.BundleContext;
+
+import com.genericworkflownodes.knime.custom.GenericActivator;
+import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import __BASE__.knime.binres.BinaryResources;
+import __BASE__.knime.nodes.mimetypes.MimeFileCellFactory;
+
+public class PluginActivator extends GenericActivator {
+
+	private static PluginActivator INSTANCE = null;
+	private static List<ExternalTool> TOOLS = Arrays.asList(__EXTERNAL_TOOLS__); 
+
+	@Override
+	public void start(final BundleContext context) throws Exception {
+		super.start(context);
+		initializePlugin();
+		INSTANCE = this;
+	}
+
+	@Override
+	public List<String> getMIMETypes() {
+		return MimeFileCellFactory.getInstance().getMimeTypes();
+	}
+
+	@Override
+	public Class<?> getBinaryLocation() {
+		return BinaryResources.class;
+	}
+	
+	public static PluginActivator getInstance() {
+		return INSTANCE;
+	}
+	
+	@Override
+	public List<ExternalTool> getTools() {
+		return TOOLS;
+	}
+}

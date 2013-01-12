@@ -16,6 +16,9 @@ public class Directory extends File {
 	public Directory(File directory) throws FileNotFoundException {
 		super(directory.getAbsolutePath());
 
+		if (!directory.exists())
+			mkdirs();
+
 		if (!directory.isDirectory()) {
 			throw new FileNotFoundException();
 		}
