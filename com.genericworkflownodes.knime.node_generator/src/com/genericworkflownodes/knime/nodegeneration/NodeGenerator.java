@@ -66,6 +66,9 @@ import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTe
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureBuildPropertiesTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureProjectTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 import com.genericworkflownodes.knime.nodegeneration.writer.PropertiesWriter;
 
@@ -121,11 +124,17 @@ public class NodeGenerator {
 			if (buildDir == null)
 				throw new NodeGeneratorException("buildDir must not be null");
 
+			baseBinaryDirectory = new Directory(buildDir);
+			if (baseBinaryDirectory.list().length != 0) {
+				LOGGER.warning("The given buildDir is not empty: Will clean the directory.");
+				for (File file : baseBinaryDirectory.listFiles())
+					FileUtils.deleteDirectory(file);
+			}
+
 			srcDir = new NodesSourceDirectory(sourceDir);
 			meta = new KNIMEPluginMeta(srcDir.getProperties());
 			pluginBuildDir = new NodesBuildDirectory(buildDir,
 					meta.getPackageRoot());
-			baseBinaryDirectory = new Directory(buildDir);
 		} catch (Exception e) {
 			throw new NodeGeneratorException(e);
 		}
@@ -228,6 +237,9 @@ public class NodeGenerator {
 			// copy assets
 			copyAsset(".classpath");
 
+			// create feature
+			generateFeature();
+
 			LOGGER.info("KNIME plugin sources successfully created in:\n\t"
 					+ pluginBuildDir);
 		} catch (Exception e) {
@@ -288,6 +300,24 @@ public class NodeGenerator {
 			}
 
 		}
+	}
+
+	private void generateFeature() throws IOException {
+		String[] packages = baseBinaryDirectory.list();
+
+		// create feature directory
+		Directory featureDir = new Directory(new File(baseBinaryDirectory,
+				meta.getPackageRoot() + ".feature"));
+
+		// find all packages in the current directory
+		new FeatureBuildPropertiesTemplate().write(new File(featureDir,
+				"build.properties"));
+
+		new FeatureXMLTemplate(meta, packages).write(new File(featureDir,
+				"feature.xml"));
+
+		new FeatureProjectTemplate(meta.getPackageRoot()).write(new File(
+				featureDir, ".project"));
 	}
 
 	private void copyAsset(String assetResourcePath, String targetPath)
