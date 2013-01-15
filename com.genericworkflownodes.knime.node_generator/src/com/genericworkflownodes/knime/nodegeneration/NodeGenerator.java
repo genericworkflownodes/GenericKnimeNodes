@@ -53,22 +53,23 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.source.Ic
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
 import com.genericworkflownodes.knime.nodegeneration.templates.BinaryResourcesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.FragmentBuildPropertiesTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.FragmentManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.MimeFileCellFactoryTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.NodeDialogTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.NodeFactoryTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.NodeFactoryXMLTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.NodeModelTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.NodeViewTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.StartupTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentBuildPropertiesTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentManifestMFTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeDialogTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryXMLTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeModelTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeViewTemplate;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 import com.genericworkflownodes.knime.nodegeneration.writer.PropertiesWriter;
 
@@ -201,6 +202,11 @@ public class NodeGenerator {
 					.write(new File(pluginBuildDir.getKnimeDirectory(),
 							"PluginActivator.java"));
 
+			// src/[PACKAGE]/knime/PluginActivator.java
+			new StartupTemplate(meta.getPackageRoot(), meta.getName())
+					.write(new File(pluginBuildDir.getKnimeDirectory(),
+							"Startup.java"));
+
 			// src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
 			new PluginPreferencePageTemplate(meta.getPackageRoot())
 					.write(new File(new File(
@@ -215,6 +221,9 @@ public class NodeGenerator {
 
 			// register preference page
 			pluginXML.registerPreferencePage(meta);
+
+			// register startup
+			pluginXML.registerStartupClass(meta);
 
 			// plugin.xml
 			pluginXML.saveTo(pluginBuildDir.getPluginXml());
