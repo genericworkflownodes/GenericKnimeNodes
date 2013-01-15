@@ -385,4 +385,5 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @return Returns the {@link Class} where the binaries are located.
 	 */
 	public abstract Class<?> getBinaryLocation();
+
 }
