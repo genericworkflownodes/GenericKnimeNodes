@@ -160,7 +160,7 @@ public class NodeFactoryXMLTemplate extends Template {
 			throws IOException {
 		super(
 				NodeGenerator.class
-						.getResourceAsStream("templates/knime_nodes/NodeXMLDescriptor.template"));
+						.getResourceAsStream("templates/knime_node/NodeXMLDescriptor.template"));
 
 		replace("__ICON__", iconPath);
 		replace("__NODENAME__", nodeName);

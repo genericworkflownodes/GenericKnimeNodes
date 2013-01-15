@@ -11,7 +11,7 @@ public class NodeDialogTemplate extends Template {
 			throws IOException {
 		super(
 				NodeGenerator.class
-						.getResourceAsStream("templates/knime_nodes/NodeDialog.template"));
+						.getResourceAsStream("templates/knime_node/NodeDialog.template"));
 
 		this.replace("__BASE__", packageName);
 		this.replace("__NODENAME__", nodeName);

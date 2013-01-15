@@ -13,9 +13,8 @@ public class NodeModelTemplate extends Template {
 	public NodeModelTemplate(String packageName, String nodeName,
 			INodeConfiguration nodeConfiguration) throws IOException,
 			UnknownMimeTypeException {
-		super(
-				NodeGenerator.class
-						.getResourceAsStream("templates/knime_nodes/NodeModel.template"));
+		super(NodeGenerator.class
+				.getResourceAsStream("templates/knime_node/NodeModel.template"));
 
 		this.replace("__BASE__", packageName);
 		this.replace("__NODENAME__", nodeName);

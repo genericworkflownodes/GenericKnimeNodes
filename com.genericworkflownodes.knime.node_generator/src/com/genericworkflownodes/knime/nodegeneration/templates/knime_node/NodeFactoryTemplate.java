@@ -11,7 +11,7 @@ public class NodeFactoryTemplate extends Template {
 			throws IOException {
 		super(
 				NodeGenerator.class
-						.getResourceAsStream("templates/knime_nodes/NodeFactory.template"));
+						.getResourceAsStream("templates/knime_node/NodeFactory.template"));
 
 		this.replace("__BASE__", packageName);
 		this.replace("__NODENAME__", nodeName);
