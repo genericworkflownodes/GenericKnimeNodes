@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.custom;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,15 +57,21 @@ public class MissingBinariesDialog extends Dialog {
 	private Button btnDoNotShow;
 
 	/**
+	 * The preference of the started plugin.
+	 */
+	private IPreferenceStore m_preferenceStore;
+
+	/**
 	 * Create the dialog.
 	 * 
 	 * @param parentShell
 	 */
 	public MissingBinariesDialog(Shell parentShell, final String bundleName,
-			final String preferencePageId) {
+			final String preferencePageId, IPreferenceStore preferenceStore) {
 		super(parentShell);
 		m_bundleName = bundleName;
 		m_preferencePageId = preferencePageId;
+		m_preferenceStore = preferenceStore;
 	}
 
 	/**
@@ -123,10 +130,9 @@ public class MissingBinariesDialog extends Dialog {
 		btnDoNotShow.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (btnDoNotShow.getSelection())
-					System.out.println("Show this warning again.");
-				else
-					System.out.println("Do not show this warning again.");
+				m_preferenceStore.setValue(
+						GenericStartup.PREFERENCE_WARN_IF_BINARIES_ARE_MISSING,
+						btnDoNotShow.getSelection());
 			}
 		});
 		btnDoNotShow.setText("Show this warning again.");

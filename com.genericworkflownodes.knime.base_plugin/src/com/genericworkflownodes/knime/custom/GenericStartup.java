@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.custom;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
@@ -34,6 +35,8 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.Tool
  * 
  */
 public class GenericStartup implements IStartup {
+
+	public static final String PREFERENCE_WARN_IF_BINARIES_ARE_MISSING = "WARN_IF_BINARIES_ARE_MISSING";
 
 	/**
 	 * The central static logger.
@@ -57,6 +60,11 @@ public class GenericStartup implements IStartup {
 	private final String m_pluginName;
 
 	/**
+	 * The preference of the started plugin.
+	 */
+	private IPreferenceStore m_preferenceStore;
+
+	/**
 	 * Create the GenericStartup with the name of the plugin. The name is used
 	 * to build the dialogs and find the correct pref-page.
 	 * 
@@ -67,10 +75,14 @@ public class GenericStartup implements IStartup {
 	 *            binaries.
 	 */
 	public GenericStartup(final String bundleName,
-			final String preferencePageId, final String pluginName) {
+			final String preferencePageId, final String pluginName,
+			IPreferenceStore preferenceStore) {
 		m_bundleName = bundleName;
 		m_preferencePageId = preferencePageId;
 		m_pluginName = pluginName;
+		m_preferenceStore = preferenceStore;
+		m_preferenceStore.setDefault(PREFERENCE_WARN_IF_BINARIES_ARE_MISSING,
+				true);
 	}
 
 	/*
@@ -81,7 +93,9 @@ public class GenericStartup implements IStartup {
 	@Override
 	public void earlyStartup() {
 		try {
-			if (findUnitializedBinaries().size() == 0) {
+			if (!findUnitializedBinaries().isEmpty()
+					&& m_preferenceStore
+							.getBoolean(PREFERENCE_WARN_IF_BINARIES_ARE_MISSING)) {
 				PlatformUI.getWorkbench().getDisplay()
 						.asyncExec(new Runnable() {
 							@Override
@@ -89,7 +103,8 @@ public class GenericStartup implements IStartup {
 								MissingBinariesDialog mbDialog = new MissingBinariesDialog(
 										PlatformUI.getWorkbench().getDisplay()
 												.getActiveShell(),
-										m_bundleName, m_preferencePageId);
+										m_bundleName, m_preferencePageId,
+										m_preferenceStore);
 								mbDialog.create();
 								mbDialog.open();
 							}
