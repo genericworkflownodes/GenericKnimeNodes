@@ -44,7 +44,7 @@ public class PluginXMLTemplate {
 		SAXReader reader = new SAXReader();
 		reader.setDocumentFactory(new DOMDocumentFactory());
 
-		this.doc = reader.read(new FileInputStream(temp));
+		doc = reader.read(new FileInputStream(temp));
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class PluginXMLTemplate {
 	 * @throws IOException
 	 */
 	public void saveTo(File dest) throws IOException {
-		Utils.writeDocumentTo(this.doc, dest);
+		Utils.writeDocumentTo(doc, dest);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class PluginXMLTemplate {
 		if (splashIcon == null) {
 			return;
 		}
-		Node node = this.doc
+		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
 		Element elem = (Element) node;
 		elem.addElement("splashExtension")
@@ -97,18 +97,18 @@ public class PluginXMLTemplate {
 			return;
 		}
 
-		if (this.registeredPrefixed.contains(path)) {
+		if (registeredPrefixed.contains(path)) {
 			return;
 		}
 
 		LOGGER.info("Registering path prefix: " + path);
 
-		this.registeredPrefixed.add(path);
+		registeredPrefixed.add(path);
 
 		String categoryName = Utils.getPathSuffix(path);
 		String categoryPath = Utils.getPathPrefix(path);
 
-		Node node = this.doc
+		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
 
 		Element elem = (Element) node;
@@ -126,7 +126,7 @@ public class PluginXMLTemplate {
 		LOGGER.info("registering Node " + clazz);
 		this.registerPath(path);
 
-		Node node = this.doc
+		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
 		Element elem = (Element) node;
 
@@ -135,7 +135,7 @@ public class PluginXMLTemplate {
 	}
 
 	public void registerPreferencePage(KNIMEPluginMeta meta) {
-		Node node = this.doc
+		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
 
 		String category = "com.genericworkflownodes.knime.preferences.PreferencePage";
@@ -149,6 +149,19 @@ public class PluginXMLTemplate {
 				.addAttribute("category", category)
 				.addAttribute("class", clazz).addAttribute("id", id)
 				.addAttribute("name", name);
+
+	}
+
+	public void registerStartupClass(KNIMEPluginMeta meta) {
+		Node node = doc
+				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
+
+		String clazzName = meta.getPackageRoot() + ".knime.Startup";
+
+		// <startup class="de.openms.knime.Startup" />
+		Element startupExtensionPoint = (Element) node;
+		startupExtensionPoint.addElement("startup").addAttribute("class",
+				clazzName);
 
 	}
 }

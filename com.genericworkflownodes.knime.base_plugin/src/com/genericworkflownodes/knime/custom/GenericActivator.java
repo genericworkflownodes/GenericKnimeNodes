@@ -33,6 +33,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
@@ -385,5 +386,12 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @return Returns the {@link Class} where the binaries are located.
 	 */
 	public abstract Class<?> getBinaryLocation();
+
+	/**
+	 * Gives access to the plugin config of the derived plugin.
+	 * 
+	 * @return The plugin config.
+	 */
+	public abstract IPluginConfiguration getPluginConfiguration();
 
 }

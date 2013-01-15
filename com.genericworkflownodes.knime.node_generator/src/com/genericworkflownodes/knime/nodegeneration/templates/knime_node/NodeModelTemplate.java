@@ -1,11 +1,11 @@
-package com.genericworkflownodes.knime.nodegeneration.templates;
+package com.genericworkflownodes.knime.nodegeneration.templates.knime_node;
 
 import java.io.IOException;
-
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.UnknownMimeTypeException;
+import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 import com.genericworkflownodes.knime.port.Port;
 
 public class NodeModelTemplate extends Template {
@@ -13,8 +13,9 @@ public class NodeModelTemplate extends Template {
 	public NodeModelTemplate(String packageName, String nodeName,
 			INodeConfiguration nodeConfiguration) throws IOException,
 			UnknownMimeTypeException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/NodeModel.template"));
+		super(
+				NodeGenerator.class
+						.getResourceAsStream("templates/knime_nodes/NodeModel.template"));
 
 		this.replace("__BASE__", packageName);
 		this.replace("__NODENAME__", nodeName);

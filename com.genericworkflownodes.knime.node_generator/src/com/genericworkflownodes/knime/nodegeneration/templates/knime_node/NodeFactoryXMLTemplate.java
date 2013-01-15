@@ -1,13 +1,13 @@
-package com.genericworkflownodes.knime.nodegeneration.templates;
+package com.genericworkflownodes.knime.nodegeneration.templates.knime_node;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
+import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -158,8 +158,9 @@ public class NodeFactoryXMLTemplate extends Template {
 	public NodeFactoryXMLTemplate(final String nodeName,
 			final INodeConfiguration nodeConfiguration, final String iconPath)
 			throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/NodeXMLDescriptor.template"));
+		super(
+				NodeGenerator.class
+						.getResourceAsStream("templates/knime_nodes/NodeXMLDescriptor.template"));
 
 		replace("__ICON__", iconPath);
 		replace("__NODENAME__", nodeName);

@@ -50,6 +50,9 @@ public class MissingBinariesDialog extends Dialog {
 	 */
 	private final String m_preferencePageId;
 
+	/**
+	 * The checkbox to disable this warning.
+	 */
 	private Button btnDoNotShow;
 
 	/**
@@ -77,12 +80,14 @@ public class MissingBinariesDialog extends Dialog {
 		gl_container.marginHeight = 15;
 		container.setLayout(gl_container);
 
+		// The warning icon
 		Label lblWarning = new Label(container, SWT.NONE);
 		lblWarning.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
 				1, 1));
 		lblWarning.setImage(Display.getCurrent().getSystemImage(
 				SWT.ICON_WARNING));
 
+		// The textfield containing the link to the preference dialog
 		Link linkMissingBinariesPlease = new Link(container, SWT.NONE);
 		linkMissingBinariesPlease.setLayoutData(new GridData(SWT.FILL,
 				SWT.FILL, true, true, 1, 1));
@@ -102,16 +107,17 @@ public class MissingBinariesDialog extends Dialog {
 							.format("Not all nodes of the plugin %s are associated with a valid binary.",
 									m_bundleName));
 
-					// this is call is blocking
+					// Open the Pref dialog
 					prefDialog.open();
 
-					// close the window
+					// close this window
 					MissingBinariesDialog.this.close();
 				}
 			}
 		});
 		new Label(container, SWT.NONE);
 
+		// The check box for do not show again
 		btnDoNotShow = new Button(container, SWT.CHECK);
 		btnDoNotShow.setSelection(true);
 		btnDoNotShow.addSelectionListener(new SelectionAdapter() {

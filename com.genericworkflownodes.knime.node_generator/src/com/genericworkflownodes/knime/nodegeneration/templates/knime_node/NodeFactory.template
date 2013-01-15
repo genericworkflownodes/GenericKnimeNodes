@@ -1,9 +1,5 @@
 package __BASE__.knime.nodes.__NODENAME__;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
-import com.genericworkflownodes.knime.config.PluginConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeFactory;
@@ -26,18 +22,9 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 			e.printStackTrace();
 		}
 		
-		// create plugin config
-		pluginConfig = createPluginConfig();
+		// get the plugin config from the PluginActivator
+		pluginConfig = PluginActivator.getInstance().getPluginConfiguration();
 	}	
-	
-	private IPluginConfiguration createPluginConfig()
-	{
-		// create pluginConfig
-		final IPreferenceStore pStore = PluginActivator.getInstance().getPreferenceStore();
-	
-		return new PluginConfiguration("__BASE__", pStore.getString("binaries_path"),
-			PluginActivator.getInstance().getProperties(), PluginActivator.getInstance().getEnvironment());
-	}
 	
 	@Override
 	public __NODENAME__NodeModel createNodeModel()

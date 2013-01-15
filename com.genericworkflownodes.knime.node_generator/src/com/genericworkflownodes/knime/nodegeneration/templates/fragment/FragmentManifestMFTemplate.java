@@ -1,19 +1,20 @@
-package com.genericworkflownodes.knime.nodegeneration.templates;
+package com.genericworkflownodes.knime.nodegeneration.templates.fragment;
 
 import java.io.IOException;
-
 
 import com.genericworkflownodes.knime.custom.Architecture;
 import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.model.KNIMEPluginMeta;
+import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
 public class FragmentManifestMFTemplate extends Template {
 
 	public FragmentManifestMFTemplate(KNIMEPluginMeta pluginMeta,
 			OperatingSystem os, Architecture arch) throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/Fragment_MANIFEST.MF.template"));
+		super(
+				NodeGenerator.class
+						.getResourceAsStream("templates/fragment/Fragment_MANIFEST.MF.template"));
 
 		this.replace("@@pluginName@@", pluginMeta.getName());
 		this.replace("@@pluginVersion@@", pluginMeta.getVersion());
