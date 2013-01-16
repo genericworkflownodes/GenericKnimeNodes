@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <feature url="features/com.genericworkflownodes.knime.base_0.7.0.qualifier.jar" id="com.genericworkflownodes.knime.base" version="0.7.0.qualifier"/>
-</site>
