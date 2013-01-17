@@ -24,7 +24,6 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**
  * <code>NodeFactory</code> for the "GenericKnimeNode" Node.
@@ -35,8 +34,10 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 public abstract class GenericKnimeNodeFactory extends
 		NodeFactory<GenericKnimeNodeModel> {
 
-	protected INodeConfiguration config;
-	protected IPluginConfiguration pluginConfig;
+	/**
+	 * The node configuration of the underlying node.
+	 */
+	protected INodeConfiguration m_nodeConfig;
 
 	public GenericKnimeNodeFactory() {
 	}

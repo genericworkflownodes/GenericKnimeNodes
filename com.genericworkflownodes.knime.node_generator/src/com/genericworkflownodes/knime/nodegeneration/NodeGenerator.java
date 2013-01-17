@@ -129,7 +129,10 @@ public class NodeGenerator {
 			if (baseBinaryDirectory.list().length != 0) {
 				LOGGER.warning("The given buildDir is not empty: Will clean the directory.");
 				for (File file : baseBinaryDirectory.listFiles())
-					FileUtils.deleteDirectory(file);
+					if (file.isDirectory())
+						FileUtils.deleteDirectory(file);
+					else
+						file.delete();
 			}
 
 			srcDir = new NodesSourceDirectory(sourceDir);
