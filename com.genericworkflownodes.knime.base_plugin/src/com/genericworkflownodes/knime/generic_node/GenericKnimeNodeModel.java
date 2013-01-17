@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.ballproject.knime.base.util.FileStash;
 import org.ballproject.knime.base.util.Helper;
+import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -58,6 +59,8 @@ import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
+import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -355,6 +358,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
+
+		// Test if the named tool exists in the tool-db, if not throws an
+		// exception to tell the user that the executable is missing.
+		checkIfToolExists();
+
 		for (Parameter<?> param : nodeConfig.getParameters()) {
 			// System.out.println(param.getKey()+" "+param.getIsOptional()+" "+param.isNull()+" |"+param.getStringRep());
 			if (!param.isOptional() && param.getValue() != null
@@ -408,6 +416,34 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		outspec_ = createOutSpec();
 
 		return outspec_;
+	}
+
+	private void checkIfToolExists() throws InvalidSettingsException {
+		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+				.getWorkbench().getService(IToolLocatorService.class);
+
+		try {
+
+			if (toolLocator == null) {
+				throw new InvalidSettingsException(
+						"Could not find matching ToolLocatorService.");
+			}
+
+			File executable = toolLocator.getToolPath(new ExternalTool(
+					pluginConfig.getPluginName(), nodeConfig.getName()));
+
+			if (executable == null) {
+				throw new InvalidSettingsException(
+						"Neither externally configured nor shipped "
+								+ "binaries exist for this node. Aborting execution.");
+			}
+		} catch (InvalidSettingsException ex) {
+			throw ex;
+		} catch (Exception ex) {
+			throw new InvalidSettingsException(
+					"Failed to find a matching executable in the Tool Registry. "
+							+ ex.getMessage());
+		}
 	}
 
 	protected PortObjectSpec[] createOutSpec() {
