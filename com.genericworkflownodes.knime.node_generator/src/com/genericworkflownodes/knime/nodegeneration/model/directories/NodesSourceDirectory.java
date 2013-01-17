@@ -24,6 +24,11 @@ public class NodesSourceDirectory extends Directory {
 	private DescriptorsDirectory descriptorsDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
 	private IconsDirectory iconsDirectory = null;
+
+	private File descriptionFile;
+	private File copyrightFile;
+	private File licenseFile;
+
 	private Properties properties = null;
 
 	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
@@ -66,6 +71,28 @@ public class NodesSourceDirectory extends Directory {
 		} catch (IOException e) {
 			throw new IOException("Could not load property file", e);
 		}
+
+		descriptionFile = new File(nodeSourceDirectory, "DESCRIPTION");
+		if (!descriptionFile.exists()) {
+			throw new FileNotFoundException(
+					"DESCRIPTION file not found in source directory. Expected in: "
+							+ descriptionFile.getAbsolutePath());
+		}
+
+		copyrightFile = new File(nodeSourceDirectory, "COPYRIGHT");
+		if (!copyrightFile.exists()) {
+			throw new FileNotFoundException(
+					"COPYRIGHT file not found in source directory. Expected in: "
+							+ copyrightFile.getAbsolutePath());
+		}
+
+		licenseFile = new File(nodeSourceDirectory, "LICENSE");
+		if (!licenseFile.exists()) {
+			throw new FileNotFoundException(
+					"LICENSE file not found in source directory. Expected in: "
+							+ licenseFile.getAbsolutePath());
+		}
+
 	}
 
 	public DescriptorsDirectory getDescriptorsDirectory() {
@@ -95,4 +122,17 @@ public class NodesSourceDirectory extends Directory {
 	public List<MimeType> getMimeTypes() {
 		return this.descriptorsDirectory.getMimeTypesFile().getMimeTypes();
 	}
+
+	public File getDescriptionFile() {
+		return descriptionFile;
+	}
+
+	public File getCopyrightFile() {
+		return copyrightFile;
+	}
+
+	public File getLicenseFile() {
+		return licenseFile;
+	}
+
 }
