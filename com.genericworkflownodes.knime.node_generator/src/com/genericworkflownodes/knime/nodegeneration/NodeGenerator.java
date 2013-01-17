@@ -42,7 +42,6 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.Architecture;
 import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.UnknownMimeTypeException;
-import com.genericworkflownodes.knime.nodegeneration.model.KNIMEPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.FragmentDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
@@ -51,6 +50,9 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.build.Nod
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.FeatureMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.templates.BinaryResourcesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
@@ -100,7 +102,9 @@ public class NodeGenerator {
 	}
 
 	private final NodesSourceDirectory srcDir;
-	private final KNIMEPluginMeta meta;
+	private final GeneratedPluginMeta generatedPluginMeta;
+	private final FeatureMeta featureMeta;
+	private List<FragmentMeta> fragmentMetas;
 	private NodesBuildDirectory pluginBuildDir;
 
 	/**
@@ -137,9 +141,11 @@ public class NodeGenerator {
 			}
 
 			srcDir = new NodesSourceDirectory(sourceDir);
-			meta = new KNIMEPluginMeta(srcDir.getProperties());
+			generatedPluginMeta = new GeneratedPluginMeta(srcDir);
+			featureMeta = new FeatureMeta(srcDir, generatedPluginMeta);
 			pluginBuildDir = new NodesBuildDirectory(buildDir,
-					meta.getPackageRoot());
+					generatedPluginMeta.getPackageRoot());
+			fragmentMetas = new ArrayList<FragmentMeta>();
 		} catch (Exception e) {
 			throw new NodeGeneratorException(e);
 		}
@@ -160,7 +166,8 @@ public class NodeGenerator {
 					.getBuildProperties());
 
 			// META-INF/MANIFEST.MF
-			new ManifestMFTemplate(meta).write(pluginBuildDir.getManifestMf());
+			new ManifestMFTemplate(generatedPluginMeta).write(pluginBuildDir
+					.getManifestMf());
 
 			// src/[PACKAGE]/knime/plugin.properties
 			new PropertiesWriter(new File(pluginBuildDir.getKnimeDirectory(),
@@ -175,10 +182,11 @@ public class NodeGenerator {
 			});
 
 			// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
-			new MimeFileCellFactoryTemplate(meta.getPackageRoot(),
-					srcDir.getMimeTypes()).write(new File(pluginBuildDir
-					.getKnimeNodesDirectory(), "mimetypes" + File.separator
-					+ "MimeFileCellFactory.java"));
+			new MimeFileCellFactoryTemplate(
+					generatedPluginMeta.getPackageRoot(), srcDir.getMimeTypes())
+					.write(new File(pluginBuildDir.getKnimeNodesDirectory(),
+							"mimetypes" + File.separator
+									+ "MimeFileCellFactory.java"));
 
 			PluginXMLTemplate pluginXML = new PluginXMLTemplate();
 			List<String> nodeNames = new LinkedList<String>();
@@ -193,26 +201,29 @@ public class NodeGenerator {
 
 				String factoryClass = copyNodeSources(ctdFile,
 						srcDir.getIconsDirectory(),
-						pluginBuildDir.getKnimeNodesDirectory(), meta);
+						pluginBuildDir.getKnimeNodesDirectory(),
+						generatedPluginMeta);
 
-				String absoluteCategory = "/" + meta.getNodeRepositoryRoot()
-						+ "/" + meta.getName() + "/"
+				String absoluteCategory = "/"
+						+ generatedPluginMeta.getNodeRepositoryRoot() + "/"
+						+ generatedPluginMeta.getName() + "/"
 						+ ctdFile.getNodeConfiguration().getCategory();
 				pluginXML.registerNode(factoryClass, absoluteCategory);
 			}
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new PluginActivatorTemplate(meta.getPackageRoot(), configurations)
-					.write(new File(pluginBuildDir.getKnimeDirectory(),
-							"PluginActivator.java"));
+			new PluginActivatorTemplate(generatedPluginMeta.getPackageRoot(),
+					configurations).write(new File(pluginBuildDir
+					.getKnimeDirectory(), "PluginActivator.java"));
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new StartupTemplate(meta.getPackageRoot(), meta.getName())
-					.write(new File(pluginBuildDir.getKnimeDirectory(),
-							"Startup.java"));
+			new StartupTemplate(generatedPluginMeta.getPackageRoot(),
+					generatedPluginMeta.getName()).write(new File(
+					pluginBuildDir.getKnimeDirectory(), "Startup.java"));
 
 			// src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
-			new PluginPreferencePageTemplate(meta.getPackageRoot())
+			new PluginPreferencePageTemplate(
+					generatedPluginMeta.getPackageRoot())
 					.write(new File(new File(
 							pluginBuildDir.getKnimeDirectory(), "preferences"),
 							"PluginPreferencePage.java"));
@@ -220,31 +231,33 @@ public class NodeGenerator {
 			// icons/*
 			copyFolderIcon(srcDir.getIconsDirectory(),
 					pluginBuildDir.getIconsDirectory());
-			registerSplashIcon(meta, pluginXML, srcDir.getIconsDirectory(),
+			registerSplashIcon(generatedPluginMeta, pluginXML,
+					srcDir.getIconsDirectory(),
 					pluginBuildDir.getIconsDirectory());
 
 			// register preference page
-			pluginXML.registerPreferencePage(meta);
+			pluginXML.registerPreferencePage(generatedPluginMeta);
 
 			// register startup
-			pluginXML.registerStartupClass(meta);
+			pluginXML.registerStartupClass(generatedPluginMeta);
 
 			// plugin.xml
 			pluginXML.saveTo(pluginBuildDir.getPluginXml());
 
 			// .project
-			new ProjectTemplate(meta.getPackageRoot()).write(pluginBuildDir
-					.getProjectFile());
+			new ProjectTemplate(generatedPluginMeta.getPackageRoot())
+					.write(pluginBuildDir.getProjectFile());
 
 			// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
-			new BinaryResourcesTemplate(meta.getPackageRoot()).write(new File(
-					pluginBuildDir.getBinaryResourcesDirectory(),
-					"BinaryResources.java"));
+			new BinaryResourcesTemplate(generatedPluginMeta.getPackageRoot())
+					.write(new File(pluginBuildDir
+							.getBinaryResourcesDirectory(),
+							"BinaryResources.java"));
 
 			// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
 			if (srcDir.getPayloadDirectory() != null) {
 				// create payload fragments
-				this.createPayloadFragments();
+				fragmentMetas = this.createPayloadFragments();
 			}
 
 			// copy assets
@@ -267,9 +280,12 @@ public class NodeGenerator {
 	 * 
 	 * @throws NodeGeneratorException
 	 */
-	private void createPayloadFragments() throws NodeGeneratorException {
+	private List<FragmentMeta> createPayloadFragments()
+			throws NodeGeneratorException {
 		Pattern payloadFormat = Pattern
 				.compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
+
+		List<FragmentMeta> createdFragments = new ArrayList<FragmentMeta>();
 
 		for (String payload : srcDir.getPayloadDirectory().list()) {
 			LOGGER.info("Create payload fragment for " + payload);
@@ -280,16 +296,17 @@ public class NodeGenerator {
 						+ " in payload directory.");
 			}
 
-			OperatingSystem sys = OperatingSystem.fromString(m.group(1));
+			OperatingSystem os = OperatingSystem.fromString(m.group(1));
 			Architecture arch = Architecture.fromString(m.group(2));
 
 			try {
 				FragmentDirectory fragmentDir = new FragmentDirectory(
-						baseBinaryDirectory, arch, sys, meta.getPackageRoot());
+						baseBinaryDirectory, arch, os,
+						generatedPluginMeta.getPackageRoot());
 
 				// create project file
-				new ProjectTemplate(meta.getPackageRoot() + "."
-						+ sys.toOSGIOS() + "." + arch.toOSGIArch())
+				new ProjectTemplate(generatedPluginMeta.getPackageRoot() + "."
+						+ os.toOsgiOs() + "." + arch.toOsgiArch())
 						.write(fragmentDir.getProjectFile());
 
 				// build.properties
@@ -297,7 +314,7 @@ public class NodeGenerator {
 						.getBuildProperties());
 
 				// manifest.mf
-				new FragmentManifestMFTemplate(meta, sys, arch)
+				new FragmentManifestMFTemplate(generatedPluginMeta, os, arch)
 						.write(fragmentDir.getManifestMf());
 
 				// copy assets
@@ -307,31 +324,32 @@ public class NodeGenerator {
 				fragmentDir.getBinaryResourcesDirectory().copyPayload(
 						new File(srcDir.getPayloadDirectory(), payload));
 
+				createdFragments.add(new FragmentMeta(generatedPluginMeta
+						.getId(), arch, os));
 			} catch (Exception e) {
 				throw new NodeGeneratorException(
 						"Could not create project for payload " + payload, e);
 			}
-
 		}
+
+		return createdFragments;
 	}
 
 	private void generateFeature() throws IOException {
-		String[] packages = baseBinaryDirectory.list();
-
 		// create feature directory
 		Directory featureDir = new Directory(new File(baseBinaryDirectory,
-				meta.getPackageRoot() + ".feature"));
+				generatedPluginMeta.getPackageRoot() + ".feature"));
 		featureDir.mkdir();
 
 		// find all packages in the current directory
 		new FeatureBuildPropertiesTemplate().write(new File(featureDir,
 				"build.properties"));
 
-		new FeatureXMLTemplate(meta, packages).write(new File(featureDir,
-				"feature.xml"));
+		new FeatureXMLTemplate(generatedPluginMeta, featureMeta, fragmentMetas)
+				.write(new File(featureDir, "feature.xml"));
 
-		new FeatureProjectTemplate(meta.getPackageRoot()).write(new File(
-				featureDir, ".project"));
+		new FeatureProjectTemplate(generatedPluginMeta.getPackageRoot())
+				.write(new File(featureDir, ".project"));
 	}
 
 	private void copyAsset(String assetResourcePath, String targetPath)
@@ -357,11 +375,11 @@ public class NodeGenerator {
 	}
 
 	public String getPluginName() {
-		return meta.getName();
+		return generatedPluginMeta.getName();
 	}
 
 	public String getPluginVersion() {
-		return meta.getVersion();
+		return generatedPluginMeta.getVersion();
 	}
 
 	public static void copyFolderIcon(IconsDirectory iconsSrc,
@@ -374,7 +392,7 @@ public class NodeGenerator {
 		}
 	}
 
-	public static void registerSplashIcon(KNIMEPluginMeta meta,
+	public static void registerSplashIcon(GeneratedPluginMeta meta,
 			PluginXMLTemplate pluginXML, IconsDirectory iconsSrc,
 			NodesBuildIconsDirectory iconsDest) throws IOException {
 		File splashIcon = iconsSrc.getSplashIcon();
@@ -404,7 +422,7 @@ public class NodeGenerator {
 	 */
 	public static String copyNodeSources(CTDFile ctdFile,
 			IconsDirectory iconsDir, NodesBuildKnimeNodesDirectory nodesDir,
-			KNIMEPluginMeta pluginMeta) throws IOException,
+			GeneratedPluginMeta pluginMeta) throws IOException,
 			UnknownMimeTypeException {
 
 		INodeConfiguration nodeConfiguration = ctdFile.getNodeConfiguration();

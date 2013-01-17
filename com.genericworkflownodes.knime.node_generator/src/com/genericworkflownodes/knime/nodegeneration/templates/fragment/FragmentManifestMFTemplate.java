@@ -5,12 +5,12 @@ import java.io.IOException;
 import com.genericworkflownodes.knime.custom.Architecture;
 import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
-import com.genericworkflownodes.knime.nodegeneration.model.KNIMEPluginMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
 public class FragmentManifestMFTemplate extends Template {
 
-	public FragmentManifestMFTemplate(KNIMEPluginMeta pluginMeta,
+	public FragmentManifestMFTemplate(GeneratedPluginMeta pluginMeta,
 			OperatingSystem os, Architecture arch) throws IOException {
 		super(
 				NodeGenerator.class
@@ -20,7 +20,7 @@ public class FragmentManifestMFTemplate extends Template {
 		this.replace("@@pluginVersion@@", pluginMeta.getVersion());
 		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
 
-		this.replace("@@os@@", os.toOSGIOS());
-		this.replace("@@arch@@", arch.toOSGIArch());
+		this.replace("@@os@@", os.toOsgiOs());
+		this.replace("@@arch@@", arch.toOsgiArch());
 	}
 }

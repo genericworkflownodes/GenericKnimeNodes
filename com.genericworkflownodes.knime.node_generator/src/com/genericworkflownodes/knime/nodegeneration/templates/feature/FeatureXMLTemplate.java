@@ -1,18 +1,18 @@
 package com.genericworkflownodes.knime.nodegeneration.templates.feature;
 
 import java.io.IOException;
-import java.util.logging.Logger;
+import java.util.List;
 
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
-import com.genericworkflownodes.knime.nodegeneration.model.KNIMEPluginMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.FeatureMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
 public class FeatureXMLTemplate extends Template {
 
-	private static final Logger LOGGER = Logger
-			.getLogger(FeatureXMLTemplate.class.getCanonicalName());
-
-	public FeatureXMLTemplate(KNIMEPluginMeta pluginMeta, String[] plugins)
+	public FeatureXMLTemplate(GeneratedPluginMeta pluginMeta,
+			FeatureMeta featureMeta, List<FragmentMeta> fragmentMetas)
 			throws IOException {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/feature/feature.xml.template"));
@@ -21,26 +21,25 @@ public class FeatureXMLTemplate extends Template {
 		this.replace("@@pluginVersion@@", pluginMeta.getVersion());
 		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
 
-		registerPlugins(plugins, pluginMeta.getPackageRoot());
+		this.replace("@@description@@", featureMeta.getDescription());
+		this.replace("@@copyright@@", featureMeta.getCopyright());
+		this.replace("@@license@@", featureMeta.getLicense());
+
+		this.registerPlugins(pluginMeta, fragmentMetas);
 	}
 
-	private void registerPlugins(String[] plugins, String basePackageName) {
-		String pluginList = "";
+	private void registerPlugins(GeneratedPluginMeta pluginMeta,
+			List<FragmentMeta> fragmentMetas) {
+		String pluginList = String
+				.format("\t<plugin id=\"%s\" download-size=\"0\" install-size=\"0\" version=\"0.0.0\" unpack=\"false\"/>\n",
+						pluginMeta.getId());
 
-		for (String pluginName : plugins) {
-			if (basePackageName.equals(pluginName)) {
-				LOGGER.info("Register base plugin: " + pluginName);
-				pluginList += String
-						.format("\t<plugin id=\"%s\" download-size=\"0\" install-size=\"0\" version=\"0.0.0\" unpack=\"false\"/>\n",
-								pluginName);
-			} else {
-				LOGGER.info("Register fragment: " + pluginName);
-				String[] info = pluginName.split("\\.");
-				pluginList += String
-						.format("\t<plugin id=\"%s\" os=\"%s\" arch=\"%s\" download-size=\"0\" install-size=\"0\" version=\"0.0.0\" unpack=\"false\" fragment=\"true\"/>\n",
-								pluginName, info[info.length - 2],
-								info[info.length - 1]);
-			}
+		for (FragmentMeta fragmentMeta : fragmentMetas) {
+			pluginList += String
+					.format("\t<plugin id=\"%s\" os=\"%s\" arch=\"%s\" download-size=\"0\" install-size=\"0\" version=\"0.0.0\" unpack=\"false\" fragment=\"true\"/>\n",
+							fragmentMeta.getId(), fragmentMeta.getOs()
+									.toOsgiOs(), fragmentMeta.getArch()
+									.toOsgiArch());
 		}
 
 		this.replace("@@PLUGINS@@", pluginList);

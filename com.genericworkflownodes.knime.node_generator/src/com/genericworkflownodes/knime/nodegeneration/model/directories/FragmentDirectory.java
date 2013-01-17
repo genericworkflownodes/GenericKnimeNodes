@@ -50,6 +50,6 @@ public class FragmentDirectory extends GenericPluginDirectory {
 			OperatingSystem os, String packageRoot)
 			throws FileNotFoundException {
 		super(new File(directory, String.format("%s.%s.%s", packageRoot,
-				os.toOSGIOS(), arch.toOSGIArch())), packageRoot);
+				os.toOsgiOs(), arch.toOsgiArch())), packageRoot);
 	}
 }

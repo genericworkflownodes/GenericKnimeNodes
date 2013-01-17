@@ -16,7 +16,7 @@ import org.dom4j.Node;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.io.SAXReader;
 
-import com.genericworkflownodes.knime.nodegeneration.model.KNIMEPluginMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 
 public class PluginXMLTemplate {
@@ -68,7 +68,7 @@ public class PluginXMLTemplate {
 	 *            project relative path to icon file, e.g. icons/logo.png
 	 * @throws IOException
 	 */
-	public void registerSplashIcon(KNIMEPluginMeta meta, File splashIcon)
+	public void registerSplashIcon(GeneratedPluginMeta meta, File splashIcon)
 			throws IOException {
 		if (splashIcon == null) {
 			return;
@@ -134,7 +134,7 @@ public class PluginXMLTemplate {
 				.addAttribute("id", clazz).addAttribute("category-path", path);
 	}
 
-	public void registerPreferencePage(KNIMEPluginMeta meta) {
+	public void registerPreferencePage(GeneratedPluginMeta meta) {
 		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
 
@@ -152,7 +152,7 @@ public class PluginXMLTemplate {
 
 	}
 
-	public void registerStartupClass(KNIMEPluginMeta meta) {
+	public void registerStartupClass(GeneratedPluginMeta meta) {
 		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
 

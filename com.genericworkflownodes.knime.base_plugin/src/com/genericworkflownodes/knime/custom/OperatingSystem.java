@@ -78,7 +78,7 @@ public enum OperatingSystem {
 		return osAsString;
 	}
 
-	public String toOSGIOS() {
+	public String toOsgiOs() {
 		String osgiOSString = "unknown";
 		switch (this) {
 		case WIN:

@@ -1,9 +1,11 @@
-package com.genericworkflownodes.knime.nodegeneration.model;
+package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
 import java.security.InvalidParameterException;
 import java.util.Properties;
 
-public class KNIMEPluginMeta {
+import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
+
+public class GeneratedPluginMeta {
 
 	/**
 	 * Returns the plugin name.
@@ -111,8 +113,8 @@ public class KNIMEPluginMeta {
 	private final String packageRoot;
 	private final String nodeRepositoyPath;
 
-	public KNIMEPluginMeta(Properties properties) {
-		this.packageRoot = getPackageRoot(properties);
+	public GeneratedPluginMeta(NodesSourceDirectory sourceDirectory) {
+		this.packageRoot = getPackageRoot(sourceDirectory.getProperties());
 		if (this.packageRoot == null || this.packageRoot.isEmpty()) {
 			throw new InvalidParameterException("No package name was specified");
 		}
@@ -121,7 +123,8 @@ public class KNIMEPluginMeta {
 					+ this.packageRoot + "\" is invalid");
 		}
 
-		this.name = getPluginName(properties, this.packageRoot);
+		this.name = getPluginName(sourceDirectory.getProperties(),
+				this.packageRoot);
 		if (this.packageRoot == null || this.name.isEmpty()) {
 			throw new InvalidParameterException("No plugin name was specified");
 		}
@@ -131,7 +134,7 @@ public class KNIMEPluginMeta {
 					+ "\" must only contain alpha numeric characters");
 		}
 
-		this.version = getPluginVersion(properties);
+		this.version = getPluginVersion(sourceDirectory.getProperties());
 		if (this.version == null || this.version.isEmpty()) {
 			throw new InvalidParameterException(
 					"No plugin version was specified");
@@ -141,7 +144,8 @@ public class KNIMEPluginMeta {
 					+ this.version + "\" is not valid");
 		}
 
-		this.nodeRepositoyPath = getNodeRepositoyPath(properties);
+		this.nodeRepositoyPath = getNodeRepositoyPath(sourceDirectory
+				.getProperties());
 		if (this.nodeRepositoyPath == null || this.nodeRepositoyPath.isEmpty()) {
 			throw new InvalidParameterException(
 					"No path within the node repository was specified");
@@ -195,5 +199,14 @@ public class KNIMEPluginMeta {
 	 */
 	public final String getNodeRepositoryRoot() {
 		return this.nodeRepositoyPath;
+	}
+
+	/**
+	 * Returns the Id of the generated plugin.
+	 * 
+	 * @return
+	 */
+	public final String getId() {
+		return this.packageRoot;
 	}
 }
