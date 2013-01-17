@@ -48,7 +48,7 @@ public class PluginActivator extends GenericActivator {
 	public IPluginConfiguration getPluginConfiguration() {
 		if (PLUGIN_CONFIG == null) {
 			// construct the plugin config
-			new PluginConfiguration("__BASE__", getPreferenceStore()
+			PLUGIN_CONFIG = new PluginConfiguration("__BASE__", getPreferenceStore()
 					.getString("binaries_path"), PluginActivator.getInstance()
 					.getProperties(), PluginActivator.getInstance()
 					.getEnvironment());

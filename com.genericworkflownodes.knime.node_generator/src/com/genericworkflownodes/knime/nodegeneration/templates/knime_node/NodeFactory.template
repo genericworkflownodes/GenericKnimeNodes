@@ -15,26 +15,23 @@ public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
 		CTDConfigurationReader reader = new CTDConfigurationReader(); 
 		try
 		{
-			config = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
+			m_nodeConfig = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		
-		// get the plugin config from the PluginActivator
-		pluginConfig = PluginActivator.getInstance().getPluginConfiguration();
 	}	
 	
 	@Override
 	public __NODENAME__NodeModel createNodeModel()
 	{
-		return new __NODENAME__NodeModel(config, pluginConfig);
+		return new __NODENAME__NodeModel(m_nodeConfig, PluginActivator.getInstance().getPluginConfiguration());
 	}	
 	
 	@Override
 	public GenericKnimeNodeDialog createNodeDialogPane()
 	{
-		return new __NODENAME__NodeDialog(config);
+		return new __NODENAME__NodeDialog(m_nodeConfig);
 	}
 }
