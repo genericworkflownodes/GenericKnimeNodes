@@ -126,6 +126,7 @@ public class NodeGenerator {
 				throw new NodeGeneratorException("buildDir must not be null");
 
 			baseBinaryDirectory = new Directory(buildDir);
+			baseBinaryDirectory.mkdir();
 			if (baseBinaryDirectory.list().length != 0) {
 				LOGGER.warning("The given buildDir is not empty: Will clean the directory.");
 				for (File file : baseBinaryDirectory.listFiles())
@@ -166,9 +167,9 @@ public class NodeGenerator {
 					"plugin.properties")).write(new HashMap<String, String>() {
 				private static final long serialVersionUID = 1L;
 				{
-					put("executor",
+					this.put("executor",
 							srcDir.getProperty("executor", "CLIExecutor"));
-					put("commandGenerator",
+					this.put("commandGenerator",
 							srcDir.getProperty("commandGenerator", ""));
 				}
 			});
@@ -243,14 +244,14 @@ public class NodeGenerator {
 			// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
 			if (srcDir.getPayloadDirectory() != null) {
 				// create payload fragments
-				createPayloadFragments();
+				this.createPayloadFragments();
 			}
 
 			// copy assets
-			copyAsset(".classpath");
+			this.copyAsset(".classpath");
 
 			// create feature
-			generateFeature();
+			this.generateFeature();
 
 			LOGGER.info("KNIME plugin sources successfully created in:\n\t"
 					+ pluginBuildDir);
@@ -300,7 +301,7 @@ public class NodeGenerator {
 						.write(fragmentDir.getManifestMf());
 
 				// copy assets
-				copyAsset(".classpath", fragmentDir.getAbsolutePath());
+				this.copyAsset(".classpath", fragmentDir.getAbsolutePath());
 
 				// copy the binaries
 				fragmentDir.getBinaryResourcesDirectory().copyPayload(
@@ -320,6 +321,7 @@ public class NodeGenerator {
 		// create feature directory
 		Directory featureDir = new Directory(new File(baseBinaryDirectory,
 				meta.getPackageRoot() + ".feature"));
+		featureDir.mkdir();
 
 		// find all packages in the current directory
 		new FeatureBuildPropertiesTemplate().write(new File(featureDir,
@@ -343,7 +345,7 @@ public class NodeGenerator {
 	}
 
 	private void copyAsset(String assetResourcePath) throws IOException {
-		copyAsset(assetResourcePath, pluginBuildDir.getAbsolutePath());
+		this.copyAsset(assetResourcePath, pluginBuildDir.getAbsolutePath());
 	}
 
 	public File getSourceDirectory() {
