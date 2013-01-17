@@ -13,7 +13,6 @@ import org.dom4j.DocumentException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.PayloadDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
@@ -23,7 +22,6 @@ public class NodesSourceDirectory extends Directory {
 
 	private static final long serialVersionUID = -2772836144406225644L;
 	private DescriptorsDirectory descriptorsDirectory = null;
-	private ExecutablesDirectory executablesDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
 	private IconsDirectory iconsDirectory = null;
 	private Properties properties = null;
@@ -41,13 +39,6 @@ public class NodesSourceDirectory extends Directory {
 					"Could not find descriptors directory "
 							+ new File(nodeSourceDirectory, "descriptors")
 									.getPath());
-		}
-
-		try {
-			this.executablesDirectory = new ExecutablesDirectory(new File(
-					nodeSourceDirectory, "executables"));
-		} catch (FileNotFoundException e) {
-
 		}
 
 		try {
@@ -79,10 +70,6 @@ public class NodesSourceDirectory extends Directory {
 
 	public DescriptorsDirectory getDescriptorsDirectory() {
 		return descriptorsDirectory;
-	}
-
-	public ExecutablesDirectory getExecutablesDirectory() {
-		return executablesDirectory;
 	}
 
 	public PayloadDirectory getPayloadDirectory() {
