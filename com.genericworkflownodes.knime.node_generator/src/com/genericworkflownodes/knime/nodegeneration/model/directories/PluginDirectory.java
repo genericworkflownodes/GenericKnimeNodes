@@ -19,9 +19,6 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-
-import org.ballproject.knime.base.model.Directory;
 
 /**
  * @author aiche, bkahlert
@@ -39,7 +36,8 @@ public class PluginDirectory extends Directory {
 	private File manifestMf;
 	private File projectFile;
 
-	public PluginDirectory(File directory) throws FileNotFoundException {
+	public PluginDirectory(File directory)
+			throws PathnameIsNoDirectoryException {
 		super(directory);
 
 		buildProperties = new File(this, "build.properties");
@@ -82,5 +80,13 @@ public class PluginDirectory extends Directory {
 	 */
 	public File getProjectFile() {
 		return projectFile;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isValidBundle() {
+		return manifestMf.exists();
 	}
 }

@@ -35,13 +35,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.ballproject.knime.base.model.Directory;
 import org.ballproject.knime.base.util.Helper;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.Architecture;
 import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.UnknownMimeTypeException;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.FragmentDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
@@ -50,6 +51,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.build.Nod
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.ContributingPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FeatureMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
@@ -105,6 +107,7 @@ public class NodeGenerator {
 	private final GeneratedPluginMeta generatedPluginMeta;
 	private final FeatureMeta featureMeta;
 	private List<FragmentMeta> fragmentMetas;
+	private List<ContributingPluginMeta> contributingPluginMetas;
 	private NodesBuildDirectory pluginBuildDir;
 
 	/**
@@ -145,6 +148,8 @@ public class NodeGenerator {
 			featureMeta = new FeatureMeta(srcDir, generatedPluginMeta);
 			pluginBuildDir = new NodesBuildDirectory(buildDir,
 					generatedPluginMeta.getPackageRoot());
+			contributingPluginMetas = srcDir.getContributingPluginsDirectory()
+					.getContributingPluginMetas();
 			fragmentMetas = new ArrayList<FragmentMeta>();
 		} catch (Exception e) {
 			throw new NodeGeneratorException(e);
@@ -263,6 +268,8 @@ public class NodeGenerator {
 			// copy assets
 			this.copyAsset(".classpath");
 
+			copyContributingPlugins();
+
 			// create feature
 			this.generateFeature();
 
@@ -271,6 +278,23 @@ public class NodeGenerator {
 		} catch (Exception e) {
 			LOGGER.info("KNIME plugin source creation failed");
 			throw new NodeGeneratorException(e);
+		}
+	}
+
+	private void copyContributingPlugins() {
+		for (ContributingPluginMeta contributingPluginMeta : contributingPluginMetas) {
+			try {
+				// TODO: Handle compiled classes in bin/ or build/ (maybe check
+				// build.properties for output folder)
+				FileUtils
+						.copyDirectory(contributingPluginMeta
+								.getContributingPluginDirectory(), new File(
+								baseBinaryDirectory, contributingPluginMeta
+										.getContributingPluginDirectory()
+										.getName()));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -335,7 +359,8 @@ public class NodeGenerator {
 		return createdFragments;
 	}
 
-	private void generateFeature() throws IOException {
+	private void generateFeature() throws PathnameIsNoDirectoryException,
+			IOException {
 		// create feature directory
 		Directory featureDir = new Directory(new File(baseBinaryDirectory,
 				generatedPluginMeta.getPackageRoot() + ".feature"));
@@ -345,8 +370,9 @@ public class NodeGenerator {
 		new FeatureBuildPropertiesTemplate().write(new File(featureDir,
 				"build.properties"));
 
-		new FeatureXMLTemplate(generatedPluginMeta, featureMeta, fragmentMetas)
-				.write(new File(featureDir, "feature.xml"));
+		new FeatureXMLTemplate(generatedPluginMeta, featureMeta, fragmentMetas,
+				contributingPluginMetas).write(new File(featureDir,
+				"feature.xml"));
 
 		new FeatureProjectTemplate(generatedPluginMeta.getPackageRoot())
 				.write(new File(featureDir, ".project"));

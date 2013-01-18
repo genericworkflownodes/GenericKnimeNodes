@@ -21,8 +21,6 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.base.model.Directory;
-
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildBinaryResourcesDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 
@@ -49,7 +47,7 @@ public class FragmentDirectory extends PluginDirectory {
 	 * @throws FileNotFoundException
 	 */
 	public FragmentDirectory(Directory directory, FragmentMeta fragmentMeta)
-			throws FileNotFoundException {
+			throws PathnameIsNoDirectoryException {
 		super(new File(directory, fragmentMeta.getId()));
 
 		String packageRootPath = fragmentMeta.getHostMeta().getPackageRoot()

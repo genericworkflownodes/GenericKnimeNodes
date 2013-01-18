@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import org.ballproject.knime.base.model.Directory;
 import org.dom4j.DocumentException;
 
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.source.ContributingPluginsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.PayloadDirectory;
@@ -24,6 +24,7 @@ public class NodesSourceDirectory extends Directory {
 	private DescriptorsDirectory descriptorsDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
 	private IconsDirectory iconsDirectory = null;
+	private ContributingPluginsDirectory contributingPluginsDirectory = null;
 
 	private File descriptionFile;
 	private File copyrightFile;
@@ -31,7 +32,8 @@ public class NodesSourceDirectory extends Directory {
 
 	private Properties properties = null;
 
-	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
+	public NodesSourceDirectory(File nodeSourceDirectory)
+			throws PathnameIsNoDirectoryException, IOException,
 			DocumentException, InvalidNodeNameException,
 			DuplicateNodeNameException {
 		super(nodeSourceDirectory);
@@ -49,7 +51,7 @@ public class NodesSourceDirectory extends Directory {
 		try {
 			this.payloadDirectory = new PayloadDirectory(new File(
 					nodeSourceDirectory, "payload"));
-		} catch (FileNotFoundException e) {
+		} catch (PathnameIsNoDirectoryException e) {
 
 		}
 
@@ -58,6 +60,12 @@ public class NodesSourceDirectory extends Directory {
 					nodeSourceDirectory, "icons"));
 		} catch (FileNotFoundException e) {
 
+		}
+
+		try {
+			this.contributingPluginsDirectory = new ContributingPluginsDirectory(
+					new File(nodeSourceDirectory, "contributing-plugins"));
+		} catch (PathnameIsNoDirectoryException e) {
 		}
 
 		File propertyFile = new File(nodeSourceDirectory, "plugin.properties");
@@ -105,6 +113,10 @@ public class NodesSourceDirectory extends Directory {
 
 	public IconsDirectory getIconsDirectory() {
 		return iconsDirectory;
+	}
+
+	public ContributingPluginsDirectory getContributingPluginsDirectory() {
+		return contributingPluginsDirectory;
 	}
 
 	public Properties getProperties() {

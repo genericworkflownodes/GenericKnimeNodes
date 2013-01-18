@@ -10,5 +10,9 @@
 
    <license>@@license@@</license>
 
-@@PLUGINS@@
+@@PLUGIN@@
+
+@@FRAGMENTS@@
+
+@@CONTRIBUTING_PLUGINS@@
 </feature>

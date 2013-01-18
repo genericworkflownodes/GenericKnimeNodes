@@ -59,12 +59,12 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
 	 * @throws FileNotFoundException
 	 */
 	public GenericPluginDirectory(File directory, String packageName)
-			throws FileNotFoundException {
+			throws PathnameIsNoDirectoryException {
 		super(directory);
 		init(packageName);
 	}
 
-	private void init(String packageName) throws FileNotFoundException {
+	private void init(String packageName) throws PathnameIsNoDirectoryException {
 		String packageRootPath = packageName.replace('.', File.separatorChar);
 
 		new File(this, "icons").mkdirs();
