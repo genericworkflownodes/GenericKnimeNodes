@@ -31,11 +31,9 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSour
  * 
  * @author aiche, bkahlert
  */
-public class FeatureMeta {
+public class FeatureMeta extends PluginMeta {
 
-	private final String id;
 	private final String name;
-	private final String version;
 
 	private final String description;
 	private final String copyright;
@@ -48,10 +46,9 @@ public class FeatureMeta {
 	 */
 	public FeatureMeta(NodesSourceDirectory sourceDirectory,
 			GeneratedPluginMeta pluginMeta) {
+		super(pluginMeta.getId(), pluginMeta.getVersion());
 		try {
-			id = pluginMeta.getId();
 			name = pluginMeta.getName();
-			version = pluginMeta.getVersion();
 
 			description = FileUtils.readFileToString(sourceDirectory
 					.getDescriptionFile());
@@ -66,17 +63,6 @@ public class FeatureMeta {
 	}
 
 	/**
-	 * Returns the KNIME plugin's root package name
-	 * <p>
-	 * e.g. de.fu_berlin.imp.seqan
-	 * 
-	 * @return The plugin's package root.
-	 */
-	public final String getId() {
-		return this.id;
-	}
-
-	/**
 	 * Gets the KNIME plugin's name.
 	 * <p>
 	 * e.g. KNIME Test
@@ -85,17 +71,6 @@ public class FeatureMeta {
 	 */
 	public final String getName() {
 		return this.name;
-	}
-
-	/**
-	 * Returns the KNIME plugin's version.
-	 * <p>
-	 * e.g. 0.1.1
-	 * 
-	 * @return The plugin's version.
-	 */
-	public final String getVersion() {
-		return this.version;
 	}
 
 	/**

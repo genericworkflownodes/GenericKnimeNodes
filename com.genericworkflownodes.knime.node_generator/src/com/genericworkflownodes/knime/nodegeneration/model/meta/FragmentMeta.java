@@ -28,9 +28,9 @@ import com.genericworkflownodes.knime.custom.OperatingSystem;
  * 
  * @author aiche, bkahlert
  */
-public class FragmentMeta {
+public class FragmentMeta extends PluginMeta {
 
-	private final String parentId;
+	private final GeneratedPluginMeta hostMeta;
 	private final Architecture arch;
 	private final OperatingSystem os;
 
@@ -42,19 +42,22 @@ public class FragmentMeta {
 	 * @param arch
 	 * @param os
 	 */
-	public FragmentMeta(String parentId, Architecture arch, OperatingSystem os) {
-		this.parentId = parentId;
+	public FragmentMeta(GeneratedPluginMeta hostMeta, Architecture arch,
+			OperatingSystem os) {
+		super(String.format("%s.%s.%s", hostMeta.getId(), os.toOsgiOs(),
+				arch.toOsgiArch()), hostMeta.getVersion());
+		this.hostMeta = hostMeta;
 		this.arch = arch;
 		this.os = os;
 	}
 
 	/**
-	 * Returns the id of the parent bundle.
+	 * Returns the meta object of the host plugin.
 	 * 
 	 * @return
 	 */
-	public String getParentId() {
-		return parentId;
+	public GeneratedPluginMeta getHostMeta() {
+		return hostMeta;
 	}
 
 	/**
@@ -73,15 +76,5 @@ public class FragmentMeta {
 	 */
 	public OperatingSystem getOs() {
 		return os;
-	}
-
-	/**
-	 * Returns the final id of the fragment.
-	 * 
-	 * @return
-	 */
-	public String getId() {
-		return String.format("%s.%s.%s", parentId, os.toOsgiOs(),
-				arch.toOsgiArch());
 	}
 }

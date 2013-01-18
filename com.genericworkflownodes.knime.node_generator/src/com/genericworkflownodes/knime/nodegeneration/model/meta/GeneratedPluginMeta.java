@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 
-public class GeneratedPluginMeta {
+public class GeneratedPluginMeta extends PluginMeta {
 
 	/**
 	 * Returns the plugin name.
@@ -109,23 +109,23 @@ public class GeneratedPluginMeta {
 	}
 
 	private final String name;
-	private final String version;
-	private final String packageRoot;
 	private final String nodeRepositoyPath;
 
 	public GeneratedPluginMeta(NodesSourceDirectory sourceDirectory) {
-		this.packageRoot = getPackageRoot(sourceDirectory.getProperties());
-		if (this.packageRoot == null || this.packageRoot.isEmpty()) {
+		super(getPackageRoot(sourceDirectory.getProperties()),
+				getPluginVersion(sourceDirectory.getProperties()));
+
+		if (getId() == null || getId().isEmpty()) {
 			throw new InvalidParameterException("No package name was specified");
 		}
-		if (!isValidPackageRoot(this.packageRoot)) {
+		if (!isValidPackageRoot(getPackageRoot())) {
 			throw new InvalidParameterException("The given package name \""
-					+ this.packageRoot + "\" is invalid");
+					+ getPackageRoot() + "\" is invalid");
 		}
 
 		this.name = getPluginName(sourceDirectory.getProperties(),
-				this.packageRoot);
-		if (this.packageRoot == null || this.name.isEmpty()) {
+				getPackageRoot());
+		if (this.name == null || this.name.isEmpty()) {
 			throw new InvalidParameterException("No plugin name was specified");
 		}
 		if (!isPluginNameValid(this.name)) {
@@ -134,14 +134,13 @@ public class GeneratedPluginMeta {
 					+ "\" must only contain alpha numeric characters");
 		}
 
-		this.version = getPluginVersion(sourceDirectory.getProperties());
-		if (this.version == null || this.version.isEmpty()) {
+		if (getVersion() == null || getVersion().isEmpty()) {
 			throw new InvalidParameterException(
 					"No plugin version was specified");
 		}
-		if (!isPluginVersionValid(this.version)) {
+		if (!isPluginVersionValid(getVersion())) {
 			throw new InvalidParameterException("The plugin version \""
-					+ this.version + "\" is not valid");
+					+ getVersion() + "\" is not valid");
 		}
 
 		this.nodeRepositoyPath = getNodeRepositoyPath(sourceDirectory
@@ -150,7 +149,7 @@ public class GeneratedPluginMeta {
 			throw new InvalidParameterException(
 					"No path within the node repository was specified");
 		}
-		if (!isNodeRepositoyPathValid(this.version)) {
+		if (!isNodeRepositoyPathValid(getVersion())) {
 			throw new InvalidParameterException("The node repository path \""
 					+ this.nodeRepositoyPath + "\" is not valid");
 		}
@@ -168,17 +167,6 @@ public class GeneratedPluginMeta {
 	}
 
 	/**
-	 * Returns the KNIME plugin's version.
-	 * <p>
-	 * e.g. 0.1.1
-	 * 
-	 * @return The plugin's version.
-	 */
-	public final String getVersion() {
-		return this.version;
-	}
-
-	/**
 	 * Returns the KNIME plugin's root package name
 	 * <p>
 	 * e.g. de.fu_berlin.imp.seqan
@@ -186,7 +174,7 @@ public class GeneratedPluginMeta {
 	 * @return The plugin's package root.
 	 */
 	public final String getPackageRoot() {
-		return this.packageRoot;
+		return getId();
 	}
 
 	/**
@@ -201,12 +189,4 @@ public class GeneratedPluginMeta {
 		return this.nodeRepositoyPath;
 	}
 
-	/**
-	 * Returns the Id of the generated plugin.
-	 * 
-	 * @return
-	 */
-	public final String getId() {
-		return this.packageRoot;
-	}
 }

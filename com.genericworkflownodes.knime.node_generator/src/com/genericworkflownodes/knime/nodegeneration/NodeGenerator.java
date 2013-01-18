@@ -300,9 +300,10 @@ public class NodeGenerator {
 			Architecture arch = Architecture.fromString(m.group(2));
 
 			try {
+				FragmentMeta fragmentMeta = new FragmentMeta(
+						generatedPluginMeta, arch, os);
 				FragmentDirectory fragmentDir = new FragmentDirectory(
-						baseBinaryDirectory, arch, os,
-						generatedPluginMeta.getPackageRoot());
+						baseBinaryDirectory, fragmentMeta);
 
 				// create project file
 				new ProjectTemplate(generatedPluginMeta.getPackageRoot() + "."
@@ -314,8 +315,8 @@ public class NodeGenerator {
 						.getBuildProperties());
 
 				// manifest.mf
-				new FragmentManifestMFTemplate(generatedPluginMeta, os, arch)
-						.write(fragmentDir.getManifestMf());
+				new FragmentManifestMFTemplate(fragmentMeta).write(fragmentDir
+						.getManifestMf());
 
 				// copy assets
 				this.copyAsset(".classpath", fragmentDir.getAbsolutePath());
@@ -324,8 +325,7 @@ public class NodeGenerator {
 				fragmentDir.getBinaryResourcesDirectory().copyPayload(
 						new File(srcDir.getPayloadDirectory(), payload));
 
-				createdFragments.add(new FragmentMeta(generatedPluginMeta
-						.getId(), arch, os));
+				createdFragments.add(fragmentMeta);
 			} catch (Exception e) {
 				throw new NodeGeneratorException(
 						"Could not create project for payload " + payload, e);
