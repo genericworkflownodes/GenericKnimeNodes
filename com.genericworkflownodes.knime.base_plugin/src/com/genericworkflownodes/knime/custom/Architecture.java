@@ -79,7 +79,7 @@ public enum Architecture {
 		return archAsString;
 	}
 
-	public String toOSGIArch() {
+	public String toOsgiArch() {
 		String osgiArch = "";
 
 		switch (this) {

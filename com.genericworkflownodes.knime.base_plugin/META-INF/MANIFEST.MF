@@ -22,8 +22,7 @@ Export-Package: com.genericworkflownodes.knime.config,
  com.genericworkflownodes.knime.outputconverter,
  com.genericworkflownodes.knime.parameter,
  com.genericworkflownodes.knime.preferences,
- com.genericworkflownodes.knime.toolfinderservice,
- org.ballproject.knime.base.util
+ com.genericworkflownodes.knime.toolfinderservice
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.genericworkflownodes.knime.GenericNodesPlugin
 Eclipse-RegisterBuddy: org.knime.core

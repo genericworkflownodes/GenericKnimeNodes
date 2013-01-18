@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ballproject.knime.base.model.Directory;
 import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
 
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationReaderException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
 import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
@@ -53,8 +53,8 @@ public class DescriptorsDirectory extends Directory {
 	 *             directory.
 	 */
 	public DescriptorsDirectory(final File sourcesDirectory)
-			throws IOException, InvalidNodeNameException,
-			DuplicateNodeNameException {
+			throws PathnameIsNoDirectoryException, IOException,
+			InvalidNodeNameException, DuplicateNodeNameException {
 		super(sourcesDirectory);
 
 		File mimeTypeFile = new File(this, "mimetypes.xml");

@@ -3,11 +3,11 @@ package com.genericworkflownodes.knime.nodegeneration.templates;
 import java.io.IOException;
 
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
-import com.genericworkflownodes.knime.nodegeneration.model.KNIMEPluginMeta;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 
 public class ManifestMFTemplate extends Template {
 
-	public ManifestMFTemplate(KNIMEPluginMeta pluginMeta) throws IOException {
+	public ManifestMFTemplate(GeneratedPluginMeta pluginMeta) throws IOException {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/MANIFEST.MF.template"));
 

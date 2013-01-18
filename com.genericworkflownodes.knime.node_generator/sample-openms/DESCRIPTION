@@ -1,0 +1,5 @@
+OpenMS is an open-source software C++ library for LC/MS data management and analyses. 
+It offers an infrastructure for the development of mass spectrometry related software 
+and powerful 2D and 3D visualization.
+
+This KNIME Node Extension has been generated with Generic Workflow Nodes for KNIME.   

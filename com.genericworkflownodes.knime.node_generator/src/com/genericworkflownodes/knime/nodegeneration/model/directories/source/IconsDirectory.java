@@ -3,11 +3,10 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories.source;
 import java.io.File;
 import java.io.IOException;
 
-import org.ballproject.knime.base.model.Directory;
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
 
 /**
  * Abstraction of the directory containing all icons related to the plugin that
@@ -40,7 +39,8 @@ public class IconsDirectory extends Directory {
 	 * @throws InvalidNodeNameException
 	 * @throws DuplicateNodeNameException
 	 */
-	public IconsDirectory(final File sourcesDirectory) throws IOException,
+	public IconsDirectory(final File sourcesDirectory)
+			throws PathnameIsNoDirectoryException, IOException,
 			InvalidNodeNameException, DuplicateNodeNameException {
 		super(sourcesDirectory);
 

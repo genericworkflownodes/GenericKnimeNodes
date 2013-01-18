@@ -3,7 +3,7 @@ This package provides the source code for the KNIME plugin
   com.genericworkflownodes.knime
 
 providing basic functionality for further plugins depending 
-on the GenericKnimeNodes mechanism.
+on the Generic Workflow Nodes for KNIME mechanism.
 
 Please adjust the file build.properties and make the property
 knimeSDKpath point to the path of the KNIME SDK root. You can
@@ -11,15 +11,14 @@ download the KNIME SDK at http://knime.org/downloads/overview.
 
 Creating your personal KNIME nodes is as easy as typing "ant"!
 
-1. Switch to you GenericKnimeNodes directory
+1. Switch to you Generic Workflow Nodes for KNIME directory
 2. Call "ant"
    This generates the needed base plugin and the sample
-   plugin in a directory called build right in your current
+   plugin in a directory called "build" right in your current
    working directory.
 3. Copy the two plugins in the plugins directory of your
-   KNIME installation (standard of SDK) and your ready
-   to start KNIME.
-4. Enjoy!
+   KNIME installation and your ready to start KNIME.
+4. Enjoy your new nodes!
 
 If you want to build your KNIME nodes from another directory
 just call:
@@ -40,7 +39,7 @@ e.g.
 
 which will produce the respective jar file 
 
-  org.ballproject.knime_x.y.z.jar
+  my.project.knime_x.y.z.jar
  
 
 The following directory structure must be provided within
@@ -52,21 +51,38 @@ directory
   │
   ├── plugin.properties
   │
-  ├── descriptors (place your ctd files and mimetypes.xml here)
+  ├── descriptors (place your ctd files and mimetypes.xml
+  │                here)
   │
   ├── payload (place your binaries here)
   │
-  └── icons (the icons to be used must be here)
+  ├── icons (the icons to be used must be here)
+  │
+  └── contributing-plugins (optional; place all your OSGI
+                            bundles and Eclipse plugin projects
+                            here)
 
-See the sample directory of your GenericKnimeNodes directory
-for an example.
+See the sample directory of your Generic Workflow Nodes
+for KNIME directory for an example.
 
-If you use GKN 'internal' programs you have to supply the 
+If you use "internal" programs you have to supply the 
 corresponding executables for each program. These wrapped 
 binaries have to be supplied in the payload directory
 Pleaser refer to payload.README for further details.
 
 If you create a plugin containing only external programs
-(i.e. programs already located on your system) you do not need
-to supply any payload data. The user can use the GKN preference
-tab to set the paths to the tools located on the target system.
+(i.e. programs already located on your system thus not
+shipped with the plugin) you do not need to supply any payload
+data. The user can use the Generic Workflow Nodes for KNIME
+preference tab to set the paths to the tools located on the
+target system.
+
+If you want to ship custom Java code as well you can create
+one or more OSGI bundles or Eclipse plugin projects and
+copy them to the "contributing-plugins" directory.
+The supplied plugins will be part of the Eclipse feature
+and thus being installed together with the KNIME nodes themselves.
+
+You have to options to make the target system execute your code:
+1) You use the Activator/Plugin class.
+2) You extend the extension point "org.eclipse.ui.startup".

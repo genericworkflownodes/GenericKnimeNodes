@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import org.ballproject.knime.base.model.Directory;
 import org.dom4j.DocumentException;
 
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.source.ContributingPluginsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.source.ExecutablesDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.PayloadDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
@@ -23,12 +22,18 @@ public class NodesSourceDirectory extends Directory {
 
 	private static final long serialVersionUID = -2772836144406225644L;
 	private DescriptorsDirectory descriptorsDirectory = null;
-	private ExecutablesDirectory executablesDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
 	private IconsDirectory iconsDirectory = null;
+	private ContributingPluginsDirectory contributingPluginsDirectory = null;
+
+	private File descriptionFile;
+	private File copyrightFile;
+	private File licenseFile;
+
 	private Properties properties = null;
 
-	public NodesSourceDirectory(File nodeSourceDirectory) throws IOException,
+	public NodesSourceDirectory(File nodeSourceDirectory)
+			throws PathnameIsNoDirectoryException, IOException,
 			DocumentException, InvalidNodeNameException,
 			DuplicateNodeNameException {
 		super(nodeSourceDirectory);
@@ -44,16 +49,9 @@ public class NodesSourceDirectory extends Directory {
 		}
 
 		try {
-			this.executablesDirectory = new ExecutablesDirectory(new File(
-					nodeSourceDirectory, "executables"));
-		} catch (FileNotFoundException e) {
-
-		}
-
-		try {
 			this.payloadDirectory = new PayloadDirectory(new File(
 					nodeSourceDirectory, "payload"));
-		} catch (FileNotFoundException e) {
+		} catch (PathnameIsNoDirectoryException e) {
 
 		}
 
@@ -62,6 +60,12 @@ public class NodesSourceDirectory extends Directory {
 					nodeSourceDirectory, "icons"));
 		} catch (FileNotFoundException e) {
 
+		}
+
+		try {
+			this.contributingPluginsDirectory = new ContributingPluginsDirectory(
+					new File(nodeSourceDirectory, "contributing-plugins"));
+		} catch (PathnameIsNoDirectoryException e) {
 		}
 
 		File propertyFile = new File(nodeSourceDirectory, "plugin.properties");
@@ -75,14 +79,32 @@ public class NodesSourceDirectory extends Directory {
 		} catch (IOException e) {
 			throw new IOException("Could not load property file", e);
 		}
+
+		descriptionFile = new File(nodeSourceDirectory, "DESCRIPTION");
+		if (!descriptionFile.exists()) {
+			throw new FileNotFoundException(
+					"DESCRIPTION file not found in source directory. Expected in: "
+							+ descriptionFile.getAbsolutePath());
+		}
+
+		copyrightFile = new File(nodeSourceDirectory, "COPYRIGHT");
+		if (!copyrightFile.exists()) {
+			throw new FileNotFoundException(
+					"COPYRIGHT file not found in source directory. Expected in: "
+							+ copyrightFile.getAbsolutePath());
+		}
+
+		licenseFile = new File(nodeSourceDirectory, "LICENSE");
+		if (!licenseFile.exists()) {
+			throw new FileNotFoundException(
+					"LICENSE file not found in source directory. Expected in: "
+							+ licenseFile.getAbsolutePath());
+		}
+
 	}
 
 	public DescriptorsDirectory getDescriptorsDirectory() {
 		return descriptorsDirectory;
-	}
-
-	public ExecutablesDirectory getExecutablesDirectory() {
-		return executablesDirectory;
 	}
 
 	public PayloadDirectory getPayloadDirectory() {
@@ -91,6 +113,10 @@ public class NodesSourceDirectory extends Directory {
 
 	public IconsDirectory getIconsDirectory() {
 		return iconsDirectory;
+	}
+
+	public ContributingPluginsDirectory getContributingPluginsDirectory() {
+		return contributingPluginsDirectory;
 	}
 
 	public Properties getProperties() {
@@ -108,4 +134,17 @@ public class NodesSourceDirectory extends Directory {
 	public List<MimeType> getMimeTypes() {
 		return this.descriptorsDirectory.getMimeTypesFile().getMimeTypes();
 	}
+
+	public File getDescriptionFile() {
+		return descriptionFile;
+	}
+
+	public File getCopyrightFile() {
+		return copyrightFile;
+	}
+
+	public File getLicenseFile() {
+		return licenseFile;
+	}
+
 }

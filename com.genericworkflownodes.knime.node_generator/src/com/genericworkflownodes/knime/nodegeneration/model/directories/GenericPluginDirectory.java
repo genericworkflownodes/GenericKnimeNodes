@@ -21,8 +21,6 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.base.model.Directory;
-
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildBinaryResourcesDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildIconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildKnimeDirectory;
@@ -36,7 +34,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.build.Nod
  * 
  * @author aiche
  */
-public abstract class GenericPluginDirectory extends Directory {
+public abstract class GenericPluginDirectory extends PluginDirectory {
 
 	/**
 	 * The serialVersionUID.
@@ -49,10 +47,6 @@ public abstract class GenericPluginDirectory extends Directory {
 	private NodesBuildKnimeDirectory knimeDirectory = null;
 	private NodesBuildKnimeNodesDirectory knimeNodesDirectory = null;
 	private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
-	private File buildProperties;
-	private File pluginXml;
-	private File manifestMf;
-	private File projectFile;
 
 	/**
 	 * Constructor with the path to the location where the plugin should be
@@ -65,12 +59,12 @@ public abstract class GenericPluginDirectory extends Directory {
 	 * @throws FileNotFoundException
 	 */
 	public GenericPluginDirectory(File directory, String packageName)
-			throws FileNotFoundException {
+			throws PathnameIsNoDirectoryException {
 		super(directory);
 		init(packageName);
 	}
 
-	private void init(String packageName) throws FileNotFoundException {
+	private void init(String packageName) throws PathnameIsNoDirectoryException {
 		String packageRootPath = packageName.replace('.', File.separatorChar);
 
 		new File(this, "icons").mkdirs();
@@ -97,11 +91,6 @@ public abstract class GenericPluginDirectory extends Directory {
 		binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
 				new File(knimeDirectory, "binres"));
 
-		buildProperties = new File(this, "build.properties");
-		pluginXml = new File(this, "plugin.xml");
-		manifestMf = new File(this, "META-INF" + File.separator + "MANIFEST.MF");
-
-		projectFile = new File(this, ".project");
 	}
 
 	/**
@@ -160,8 +149,10 @@ public abstract class GenericPluginDirectory extends Directory {
 	}
 
 	/**
-	 * Returns the source directory where to put all binary resources like the
-	 * shipped executables.
+	 * Returns the source directory where the BinaryResources class is located.
+	 * The BinaryResouces class is used to access the platform specific binaries
+	 * stored in separate fragments.
+	 * 
 	 * <p>
 	 * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime/nodes/binres
 	 * 
@@ -169,22 +160,6 @@ public abstract class GenericPluginDirectory extends Directory {
 	 */
 	public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
 		return binaryResourcesDirectory;
-	}
-
-	public File getBuildProperties() {
-		return buildProperties;
-	}
-
-	public File getPluginXml() {
-		return pluginXml;
-	}
-
-	public File getManifestMf() {
-		return manifestMf;
-	}
-
-	public File getProjectFile() {
-		return projectFile;
 	}
 
 }
