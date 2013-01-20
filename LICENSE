@@ -19,7 +19,6 @@ GenericKnimeNodes depends upon
 - BeanShell which is also licensed under the GNU LESSER GENERAL PUBLIC LICENSE V3
 - for our Apache Xerces binary dependecies please notice the Apache License 2.0 (APACHE.LICENSE)
 - for our JAXEN binary dependencies please notice the following
-- Some of the icons used are part of the or based on the Tango Desktop Project (http://tango.freedesktop.org)
 
 
 """ 
