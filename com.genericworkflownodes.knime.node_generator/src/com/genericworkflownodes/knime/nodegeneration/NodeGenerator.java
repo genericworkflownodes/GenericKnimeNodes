@@ -316,8 +316,9 @@ public class NodeGenerator {
 
 			Matcher m = payloadFormat.matcher(payload);
 			if (!m.find()) {
-				LOGGER.warning("Ignoring incompatible file " + payload
-						+ " in payload directory.");
+				LOGGER.warning("Ignoring incompatible file in payload directory: "
+						+ payload);
+				continue;
 			}
 
 			OperatingSystem os = OperatingSystem.fromString(m.group(1));
