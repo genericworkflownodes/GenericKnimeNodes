@@ -1,4 +1,4 @@
-<project name="pluginbuilder" default="custom.plugin.build" basedir=".">
+<project name="pluginbuilder" default="custom.plugin.generate_sources" basedir=".">
 
 	<property name="debug" value="true" />
 
@@ -80,8 +80,6 @@
 		<fileset dir="${nodegenerator.src}/lib">
 			<include name="*.jar" />
 		</fileset>
-		<!-- Make sure we have the urltype plugin in our classpath -->
-		<pathelement location="${base.plugin.src}/lib/org.knime.core.data.urltype.jar" />		
 	</path>
 
 	<path id="nodegenerator.exec.classpath">
@@ -117,7 +115,7 @@
 	<target name="plugin.dir.check" depends="plugin.dir.condition" unless="plugin.dir.isset">
 		<echo message="Using default plugin.dir: ${plugin.dir}" />
 		<echo message="If you want to use a custom plugin dir, just add a plugin.dir property to the" />
-		<echo message="build.properties file, e.g.," />
+		<echo message="build.properties file." />
 	</target>
 
 	<!-- knime.sdk checks -->
@@ -227,7 +225,7 @@
 		<zip destfile="${custom.plugin.build.jar}" basedir="${custom.plugin.build.dir}" />
 	</target>
 
-	<target name="custom.plugin.generate_sources" description="run node generator">
+	<target name="custom.plugin.generate_sources" description="run node generator" depends="nodegenerator.build">
 		<echo message="${toString:nodegenerator.exec.classpath}" />
 		<java classname="com.genericworkflownodes.knime.nodegeneration.Main" failonerror="true" fork="true">
 			<!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
