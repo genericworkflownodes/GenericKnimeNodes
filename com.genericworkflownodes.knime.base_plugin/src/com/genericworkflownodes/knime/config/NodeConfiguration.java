@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
+import com.genericworkflownodes.knime.relocator.Relocator;
 
 /**
  * Default implementation of {@link INodeConfiguration}

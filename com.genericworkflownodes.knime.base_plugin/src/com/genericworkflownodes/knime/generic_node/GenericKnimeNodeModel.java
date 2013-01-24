@@ -52,7 +52,6 @@ import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
-import com.genericworkflownodes.knime.outputconverter.IOutputConverter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IFileParameter;
@@ -659,24 +658,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		} else {
 			return path.substring(path.lastIndexOf('.') + 1);
 		}
-	}
-
-	/**
-	 * Applies the given list of conversions to the URI.
-	 * 
-	 * @param converters
-	 *            List of converters to apply.
-	 * @param filename
-	 *            The initial URI to convert.
-	 * @return The converted URI.
-	 */
-	private URI applyConverter(final List<IOutputConverter> converters,
-			final URI filename) {
-		URI finalConverterdUri = new File(filename.getPath()).toURI();
-		for (IOutputConverter converter : converters) {
-			finalConverterdUri = converter.convert(finalConverterdUri);
-		}
-		return finalConverterdUri;
 	}
 
 }

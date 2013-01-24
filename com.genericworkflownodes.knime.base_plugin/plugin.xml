@@ -2,7 +2,6 @@
 <?eclipse version="3.4"?>
 
 <plugin>
-   <extension-point id="com.genericworkflownodes.knime.outputconverter.OutputConverter" name="OutputConverter" schema="schema/com.genericworkflownods.knime.outputconverter.OutputConverter.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>  
    
    <extension point="org.knime.workbench.repository.categories">
@@ -51,11 +50,4 @@
          <service serviceClass="com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry"/>
       </serviceFactory>
    </extension>
-   <extension point="com.genericworkflownodes.knime.outputconverter.OutputConverter">
-      <outputconverter converter-id="DefaultOutputConverter" factoryclass="com.genericworkflownodes.knime.outputconverter.impl.DefaultOutputConverterFactory" identifier="DefaultOutputConverter">
-      </outputconverter>
-      <outputconverter converter-id="FileNameExtender" factoryclass="com.genericworkflownodes.knime.outputconverter.impl.FileNameExtenderFactory" identifier="FileNameExtender">
-      </outputconverter>
-   </extension>
-   
 </plugin>

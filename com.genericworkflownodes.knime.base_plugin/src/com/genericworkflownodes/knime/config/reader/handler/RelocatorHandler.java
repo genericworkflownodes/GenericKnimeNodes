@@ -24,7 +24,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.genericworkflownodes.knime.config.NodeConfiguration;
-import com.genericworkflownodes.knime.outputconverter.Relocator;
+import com.genericworkflownodes.knime.relocator.Relocator;
 
 /**
  * SAX Handler for the relocator part of the CTD.

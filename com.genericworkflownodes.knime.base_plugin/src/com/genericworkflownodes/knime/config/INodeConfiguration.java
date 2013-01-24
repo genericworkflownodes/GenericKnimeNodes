@@ -22,9 +22,9 @@ package com.genericworkflownodes.knime.config;
 import java.util.List;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
-import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
+import com.genericworkflownodes.knime.relocator.Relocator;
 
 /**
  * Interface for the node configuration.
