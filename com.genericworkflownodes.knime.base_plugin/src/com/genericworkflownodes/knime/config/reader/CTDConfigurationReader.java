@@ -32,13 +32,13 @@ import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.INodeConfigurationReader;
 import com.genericworkflownodes.knime.config.reader.handler.CTDHandler;
-import com.genericworkflownodes.knime.outputconverter.Relocator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
+import com.genericworkflownodes.knime.relocator.Relocator;
 import com.genericworkflownodes.knime.schemas.SchemaProvider;
 
 /**
