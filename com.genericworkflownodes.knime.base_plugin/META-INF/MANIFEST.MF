@@ -13,13 +13,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
  org.knime.base,
- org.knime.core.data.uritype;bundle-version="2.7.0"
+ org.knime.core.data.uritype
 Export-Package: com.genericworkflownodes.knime.config,
  com.genericworkflownodes.knime.config.reader,
  com.genericworkflownodes.knime.custom,
  com.genericworkflownodes.knime.generic_node,
  com.genericworkflownodes.knime.mime.demangler,
- com.genericworkflownodes.knime.outputconverter,
  com.genericworkflownodes.knime.parameter,
  com.genericworkflownodes.knime.preferences,
  com.genericworkflownodes.knime.toolfinderservice
