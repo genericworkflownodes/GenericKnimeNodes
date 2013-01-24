@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="@@packageName@@.feature"
-      label="@@pluginName@@ Feature"
+      label="@@pluginName@@"
       version="@@pluginVersion@@">
 
    <description>@@description@@</description>
