@@ -165,7 +165,6 @@
 
 		<mkdir dir="${base.plugin.build.dir}/schema" />
 		<copy file="${base.plugin.src}/schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd" todir="${base.plugin.build.dir}/schema" />
-		<copy file="${base.plugin.src}/schema/com.genericworkflownods.knime.outputconverter.OutputConverter.exsd" todir="${base.plugin.build.dir}/schema" />
 
 		<mkdir dir="${base.plugin.build.dir}/icons" />
 		<copy todir="${base.plugin.build.dir}/icons" failonerror="true" overwrite="true">
