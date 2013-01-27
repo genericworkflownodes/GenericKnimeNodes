@@ -30,16 +30,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.ballproject.knime.base.util.Helper;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.custom.Architecture;
-import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.UnknownMimeTypeException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
@@ -303,58 +299,38 @@ public class NodeGenerator {
 	 * payload directory.
 	 * 
 	 * @throws NodeGeneratorException
+	 * @throws PathnameIsNoDirectoryException
+	 * @throws IOException
 	 */
 	private List<FragmentMeta> createPayloadFragments()
-			throws NodeGeneratorException {
-		Pattern payloadFormat = Pattern
-				.compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
+			throws NodeGeneratorException, PathnameIsNoDirectoryException,
+			IOException {
 
-		List<FragmentMeta> createdFragments = new ArrayList<FragmentMeta>();
+		List<FragmentMeta> createdFragments = srcDir.getPayloadDirectory()
+				.getFragmentMetas(generatedPluginMeta);
 
-		for (String payload : srcDir.getPayloadDirectory().list()) {
-			LOGGER.info("Create payload fragment for " + payload);
+		for (FragmentMeta fragmentMeta : createdFragments) {
+			FragmentDirectory fragmentDir = new FragmentDirectory(
+					baseBinaryDirectory, fragmentMeta);
 
-			Matcher m = payloadFormat.matcher(payload);
-			if (!m.find()) {
-				LOGGER.warning("Ignoring incompatible file in payload directory: "
-						+ payload);
-				continue;
-			}
+			// create project file
+			new ProjectTemplate(fragmentMeta.getId()).write(fragmentDir
+					.getProjectFile());
 
-			OperatingSystem os = OperatingSystem.fromString(m.group(1));
-			Architecture arch = Architecture.fromString(m.group(2));
+			// build.properties
+			new FragmentBuildPropertiesTemplate().write(fragmentDir
+					.getBuildProperties());
 
-			try {
-				FragmentMeta fragmentMeta = new FragmentMeta(
-						generatedPluginMeta, arch, os);
-				FragmentDirectory fragmentDir = new FragmentDirectory(
-						baseBinaryDirectory, fragmentMeta);
+			// manifest.mf
+			new FragmentManifestMFTemplate(fragmentMeta).write(fragmentDir
+					.getManifestMf());
 
-				// create project file
-				new ProjectTemplate(generatedPluginMeta.getPackageRoot() + "."
-						+ os.toOsgiOs() + "." + arch.toOsgiArch())
-						.write(fragmentDir.getProjectFile());
+			// copy assets
+			this.copyAsset(".classpath", fragmentDir.getAbsolutePath());
 
-				// build.properties
-				new FragmentBuildPropertiesTemplate().write(fragmentDir
-						.getBuildProperties());
-
-				// manifest.mf
-				new FragmentManifestMFTemplate(fragmentMeta).write(fragmentDir
-						.getManifestMf());
-
-				// copy assets
-				this.copyAsset(".classpath", fragmentDir.getAbsolutePath());
-
-				// copy the binaries
-				fragmentDir.getBinaryResourcesDirectory().copyPayload(
-						new File(srcDir.getPayloadDirectory(), payload));
-
-				createdFragments.add(fragmentMeta);
-			} catch (Exception e) {
-				throw new NodeGeneratorException(
-						"Could not create project for payload " + payload, e);
-			}
+			// copy the binaries
+			fragmentDir.getBinaryResourcesDirectory().copyPayload(
+					fragmentMeta.getPayloadFile());
 		}
 
 		return createdFragments;

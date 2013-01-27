@@ -18,6 +18,8 @@
  */
 package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
+import java.io.File;
+
 import com.genericworkflownodes.knime.custom.Architecture;
 import com.genericworkflownodes.knime.custom.OperatingSystem;
 
@@ -33,6 +35,7 @@ public class FragmentMeta extends PluginMeta {
 	private final GeneratedPluginMeta hostMeta;
 	private final Architecture arch;
 	private final OperatingSystem os;
+	private final File payloadFile;
 
 	/**
 	 * Constructs the fragment meta information given a base id, the
@@ -43,12 +46,13 @@ public class FragmentMeta extends PluginMeta {
 	 * @param os
 	 */
 	public FragmentMeta(GeneratedPluginMeta hostMeta, Architecture arch,
-			OperatingSystem os) {
+			OperatingSystem os, File payloadFile) {
 		super(String.format("%s.%s.%s", hostMeta.getId(), os.toOsgiOs(),
 				arch.toOsgiArch()), hostMeta.getVersion());
 		this.hostMeta = hostMeta;
 		this.arch = arch;
 		this.os = os;
+		this.payloadFile = payloadFile;
 	}
 
 	/**
@@ -76,5 +80,14 @@ public class FragmentMeta extends PluginMeta {
 	 */
 	public OperatingSystem getOs() {
 		return os;
+	}
+
+	/**
+	 * Returns the actual zip file containing the payload.
+	 * 
+	 * @return
+	 */
+	public File getPayloadFile() {
+		return payloadFile;
 	}
 }
