@@ -67,8 +67,8 @@ public class PayloadDirectory extends Directory {
 			OperatingSystem os = OperatingSystem.fromString(m.group(1));
 			Architecture arch = Architecture.fromString(m.group(2));
 
-			containedFragments
-					.add(new FragmentMeta(generatedPluginMeta, arch, os));
+			containedFragments.add(new FragmentMeta(generatedPluginMeta, arch,
+					os, new File(this, payload)));
 		}
 
 		return containedFragments;
