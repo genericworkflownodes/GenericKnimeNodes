@@ -263,9 +263,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 				ExternalToolSettings settings = currentSelection();
 
 				settings.setLocalToolPath(f.getAbsolutePath());
-				if (settings.getSelectedToolPathType() == ToolPathType.UNKNOWN) {
-					settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
-				}
+				settings.setSelectedToolPathType(ToolPathType.USER_DEFINED);
 				refresh();
 			}
 		}
@@ -326,9 +324,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 				.getExecutableName());
 		if (executable.exists() && executable.canExecute()) {
 			setting.setLocalToolPath(executable.getAbsolutePath());
-			if (setting.getSelectedToolPathType() == ToolPathType.UNKNOWN) {
-				setting.setSelectedToolPathType(ToolPathType.USER_DEFINED);
-			}
+			setting.setSelectedToolPathType(ToolPathType.USER_DEFINED);
 			return true;
 		}
 		return false;
