@@ -590,7 +590,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			Parameter<?> p = nodeConfig.getParameter(name);
 			// check that we are actually referencing a file parameter from this
 			// port
-			if (!(p instanceof FileParameter)) {
+			if (!(p instanceof IFileParameter)) {
 				throw new Exception(
 						"Invalid reference from port to non-file parameter. URI port #"
 								+ i);
