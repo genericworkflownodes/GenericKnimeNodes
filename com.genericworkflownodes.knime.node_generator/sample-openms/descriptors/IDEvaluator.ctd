@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tool>
-<name>IDEvaluation</name>
+<name>IDEvaluator</name>
 <version>1.10.0</version>
-<description><![CDATA[Computes a 'q-value vs. #PSM' plot to visualize the number identifications for a certain q-value.]]></description>
-<manual><![CDATA[Computes a 'q-value vs. #PSM' plot to visualize the number identifications for a certain q-value.]]></manual>
+<description><![CDATA[Computes a 'q-value vs. #PSM' plot which is saved as an image to visualize the number identifications for a certain q-value.]]></description>
+<manual><![CDATA[Computes a 'q-value vs. #PSM' plot which is saved as an image to visualize the number identifications for a certain q-value.]]></manual>
 <docurl></docurl>
 <category></category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <NODE name="IDEvaluation" description="Computes a &apos;q-value vs. #PSM&apos; plot to visualize the number identifications for a certain q-value.">
+  <NODE name="IDEvaluator" description="Computes a &apos;q-value vs. #PSM&apos; plot which is saved as an image to visualize the number identifications for a certain q-value.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
-    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDEvaluation&apos;">
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDEvaluator&apos;">
       <ITEMLIST name="in" type="string" description="Input file(s)" tags="input file" supported_formats="*.idXML">
       </ITEMLIST>
       <ITEM name="out" value="" type="string" description="Output file (if given, no GUI will be displayed)" tags="output file" supported_formats="*.png,*.jpg,*.svg" />

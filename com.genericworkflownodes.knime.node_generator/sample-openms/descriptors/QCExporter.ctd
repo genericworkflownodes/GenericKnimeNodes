@@ -11,8 +11,9 @@
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;QCExporter&apos;">
       <ITEM name="in" value="" type="string" description="Input qcml file" tags="input file,required" supported_formats="*.qcML" />
-      <ITEM name="qp" value="" type="string" description="Target QualityParameter. (&apos;ticpoints&apos;: total ion current stats, &apos;precursorpoints&apos;: stats about the precursors from the rawfile, &apos;pepidpoints&apos;: identifications from the rawfile, &apos;featurepoints&apos;: stats about features from the rawfile, &apos;consensusstats&apos;: stats about consensus features from the rawfile)#br#" tags="required" restrictions="ticpoints,precursorpoints,pepidpoints,featurepoints,consensuspoints" />
-      <ITEM name="msrun_filename" value="" type="string" description="The name of the target raw file of the respective quality parameter." tags="required" />
+      <ITEM name="qp" value="" type="string" description="Target attachment table." tags="required" restrictions="precursor tables,charge tables,total ion current tables,delta ppm tables,feature tables,set id" />
+      <ITEM name="name" value="" type="string" description="The name of the target run or set that contains the requested quality parameter." />
+      <ITEM name="run" value="" type="string" description="The file from which the name of the target run that contains the requested quality parameter is taken. This overrides the name parameter!" tags="input file" supported_formats="*.mzML" />
       <ITEM name="out_csv" value="" type="string" description="Output csv formated quality parameter or extended qcML file" tags="output file,required" supported_formats="*.csv" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />

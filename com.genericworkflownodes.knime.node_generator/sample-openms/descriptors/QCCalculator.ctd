@@ -15,7 +15,6 @@
       <ITEM name="id" value="" type="string" description="Input idXML file containing the identifications. Your identifications will be exported in an easy-to-read format" tags="input file" supported_formats="*.idXML" />
       <ITEM name="feature" value="" type="string" description="feature input file (this is relevant for most QC issues)" tags="input file" supported_formats="*.featureXML" />
       <ITEM name="consensus" value="" type="string" description="consensus input file (this is only used for charge state deconvoluted output. Use the consensusXML output form the DeCharger)" tags="input file" supported_formats="*.consensusXML" />
-      <ITEM name="AllHits" value="false" type="string" description="If set, the exporter takes all peptide candidates per spectrum into account." restrictions="true,false" />
       <ITEM name="remove_duplicate_features" value="false" type="string" description="This flag should be set, if you work with a set of merged features." restrictions="true,false" />
       <ITEM name="MS1" value="false" type="string" description="This flag should be set, if you want to work with MS1 stats." restrictions="true,false" />
       <ITEM name="MS2" value="false" type="string" description="This flag should be set, if you want to work with MS2 stats." restrictions="true,false" />

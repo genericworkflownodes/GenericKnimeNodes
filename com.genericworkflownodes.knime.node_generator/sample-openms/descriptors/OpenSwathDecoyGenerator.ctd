@@ -21,6 +21,7 @@
       <ITEM name="exclude_similar" value="false" type="string" description="set this flag if decoy assays with similarity of the peptide sequence to the target assays higher than the identity_threshold should be excluded. If similarity_threshold is over 0, decoy assays with an absolute difference of the decoy and target product mz smaller than similarity_threshold are further excluded." restrictions="true,false" />
       <ITEM name="similarity_threshold" value="-1" type="float" description="Similarity threshold for absolute difference of the product mz of target and decoy assays for exclusion in Dalton. Suggested value: 0.05" />
       <ITEM name="append" value="false" type="string" description="set this flag if non-decoy TraML should be appended to the output." restrictions="true,false" />
+      <ITEM name="remove_CNterm_mods" value="false" type="string" description="set this flag to remove decoy peptides with C/N terminal modifications (may be necessary depending on the decoy generation method)." restrictions="true,false" />
       <ITEM name="identity_threshold" value="0.7" type="float" description="shuffle: identity threshold for the shuffle algorithm" />
       <ITEM name="max_attempts" value="10" type="int" description="shuffle: maximum attempts to lower the sequence identity between target and decoy for the shuffle algorithm" />
       <ITEM name="mz_shift" value="20" type="float" description="shift: MZ shift in Thomson for shift decoy method" />

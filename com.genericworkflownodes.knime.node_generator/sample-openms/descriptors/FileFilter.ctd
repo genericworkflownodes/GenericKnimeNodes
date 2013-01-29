@@ -14,8 +14,9 @@
       <ITEM name="in_type" value="" type="string" description="input file type -- default: determined from file extension or content#br#" restrictions="mzML,featureXML,consensusXML" />
       <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.mzML,*.featureXML,*.consensusXML" />
       <ITEM name="out_type" value="" type="string" description="output file type -- default: determined from file extension or content#br#" restrictions="mzML,featureXML,consensusXML" />
-      <ITEM name="mz" value=":" type="string" description="m/z range to extract" />
       <ITEM name="rt" value=":" type="string" description="retention time range to extract" />
+      <ITEM name="mz" value=":" type="string" description="m/z range to extract (applies to ALL ms levels!)" />
+      <ITEM name="pc_mz" value=":" type="string" description="MSn (n&gt;=2) precursor filtering according to their m/z value. Do not use this flag in conjunction with &apos;mz&apos;, unless you want to actually remove peaks in spectra (see &apos;mz&apos;). RT filtering is covered by &apos;rt&apos; and compatible with this flag." />
       <ITEM name="int" value=":" type="string" description="intensity range to extract" />
       <ITEM name="sort" value="false" type="string" description="sorts the output according to RT and m/z." restrictions="true,false" />
       <ITEM name="sn" value="0" type="float" description="write peaks with S/N &gt; &apos;sn&apos; values only" />
