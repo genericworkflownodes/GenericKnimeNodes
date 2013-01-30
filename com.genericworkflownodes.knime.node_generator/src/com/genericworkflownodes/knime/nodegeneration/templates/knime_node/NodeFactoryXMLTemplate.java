@@ -8,6 +8,7 @@ import java.util.List;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -117,6 +118,11 @@ public class NodeFactoryXMLTemplate extends Template {
 	private static String getOptions(final INodeConfiguration nodeConfiguration) {
 		StringBuffer sb = new StringBuffer();
 		for (Parameter<?> p : nodeConfiguration.getParameters()) {
+			// we ignore file parameters here, since they will be listed in the
+			// port section
+			if (p instanceof IFileParameter) {
+				continue;
+			}
 			sb.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA["
 					+ p.getDescription() + "]]></option>\n");
 		}
