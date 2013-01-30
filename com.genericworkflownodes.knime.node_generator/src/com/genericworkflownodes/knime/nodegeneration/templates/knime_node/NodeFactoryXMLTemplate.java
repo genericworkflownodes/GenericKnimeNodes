@@ -1,7 +1,6 @@
 package com.genericworkflownodes.knime.nodegeneration.templates.knime_node;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,23 +53,18 @@ public class NodeFactoryXMLTemplate extends Template {
 	 */
 	private static String getInPorts(final INodeConfiguration nodeConfiguration) {
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTNAME__\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
+		String ip = "<inPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getInputPorts()) {
+			Parameter<?> parameter = nodeConfiguration.getParameter(port
+					.getName());
 			String ipp = ip;
-			ipp = ip.replace("__PORTNAME__", port.getName());
+
+			ipp = ip.replace("__PORTNAME__", parameter.getKey());
 			ipp = ipp.replace("__PORTDESCR__", port.getDescription());
 			ipp = ipp.replace("__IDX__", String.format("%d", idx++));
-
-			// fix me
-			// ipp = ipp.replace("__MIMETYPE__",
-			// port.getMimeTypes().get(0).getExt());
-			List<String> mts = new ArrayList<String>();
-			for (String mt : port.getMimeTypes()) {
-				mts.add(mt);
-			}
-			ipp = ipp.replace("__MIMETYPE__", join(mts, ","));
+			ipp = ipp.replace("__MIMETYPE__", join(port.getMimeTypes(), ","));
 
 			ipp = ipp.replace("__OPT__", (port.isOptional() ? ",opt." : ""));
 			inPorts += ipp + "\n";
@@ -94,13 +88,15 @@ public class NodeFactoryXMLTemplate extends Template {
 		String outPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getOutputPorts()) {
+			Parameter<?> parameter = nodeConfiguration.getParameter(port
+					.getName());
+
 			String opp = op;
-			opp = op.replace("__PORTNAME__", port.getName());
+
+			opp = op.replace("__PORTNAME__", parameter.getKey());
 			opp = opp.replace("__PORTDESCR__", port.getDescription());
 			opp = opp.replace("__IDX__", String.format("%d", idx++));
-
-			//
-			opp = opp.replace("__MIMETYPE__", port.getMimeTypes().get(0));
+			opp = opp.replace("__MIMETYPE__", join(port.getMimeTypes(), ","));
 
 			outPorts += opp + "\n";
 		}
