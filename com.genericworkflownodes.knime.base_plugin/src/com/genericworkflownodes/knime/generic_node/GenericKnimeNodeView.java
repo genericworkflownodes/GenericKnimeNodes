@@ -46,10 +46,17 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 
 		JTabbedPane tabs = new JTabbedPane();
 
-		tabs.add("stdout",
-				createScrollableOutputArea(nodeModel.executor.getToolOutput()));
-		tabs.add("stderr", createScrollableOutputArea(nodeModel.executor
-				.getToolErrorOutput()));
+		String stdout = "", stderr = "";
+
+		if (nodeModel.executor != null) {
+			stdout = nodeModel.executor.getToolOutput() != null ? nodeModel.executor
+					.getToolOutput() : "";
+			stderr = nodeModel.executor.getToolErrorOutput() != null ? nodeModel.executor
+					.getToolErrorOutput() : "";
+		}
+
+		tabs.add("stdout", createScrollableOutputArea(stdout));
+		tabs.add("stderr", createScrollableOutputArea(stderr));
 
 		// we generally prefer stderr (if available), since it should be more
 		// important
