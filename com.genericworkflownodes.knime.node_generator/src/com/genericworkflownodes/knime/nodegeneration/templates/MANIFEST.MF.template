@@ -1,15 +1,18 @@
 Manifest-Version: 1.0
+Export-Package: @@packageName@@.nodes.mimetypes
 Bundle-ManifestVersion: 2
 Bundle-Name: Generic Workflow Nodes - KNIME plugin @@pluginName@@
 Bundle-SymbolicName: @@packageName@@;singleton:=true
 Bundle-Version: @@pluginVersion@@
 Bundle-Activator: @@packageName@@.knime.PluginActivator
-Bundle-Vendor: Freie Universität Berlin, Universität Tübingen
-Require-Bundle: org.eclipse.core.runtime,
- org.knime.workbench.core,
- org.knime.workbench.repository,
- org.knime.base,
- com.genericworkflownodes.knime;bundle-version="0.7.0"
+Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tübingen, and the @@pluginName@@ Team
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
+ org.knime.workbench.core;bundle-version="[2.6.0,3.0.0)",
+ org.knime.workbench.repository;bundle-version="[2.6.0,3.0.0)",
+ org.knime.base;bundle-version="[2.6.0,3.0.0)",
+ com.genericworkflownodes.knime;bundle-version="[0.7.0,1.0.0)",
+ org.eclipse.help;resolution:=optional,
+ org.eclipse.help.ui;resolution:=optional
 Bundle-ActivationPolicy: lazy
 Export-Package: @@packageName@@.knime.nodes.mimetypes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

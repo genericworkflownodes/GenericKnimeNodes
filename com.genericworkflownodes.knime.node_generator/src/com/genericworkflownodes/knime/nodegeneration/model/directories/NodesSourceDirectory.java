@@ -39,7 +39,7 @@ public class NodesSourceDirectory extends Directory {
 		super(nodeSourceDirectory);
 
 		try {
-			this.descriptorsDirectory = new DescriptorsDirectory(new File(
+			descriptorsDirectory = new DescriptorsDirectory(new File(
 					nodeSourceDirectory, "descriptors"));
 		} catch (FileNotFoundException e) {
 			throw new FileNotFoundException(
@@ -49,21 +49,21 @@ public class NodesSourceDirectory extends Directory {
 		}
 
 		try {
-			this.payloadDirectory = new PayloadDirectory(new File(
+			payloadDirectory = new PayloadDirectory(new File(
 					nodeSourceDirectory, "payload"));
 		} catch (PathnameIsNoDirectoryException e) {
 
 		}
 
 		try {
-			this.iconsDirectory = new IconsDirectory(new File(
-					nodeSourceDirectory, "icons"));
+			iconsDirectory = new IconsDirectory(new File(nodeSourceDirectory,
+					"icons"));
 		} catch (FileNotFoundException e) {
 
 		}
 
 		try {
-			this.contributingPluginsDirectory = new ContributingPluginsDirectory(
+			contributingPluginsDirectory = new ContributingPluginsDirectory(
 					new File(nodeSourceDirectory, "contributing-plugins"));
 		} catch (PathnameIsNoDirectoryException e) {
 		}
@@ -128,11 +128,11 @@ public class NodesSourceDirectory extends Directory {
 	}
 
 	public List<CTDFile> getCtdFiles() {
-		return this.descriptorsDirectory.getCTDFiles();
+		return descriptorsDirectory.getCTDFiles();
 	}
 
 	public List<MimeType> getMimeTypes() {
-		return this.descriptorsDirectory.getMimeTypesFile().getMimeTypes();
+		return descriptorsDirectory.getMimeTypesFile().getMimeTypes();
 	}
 
 	public File getDescriptionFile() {

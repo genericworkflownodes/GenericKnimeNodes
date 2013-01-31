@@ -4,15 +4,19 @@
       label="@@pluginName@@"
       version="@@pluginVersion@@">
 
-   <description>@@description@@</description>
+   <description>
+   @@description@@
+   </description>
 
-   <copyright>@@copyright@@</copyright>
+   <copyright>
+   @@copyright@@
+   </copyright>
 
-   <license>@@license@@</license>
+   <license>
+   @@license@@
+   </license>
 
 @@PLUGIN@@
-
 @@FRAGMENTS@@
-
 @@CONTRIBUTING_PLUGINS@@
 </feature>

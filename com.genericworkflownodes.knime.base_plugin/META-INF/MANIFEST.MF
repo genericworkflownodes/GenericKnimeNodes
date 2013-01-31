@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GenericKnimeNodes
 Bundle-SymbolicName: com.genericworkflownodes.knime;singleton:=true
-Bundle-Version: 0.7.0
-Bundle-ClassPath: .,
+Bundle-Version: 0.7.0.qualifier
+Bundle-ClassPath: genericnodes.jar,
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1-beta-6.jar,
  lib/swingx-all-1.6.4.jar,
  lib/bsh-2.0b4.jar
 Bundle-Vendor: The GenericWorkflowNodes Project
-Require-Bundle: org.eclipse.core.runtime,
- org.knime.workbench.core,
- org.knime.workbench.repository,
- org.knime.base,
- org.knime.core.data.uritype
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
+ org.knime.workbench.core;bundle-version="[2.6.0,3.0.0)",
+ org.knime.workbench.repository;bundle-version="[2.6.0,3.0.0)",
+ org.knime.base;bundle-version="[2.6.0,3.0.0)",
+ org.knime.core.data.uritype;bundle-version="[2.7.0,3.0.0)"
 Export-Package: com.genericworkflownodes.knime.config,
  com.genericworkflownodes.knime.config.reader,
  com.genericworkflownodes.knime.custom,
