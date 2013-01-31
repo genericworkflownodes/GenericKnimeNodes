@@ -263,6 +263,7 @@ public class NodeGenerator {
 
 			// copy assets
 			this.copyAsset(".classpath");
+			this.copyAsset("buckminster.cspex");
 
 			copyContributingPlugins();
 
