@@ -195,7 +195,6 @@ Library.
          id="com.genericworkflownodes.knime"
          download-size="0"
          install-size="0"
-         version="0.7.0"
-         unpack="false"/>
+         version="0.7.0.qualifier" />
 
 </feature>
