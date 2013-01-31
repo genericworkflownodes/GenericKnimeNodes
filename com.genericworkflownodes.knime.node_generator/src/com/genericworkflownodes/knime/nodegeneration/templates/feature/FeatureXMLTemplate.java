@@ -66,11 +66,11 @@ public class FeatureXMLTemplate extends Template {
 			List<ContributingPluginMeta> contributingPluginMetas) {
 		String contributingPluginList = "";
 		for (ContributingPluginMeta contributingPluginMeta : contributingPluginMetas) {
-			contributingPluginList += String.format("\t<plugin\n" + "\t\tid=\"%s\"\n"
-					+ "\t\tdownload-size=\"0\"\n" + "\t\tinstall-size=\"0\"\n"
-					+ "\t\tversion=\"%s\"\n" + "\t\tunpack=\"false\"/>\n\n",
-					contributingPluginMeta.getId(),
-					contributingPluginMeta.getVersion());
+			contributingPluginList += String.format("\t<plugin\n"
+					+ "\t\tid=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
+					+ "\t\tinstall-size=\"0\"\n" + "\t\tversion=\"0.0.0\"\n"
+					+ "\t\tunpack=\"false\"/>\n\n",
+					contributingPluginMeta.getId());
 		}
 
 		this.replace("@@CONTRIBUTING_PLUGINS@@", contributingPluginList);
