@@ -3,6 +3,8 @@ package com.genericworkflownodes.knime.nodegeneration.templates.feature;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.ContributingPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FeatureMeta;
@@ -23,9 +25,12 @@ public class FeatureXMLTemplate extends Template {
 		this.replace("@@pluginVersion@@", pluginMeta.getVersion());
 		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
 
-		this.replace("@@description@@", featureMeta.getDescription());
-		this.replace("@@copyright@@", featureMeta.getCopyright());
-		this.replace("@@license@@", featureMeta.getLicense());
+		this.replace("@@description@@",
+				StringEscapeUtils.escapeXml(featureMeta.getDescription()));
+		this.replace("@@copyright@@",
+				StringEscapeUtils.escapeXml(featureMeta.getCopyright()));
+		this.replace("@@license@@",
+				StringEscapeUtils.escapeXml(featureMeta.getLicense()));
 
 		this.registerGeneratedPlugin(pluginMeta);
 		this.registerFragments(fragmentMetas);
@@ -33,9 +38,10 @@ public class FeatureXMLTemplate extends Template {
 	}
 
 	private void registerGeneratedPlugin(GeneratedPluginMeta pluginMeta) {
-		String pluginList = String
-				.format("\t<plugin id=\"%s\" download-size=\"0\" install-size=\"0\" version=\"0.0.0\" unpack=\"false\"/>\n",
-						pluginMeta.getId());
+		String pluginList = String.format("\t<plugin\n" + "\t\tid=\"%s\"\n"
+				+ "\t\tdownload-size=\"0\"\n" + "\t\tinstall-size=\"0\"\n"
+				+ "\t\tversion=\"0.0.0\"\n" + "\t\tunpack=\"false\"/>\n\n",
+				pluginMeta.getId());
 
 		this.replace("@@PLUGIN@@", pluginList);
 	}
@@ -43,11 +49,14 @@ public class FeatureXMLTemplate extends Template {
 	private void registerFragments(List<FragmentMeta> fragmentMetas) {
 		String fragmentList = "";
 		for (FragmentMeta fragmentMeta : fragmentMetas) {
-			fragmentList += String
-					.format("\t<plugin id=\"%s\" os=\"%s\" arch=\"%s\" download-size=\"0\" install-size=\"0\" version=\"0.0.0\" unpack=\"false\" fragment=\"true\"/>\n",
-							fragmentMeta.getId(), fragmentMeta.getOs()
-									.toOsgiOs(), fragmentMeta.getArch()
-									.toOsgiArch());
+			fragmentList += String.format(
+					"\t<plugin id=\"%s\"\n" + "\t\tos=\"%s\"\n"
+							+ "\t\tarch=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
+							+ "\t\tinstall-size=\"0\"\n"
+							+ "\t\tversion=\"0.0.0\"\n"
+							+ "\t\tfragment=\"true\"/>\n\n",
+					fragmentMeta.getId(), fragmentMeta.getOs().toOsgiOs(),
+					fragmentMeta.getArch().toOsgiArch());
 		}
 
 		this.replace("@@FRAGMENTS@@", fragmentList);
@@ -55,14 +64,15 @@ public class FeatureXMLTemplate extends Template {
 
 	private void registerContributingPlugins(
 			List<ContributingPluginMeta> contributingPluginMetas) {
-		String fragmentList = "";
+		String contributingPluginList = "";
 		for (ContributingPluginMeta contributingPluginMeta : contributingPluginMetas) {
-			fragmentList += String
-					.format("\t<plugin id=\"%s\" download-size=\"0\" install-size=\"0\" version=\"%s\" unpack=\"false\"/>\n",
-							contributingPluginMeta.getId(),
-							contributingPluginMeta.getVersion());
+			contributingPluginList += String.format("\t<plugin\n" + "\t\tid=\"%s\"\n"
+					+ "\t\tdownload-size=\"0\"\n" + "\t\tinstall-size=\"0\"\n"
+					+ "\t\tversion=\"%s\"\n" + "\t\tunpack=\"false\"/>\n\n",
+					contributingPluginMeta.getId(),
+					contributingPluginMeta.getVersion());
 		}
 
-		this.replace("@@CONTRIBUTING_PLUGINS@@", fragmentList);
+		this.replace("@@CONTRIBUTING_PLUGINS@@", contributingPluginList);
 	}
 }

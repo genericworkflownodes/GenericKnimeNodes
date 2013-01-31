@@ -2,7 +2,6 @@ source.. = src/
 output.. = bin/
 bin.includes = .,\
                icons/,\
-               bin/,\
                META-INF/,\
                plugin.xml
                

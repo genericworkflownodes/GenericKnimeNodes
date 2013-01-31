@@ -70,7 +70,7 @@ public class FeatureMeta extends PluginMeta {
 	 * @return The plugin's name.
 	 */
 	public final String getName() {
-		return this.name;
+		return name;
 	}
 
 	/**
