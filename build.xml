@@ -27,7 +27,7 @@
 	</tstamp>
 	<property name="tmp" value="${java.io.tmpdir}/GKN-${fulltime}" />
 
-	<property name="base.plugin.src" value="com.genericworkflownodes.knime.base_plugin" />
+	<property name="base.plugin.src" value="com.genericworkflownodes.knime" />
 	<property name="base.plugin.build.dir" value="${tmp}/basePlugin" />
 	<property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" />
 	<property name="base.plugin.test.dir" value="${tmp}/basePlugin-test" />
