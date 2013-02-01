@@ -8,7 +8,7 @@ Bundle-ClassPath: genericnodes.jar,
  lib/jaxen-1.1-beta-6.jar,
  lib/swingx-all-1.6.4.jar,
  lib/bsh-2.0b4.jar
-Bundle-Vendor: The GenericWorkflowNodes Project
+Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
  org.knime.workbench.core;bundle-version="[2.6.0,3.0.0)",
  org.knime.workbench.repository;bundle-version="[2.6.0,3.0.0)",

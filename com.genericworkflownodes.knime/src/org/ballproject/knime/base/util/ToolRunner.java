@@ -41,7 +41,7 @@ public class ToolRunner {
 	}
 
 	public void addEnvironmentEntry(String key, String value) {
-		this.env.put(key, value);
+		env.put(key, value);
 	}
 
 	public void setEnvironment(Map<String, String> env) {

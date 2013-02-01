@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-Export-Package: @@packageName@@.nodes.mimetypes
 Bundle-ManifestVersion: 2
 Bundle-Name: Generic Workflow Nodes for KNIME: @@pluginName@@
 Bundle-SymbolicName: @@packageName@@;singleton:=true
