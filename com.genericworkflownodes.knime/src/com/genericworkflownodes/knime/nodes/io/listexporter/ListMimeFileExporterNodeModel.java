@@ -65,9 +65,8 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
+		// set string value to ""
+		m_filename.setStringValue("");
 	}
 
 	/**
@@ -119,7 +118,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
 			throw new InvalidSettingsException(
-					"no MIMEURIPortObject compatible port object at port 0");
+					"No URIPortObjectSpec compatible port object");
 		}
 		return new PortObjectSpec[] {};
 	}
@@ -132,14 +131,14 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 
 		if (uris.size() == 0) {
 			throw new Exception(
-					"there were no URIs in the supplied MIMEURIPortObject at port 0");
+					"There were no URIs in the supplied URIPortObject");
 		}
 
 		int idx = 1;
 		for (URIContent uri : uris) {
 			File in = new File(uri.getURI());
-			if (!in.canWrite()) {
-				throw new Exception("cannot read file to export: "
+			if (!in.canRead()) {
+				throw new Exception("Cannot read file to export: "
 						+ in.getAbsolutePath());
 			}
 
@@ -147,14 +146,17 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 					.getSpec().getFileExtensions().get(0), idx++);
 			File out = new File(outfilename);
 
-			// if(!out.canWrite())
-			// throw new
-			// Exception("cannot write to file: "+out.getAbsolutePath());
+			if (out.exists() && !out.canWrite()) {
+				throw new Exception("Cannot write to file: "
+						+ out.getAbsolutePath());
+			} else if (!out.getParentFile().canWrite()) {
+				throw new Exception("Cannot write to containing directoy: "
+						+ out.getParentFile().getAbsolutePath());
+			}
 
 			Helper.copyFile(in, out);
 		}
-
-		return new PortObject[] {};
+		return null;
 	}
 
 	private static String insertIndex(String filename, String extension, int idx) {

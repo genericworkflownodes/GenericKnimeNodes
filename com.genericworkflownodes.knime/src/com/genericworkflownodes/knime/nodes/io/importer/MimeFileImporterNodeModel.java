@@ -96,9 +96,6 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
 	}
 
 	/**
@@ -161,7 +158,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 		byte[] BUFFER = new byte[BUFFSIZE];
 
 		while (entries.hasMoreElements()) {
-			ZipEntry entry = (ZipEntry) entries.nextElement();
+			ZipEntry entry = entries.nextElement();
 
 			if (entry.getName().equals("rawdata.bin")) {
 				int size = (int) entry.getSize();
@@ -206,7 +203,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 			IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
 					.getWorkbench().getService(IMIMEtypeRegistry.class);
 			// if service is unavailable it will be catched below
-			mt = registry.getMIMEtype(this.m_filename.getStringValue());
+			mt = registry.getMIMEtype(m_filename.getStringValue());
 		} catch (Exception e) {
 			throw new InvalidSettingsException(
 					"could not resolve MIME type of file");
