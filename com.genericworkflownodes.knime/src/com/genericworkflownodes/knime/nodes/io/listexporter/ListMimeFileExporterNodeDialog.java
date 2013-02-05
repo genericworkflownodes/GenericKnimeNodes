@@ -19,6 +19,8 @@
 
 package com.genericworkflownodes.knime.nodes.io.listexporter;
 
+import javax.swing.JFileChooser;
+
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -44,7 +46,7 @@ public class ListMimeFileExporterNodeDialog extends DefaultNodeSettingsPane {
 		super();
 		DialogComponentFileChooser dfc = new DialogComponentFileChooser(
 				ListMimeFileExporterNodeDialog.createFileChooserModel(),
-				"MimeFileExporterNodeDialog");
+				"MimeFileExporterNodeDialog", JFileChooser.SAVE_DIALOG);
 		dfc.setBorderTitle("");
 		addDialogComponent(dfc);
 	}
