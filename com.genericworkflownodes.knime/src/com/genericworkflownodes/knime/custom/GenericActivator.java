@@ -121,12 +121,20 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 		// We extract the payload only if we can find nothing inside the
 		// referenced directory. If the directory is not empty we assume that
-		// the payload was already extracted and registered in a previous run.
+		// the payload was already extracted
 		if (payloadDirectory.isEmpty()) {
 			extractBinaries();
+		}
+
+		// make sure everything is extracted and ready to run
+		if (!payloadDirectory.isEmpty()) {
+			// load the associated properties and store them as environment
+			// variable
+			loadEnvironmentVariables(payloadDirectory.getPath());
 			makeExtractedBinariesExecutable();
 			registerExtractedBinaries();
 		}
+
 		registerMimeTypes();
 	}
 
@@ -186,10 +194,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 			// extract it
 			ZipUtils.decompressTo(nodeBinariesDir, getBinaryLocation()
 					.getResourceAsStream(getZipFileName()));
-
-			// load the associated properties and store them as environment
-			// variable
-			loadEnvironmentVariables(nodeBinariesDir);
 			return true;
 		} else {
 			return false;

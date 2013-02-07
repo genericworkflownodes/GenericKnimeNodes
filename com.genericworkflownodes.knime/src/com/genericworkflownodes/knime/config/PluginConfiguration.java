@@ -70,8 +70,12 @@ public class PluginConfiguration implements IPluginConfiguration {
 			if (env.get(envName).contains("$ROOT")) {
 				// update the map entry with the correct path
 				env.put(envName,
-						env.get(envName).replace("$ROOT",
-								getBinariesPath() + File.separator));
+						env.get(envName)
+								.replace(
+										"$ROOT",
+										new File(getBinariesPath()).toPath()
+												.toString()));
+
 			}
 		}
 	}

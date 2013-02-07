@@ -230,8 +230,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		GenericNodesPlugin.log("retcode=" + retcode);
 
 		if (retcode != 0) {
-			LOGGER.error(executor.getToolOutput());
-			LOGGER.error(executor.getToolErrorOutput());
+			LOGGER.error("Failing process stdout: " + executor.getToolOutput());
+			LOGGER.error("Failing process stderr: "
+					+ executor.getToolErrorOutput());
 			throw new Exception("Execution of external tool failed.");
 		}
 

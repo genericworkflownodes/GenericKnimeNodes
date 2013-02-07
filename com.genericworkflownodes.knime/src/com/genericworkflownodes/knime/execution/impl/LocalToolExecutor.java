@@ -252,7 +252,7 @@ public class LocalToolExecutor implements IToolExecutor {
 			// the system and was requested by the value, e.g.,
 			// PATH=/usr/bin:$PATH .. will be extended by the system variable
 			// PATH=/usr/bin .. not
-			if (value.contains("$" + key) && System.getenv(key) != null) {
+			if (System.getenv(key) != null) {
 				value = value + PATHSEP + System.getenv(key);
 			}
 
