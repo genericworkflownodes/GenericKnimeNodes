@@ -53,7 +53,7 @@ public class PluginConfiguration implements IPluginConfiguration {
 			final Properties props, final Map<String, String> env) {
 
 		this.pluginName = pluginName;
-		this.binariesPath = binPath;
+		binariesPath = binPath;
 		this.props = props;
 		this.env = env;
 
@@ -66,15 +66,12 @@ public class PluginConfiguration implements IPluginConfiguration {
 	 * the correct values.
 	 */
 	private void fixEnvironmentVariables() {
-		for (String envName : this.env.keySet()) {
+		for (String envName : env.keySet()) {
 			if (env.get(envName).contains("$ROOT")) {
 				// update the map entry with the correct path
 				env.put(envName,
-						env.get(envName)
-								.replace(
-										"$ROOT",
-										new File(getBinariesPath()).toPath()
-												.toString()));
+						env.get(envName).replace("$ROOT",
+								new File(getBinariesPath()).getAbsolutePath()));
 
 			}
 		}
