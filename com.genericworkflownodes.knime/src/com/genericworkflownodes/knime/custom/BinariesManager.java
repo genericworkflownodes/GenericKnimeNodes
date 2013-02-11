@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleContext;
 
@@ -72,17 +73,50 @@ public class BinariesManager {
 		// We extract the payload only if we can find nothing inside the
 		// referenced directory. If the directory is not empty we assume that
 		// the payload was already extracted
-		if (payloadDirectory.isEmpty()) {
+		if (checkExtractedPayload()) {
 			extractBinaries();
 		}
 
 		// make sure everything is extracted and ready to run
-		if (!payloadDirectory.isEmpty()) {
+		if (!checkExtractedPayload()) {
 			// load the associated properties and store them as environment
 			// variable
 			loadEnvironmentVariables(payloadDirectory.getPath());
-			makeExtractedBinariesExecutable();
 			registerExtractedBinaries();
+		}
+	}
+
+	private boolean checkExtractedPayload() {
+		// check if all extracted paths still available, if one fails,
+		// re-extract
+		if (payloadDirectory.isEmpty()) {
+			return false;
+		} else {
+			try {
+				IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
+						.getWorkbench().getService(IToolLocatorService.class);
+
+				if (toolLocator != null) {
+					// for each node find the executable
+					for (ExternalTool tool : genericActivator.getTools()) {
+						File toolExecutable = toolLocator.getToolPath(tool,
+								ToolPathType.SHIPPED);
+						// check if it exists
+						if (!toolExecutable.exists())
+							return false;
+
+						// check if it is in our payload
+						if (!toolExecutable.getAbsolutePath().startsWith(
+								payloadDirectory.getPath().getAbsolutePath()))
+							return false;
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.warning("Error during payload check. Assume there is no extracted payload.");
+				LOGGER.warning(e.getMessage());
+				return false;
+			}
+			return true;
 		}
 	}
 
@@ -93,7 +127,9 @@ public class BinariesManager {
 	 *             In case of IO errors.
 	 */
 	private void extractBinaries() throws IOException {
-		tryExtractPayloadZIP(payloadDirectory.getPath());
+		// clear the directory to avoid inconsistencies
+		FileUtils.deleteDirectory(payloadDirectory.getPath());
+		tryExtractPayloadZIP();
 	}
 
 	/**
@@ -106,17 +142,13 @@ public class BinariesManager {
 	 * @throws IOException
 	 *             Exception is thrown in case of io problems.
 	 */
-	private boolean tryExtractPayloadZIP(final File nodeBinariesDir)
-			throws IOException {
+	private void tryExtractPayloadZIP() throws IOException {
 		// check if a zip file for that combination of OS and data model exists
 		if (genericActivator.getBinaryLocation().getResourceAsStream(
 				getZipFileName()) != null) {
 			// extract it
-			ZipUtils.decompressTo(nodeBinariesDir, genericActivator
+			ZipUtils.decompressTo(payloadDirectory.getPath(), genericActivator
 					.getBinaryLocation().getResourceAsStream(getZipFileName()));
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -160,6 +192,7 @@ public class BinariesManager {
 			for (ExternalTool tool : genericActivator.getTools()) {
 				File executable = getExecutableName(binaryDirectory,
 						tool.getExecutableName());
+				executable.setExecutable(true);
 				if (executable != null) {
 					// register executalbe in the ToolFinder
 					toolLocator.setToolPath(tool, executable,
@@ -236,18 +269,6 @@ public class BinariesManager {
 			String k = key.toString();
 			String v = envProperites.getProperty(k);
 			environmentVariables.put(k, v);
-		}
-	}
-
-	/**
-	 * Tries to make all binaries contained in the extracted payload executable.
-	 */
-	private void makeExtractedBinariesExecutable() {
-		if (payloadDirectory.getExecutableDirectory() != null) {
-			for (File execFile : payloadDirectory.getExecutableDirectory()
-					.listFiles()) {
-				execFile.setExecutable(true);
-			}
 		}
 	}
 }
