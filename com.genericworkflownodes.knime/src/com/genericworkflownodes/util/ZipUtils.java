@@ -72,4 +72,23 @@ public class ZipUtils {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Do not extract the stream, just count the number of zip entries.
+	 * 
+	 * @param zipStream
+	 */
+	public static int countEntries(InputStream zipStream) {
+		int numEntries = 0;
+		try {
+			ZipInputStream zin = new ZipInputStream(zipStream);
+			while ((zin.getNextEntry()) != null) {
+				++numEntries;
+			}
+			zin.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return numEntries;
+	}
 }
