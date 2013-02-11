@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -120,18 +121,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 		binariesManager.run();
 
-		/**
-		 * // We extract the payload only if we can find nothing inside the //
-		 * referenced directory. If the directory is not empty we assume that //
-		 * the payload was already extracted if (payloadDirectory.isEmpty()) {
-		 * extractBinaries(); }
-		 * 
-		 * // make sure everything is extracted and ready to run if
-		 * (!payloadDirectory.isEmpty()) { // load the associated properties and
-		 * store them as environment // variable
-		 * loadEnvironmentVariables(payloadDirectory.getPath());
-		 * makeExtractedBinariesExecutable(); registerExtractedBinaries(); }
-		 */
 		registerMimeTypes();
 	}
 
@@ -161,6 +150,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				.getWorkbench().getService(IMIMEtypeRegistry.class);
 		if (registry != null) {
 			for (String mimeType : getMIMETypes()) {
+				LOGGER.log(Level.FINEST, "Register MIME Type: " + mimeType);
 				registry.registerMIMEtype(mimeType);
 			}
 		}

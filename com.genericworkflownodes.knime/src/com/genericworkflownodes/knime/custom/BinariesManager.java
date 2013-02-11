@@ -81,7 +81,7 @@ public class BinariesManager {
 		if (!checkExtractedPayload()) {
 			// load the associated properties and store them as environment
 			// variable
-			loadEnvironmentVariables(payloadDirectory.getPath());
+			loadEnvironmentVariables();
 			registerExtractedBinaries();
 		}
 	}
@@ -92,6 +92,7 @@ public class BinariesManager {
 		if (payloadDirectory.isEmpty()) {
 			return false;
 		} else {
+			boolean extractedPayloadIsValid = true;
 			try {
 				IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
 						.getWorkbench().getService(IToolLocatorService.class);
@@ -102,13 +103,22 @@ public class BinariesManager {
 						File toolExecutable = toolLocator.getToolPath(tool,
 								ToolPathType.SHIPPED);
 						// check if it exists
-						if (!toolExecutable.exists())
-							return false;
+						if (!toolExecutable.exists()) {
+							extractedPayloadIsValid = false;
+							if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.SHIPPED)
+								toolLocator.updateToolPathType(tool,
+										ToolPathType.UNKNOWN);
+						}
 
 						// check if it is in our payload
 						if (!toolExecutable.getAbsolutePath().startsWith(
-								payloadDirectory.getPath().getAbsolutePath()))
-							return false;
+								payloadDirectory.getPath().getAbsolutePath())) {
+							extractedPayloadIsValid = false;
+							if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.SHIPPED)
+								toolLocator.updateToolPathType(tool,
+										ToolPathType.UNKNOWN);
+
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -116,7 +126,7 @@ public class BinariesManager {
 				LOGGER.warning(e.getMessage());
 				return false;
 			}
-			return true;
+			return extractedPayloadIsValid;
 		}
 	}
 
@@ -136,9 +146,6 @@ public class BinariesManager {
 	 * Tests if a zip file with the name binaries.zip is available and extracts
 	 * it.
 	 * 
-	 * @param nodeBinariesDir
-	 *            Target directory where it should be extracted to
-	 * @return true if the specified zip file was found and extracted correctly.
 	 * @throws IOException
 	 *             Exception is thrown in case of io problems.
 	 */
@@ -192,8 +199,9 @@ public class BinariesManager {
 			for (ExternalTool tool : genericActivator.getTools()) {
 				File executable = getExecutableName(binaryDirectory,
 						tool.getExecutableName());
-				executable.setExecutable(true);
 				if (executable != null) {
+					// make executable
+					executable.setExecutable(true);
 					// register executalbe in the ToolFinder
 					toolLocator.setToolPath(tool, executable,
 							ToolPathType.SHIPPED);
@@ -243,18 +251,13 @@ public class BinariesManager {
 	 * Tries to load data from the platform specific ini file, contained in the
 	 * plugin.jar.
 	 * 
-	 * @param os
-	 *            The operating system.
-	 * @param dataModel
-	 *            The data model (32 or 64 bit).
 	 * @throws IOException
 	 *             I thrown in case of IO errors.
 	 */
-	private void loadEnvironmentVariables(final File targetDirectory)
-			throws IOException {
+	private void loadEnvironmentVariables() throws IOException {
 		Properties envProperites = new Properties();
 
-		File iniFile = new File(targetDirectory, getINIFileName());
+		File iniFile = new File(payloadDirectory.getPath(), getINIFileName());
 
 		// check if we extracted also an ini file
 		if (!iniFile.exists()) {
