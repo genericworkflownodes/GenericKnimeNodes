@@ -1,3 +1,5 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
 package org.ballproject.knime.nodes.mimetypes;
 
 import org.ballproject.knime.types.MIMEtype;

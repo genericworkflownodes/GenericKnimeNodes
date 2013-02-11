@@ -73,6 +73,9 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 */
 	private BundleContext bundleContext;
 
+	/**
+	 * Handles the extraction of the payload.
+	 */
 	private BinariesManager binariesManager;
 
 	/**
@@ -195,6 +198,17 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Gives access to the {@link BinariesManager} responsible for
+	 * extracting/registering/handling the binaries contained in the payload.
+	 * 
+	 * @return the binariesManager
+	 */
+	public final BinariesManager getBinariesManager() {
+		return binariesManager;
+	}
+
+	/**
+	 * Returns a {@link List} of {@link ExternalTool}s contained in the plugin.
 	 * 
 	 * @return
 	 */

@@ -102,22 +102,16 @@ public class BinariesManager {
 					for (ExternalTool tool : genericActivator.getTools()) {
 						File toolExecutable = toolLocator.getToolPath(tool,
 								ToolPathType.SHIPPED);
-						// check if it exists
-						if (!toolExecutable.exists()) {
+						// check if it exists and if it is in our payload
+						if (!toolExecutable.exists()
+								|| !toolExecutable.getAbsolutePath()
+										.startsWith(
+												payloadDirectory.getPath()
+														.getAbsolutePath())) {
 							extractedPayloadIsValid = false;
 							if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.SHIPPED)
 								toolLocator.updateToolPathType(tool,
 										ToolPathType.UNKNOWN);
-						}
-
-						// check if it is in our payload
-						if (!toolExecutable.getAbsolutePath().startsWith(
-								payloadDirectory.getPath().getAbsolutePath())) {
-							extractedPayloadIsValid = false;
-							if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.SHIPPED)
-								toolLocator.updateToolPathType(tool,
-										ToolPathType.UNKNOWN);
-
 						}
 					}
 				}
