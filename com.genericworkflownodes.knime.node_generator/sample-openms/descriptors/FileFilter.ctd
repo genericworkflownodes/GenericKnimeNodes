@@ -19,39 +19,49 @@
       <ITEM name="pc_mz" value=":" type="string" description="MSn (n&gt;=2) precursor filtering according to their m/z value. Do not use this flag in conjunction with &apos;mz&apos;, unless you want to actually remove peaks in spectra (see &apos;mz&apos;). RT filtering is covered by &apos;rt&apos; and compatible with this flag." />
       <ITEM name="int" value=":" type="string" description="intensity range to extract" />
       <ITEM name="sort" value="false" type="string" description="sorts the output according to RT and m/z." restrictions="true,false" />
-      <ITEM name="sn" value="0" type="float" description="write peaks with S/N &gt; &apos;sn&apos; values only" />
-      <ITEMLIST name="rm_pc_charge" type="int" description="Remove MS(2) spectra with these precursor charges. All spectra without precursor are kept!">
-      </ITEMLIST>
-      <ITEMLIST name="level" type="int" description="MS levels to extract">
-        <LISTITEM value="1"/>
-        <LISTITEM value="2"/>
-        <LISTITEM value="3"/>
-      </ITEMLIST>
-      <ITEM name="sort_peaks" value="false" type="string" description="sorts the peaks according to m/z." restrictions="true,false" />
-      <ITEM name="no_chromatograms" value="false" type="string" description="No conversion to space-saving real chromatograms, e.g. from SRM scans." restrictions="true,false" />
-      <ITEM name="remove_chromatograms" value="false" type="string" description="Removes chromatograms stored in a file." restrictions="true,false" />
-      <ITEM name="mz_precision" value="64" type="string" description="Store base64 encoded m/z data using 32 or 64 bit precision." restrictions="32,64" />
-      <ITEM name="int_precision" value="32" type="string" description="Store base64 encoded intensity data using 32 or 64 bit precision." restrictions="32,64" />
-      <ITEM name="remove_zoom" value="false" type="string" description="Remove zoom (enhanced resolution) scans" restrictions="true,false" />
-      <ITEM name="remove_mode" value="" type="string" description="Remove scans by scan mode#br#" restrictions="Unknown,MassSpectrum,MS1Spectrum,MSnSpectrum,SelectedIonMonitoring,SelectedReactionMonitoring,ConsecutiveReactionMonitoring,ConstantNeutralGain,ConstantNeutralLoss,Precursor,EnhancedMultiplyCharged,TimeDelayedFragmentation,ElectromagneticRadiation,Emission,Absorbtion" />
-      <ITEM name="remove_activation" value="" type="string" description="Remove MSn scans where any of its precursors features a certain activation method#br#" restrictions="Collision-induced dissociation,Post-source decay,Plasma desorption,Surface-induced dissociation,Blackbody infrared radiative dissociation,Electron capture dissociation,Infrared multiphoton dissociation,Sustained off-resonance irradiation,High-energy collision-induced dissociation,Low-energy collision-induced dissociation,Photodissociation,Electron transfer dissociation,Pulsed q dissociation" />
-      <ITEM name="select_zoom" value="false" type="string" description="Select zoom (enhanced resolution) scans" restrictions="true,false" />
-      <ITEM name="select_mode" value="" type="string" description="Selects scans by scan mode#br#" restrictions="Unknown,MassSpectrum,MS1Spectrum,MSnSpectrum,SelectedIonMonitoring,SelectedReactionMonitoring,ConsecutiveReactionMonitoring,ConstantNeutralGain,ConstantNeutralLoss,Precursor,EnhancedMultiplyCharged,TimeDelayedFragmentation,ElectromagneticRadiation,Emission,Absorbtion" />
-      <ITEM name="select_activation" value="" type="string" description="Select MSn scans where any of its precursors features a certain activation method#br#" restrictions="Collision-induced dissociation,Post-source decay,Plasma desorption,Surface-induced dissociation,Blackbody infrared radiative dissociation,Electron capture dissociation,Infrared multiphoton dissociation,Sustained off-resonance irradiation,High-energy collision-induced dissociation,Low-energy collision-induced dissociation,Photodissociation,Electron transfer dissociation,Pulsed q dissociation" />
-      <ITEM name="charge" value=":" type="string" description="charge range to extract" />
-      <ITEM name="size" value=":" type="string" description="size range to extract" />
-      <ITEMLIST name="remove_meta" type="string" description="Expects a 3-tuple (=3 entries in the list), i.e. &lt;name&gt; &apos;lt|eq|gt&apos; &lt;value&gt;; the first is the name of meta value, followed by the comparison operator (equal, less or greater) and the value to compare to. All comparisons are done after converting the given value to the corresponding data value type of the meta value (for lists, this simply compares length, not content!)!">
-      </ITEMLIST>
-      <ITEM name="q" value=":" type="string" description="Overall quality range to extract [0:1]" />
-      <ITEMLIST name="map" type="int" description="maps to be extracted from a consensus">
-      </ITEMLIST>
-      <ITEM name="map_and" value="false" type="string" description="AND connective of map selection instead of OR." restrictions="true,false" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
       <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
       <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
-      <NODE name="id" description="ID options">
+      <NODE name="peak_options" description="Peak data options">
+        <ITEM name="sn" value="0" type="float" description="write peaks with S/N &gt; &apos;sn&apos; values only" />
+        <ITEMLIST name="rm_pc_charge" type="int" description="Remove MS(2) spectra with these precursor charges. All spectra without precursor are kept!">
+        </ITEMLIST>
+        <ITEMLIST name="level" type="int" description="MS levels to extract">
+          <LISTITEM value="1"/>
+          <LISTITEM value="2"/>
+          <LISTITEM value="3"/>
+        </ITEMLIST>
+        <ITEM name="sort_peaks" value="false" type="string" description="sorts the peaks according to m/z." restrictions="true,false" />
+        <ITEM name="no_chromatograms" value="false" type="string" description="No conversion to space-saving real chromatograms, e.g. from SRM scans." restrictions="true,false" />
+        <ITEM name="remove_chromatograms" value="false" type="string" description="Removes chromatograms stored in a file." restrictions="true,false" />
+        <ITEM name="mz_precision" value="64" type="string" description="Store base64 encoded m/z data using 32 or 64 bit precision." restrictions="32,64" />
+        <ITEM name="int_precision" value="32" type="string" description="Store base64 encoded intensity data using 32 or 64 bit precision." restrictions="32,64" />
+      </NODE>
+      <NODE name="spectra" description="Remove spectra or select spectra (removing all others) with certain properties.">
+        <ITEM name="remove_zoom" value="false" type="string" description="Remove zoom (enhanced resolution) scans" restrictions="true,false" />
+        <ITEM name="remove_mode" value="" type="string" description="Remove scans by scan mode#br#" restrictions="Unknown,MassSpectrum,MS1Spectrum,MSnSpectrum,SelectedIonMonitoring,SelectedReactionMonitoring,ConsecutiveReactionMonitoring,ConstantNeutralGain,ConstantNeutralLoss,Precursor,EnhancedMultiplyCharged,TimeDelayedFragmentation,ElectromagneticRadiation,Emission,Absorbtion" />
+        <ITEM name="remove_activation" value="" type="string" description="Remove MSn scans where any of its precursors features a certain activation method#br#" restrictions="Collision-induced dissociation,Post-source decay,Plasma desorption,Surface-induced dissociation,Blackbody infrared radiative dissociation,Electron capture dissociation,Infrared multiphoton dissociation,Sustained off-resonance irradiation,High-energy collision-induced dissociation,Low-energy collision-induced dissociation,Photodissociation,Electron transfer dissociation,Pulsed q dissociation" />
+        <ITEM name="select_zoom" value="false" type="string" description="Select zoom (enhanced resolution) scans" restrictions="true,false" />
+        <ITEM name="select_mode" value="" type="string" description="Selects scans by scan mode#br#" restrictions="Unknown,MassSpectrum,MS1Spectrum,MSnSpectrum,SelectedIonMonitoring,SelectedReactionMonitoring,ConsecutiveReactionMonitoring,ConstantNeutralGain,ConstantNeutralLoss,Precursor,EnhancedMultiplyCharged,TimeDelayedFragmentation,ElectromagneticRadiation,Emission,Absorbtion" />
+        <ITEM name="select_activation" value="" type="string" description="Select MSn scans where any of its precursors features a certain activation method#br#" restrictions="Collision-induced dissociation,Post-source decay,Plasma desorption,Surface-induced dissociation,Blackbody infrared radiative dissociation,Electron capture dissociation,Infrared multiphoton dissociation,Sustained off-resonance irradiation,High-energy collision-induced dissociation,Low-energy collision-induced dissociation,Photodissociation,Electron transfer dissociation,Pulsed q dissociation" />
+      </NODE>
+      <NODE name="feature" description="Feature data options">
+        <ITEM name="q" value=":" type="string" description="Overall quality range to extract [0:1]" />
+      </NODE>
+      <NODE name="consensusfeature" description="Consensus feature data options">
+        <ITEMLIST name="map" type="int" description="maps to be extracted from a consensus">
+        </ITEMLIST>
+        <ITEM name="map_and" value="false" type="string" description="AND connective of map selection instead of OR." restrictions="true,false" />
+      </NODE>
+      <NODE name="f_and_cf" description="Feature &amp; Consensus data options">
+        <ITEM name="charge" value=":" type="string" description="charge range to extract" />
+        <ITEM name="size" value=":" type="string" description="size range to extract" />
+        <ITEMLIST name="remove_meta" type="string" description="Expects a 3-tuple (=3 entries in the list), i.e. &lt;name&gt; &apos;lt|eq|gt&apos; &lt;value&gt;; the first is the name of meta value, followed by the comparison operator (equal, less or greater) and the value to compare to. All comparisons are done after converting the given value to the corresponding data value type of the meta value (for lists, this simply compares length, not content!)!">
+        </ITEMLIST>
+      </NODE>
+      <NODE name="id" description="ID options. The Priority of the id-flags is: remove_annotated_features / remove_unannotated_features -&gt; remove_clashes -&gt; keep_best_score_id -&gt; sequences_whitelist / accessions_whitelist.">
         <ITEM name="remove_clashes" value="false" type="string" description="remove features with id clashes (different sequences mapped to one feature)" tags="advanced" restrictions="true,false" />
         <ITEM name="keep_best_score_id" value="false" type="string" description="in case of multiple peptide identifications, keep only the id with best score" restrictions="true,false" />
         <ITEMLIST name="sequences_whitelist" type="string" description="keep only features with white listed sequences, e.g. LYSNLVER or the modification (Oxidation)">

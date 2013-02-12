@@ -29,11 +29,11 @@ import java.util.Properties;
 public interface IPluginConfiguration {
 
 	/**
-	 * The name of the plugin.
+	 * The id of the plugin.
 	 * 
 	 * @return The name of the configured plugin.
 	 */
-	String getPluginName();
+	String getPluginId();
 
 	/**
 	 * The path where all binaries are located.
@@ -58,4 +58,10 @@ public interface IPluginConfiguration {
 	 */
 	Map<String, String> getEnvironmentVariables();
 
+	/**
+	 * The name of the plugin as it would be shown in the GUI.
+	 * 
+	 * @return
+	 */
+	String getPluginName();
 }

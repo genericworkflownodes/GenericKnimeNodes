@@ -1,3 +1,5 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
 package __BASE__.knime;
 
 import java.util.Arrays;
@@ -6,10 +8,9 @@ import java.util.List;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
-import com.genericworkflownodes.knime.config.PluginConfiguration;
+import com.genericworkflownodes.knime.config.impl.PluginConfiguration;
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import __BASE__.knime.binres.BinaryResources;
 import __BASE__.knime.nodes.mimetypes.MimeFileCellFactory;
 
 public class PluginActivator extends GenericActivator {
@@ -30,11 +31,6 @@ public class PluginActivator extends GenericActivator {
 		return MimeFileCellFactory.getInstance().getMimeTypes();
 	}
 
-	@Override
-	public Class<?> getBinaryLocation() {
-		return BinaryResources.class;
-	}
-	
 	public static PluginActivator getInstance() {
 		return INSTANCE;
 	}
@@ -48,7 +44,7 @@ public class PluginActivator extends GenericActivator {
 	public IPluginConfiguration getPluginConfiguration() {
 		if (PLUGIN_CONFIG == null) {
 			// construct the plugin config
-			PLUGIN_CONFIG = new PluginConfiguration("__BASE__", getPreferenceStore()
+			PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", getPreferenceStore()
 					.getString("binaries_path"), PluginActivator.getInstance()
 					.getProperties(), PluginActivator.getInstance()
 					.getEnvironment());

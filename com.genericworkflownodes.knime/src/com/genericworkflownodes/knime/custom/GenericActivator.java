@@ -18,13 +18,12 @@
  */
 package com.genericworkflownodes.knime.custom;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -34,13 +33,12 @@ import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.payload.BinariesManager;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
-import com.genericworkflownodes.util.ZipUtils;
 
 /**
  * This class is an abstract bundle activator which holds the code necessary to
@@ -75,6 +73,11 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * The bundle context for access inside the activator.
 	 */
 	private BundleContext bundleContext;
+
+	/**
+	 * Handles the extraction of the payload.
+	 */
+	private BinariesManager binariesManager;
 
 	/**
 	 * Default c'tor.
@@ -112,40 +115,13 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 		// initialize the payload directory
 		payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
-
+		binariesManager = new BinariesManager(payloadDirectory, this);
 		final IPreferenceStore pStore = getPreferenceStore();
 		pStore.setValue("binaries_path", payloadDirectory.getPath()
 				.getCanonicalPath());
 
 		loadPluginProperties();
-
-		// We extract the payload only if we can find nothing inside the
-		// referenced directory. If the directory is not empty we assume that
-		// the payload was already extracted
-		if (payloadDirectory.isEmpty()) {
-			extractBinaries();
-		}
-
-		// make sure everything is extracted and ready to run
-		if (!payloadDirectory.isEmpty()) {
-			// load the associated properties and store them as environment
-			// variable
-			loadEnvironmentVariables(payloadDirectory.getPath());
-			makeExtractedBinariesExecutable();
-			registerExtractedBinaries();
-		}
-
 		registerMimeTypes();
-	}
-
-	/**
-	 * Tries to extract platform specific binaries from the plugin.jar.
-	 * 
-	 * @throws IOException
-	 *             In case of IO errors.
-	 */
-	private void extractBinaries() throws IOException {
-		tryExtractPayloadZIP(payloadDirectory.getPath());
 	}
 
 	/**
@@ -157,103 +133,12 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	private void loadPluginProperties() throws IOException {
 		props.load(this.getClass().getResourceAsStream("plugin.properties"));
 		if (GenericNodesPlugin.isDebug()) {
-			GenericNodesPlugin
-					.log("com.genericworkflownodes.sample.copyfasta plugin properties are ... ");
+			GenericNodesPlugin.log(getPluginConfiguration().getPluginId()
+					+ " plugin properties are ... ");
 			for (Object key : props.keySet()) {
 				GenericNodesPlugin.log(key + " -> " + props.get(key));
 			}
 		}
-	}
-
-	/**
-	 * Tries to make all binaries contained in the extracted payload executable.
-	 */
-	private void makeExtractedBinariesExecutable() {
-		if (payloadDirectory.getExecutableDirectory() != null) {
-			for (File execFile : payloadDirectory.getExecutableDirectory()
-					.listFiles()) {
-				execFile.setExecutable(true);
-			}
-		}
-	}
-
-	/**
-	 * Tests if a zip file with the name binaries.zip is available and extracts
-	 * it.
-	 * 
-	 * @param nodeBinariesDir
-	 *            Target directory where it should be extracted to
-	 * @return true if the specified zip file was found and extracted correctly.
-	 * @throws IOException
-	 *             Exception is thrown in case of io problems.
-	 */
-	private boolean tryExtractPayloadZIP(final File nodeBinariesDir)
-			throws IOException {
-		// check if a zip file for that combination of OS and data model exists
-		if (getBinaryLocation().getResourceAsStream(getZipFileName()) != null) {
-			// extract it
-			ZipUtils.decompressTo(nodeBinariesDir, getBinaryLocation()
-					.getResourceAsStream(getZipFileName()));
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Tries to load data from the platform specific ini file, contained in the
-	 * plugin.jar.
-	 * 
-	 * @param os
-	 *            The operating system.
-	 * @param dataModel
-	 *            The data model (32 or 64 bit).
-	 * @throws IOException
-	 *             I thrown in case of IO errors.
-	 */
-	private void loadEnvironmentVariables(final File targetDirectory)
-			throws IOException {
-		Properties envProperites = new Properties();
-
-		File iniFile = new File(targetDirectory, getINIFileName());
-
-		// check if we extracted also an ini file
-		if (!iniFile.exists()) {
-			throw new IOException("No ini found at location: "
-					+ iniFile.getAbsolutePath());
-		}
-
-		// load the properties file
-		envProperites.load(new FileInputStream(iniFile));
-
-		for (Object key : envProperites.keySet()) {
-			String k = key.toString();
-			String v = envProperites.getProperty(k);
-			environmentVariables.put(k, v);
-		}
-	}
-
-	/**
-	 * Returns a correctly formated ini file name for the given combination of
-	 * os and dataModel.
-	 * 
-	 * @param os
-	 *            The operating system.
-	 * @param dataModel
-	 *            The data model (32 or 64 bit).
-	 * @return Returns a string like binaries_win_32.ini.
-	 */
-	private String getINIFileName() {
-		return "binaries.ini";
-	}
-
-	/**
-	 * Returns the zip file name in the binres package.
-	 * 
-	 * @return Returns a string like binaries.zip.
-	 */
-	private String getZipFileName() {
-		return "binaries.zip";
 	}
 
 	/**
@@ -265,6 +150,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				.getWorkbench().getService(IMIMEtypeRegistry.class);
 		if (registry != null) {
 			for (String mimeType : getMIMETypes()) {
+				LOGGER.log(Level.FINEST, "Register MIME Type: " + mimeType);
 				registry.registerMIMEtype(mimeType);
 			}
 		}
@@ -289,69 +175,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Adds all extracted binaries to the tool registry.
-	 */
-	private void registerExtractedBinaries() {
-
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-
-		if (toolLocator != null) {
-
-			// get binary path
-			File binaryDirectory = payloadDirectory.getExecutableDirectory();
-
-			// for each node find the executable
-			for (ExternalTool tool : getTools()) {
-				File executable = getExecutableName(binaryDirectory,
-						tool.getExecutableName());
-				if (executable != null) {
-					// register executalbe in the ToolFinder
-					toolLocator.setToolPath(tool, executable,
-							ToolPathType.SHIPPED);
-
-					try {
-						// check if we need to adjust the type
-						if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
-							toolLocator.updateToolPathType(tool,
-									ToolPathType.SHIPPED);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-				} else {
-					// TODO: handle non existent binaries, check if we have a
-					// configured one, otherwise warn
-					LOGGER.warning("Did not find any binaries for your platform.");
-				}
-			}
-		}
-
-	}
-
-	/**
-	 * Helper function to find an executable based on a node name and the
-	 * directory where the binaries are located.
-	 * 
-	 * @param binDir
-	 *            Directory containing all binaries associated to the plugin.
-	 * @param nodename
-	 *            The name of the node for which the executable should be found.
-	 * @return A {@link File} pointing to the executable (if one was found) or
-	 *         null (if no executable was found).
-	 */
-	private File getExecutableName(final File binDir, final String nodename) {
-		for (String extension : new String[] { "", ".bin", ".exe" }) {
-			File binFile = new File(binDir, nodename + extension);
-			if (binFile.canExecute()) {
-				return binFile;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Get the plugin specific proberties stored in the plugin.properties file.
 	 * 
 	 * @return The properties loaded for this plugin.
@@ -372,6 +195,17 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Gives access to the {@link BinariesManager} responsible for
+	 * extracting/registering/handling the binaries contained in the payload.
+	 * 
+	 * @return the binariesManager
+	 */
+	public final BinariesManager getBinariesManager() {
+		return binariesManager;
+	}
+
+	/**
+	 * Returns a {@link List} of {@link ExternalTool}s contained in the plugin.
 	 * 
 	 * @return
 	 */
@@ -383,13 +217,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @return Returns the list of {@link MIMEType}s provided by the plugin.
 	 */
 	public abstract List<String> getMIMETypes();
-
-	/**
-	 * Returns the {@link Class} where the binaries are located.
-	 * 
-	 * @return Returns the {@link Class} where the binaries are located.
-	 */
-	public abstract Class<?> getBinaryLocation();
 
 	/**
 	 * Gives access to the plugin config of the derived plugin.

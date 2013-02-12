@@ -51,7 +51,6 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.ContributingPlug
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FeatureMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
-import com.genericworkflownodes.knime.nodegeneration.templates.BinaryResourcesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.MimeFileCellFactoryTemplate;
@@ -213,18 +212,16 @@ public class NodeGenerator {
 			}
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new PluginActivatorTemplate(generatedPluginMeta.getPackageRoot(),
-					configurations).write(new File(pluginBuildDir
-					.getKnimeDirectory(), "PluginActivator.java"));
+			new PluginActivatorTemplate(generatedPluginMeta, configurations)
+					.write(new File(pluginBuildDir.getKnimeDirectory(),
+							"PluginActivator.java"));
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new StartupTemplate(generatedPluginMeta.getPackageRoot(),
-					generatedPluginMeta.getName()).write(new File(
+			new StartupTemplate(generatedPluginMeta.getId()).write(new File(
 					pluginBuildDir.getKnimeDirectory(), "Startup.java"));
 
 			// src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
-			new PluginPreferencePageTemplate(
-					generatedPluginMeta.getPackageRoot())
+			new PluginPreferencePageTemplate(generatedPluginMeta.getId())
 					.write(new File(new File(
 							pluginBuildDir.getKnimeDirectory(), "preferences"),
 							"PluginPreferencePage.java"));
@@ -248,12 +245,6 @@ public class NodeGenerator {
 			// .project
 			new ProjectTemplate(generatedPluginMeta.getPackageRoot())
 					.write(pluginBuildDir.getProjectFile());
-
-			// src/[PACKAGE]/knime/nodes/binres/BinaryResources.java
-			new BinaryResourcesTemplate(generatedPluginMeta.getPackageRoot())
-					.write(new File(pluginBuildDir
-							.getBinaryResourcesDirectory(),
-							"BinaryResources.java"));
 
 			// src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
 			if (srcDir.getPayloadDirectory() != null) {

@@ -2,12 +2,12 @@
 <tool>
 <name>SpecLibCreator</name>
 <version>1.10.0</version>
-<description><![CDATA[Creates an MSP formated spectral library.]]></description>
-<manual><![CDATA[Creates an MSP formated spectral library.]]></manual>
+<description><![CDATA[Creates an MSP formatted spectral library.]]></description>
+<manual><![CDATA[Creates an MSP formatted spectral library.]]></manual>
 <docurl></docurl>
 <category></category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <NODE name="SpecLibCreator" description="Creates an MSP formated spectral library.">
+  <NODE name="SpecLibCreator" description="Creates an MSP formatted spectral library.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;SpecLibCreator&apos;">
       <ITEM name="info" value="" type="string" description="Holds id, peptide, retention time etc." tags="input file,required" supported_formats="*.csv" />

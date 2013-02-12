@@ -15,7 +15,7 @@
       <ITEM name="ext_calibrants" value="" type="string" description="input file containing the external calibrant spectra (peak or raw data)#br#" tags="input file,required" supported_formats="*.mzML" />
       <ITEM name="ref_masses" value="" type="string" description="input file containing reference masses of the external calibrant spectra (one per line)" tags="input file,required" supported_formats="*.txt" />
       <ITEM name="tof_const" value="" type="string" description="File containing TOF conversion constants. These can be either two or three constants#br#per set, depending on the conversion type. Either one set for all calibrant spectra #br#(tab separated), or one for each spectrum.#br#For a detailed description, please have a look at the doxygen documentation.(one set, tab separated, per line)" tags="input file,required" supported_formats="*.csv" />
-      <ITEM name="peak_data" value="false" type="string" description="set this flag, if you have peak data, not raw data" restrictions="true,false" />
+      <ITEM name="peak_data" value="false" type="string" description="set this flag, if you have peak data, not raw data (the picking parameters are accessible only from the INI file)." restrictions="true,false" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />

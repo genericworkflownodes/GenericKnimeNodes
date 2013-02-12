@@ -13,7 +13,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.mime.MimeType;
 public class MimeFileCellFactoryTemplate extends Template {
 
 	private static final Logger LOGGER = Logger
-			.getLogger(BinaryResourcesTemplate.class.getCanonicalName());
+			.getLogger(MimeFileCellFactoryTemplate.class.getCanonicalName());
 
 	public MimeFileCellFactoryTemplate(String packageName,
 			List<MimeType> mimeTypes) throws IOException {

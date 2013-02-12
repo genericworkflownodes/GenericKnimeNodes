@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.util.StringUtils;
 
 /**
@@ -39,7 +39,7 @@ public class PluginActivatorTemplate extends Template {
 	/**
 	 * Constructor.
 	 * 
-	 * @param packageName
+	 * @param generatedPluginMeta
 	 *            The name of the package, where the PluginActivator will be
 	 *            located.
 	 * @param configurations
@@ -48,12 +48,15 @@ public class PluginActivatorTemplate extends Template {
 	 * @throws IOException
 	 *             Will be thrown if the access to the template file fails.
 	 */
-	public PluginActivatorTemplate(final String packageName,
+	public PluginActivatorTemplate(
+			final GeneratedPluginMeta generatedPluginMeta,
 			final List<INodeConfiguration> configurations) throws IOException {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/PluginActivator.template"));
 
-		replace("__BASE__", packageName);
+		replace("__BASE__", generatedPluginMeta.getPackageRoot());
+		replace("__PLUGIN_ID__", generatedPluginMeta.getId());
+		replace("__PLUGIN_NAME__", generatedPluginMeta.getName());
 
 		List<String> externalTools = new ArrayList<String>();
 		for (INodeConfiguration config : configurations) {
@@ -65,7 +68,7 @@ public class PluginActivatorTemplate extends Template {
 			}
 
 			externalTools.add(String.format(EXTERNAL_TOOL_CTOR_TEMPLATE,
-					packageName, nodeName, executableName));
+					generatedPluginMeta.getId(), nodeName, executableName));
 		}
 
 		replace("__EXTERNAL_TOOLS__", StringUtils.join(externalTools, ", "));

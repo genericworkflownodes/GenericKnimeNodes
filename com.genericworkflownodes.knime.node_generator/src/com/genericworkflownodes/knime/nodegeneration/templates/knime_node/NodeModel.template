@@ -1,3 +1,5 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
 package __BASE__.knime.nodes.__NODENAME__;
 
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;

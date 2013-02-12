@@ -16,6 +16,7 @@
       <ITEM name="name" value="" type="string" description="The name of the target run or set that contains the requested quality parameter." />
       <ITEM name="run" value="" type="string" description="The file from which the name of the target run that contains the requested quality parameter is taken. This overrides the name parameter!" tags="input file" supported_formats="*.mzML" />
       <ITEM name="plot" value="" type="string" description="Plot file to be added to target quality parameter. (Plot file generated from csv output.)" tags="input file,required" supported_formats="*.PNG" />
+      <ITEM name="table" value="" type="string" description="Table file that will be added as attachment to the given qc." tags="input file" supported_formats="*.csv" />
       <ITEM name="out" value="" type="string" description="Output extended/reduced qcML file" tags="output file,required" supported_formats="*.qcML" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />

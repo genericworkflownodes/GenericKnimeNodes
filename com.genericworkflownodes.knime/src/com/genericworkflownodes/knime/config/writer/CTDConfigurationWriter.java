@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -56,33 +58,7 @@ public class CTDConfigurationWriter {
 	private INodeConfiguration currentConfig;
 
 	private String xmlEscapeText(String t) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < t.length(); i++) {
-			char c = t.charAt(i);
-			switch (c) {
-			case '<':
-				sb.append("&lt;");
-				break;
-			case '>':
-				sb.append("&gt;");
-				break;
-			case '\"':
-				sb.append("&quot;");
-				break;
-			case '&':
-				sb.append("&amp;");
-				break;
-			case '\'':
-				sb.append("&apos;");
-				break;
-			default:
-				if (c > 0x7e) {
-					sb.append("&#" + ((int) c) + ";");
-				} else
-					sb.append(c);
-			}
-		}
-		return sb.toString();
+		return StringEscapeUtils.escapeXml(t);
 	}
 
 	public CTDConfigurationWriter(File target) throws IOException {
@@ -513,8 +489,8 @@ public class CTDConfigurationWriter {
 			if (description == null)
 				description = "";
 
-			streamPut(String.format("<NODE name=\"%s\" descriptions=\"%s\">",
-					prefix.get(i), description));
+			streamPut(String.format("<NODE name=\"%s\" description=\"%s\">",
+					prefix.get(i), xmlEscapeText(description)));
 			indent();
 		}
 		currentNodeState = prefix;

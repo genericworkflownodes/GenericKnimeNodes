@@ -12,11 +12,11 @@
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;MapRTTransformer&apos;">
       <ITEMLIST name="in" type="string" description="Input files to transform (separated by blanks)" tags="input file" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.idXML">
       </ITEMLIST>
-      <ITEMLIST name="out" type="string" description="Output files separated by blanks" tags="output file" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.idXML">
+      <ITEMLIST name="out" type="string" description="Output files separated by blanks. Either this option or &apos;trafo_out&apos; have to be provided. They can be used together." tags="output file" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.idXML">
       </ITEMLIST>
       <ITEMLIST name="trafo_in" type="string" description="Transformations to apply (files separated by blanks)" tags="input file,required" supported_formats="*.trafoXML">
       </ITEMLIST>
-      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks" tags="output file" supported_formats="*.trafoXML">
+      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks. Either this option or &apos;out&apos; have to be provided. They can be used together." tags="output file" supported_formats="*.trafoXML">
       </ITEMLIST>
       <ITEM name="invert" value="false" type="string" description="Invert transformations (approximatively) before applying them" restrictions="true,false" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
