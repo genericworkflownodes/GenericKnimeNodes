@@ -2,12 +2,12 @@
 <tool>
 <name>NoiseFilterGaussian</name>
 <version>1.10.0</version>
-<description><![CDATA[Removes noise from profile spectra by using Gaussian filter.]]></description>
-<manual><![CDATA[Removes noise from profile spectra by using Gaussian filter.]]></manual>
+<description><![CDATA[Removes noise from profile spectra by using Gaussian filter (on uniform as well as non-uniform data).]]></description>
+<manual><![CDATA[Removes noise from profile spectra by using Gaussian filter (on uniform as well as non-uniform data).]]></manual>
 <docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__NoiseFilterGaussian.html</docurl>
 <category>Signal processing and preprocessing</category>
 <PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <NODE name="NoiseFilterGaussian" description="Removes noise from profile spectra by using Gaussian filter.">
+  <NODE name="NoiseFilterGaussian" description="Removes noise from profile spectra by using Gaussian filter (on uniform as well as non-uniform data).">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;NoiseFilterGaussian&apos;">
       <ITEM name="in" value="" type="string" description="input raw data file " tags="input file,required" supported_formats="*.mzML" />

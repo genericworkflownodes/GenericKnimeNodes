@@ -27,29 +27,31 @@
       <ITEM name="total_gradient_time" value="1" type="float" description="the time (in seconds) of the gradient (only for RT prediction)" restrictions="1e-05:" />
       <ITEM name="first_dim_rt" value="false" type="string" description="if set the model will be built for first_dim_rt" restrictions="true,false" />
       <ITEM name="additive_cv" value="false" type="string" description="if the step sizes should be interpreted additively (otherwise the actual value is multiplied#br#with the step size to get the new value" restrictions="true,false" />
-      <ITEM name="number_of_runs" value="1" type="int" description="number of runs for the CV (each run creates a new random partition of the data)" restrictions="1:" />
-      <ITEM name="number_of_partitions" value="10" type="int" description="number of CV partitions" restrictions="2:" />
-      <ITEM name="degree_start" value="1" type="int" description="starting point of degree" restrictions="1:" />
-      <ITEM name="degree_step_size" value="2" type="int" description="step size point of degree" />
-      <ITEM name="degree_stop" value="4" type="int" description="stopping point of degree" />
-      <ITEM name="p_start" value="1" type="float" description="starting point of p" />
-      <ITEM name="p_step_size" value="10" type="float" description="step size point of p" />
-      <ITEM name="p_stop" value="1000" type="float" description="stopping point of p" />
-      <ITEM name="c_start" value="1" type="float" description="starting point of c" />
-      <ITEM name="c_step_size" value="10" type="float" description="step size of c" />
-      <ITEM name="c_stop" value="1000" type="float" description="stopping point of c" />
-      <ITEM name="nu_start" value="0.3" type="float" description="starting point of nu" restrictions="0:1" />
-      <ITEM name="nu_step_size" value="1.2" type="float" description="step size of nu" />
-      <ITEM name="nu_stop" value="0.7" type="float" description="stopping point of nu" restrictions="0:1" />
-      <ITEM name="sigma_start" value="1" type="float" description="starting point of sigma" />
-      <ITEM name="sigma_step_size" value="1.3" type="float" description="step size of sigma" />
-      <ITEM name="sigma_stop" value="15" type="float" description="stopping point of sigma" />
-      <ITEM name="skip_cv" value="false" type="string" description="Set to enable Cross-Validation or set to true if the model should just be trained with 1 set of specified parameters." restrictions="true,false" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
       <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
       <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="cv" description="Parameters for the grid search / cross validation:">
+        <ITEM name="skip_cv" value="false" type="string" description="Set to enable Cross-Validation or set to true if the model should just be trained with 1 set of specified parameters." restrictions="true,false" />
+        <ITEM name="number_of_runs" value="1" type="int" description="number of runs for the CV (each run creates a new random partition of the data)" restrictions="1:" />
+        <ITEM name="number_of_partitions" value="10" type="int" description="number of CV partitions" restrictions="2:" />
+        <ITEM name="degree_start" value="1" type="int" description="starting point of degree" restrictions="1:" />
+        <ITEM name="degree_step_size" value="2" type="int" description="step size point of degree" />
+        <ITEM name="degree_stop" value="4" type="int" description="stopping point of degree" />
+        <ITEM name="p_start" value="1" type="float" description="starting point of p" />
+        <ITEM name="p_step_size" value="10" type="float" description="step size point of p" />
+        <ITEM name="p_stop" value="1000" type="float" description="stopping point of p" />
+        <ITEM name="c_start" value="1" type="float" description="starting point of c" />
+        <ITEM name="c_step_size" value="10" type="float" description="step size of c" />
+        <ITEM name="c_stop" value="1000" type="float" description="stopping point of c" />
+        <ITEM name="nu_start" value="0.3" type="float" description="starting point of nu" restrictions="0:1" />
+        <ITEM name="nu_step_size" value="1.2" type="float" description="step size of nu" />
+        <ITEM name="nu_stop" value="0.7" type="float" description="stopping point of nu" restrictions="0:1" />
+        <ITEM name="sigma_start" value="1" type="float" description="starting point of sigma" />
+        <ITEM name="sigma_step_size" value="1.3" type="float" description="step size of sigma" />
+        <ITEM name="sigma_stop" value="15" type="float" description="stopping point of sigma" />
+      </NODE>
     </NODE>
   </NODE>
 </PARAMETERS>

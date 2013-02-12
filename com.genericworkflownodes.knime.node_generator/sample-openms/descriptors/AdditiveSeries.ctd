@@ -15,21 +15,21 @@
       <ITEM name="out" value="" type="string" description="output XML file containg regression line and confidence interval" tags="output file,required" supported_formats="*.XML" />
       <ITEM name="mz_tolerance" value="1" type="float" description="Tolerance in m/z dimension" />
       <ITEM name="rt_tolerance" value="1" type="float" description="Tolerance in RT dimension" />
-      <ITEMLIST name="concentrations" type="float" description="Spiked concentrations" tags="required">
+      <ITEMLIST name="concentrations" type="float" description="List of spiked concentrations" tags="required">
       </ITEMLIST>
       <ITEM name="feature_rt" value="-1" type="float" description="RT position of the feature" />
       <ITEM name="feature_mz" value="-1" type="float" description="m/z position of the feature" />
       <ITEM name="standard_rt" value="-1" type="float" description="RT position of the standard" />
       <ITEM name="standard_mz" value="-1" type="float" description="m/z position of the standard" />
-      <ITEM name="write_gnuplot_output" value="false" type="string" description="Flag that activates the GNUplot output" restrictions="true,false" />
-      <ITEM name="out_gp" value="" type="string" description="base file name (3 files with different extensions are created)" />
-      <ITEM name="mz_unit" value="Thomson" type="string" description="the m/z unit of the plot" />
-      <ITEM name="rt_unit" value="seconds" type="string" description="the RT unit of the plot" />
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
       <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
       <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
       <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <NODE name="plot" description="GNUplot options">
+        <ITEM name="write_gnuplot_output" value="false" type="string" description="Flag that activates the GNUplot output" restrictions="true,false" />
+        <ITEM name="out_gp" value="" type="string" description="base file name (3 files with different extensions are created)" />
+      </NODE>
     </NODE>
   </NODE>
 </PARAMETERS>

@@ -10,9 +10,9 @@
   <NODE name="FalseDiscoveryRate" description="Estimates the false discovery rate on peptide and protein level using decoy searches.">
     <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FalseDiscoveryRate&apos;">
-      <ITEM name="in" value="" type="string" description="Identification input file which contains a search against a concatenated sequence database" tags="input file" supported_formats="*.idXML" />
-      <ITEM name="fwd_in" value="" type="string" description="Identification input to estimate FDR, forward" tags="input file" supported_formats="*.idXML" />
-      <ITEM name="rev_in" value="" type="string" description="Identification input to estimate FDR, decoy run" tags="input file" supported_formats="*.idXML" />
+      <ITEM name="in" value="" type="string" description="Identification input file which contains a search against a concatenated sequence database. Either specify &apos;-in&apos; alone or &apos;fwd_in&apos; together with &apos;rev_in&apos; as input." tags="input file" supported_formats="*.idXML" />
+      <ITEM name="fwd_in" value="" type="string" description="Identification input to estimate FDR, forward run." tags="input file" supported_formats="*.idXML" />
+      <ITEM name="rev_in" value="" type="string" description="Identification input to estimate FDR, decoy run." tags="input file" supported_formats="*.idXML" />
       <ITEM name="out" value="" type="string" description="Identification output with annotated FDR" tags="output file,required" supported_formats="*.idXML" />
       <ITEM name="proteins_only" value="false" type="string" description="If set, the FDR of the proteins only is calculated" restrictions="true,false" />
       <ITEM name="peptides_only" value="false" type="string" description="If set, the FDR of the peptides only is calculated" restrictions="true,false" />

@@ -12,9 +12,9 @@
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;MapAlignerIdentification&apos;">
       <ITEMLIST name="in" type="string" description="Input files separated by blanks (all must have the same file type)" tags="input file,required" supported_formats="*.featureXML,*.consensusXML,*.idXML">
       </ITEMLIST>
-      <ITEMLIST name="out" type="string" description="Output files separated by blanks" tags="output file" supported_formats="*.featureXML,*.consensusXML,*.idXML">
+      <ITEMLIST name="out" type="string" description="Output files separated by blanks. Either &apos;out&apos; or &apos;trafo_out&apos; has to be provided. They can be used together." tags="output file" supported_formats="*.featureXML,*.consensusXML,*.idXML">
       </ITEMLIST>
-      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks" tags="output file" supported_formats="*.trafoXML">
+      <ITEMLIST name="trafo_out" type="string" description="Transformation output files separated by blanks. Either &apos;out&apos; or &apos;trafo_out&apos; has to be provided. They can be used together." tags="output file" supported_formats="*.trafoXML">
       </ITEMLIST>
       <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
       <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
