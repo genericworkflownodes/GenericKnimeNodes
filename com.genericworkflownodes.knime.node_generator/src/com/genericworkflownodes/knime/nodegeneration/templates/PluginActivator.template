@@ -11,7 +11,6 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.impl.PluginConfiguration;
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import __BASE__.knime.binres.BinaryResources;
 import __BASE__.knime.nodes.mimetypes.MimeFileCellFactory;
 
 public class PluginActivator extends GenericActivator {
@@ -32,11 +31,6 @@ public class PluginActivator extends GenericActivator {
 		return MimeFileCellFactory.getInstance().getMimeTypes();
 	}
 
-	@Override
-	public Class<?> getBinaryLocation() {
-		return BinaryResources.class;
-	}
-	
 	public static PluginActivator getInstance() {
 		return INSTANCE;
 	}

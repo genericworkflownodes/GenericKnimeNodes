@@ -219,13 +219,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	public abstract List<String> getMIMETypes();
 
 	/**
-	 * Returns the {@link Class} where the binaries are located.
-	 * 
-	 * @return Returns the {@link Class} where the binaries are located.
-	 */
-	public abstract Class<?> getBinaryLocation();
-
-	/**
 	 * Gives access to the plugin config of the derived plugin.
 	 * 
 	 * @return The plugin config.
