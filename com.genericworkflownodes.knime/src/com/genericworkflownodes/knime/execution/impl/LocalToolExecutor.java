@@ -294,7 +294,7 @@ public class LocalToolExecutor implements IToolExecutor {
 		}
 
 		executable = toolLocator.getToolPath(new ExternalTool(
-				pluginConfiguration.getPluginName(), nodeConfiguration
+				pluginConfiguration.getPluginId(), nodeConfiguration
 						.getName()));
 
 		if (executable == null) {

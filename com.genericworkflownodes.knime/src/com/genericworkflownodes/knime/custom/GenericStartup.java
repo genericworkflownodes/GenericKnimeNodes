@@ -18,9 +18,11 @@
  */
 package com.genericworkflownodes.knime.custom;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
@@ -44,11 +46,6 @@ public class GenericStartup implements IStartup {
 			.getLogger(GenericStartup.class);
 
 	/**
-	 * The name of the bundle that is initialized.
-	 */
-	private final String m_bundleName;
-
-	/**
 	 * The id of the preference page to open if there are missing binaries.
 	 */
 	private final String m_preferencePageId;
@@ -62,19 +59,14 @@ public class GenericStartup implements IStartup {
 	 * Create the GenericStartup with the name of the plugin. The name is used
 	 * to build the dialogs and find the correct pref-page.
 	 * 
-	 * @param bundleName
-	 *            The name of the bundle that is initialized.
 	 * @param preferencePageId
 	 *            The id of the preference page to open if there are missing
 	 *            binaries.
-	 * @param pluginName
-	 *            The name of the plugin.
 	 * @param preferenceStore
 	 *            The preference store of the plugin.
 	 */
-	public GenericStartup(final String bundleName,
-			final String preferencePageId, GenericActivator genericActivator) {
-		m_bundleName = bundleName;
+	public GenericStartup(GenericActivator genericActivator,
+			final String preferencePageId) {
 		m_preferencePageId = preferencePageId;
 		m_pluginActivator = genericActivator;
 		m_pluginActivator.getPreferenceStore().setDefault(
@@ -90,6 +82,33 @@ public class GenericStartup implements IStartup {
 	@Override
 	public void earlyStartup() {
 		try {
+			// in case we have a payload, check if it is already extracted and
+			// valid
+			if (m_pluginActivator.getBinariesManager().hasPayload()) {
+				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							if (!m_pluginActivator.getBinariesManager()
+									.hasValidPayload()) {
+								new ProgressMonitorDialog(PlatformUI
+										.getWorkbench().getDisplay()
+										.getActiveShell()).run(true, false,
+										m_pluginActivator.getBinariesManager());
+							}
+
+							// we should (in any case) have a valid payload now
+							m_pluginActivator.getBinariesManager().register();
+						} catch (InvocationTargetException e) {
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+
+			// in any case; check if we have a binary for all nodes
 			if (!findUnitializedBinaries().isEmpty()
 					&& m_pluginActivator.getPreferenceStore().getBoolean(
 							PREFERENCE_WARN_IF_BINARIES_ARE_MISSING)) {
@@ -100,8 +119,11 @@ public class GenericStartup implements IStartup {
 								MissingBinariesDialog mbDialog = new MissingBinariesDialog(
 										PlatformUI.getWorkbench().getDisplay()
 												.getActiveShell(),
-										m_bundleName, m_preferencePageId,
-										m_pluginActivator.getPreferenceStore());
+										m_pluginActivator
+												.getPluginConfiguration()
+												.getPluginName(),
+										m_preferencePageId, m_pluginActivator
+												.getPreferenceStore());
 								mbDialog.create();
 								mbDialog.open();
 							}

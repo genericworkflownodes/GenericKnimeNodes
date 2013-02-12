@@ -33,6 +33,7 @@ import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.payload.BinariesManager;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
@@ -121,10 +122,12 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				.getCanonicalPath());
 
 		loadPluginProperties();
-
-		binariesManager.run();
-
 		registerMimeTypes();
+
+		System.out
+				.println("Payload exists: "
+						+ getBinaryLocation().getResourceAsStream(
+								"binaries.zip") != null);
 	}
 
 	/**
@@ -136,7 +139,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	private void loadPluginProperties() throws IOException {
 		props.load(this.getClass().getResourceAsStream("plugin.properties"));
 		if (GenericNodesPlugin.isDebug()) {
-			GenericNodesPlugin.log(getPluginConfiguration().getPluginName()
+			GenericNodesPlugin.log(getPluginConfiguration().getPluginId()
 					+ " plugin properties are ... ");
 			for (Object key : props.keySet()) {
 				GenericNodesPlugin.log(key + " -> " + props.get(key));
@@ -205,6 +208,10 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 */
 	public final BinariesManager getBinariesManager() {
 		return binariesManager;
+	}
+
+	public final BundleContext getBundleContext() {
+		return bundleContext;
 	}
 
 	/**

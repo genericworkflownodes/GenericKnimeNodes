@@ -1,11 +1,28 @@
 /**
+ * Copyright (c) 2012, Stephan Aiche.
+ *
+ * This file is part of GenericKnimeNodes.
  * 
+ * GenericKnimeNodes is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config;
+package com.genericworkflownodes.knime.config.impl;
 
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
+
+import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
 /**
  * Default implementation of {@link IPluginConfiguration}.
@@ -18,12 +35,17 @@ public class PluginConfiguration implements IPluginConfiguration {
 	/**
 	 * The name of the plugin.
 	 */
-	private String pluginName;
+	private final String pluginId;
 
 	/**
 	 * The path where all binaries are stored (as string).
 	 */
-	private String binariesPath;
+	private final String binariesPath;
+
+	/**
+	 * The name of the plugin for the GUI.
+	 */
+	private final String pluginName;
 
 	/**
 	 * Additional properties of the plugin.
@@ -39,9 +61,9 @@ public class PluginConfiguration implements IPluginConfiguration {
 	/**
 	 * C'tor for {@link PluginConfiguration}.
 	 * 
-	 * @param pluginName
+	 * @param pluginId
 	 *            The name of the plugin.
-	 * @param binPath
+	 * @param binariesPath
 	 *            The path where all the binaries are located.
 	 * @param props
 	 *            Additional properties.
@@ -49,11 +71,13 @@ public class PluginConfiguration implements IPluginConfiguration {
 	 *            A {@link Map} containing entries for environment variables,
 	 *            needed to execute the binaries located in the plugin.
 	 */
-	public PluginConfiguration(final String pluginName, final String binPath,
-			final Properties props, final Map<String, String> env) {
+	public PluginConfiguration(final String pluginId, final String pluginName,
+			final String binariesPath, final Properties props,
+			final Map<String, String> env) {
 
+		this.pluginId = pluginId;
 		this.pluginName = pluginName;
-		binariesPath = binPath;
+		this.binariesPath = binariesPath;
 		this.props = props;
 		this.env = env;
 
@@ -81,8 +105,8 @@ public class PluginConfiguration implements IPluginConfiguration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String getPluginName() {
-		return pluginName;
+	public final String getPluginId() {
+		return pluginId;
 	}
 
 	/**
@@ -107,6 +131,11 @@ public class PluginConfiguration implements IPluginConfiguration {
 	@Override
 	public final Map<String, String> getEnvironmentVariables() {
 		return env;
+	}
+
+	@Override
+	public String getPluginName() {
+		return pluginName;
 	}
 
 }

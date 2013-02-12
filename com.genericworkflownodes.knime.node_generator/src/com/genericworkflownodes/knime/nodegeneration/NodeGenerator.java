@@ -213,18 +213,16 @@ public class NodeGenerator {
 			}
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new PluginActivatorTemplate(generatedPluginMeta.getPackageRoot(),
-					configurations).write(new File(pluginBuildDir
-					.getKnimeDirectory(), "PluginActivator.java"));
+			new PluginActivatorTemplate(generatedPluginMeta, configurations)
+					.write(new File(pluginBuildDir.getKnimeDirectory(),
+							"PluginActivator.java"));
 
 			// src/[PACKAGE]/knime/PluginActivator.java
-			new StartupTemplate(generatedPluginMeta.getPackageRoot(),
-					generatedPluginMeta.getName()).write(new File(
+			new StartupTemplate(generatedPluginMeta.getId()).write(new File(
 					pluginBuildDir.getKnimeDirectory(), "Startup.java"));
 
 			// src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
-			new PluginPreferencePageTemplate(
-					generatedPluginMeta.getPackageRoot())
+			new PluginPreferencePageTemplate(generatedPluginMeta.getId())
 					.write(new File(new File(
 							pluginBuildDir.getKnimeDirectory(), "preferences"),
 							"PluginPreferencePage.java"));

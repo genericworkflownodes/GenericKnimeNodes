@@ -16,33 +16,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.custom;
+package com.genericworkflownodes.knime.custom.payload;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleContext;
 
+import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
-import com.genericworkflownodes.util.ZipUtils;
 
 /**
  * Manages the extraction and registriation of shipped binaries.
  * 
  * @author aiche
  */
-public class BinariesManager {
+public class BinariesManager implements IRunnableWithProgress {
 
 	/**
 	 * The logger.
@@ -69,24 +78,12 @@ public class BinariesManager {
 		this.genericActivator = genericActivator;
 	}
 
-	public void run() throws IOException {
-		// We extract the payload only if we can find nothing inside the
-		// referenced directory. If the directory is not empty we assume that
-		// the payload was already extracted
-		if (checkExtractedPayload()) {
-			extractBinaries();
-		}
-
-		// make sure everything is extracted and ready to run
-		if (!checkExtractedPayload()) {
-			// load the associated properties and store them as environment
-			// variable
-			loadEnvironmentVariables();
-			registerExtractedBinaries();
-		}
-	}
-
-	private boolean checkExtractedPayload() {
+	/**
+	 * Checks if the payload exists and is valid.
+	 * 
+	 * @return
+	 */
+	public boolean hasValidPayload() {
 		// check if all extracted paths still available, if one fails,
 		// re-extract
 		if (payloadDirectory.isEmpty()) {
@@ -127,29 +124,92 @@ public class BinariesManager {
 	/**
 	 * Tries to extract platform specific binaries from the plugin.jar.
 	 * 
+	 * @param monitor
+	 * 
 	 * @throws IOException
 	 *             In case of IO errors.
 	 */
-	private void extractBinaries() throws IOException {
+	private void extractBinaries(IProgressMonitor monitor) throws IOException {
 		// clear the directory to avoid inconsistencies
+		cleanPayload();
+		// extract the actual payload
+		extractPayloadZIP(monitor);
+		// mark everything under payloadDirectory.getExecutableDirectory() as
+		// isExecutable
+		makePayloadExecutable();
+	}
+
+	public void cleanPayload() throws IOException {
 		FileUtils.deleteDirectory(payloadDirectory.getPath());
-		tryExtractPayloadZIP();
+	}
+
+	/**
+	 * Sets the executable bit for every file under
+	 * {@link IPayloadDirectory#getExecutableDirectory()}.
+	 */
+	private void makePayloadExecutable() {
+		@SuppressWarnings("unchecked")
+		Iterator<File> fIt = FileUtils.iterateFiles(
+				payloadDirectory.getExecutableDirectory(),
+				TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+		while (fIt.hasNext()) {
+			fIt.next().setExecutable(true);
+		}
 	}
 
 	/**
 	 * Tests if a zip file with the name binaries.zip is available and extracts
 	 * it.
 	 * 
+	 * @param monitor
+	 * 
 	 * @throws IOException
 	 *             Exception is thrown in case of io problems.
 	 */
-	private void tryExtractPayloadZIP() throws IOException {
+	private void extractPayloadZIP(IProgressMonitor monitor) throws IOException {
 		// check if a zip file for that combination of OS and data model exists
-		if (genericActivator.getBinaryLocation().getResourceAsStream(
-				getZipFileName()) != null) {
+		if (hasPayload()) {
+			// count number of entries in the zip file
+			monitor.beginTask(
+					"Checking shipped binaries for plugin "
+							+ genericActivator.getPluginConfiguration()
+									.getPluginName(), IProgressMonitor.UNKNOWN);
+			int numEntries = ZipUtils.countEntries(getPayloadStream());
+			monitor.done();
+
 			// extract it
-			ZipUtils.decompressTo(payloadDirectory.getPath(), genericActivator
-					.getBinaryLocation().getResourceAsStream(getZipFileName()));
+			monitor.beginTask(
+					"Extracting shipped binaries for plugin "
+							+ genericActivator.getPluginConfiguration()
+									.getPluginName(), numEntries);
+			ZipUtils.decompressTo(payloadDirectory.getPath(),
+					getPayloadStream(), monitor);
+			monitor.done();
+		}
+	}
+
+	/**
+	 * Returns true if the given plugin has a payload fragment.
+	 * 
+	 * @return
+	 */
+	public boolean hasPayload() {
+		InputStream pStream = getPayloadStream();
+		return pStream != null;
+	}
+
+	private InputStream getPayloadStream() {
+		Enumeration<URL> e = genericActivator.getBundle().findEntries("/",
+				getZipFileName(), true);
+		if (e != null && e.hasMoreElements()) {
+			try {
+				return e.nextElement().openStream();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+		} else {
+			return null;
 		}
 	}
 
@@ -234,7 +294,7 @@ public class BinariesManager {
 	private File getExecutableName(final File binDir, final String nodename) {
 		for (String extension : new String[] { "", ".bin", ".exe" }) {
 			File binFile = new File(binDir, nodename + extension);
-			if (binFile.canExecute()) {
+			if (binFile.exists()) {
 				return binFile;
 			}
 		}
@@ -266,6 +326,29 @@ public class BinariesManager {
 			String k = key.toString();
 			String v = envProperites.getProperty(k);
 			environmentVariables.put(k, v);
+		}
+	}
+
+	@Override
+	public void run(IProgressMonitor monitor) throws InvocationTargetException,
+			InterruptedException {
+		try {
+			extractBinaries(monitor);
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, e.getMessage());
+		}
+	}
+
+	/**
+	 * Finalizes the binaries by registering them and loading the necessary
+	 * environment variables.
+	 */
+	public void register() {
+		try {
+			loadEnvironmentVariables();
+			registerExtractedBinaries();
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, e.getMessage());
 		}
 	}
 }
