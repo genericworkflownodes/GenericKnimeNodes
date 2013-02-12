@@ -122,11 +122,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 		loadPluginProperties();
 		registerMimeTypes();
-
-		System.out
-				.println("Payload exists: "
-						+ getBinaryLocation().getResourceAsStream(
-								"binaries.zip") != null);
 	}
 
 	/**
