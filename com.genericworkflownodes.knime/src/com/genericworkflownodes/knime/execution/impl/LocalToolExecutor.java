@@ -85,8 +85,6 @@ public class LocalToolExecutor implements IToolExecutor {
 
 	private List<String> commands;
 
-	private static String PATHSEP = System.getProperty("path.separator");
-
 	public LocalToolExecutor() {
 		environmentVariables = new TreeMap<String, String>();
 		returnCode = -1;
@@ -245,17 +243,7 @@ public class LocalToolExecutor implements IToolExecutor {
 	 */
 	private void setupProcessEnvironment(ProcessBuilder builder) {
 		for (String key : environmentVariables.keySet()) {
-
 			String value = environmentVariables.get(key);
-
-			// extend paths instead of replacing them, if it was already set by
-			// the system and was requested by the value, e.g.,
-			// PATH=/usr/bin:$PATH .. will be extended by the system variable
-			// PATH=/usr/bin .. not
-			if (System.getenv(key) != null) {
-				value = value + PATHSEP + System.getenv(key);
-			}
-
 			builder.environment().put(key, value);
 		}
 	}
@@ -293,9 +281,10 @@ public class LocalToolExecutor implements IToolExecutor {
 			throw new Exception("Could not find matching ToolLocatorService.");
 		}
 
-		executable = toolLocator.getToolPath(new ExternalTool(
-				pluginConfiguration.getPluginId(), nodeConfiguration
-						.getName()));
+		executable = toolLocator
+				.getToolPath(new ExternalTool(
+						pluginConfiguration.getPluginId(), nodeConfiguration
+								.getName()));
 
 		if (executable == null) {
 			throw new Exception("Neither externally configured nor shipped "
