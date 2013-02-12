@@ -90,7 +90,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		bundleContext = context;
-		binariesManager = new BinariesManager(bundleContext, this);
 	}
 
 	@Override
@@ -116,7 +115,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 
 		// initialize the payload directory
 		payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
-
+		binariesManager = new BinariesManager(payloadDirectory, this);
 		final IPreferenceStore pStore = getPreferenceStore();
 		pStore.setValue("binaries_path", payloadDirectory.getPath()
 				.getCanonicalPath());
@@ -208,10 +207,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 */
 	public final BinariesManager getBinariesManager() {
 		return binariesManager;
-	}
-
-	public final BundleContext getBundleContext() {
-		return bundleContext;
 	}
 
 	/**

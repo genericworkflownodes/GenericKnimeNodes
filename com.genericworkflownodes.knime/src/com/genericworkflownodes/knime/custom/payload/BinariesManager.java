@@ -37,11 +37,9 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
-import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
-import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
@@ -71,10 +69,10 @@ public class BinariesManager implements IRunnableWithProgress {
 	 */
 	private Map<String, String> environmentVariables = new HashMap<String, String>();
 
-	public BinariesManager(final BundleContext bundleContext,
+	public BinariesManager(IPayloadDirectory payloadDirectory,
 			final GenericActivator genericActivator) {
 		// initialize the payload directory
-		payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
+		this.payloadDirectory = payloadDirectory;
 		this.genericActivator = genericActivator;
 	}
 
