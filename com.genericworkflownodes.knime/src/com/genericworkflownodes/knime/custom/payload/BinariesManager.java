@@ -64,11 +64,6 @@ public class BinariesManager implements IRunnableWithProgress {
 
 	private GenericActivator genericActivator;
 
-	/**
-	 * Plugin specific environment variables.
-	 */
-	private Map<String, String> environmentVariables = new HashMap<String, String>();
-
 	public BinariesManager(IPayloadDirectory payloadDirectory,
 			final GenericActivator genericActivator) {
 		// initialize the payload directory
@@ -320,11 +315,17 @@ public class BinariesManager implements IRunnableWithProgress {
 		// load the properties file
 		envProperites.load(new FileInputStream(iniFile));
 
+		Map<String, String> environmentVariables = new HashMap<String, String>();
 		for (Object key : envProperites.keySet()) {
 			String k = key.toString();
 			String v = envProperites.getProperty(k);
+			// transfer the environment variables into the generic activator
 			environmentVariables.put(k, v);
 		}
+
+		// transfer the variables to the pluginconfig
+		genericActivator.getPluginConfiguration().updateEnvironmentVariables(
+				environmentVariables);
 	}
 
 	@Override

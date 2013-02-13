@@ -46,8 +46,7 @@ public class PluginActivator extends GenericActivator {
 			// construct the plugin config
 			PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", getPreferenceStore()
 					.getString("binaries_path"), PluginActivator.getInstance()
-					.getProperties(), PluginActivator.getInstance()
-					.getEnvironment());
+					.getProperties());
 		}
 		return PLUGIN_CONFIG;
 	}

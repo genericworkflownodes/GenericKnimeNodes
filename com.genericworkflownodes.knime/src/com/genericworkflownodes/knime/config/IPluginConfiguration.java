@@ -21,6 +21,8 @@ package com.genericworkflownodes.knime.config;
 import java.util.Map;
 import java.util.Properties;
 
+import com.genericworkflownodes.knime.config.impl.PluginConfiguration;
+
 /**
  * Provides all plugin specific configuration settings.
  * 
@@ -64,4 +66,12 @@ public interface IPluginConfiguration {
 	 * @return
 	 */
 	String getPluginName();
+
+	/**
+	 * Updates the environment variables of the {@link PluginConfiguration} with
+	 * the given values.
+	 * 
+	 * @param env
+	 */
+	void updateEnvironmentVariables(final Map<String, String> env);
 }

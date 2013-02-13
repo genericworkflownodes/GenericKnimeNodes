@@ -19,9 +19,7 @@
 package com.genericworkflownodes.knime.custom;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,11 +56,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * Plugin properties.
 	 */
 	private Properties props = new Properties();
-
-	/**
-	 * Plugin specific environment variables.
-	 */
-	private Map<String, String> environmentVariables = new HashMap<String, String>();
 
 	/**
 	 * An abstraction of the payload directory.
@@ -181,17 +174,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 */
 	public final Properties getProperties() {
 		return props;
-	}
-
-	/**
-	 * Get the environment variable customizations stored in the payload config
-	 * file (e.g., binaries_mac_64.ini).
-	 * 
-	 * @return A {@link Map} containing environment variables and there
-	 *         respective value as set in the binaries_...ini file.
-	 */
-	public final Map<String, String> getEnvironment() {
-		return environmentVariables;
 	}
 
 	/**

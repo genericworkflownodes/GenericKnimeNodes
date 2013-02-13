@@ -19,6 +19,7 @@
 package com.genericworkflownodes.knime.config.impl;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -72,17 +73,13 @@ public class PluginConfiguration implements IPluginConfiguration {
 	 *            needed to execute the binaries located in the plugin.
 	 */
 	public PluginConfiguration(final String pluginId, final String pluginName,
-			final String binariesPath, final Properties props,
-			final Map<String, String> env) {
+			final String binariesPath, final Properties props) {
 
 		this.pluginId = pluginId;
 		this.pluginName = pluginName;
 		this.binariesPath = binariesPath;
 		this.props = props;
-		this.env = env;
-
-		// fix environment variables
-		fixEnvironmentVariables();
+		env = new HashMap<String, String>();
 	}
 
 	/**
@@ -133,6 +130,19 @@ public class PluginConfiguration implements IPluginConfiguration {
 		return env;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void updateEnvironmentVariables(final Map<String, String> env) {
+		this.env.clear();
+		this.env.putAll(env);
+		fixEnvironmentVariables();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getPluginName() {
 		return pluginName;
