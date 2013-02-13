@@ -189,13 +189,15 @@ public class CLICommandGenerator implements ICommandGenerator {
 
 				Parameter<?> p = nodeConfig.getParameter(cliMapping
 						.getReferenceName());
-				if (p instanceof ListParameter) {
-					extractedParameterValues.add(((ListParameter) p)
-							.getStrings());
-				} else {
-					List<String> l = new ArrayList<String>();
-					l.add(p.getStringRep());
-					extractedParameterValues.add(l);
+				if (!p.isNull()) {
+					if (p instanceof ListParameter) {
+						extractedParameterValues.add(((ListParameter) p)
+								.getStrings());
+					} else {
+						List<String> l = new ArrayList<String>();
+						l.add(p.getStringRep());
+						extractedParameterValues.add(l);
+					}
 				}
 			}
 		}

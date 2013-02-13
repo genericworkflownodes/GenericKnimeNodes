@@ -161,10 +161,10 @@ public abstract class Parameter<T> implements Serializable {
 	}
 
 	/**
-	 * Returns whether this parameter is initialized with a valid, non-null
-	 * value or not.
+	 * Returns if this parameter has <code>null</code> as value.
 	 * 
-	 * @return True if the parameter is initialized, false otherwise.
+	 * @return <code>true</code> if the parameter is <code>null</code>,
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isNull() {
 		if (value == null) {
