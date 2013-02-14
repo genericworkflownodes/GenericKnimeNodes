@@ -47,6 +47,57 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 public class LocalToolExecutor implements IToolExecutor {
 
 	/**
+	 * Captures the stderr/stdout stream of the running process to avoid
+	 * deadlocks.
+	 * 
+	 * Inspired by
+	 * http://www.javaworld.com/jw-12-2000/jw-1229-traps.html?page=4.
+	 * 
+	 * @author aiche
+	 */
+	private static class StreamGobbler extends Thread {
+		/**
+		 * The stream that is gobbled.
+		 */
+		InputStream is;
+
+		/**
+		 * The string where the extracted messages are stored.
+		 */
+		StringBuffer target;
+
+		private static final String LINE_SEPARATOR = System
+				.getProperty("line.separator");
+
+		StreamGobbler(InputStream is) {
+			this.is = is;
+			target = new StringBuffer();
+		}
+
+		@Override
+		public void run() {
+			try {
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				String line = null;
+				while ((line = br.readLine()) != null)
+					target.append(line + LINE_SEPARATOR);
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
+
+		/**
+		 * Gives access to the gobbled string.
+		 * 
+		 * @return
+		 */
+		public String getContent() {
+			return target.toString();
+		}
+	}
+
+	/**
 	 * NodeLogger used for this executor.
 	 */
 	protected static final NodeLogger logger = NodeLogger
@@ -200,42 +251,28 @@ public class LocalToolExecutor implements IToolExecutor {
 			// execute
 			process = builder.start();
 
+			// prepare capture of cerr/cout streams
+			StreamGobbler stdOutGobbler = new StreamGobbler(
+					process.getInputStream());
+			StreamGobbler stdErrGobbler = new StreamGobbler(
+					process.getErrorStream());
+
+			// start separate threads to capture the cerr/cout streams
+			stdErrGobbler.start();
+			stdOutGobbler.start();
+
 			// fetch return code
 			returnCode = process.waitFor();
 
 			// extract messages from stderr and stdout
-			stdOut = extractStdMessages(process.getInputStream());
-			stdErr = extractStdMessages(process.getErrorStream());
+			stdOut = stdOutGobbler.getContent();
+			stdErr = stdErrGobbler.getContent();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 
 		return returnCode;
-	}
-
-	/**
-	 * Extracts all the data from the given stream and returns it as string.
-	 * 
-	 * @param stream
-	 *            The stream to translate.
-	 * @return The content of the stream as string.
-	 * 
-	 * @throws IOException
-	 *             Is thrown if the given stream cannot be handled correctly.
-	 */
-	private String extractStdMessages(InputStream stream) throws IOException {
-		InputStreamReader isr = new InputStreamReader(stream);
-		BufferedReader br = new BufferedReader(isr);
-
-		String line = null;
-		StringBuffer out = new StringBuffer();
-
-		while ((line = br.readLine()) != null) {
-			out.append(line + System.getProperty("line.separator"));
-		}
-
-		return out.toString();
 	}
 
 	/**
