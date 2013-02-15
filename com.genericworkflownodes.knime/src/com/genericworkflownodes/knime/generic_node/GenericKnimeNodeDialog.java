@@ -73,6 +73,9 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings)
 			throws InvalidSettingsException {
+		// ensure all edit operations are finished
+		dialog.stopEdition();
+		// transfer values
 		for (String key : config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);
 
