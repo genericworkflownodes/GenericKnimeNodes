@@ -54,7 +54,7 @@ public class MimeFileExporterNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	private SettingsModelString m_filename = MimeFileExporterNodeDialog
+	SettingsModelString m_filename = MimeFileExporterNodeDialog
 			.createFileChooserModel();
 
 	private String data;

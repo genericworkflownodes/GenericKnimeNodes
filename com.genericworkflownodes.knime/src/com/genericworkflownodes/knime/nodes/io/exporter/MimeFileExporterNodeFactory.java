@@ -44,7 +44,7 @@ public class MimeFileExporterNodeFactory extends
 	 */
 	@Override
 	public int getNrNodeViews() {
-		return 1;
+		return 2;
 	}
 
 	/**
@@ -53,7 +53,10 @@ public class MimeFileExporterNodeFactory extends
 	@Override
 	public NodeView<MimeFileExporterNodeModel> createNodeView(
 			final int viewIndex, final MimeFileExporterNodeModel nodeModel) {
-		return new MimeFileExporterNodeView(nodeModel);
+		if (viewIndex == 0)
+			return new MimeFileExporterNodeView(nodeModel);
+		else
+			return new OpenFolderNodeView(nodeModel);
 	}
 
 	/**

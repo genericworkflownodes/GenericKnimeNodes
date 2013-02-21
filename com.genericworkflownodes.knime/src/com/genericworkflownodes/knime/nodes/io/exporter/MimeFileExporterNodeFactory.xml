@@ -7,17 +7,18 @@
     <name>Output File</name>
     
     <shortDescription>
-        
+    	Saves the incoming file to a specified folder. 
     </shortDescription>
     
     <fullDescription>
-        <intro>Save any MIME file to filesystem. </intro>
+        <intro>Saves the incoming file to a specified folder.</intro>
     </fullDescription>
     
     <ports>
-     <inPort index="0" name="MimeFile "> MimeFile </inPort>   
+     <inPort index="0" name="URI ">URI port object to save to the file.</inPort>   
     </ports>    
     <views>
-        <view index="0" name="View file summary">View file summary</view>
+        <view index="0" name="View file summary">Shows a summary of the exported file. If the file contains more then 50 lines only the first 50 lines are shown.</view>
+        <view index="1" name="Open Folder">Open the folder containing the output file.</view>
     </views>
 </knimeNode>

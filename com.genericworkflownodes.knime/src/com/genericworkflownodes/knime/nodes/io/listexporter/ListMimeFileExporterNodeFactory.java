@@ -43,7 +43,7 @@ public class ListMimeFileExporterNodeFactory extends
 	 */
 	@Override
 	public int getNrNodeViews() {
-		return 0;
+		return 1;
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class ListMimeFileExporterNodeFactory extends
 	@Override
 	public NodeView<ListMimeFileExporterNodeModel> createNodeView(
 			final int viewIndex, final ListMimeFileExporterNodeModel nodeModel) {
-		return null;
+		return new OpenFolderNodeView(nodeModel);
 	}
 
 	/**

@@ -47,7 +47,7 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	private SettingsModelString m_filename = ListMimeFileExporterNodeDialog
+	SettingsModelString m_filename = ListMimeFileExporterNodeDialog
 			.createFileChooserModel();
 
 	/**
