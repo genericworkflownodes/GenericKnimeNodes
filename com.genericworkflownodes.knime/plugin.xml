@@ -14,7 +14,7 @@
 
    <extension point="org.knime.workbench.repository.nodes">
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.exporter.MimeFileExporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.exporter.MimeFileExporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory" id="com.genericworkflownodes.knime.nodes.io.exporter.MimeFileExporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfiles.OutputFilesNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listexporter.ListMimeFileExporterNodeFactory"/>

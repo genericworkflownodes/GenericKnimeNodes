@@ -45,13 +45,12 @@ public class OutputFilesNodeDialog extends DefaultNodeSettingsPane {
 		super();
 		DialogComponentFileChooser dfc = new DialogComponentFileChooser(
 				OutputFilesNodeDialog.createFileChooserModel(),
-				"MimeFileExporterNodeDialog", JFileChooser.SAVE_DIALOG);
+				"OutputFilesNodeDialog", JFileChooser.SAVE_DIALOG);
 		dfc.setBorderTitle("");
 		addDialogComponent(dfc);
 	}
 
 	static SettingsModelString createFileChooserModel() {
-		return new SettingsModelString(
-				OutputFilesNodeModel.CFG_FILENAME, "");
+		return new SettingsModelString(OutputFilesNodeModel.CFG_FILENAME, "");
 	}
 }

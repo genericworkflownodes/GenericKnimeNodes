@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.exporter;
+package com.genericworkflownodes.knime.nodes.io.outputfile;
 
 import java.awt.Font;
 
@@ -33,8 +33,12 @@ import com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporter
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeView extends
-		NodeView<MimeFileExporterNodeModel> {
+public class OutputFileNodeView extends NodeView<OutputFileNodeModel> {
+
+	/**
+	 * The {@link JTextArea} where the file content preview is stored.
+	 */
+	private final JTextArea m_text;
 
 	/**
 	 * Creates a new view.
@@ -42,11 +46,12 @@ public class MimeFileExporterNodeView extends
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel) {
+	protected OutputFileNodeView(final OutputFileNodeModel nodeModel) {
 		super(nodeModel);
-		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
+		m_text = new JTextArea("", 40, 80);
+		JScrollPane scrollpane = new JScrollPane(m_text);
+		m_text.setFont(new Font("Monospaced", Font.BOLD, 12));
+		m_text.setText(getNodeModel().getContent());
 		setComponent(scrollpane);
 	}
 
@@ -55,8 +60,8 @@ public class MimeFileExporterNodeView extends
 	 */
 	@Override
 	protected void modelChanged() {
-		MimeFileExporterNodeModel nodeModel = getNodeModel();
-		assert nodeModel != null;
+		assert getNodeModel() != null;
+		m_text.setText(getNodeModel().getContent());
 	}
 
 	/**

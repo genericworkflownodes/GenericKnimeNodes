@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.exporter;
+package com.genericworkflownodes.knime.nodes.io.outputfile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,11 +50,11 @@ import org.knime.core.node.port.PortType;
  * 
  * @author roettig, aiche
  */
-public class MimeFileExporterNodeModel extends NodeModel {
+public class OutputFileNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	SettingsModelString m_filename = MimeFileExporterNodeDialog
+	SettingsModelString m_filename = OutputFileNodeDialog
 			.createFileChooserModel();
 
 	private String data;
@@ -66,7 +66,7 @@ public class MimeFileExporterNodeModel extends NodeModel {
 	/**
 	 * Constructor for the node model.
 	 */
-	protected MimeFileExporterNodeModel() {
+	protected OutputFileNodeModel() {
 		super(new PortType[] { new PortType(URIPortObject.class) },
 				new PortType[] {});
 	}

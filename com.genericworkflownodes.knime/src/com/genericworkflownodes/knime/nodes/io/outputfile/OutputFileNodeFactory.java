@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.exporter;
+package com.genericworkflownodes.knime.nodes.io.outputfile;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -28,15 +28,15 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeFactory extends
-		NodeFactory<MimeFileExporterNodeModel> {
+public class OutputFileNodeFactory extends
+		NodeFactory<OutputFileNodeModel> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MimeFileExporterNodeModel createNodeModel() {
-		return new MimeFileExporterNodeModel();
+	public OutputFileNodeModel createNodeModel() {
+		return new OutputFileNodeModel();
 	}
 
 	/**
@@ -51,10 +51,10 @@ public class MimeFileExporterNodeFactory extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<MimeFileExporterNodeModel> createNodeView(
-			final int viewIndex, final MimeFileExporterNodeModel nodeModel) {
+	public NodeView<OutputFileNodeModel> createNodeView(
+			final int viewIndex, final OutputFileNodeModel nodeModel) {
 		if (viewIndex == 0)
-			return new MimeFileExporterNodeView(nodeModel);
+			return new OutputFileNodeView(nodeModel);
 		else
 			return new OpenFolderNodeView(nodeModel);
 	}
@@ -72,7 +72,7 @@ public class MimeFileExporterNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new MimeFileExporterNodeDialog();
+		return new OutputFileNodeDialog();
 	}
 
 }
