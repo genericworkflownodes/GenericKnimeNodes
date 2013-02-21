@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.listexporter;
+package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -27,15 +27,15 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
-public class ListMimeFileExporterNodeFactory extends
-		NodeFactory<ListMimeFileExporterNodeModel> {
+public class OutputFilesNodeFactory extends
+		NodeFactory<OutputFilesNodeModel> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ListMimeFileExporterNodeModel createNodeModel() {
-		return new ListMimeFileExporterNodeModel();
+	public OutputFilesNodeModel createNodeModel() {
+		return new OutputFilesNodeModel();
 	}
 
 	/**
@@ -50,8 +50,8 @@ public class ListMimeFileExporterNodeFactory extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<ListMimeFileExporterNodeModel> createNodeView(
-			final int viewIndex, final ListMimeFileExporterNodeModel nodeModel) {
+	public NodeView<OutputFilesNodeModel> createNodeView(
+			final int viewIndex, final OutputFilesNodeModel nodeModel) {
 		return new OpenFolderNodeView(nodeModel);
 	}
 
@@ -68,7 +68,7 @@ public class ListMimeFileExporterNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new ListMimeFileExporterNodeDialog();
+		return new OutputFilesNodeDialog();
 	}
 
 }

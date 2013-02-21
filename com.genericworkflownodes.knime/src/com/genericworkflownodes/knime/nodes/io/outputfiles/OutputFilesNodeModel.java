@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.listexporter;
+package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,21 +39,21 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 /**
- * This is the model implementation of ListMimeFileImporter.
+ * This is the model implementation of OutputFiles Node.
  * 
  * @author roettig, aiche
  */
-public class ListMimeFileExporterNodeModel extends NodeModel {
+public class OutputFilesNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	SettingsModelString m_filename = ListMimeFileExporterNodeDialog
+	SettingsModelString m_filename = OutputFilesNodeDialog
 			.createFileChooserModel();
 
 	/**
 	 * Constructor for the node model.
 	 */
-	protected ListMimeFileExporterNodeModel() {
+	protected OutputFilesNodeModel() {
 		super(new PortType[] { new PortType(URIPortObject.class) },
 				new PortType[] {});
 	}

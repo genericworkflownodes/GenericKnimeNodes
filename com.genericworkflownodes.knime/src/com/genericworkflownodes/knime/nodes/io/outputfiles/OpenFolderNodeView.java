@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.listexporter;
+package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -28,9 +28,9 @@ import org.knime.core.node.NodeView;
  * @author aiche
  * 
  */
-public class OpenFolderNodeView extends NodeView<ListMimeFileExporterNodeModel> {
+public class OpenFolderNodeView extends NodeView<OutputFilesNodeModel> {
 
-	protected OpenFolderNodeView(ListMimeFileExporterNodeModel nodeModel) {
+	protected OpenFolderNodeView(OutputFilesNodeModel nodeModel) {
 		super(nodeModel);
 	}
 
