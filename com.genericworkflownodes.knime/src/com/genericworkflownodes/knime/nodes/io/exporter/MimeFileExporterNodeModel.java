@@ -80,7 +80,7 @@ public class MimeFileExporterNodeModel extends NodeModel {
 		// check the incoming port
 		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
 			throw new InvalidSettingsException(
-					"no MIMEURIPortObject compatible port object at port 0");
+					"No URIPortObjectSpec compatible port object");
 		}
 
 		// check the selected file

@@ -118,6 +118,26 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 			throw new InvalidSettingsException(
 					"No URIPortObjectSpec compatible port object");
 		}
+
+		// check the selected file
+		if ("".equals(m_filename.getStringValue())) {
+			throw new InvalidSettingsException(
+					"Please select a target file for the Output Files node.");
+		}
+
+		boolean selectedExtensionIsValid = false;
+		String lcFile = m_filename.getStringValue().toLowerCase();
+		for (String ext : ((URIPortObjectSpec) inSpecs[0]).getFileExtensions()) {
+			if (lcFile.endsWith(ext.toLowerCase())) {
+				selectedExtensionIsValid = true;
+				break;
+			}
+		}
+		if (!selectedExtensionIsValid) {
+			throw new InvalidSettingsException(
+					"The selected output files and the incoming files have different mime types.");
+		}
+
 		return new PortObjectSpec[] {};
 	}
 
