@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.nodes.io.exporter;
 
 import java.io.File;
@@ -49,7 +48,7 @@ import org.knime.core.node.port.PortType;
  * This is the model implementation of MimeFileExporter.
  * 
  * 
- * @author roettig
+ * @author roettig, aiche
  */
 public class MimeFileExporterNodeModel extends NodeModel {
 
