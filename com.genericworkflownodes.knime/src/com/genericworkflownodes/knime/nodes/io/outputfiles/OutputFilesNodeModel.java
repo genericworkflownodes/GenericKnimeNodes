@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.genericworkflownodes.knime.nodes.io.listexporter;
+package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,22 +39,21 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 /**
- * This is the model implementation of ListMimeFileImporter.
+ * This is the model implementation of OutputFiles Node.
  * 
- * 
- * @author roettig
+ * @author roettig, aiche
  */
-public class ListMimeFileExporterNodeModel extends NodeModel {
+public class OutputFilesNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	private SettingsModelString m_filename = ListMimeFileExporterNodeDialog
+	SettingsModelString m_filename = OutputFilesNodeDialog
 			.createFileChooserModel();
 
 	/**
 	 * Constructor for the node model.
 	 */
-	protected ListMimeFileExporterNodeModel() {
+	protected OutputFilesNodeModel() {
 		super(new PortType[] { new PortType(URIPortObject.class) },
 				new PortType[] {});
 	}
@@ -120,6 +118,26 @@ public class ListMimeFileExporterNodeModel extends NodeModel {
 			throw new InvalidSettingsException(
 					"No URIPortObjectSpec compatible port object");
 		}
+
+		// check the selected file
+		if ("".equals(m_filename.getStringValue())) {
+			throw new InvalidSettingsException(
+					"Please select a target file for the Output Files node.");
+		}
+
+		boolean selectedExtensionIsValid = false;
+		String lcFile = m_filename.getStringValue().toLowerCase();
+		for (String ext : ((URIPortObjectSpec) inSpecs[0]).getFileExtensions()) {
+			if (lcFile.endsWith(ext.toLowerCase())) {
+				selectedExtensionIsValid = true;
+				break;
+			}
+		}
+		if (!selectedExtensionIsValid) {
+			throw new InvalidSettingsException(
+					"The selected output files and the incoming files have different mime types.");
+		}
+
 		return new PortObjectSpec[] {};
 	}
 

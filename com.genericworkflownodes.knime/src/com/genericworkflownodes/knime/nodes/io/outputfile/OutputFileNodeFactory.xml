@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+
+<knimeNode icon="OutputFile.png" type="Sink">
+
+    <name>Output File</name>
+    
+    <shortDescription>
+    	Saves the incoming file to a specified folder. 
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Saves the incoming file to a specified folder.</intro>
+    </fullDescription>
+    
+    <ports>
+     <inPort index="0" name="URI ">URI port object to save to the file.</inPort>   
+    </ports>    
+    <views>
+        <view index="0" name="View file summary">Shows a summary of the exported file. If the file contains more then 50 lines only the first 50 lines are shown.</view>
+        <view index="1" name="Open Folder">Open the folder containing the output file.</view>
+    </views>
+</knimeNode>

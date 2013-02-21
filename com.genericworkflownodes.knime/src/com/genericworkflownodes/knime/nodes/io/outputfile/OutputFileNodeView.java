@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.genericworkflownodes.knime.nodes.io.exporter;
+package com.genericworkflownodes.knime.nodes.io.outputfile;
 
 import java.awt.Font;
 
@@ -34,8 +33,12 @@ import com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporter
  * 
  * @author roettig
  */
-public class MimeFileExporterNodeView extends
-		NodeView<MimeFileExporterNodeModel> {
+public class OutputFileNodeView extends NodeView<OutputFileNodeModel> {
+
+	/**
+	 * The {@link JTextArea} where the file content preview is stored.
+	 */
+	private final JTextArea m_text;
 
 	/**
 	 * Creates a new view.
@@ -43,11 +46,12 @@ public class MimeFileExporterNodeView extends
 	 * @param nodeModel
 	 *            The model (class: {@link ListMimeFileImporterNodeModel})
 	 */
-	protected MimeFileExporterNodeView(final MimeFileExporterNodeModel nodeModel) {
+	protected OutputFileNodeView(final OutputFileNodeModel nodeModel) {
 		super(nodeModel);
-		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
+		m_text = new JTextArea("", 40, 80);
+		JScrollPane scrollpane = new JScrollPane(m_text);
+		m_text.setFont(new Font("Monospaced", Font.BOLD, 12));
+		m_text.setText(getNodeModel().getContent());
 		setComponent(scrollpane);
 	}
 
@@ -56,15 +60,8 @@ public class MimeFileExporterNodeView extends
 	 */
 	@Override
 	protected void modelChanged() {
-
-		// TODO retrieve the new model from your nodemodel and
-		// update the view.
-		MimeFileExporterNodeModel nodeModel = (MimeFileExporterNodeModel) getNodeModel();
-		assert nodeModel != null;
-
-		// be aware of a possibly not executed nodeModel! The data you retrieve
-		// from your nodemodel could be null, emtpy, or invalid in any kind.
-
+		assert getNodeModel() != null;
+		m_text.setText(getNodeModel().getContent());
 	}
 
 	/**
@@ -72,8 +69,6 @@ public class MimeFileExporterNodeView extends
 	 */
 	@Override
 	protected void onClose() {
-
-		// TODO things to do when closing the view
 	}
 
 	/**
@@ -81,8 +76,5 @@ public class MimeFileExporterNodeView extends
 	 */
 	@Override
 	protected void onOpen() {
-
-		// TODO things to do when opening the view
 	}
-
 }

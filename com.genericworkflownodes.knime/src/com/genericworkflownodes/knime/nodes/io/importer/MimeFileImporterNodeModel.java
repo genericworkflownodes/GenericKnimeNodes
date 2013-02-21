@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.MimeType;
 
+import org.ballproject.knime.base.util.Helper;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
@@ -49,7 +50,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
-import com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeModel;
 
 /**
  * This is the model implementation of MimeFileImporter.
@@ -231,7 +231,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 		uris.add(new URIContent(file.toURI(), getExtension(file
 				.getAbsolutePath())));
 
-		data = MimeFileViewerNodeModel.readFileSummary(file, 50);
+		data = Helper.readFileSummary(file, 50);
 
 		return new PortObject[] { new URIPortObject(uris) };
 	}

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.genericworkflownodes.knime.nodes.io.listexporter;
+package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import javax.swing.JFileChooser;
 
@@ -26,7 +25,7 @@ import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
- * <code>NodeDialog</code> for the "ListMimeFileExporter" Node.
+ * <code>NodeDialog</code> for the "OutputFiles" Node.
  * 
  * 
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
@@ -36,23 +35,22 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * 
  * @author roettig
  */
-public class ListMimeFileExporterNodeDialog extends DefaultNodeSettingsPane {
+public class OutputFilesNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
 	 * New pane for configuring MimeFileExporter node dialog. This is just a
 	 * suggestion to demonstrate possible default dialog components.
 	 */
-	protected ListMimeFileExporterNodeDialog() {
+	protected OutputFilesNodeDialog() {
 		super();
 		DialogComponentFileChooser dfc = new DialogComponentFileChooser(
-				ListMimeFileExporterNodeDialog.createFileChooserModel(),
-				"MimeFileExporterNodeDialog", JFileChooser.SAVE_DIALOG);
+				OutputFilesNodeDialog.createFileChooserModel(),
+				"OutputFilesNodeDialog", JFileChooser.SAVE_DIALOG);
 		dfc.setBorderTitle("");
 		addDialogComponent(dfc);
 	}
 
 	static SettingsModelString createFileChooserModel() {
-		return new SettingsModelString(
-				ListMimeFileExporterNodeModel.CFG_FILENAME, "");
+		return new SettingsModelString(OutputFilesNodeModel.CFG_FILENAME, "");
 	}
 }
