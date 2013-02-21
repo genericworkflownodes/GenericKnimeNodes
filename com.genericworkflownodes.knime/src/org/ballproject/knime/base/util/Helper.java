@@ -20,12 +20,17 @@
 package org.ballproject.knime.base.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class Helper {
@@ -181,5 +186,42 @@ public class Helper {
 			e.printStackTrace();
 		}
 		return object;
+	}
+
+	public static String readFileSummary(File file, int maxLines)
+			throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		StringBuffer sb = new StringBuffer();
+	
+		String line = "";
+	
+		int cnt = 0;
+	
+		sb.append("File path: " + file.getAbsolutePath()
+				+ System.getProperty("line.separator"));
+		sb.append("File size: " + file.length() + " bytes"
+				+ System.getProperty("line.separator"));
+	
+		Date date = new Date(file.lastModified());
+		Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+		String s = formatter.format(date);
+	
+		sb.append("File time: " + s + System.getProperty("line.separator"));
+	
+		sb.append(String.format(
+				"File content (first %d lines):"
+						+ System.getProperty("line.separator"), maxLines));
+	
+		while ((line = br.readLine()) != null) {
+			sb.append(line + System.getProperty("line.separator"));
+			cnt++;
+			if (cnt > maxLines) {
+				sb.append("######### OUTPUT TRUNCATED #########"
+						+ System.getProperty("line.separator"));
+				break;
+			}
+		}
+	
+		return sb.toString();
 	}
 }

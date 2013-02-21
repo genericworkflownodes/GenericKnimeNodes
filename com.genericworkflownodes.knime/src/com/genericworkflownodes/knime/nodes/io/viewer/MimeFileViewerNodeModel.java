@@ -19,20 +19,16 @@
 
 package com.genericworkflownodes.knime.nodes.io.viewer;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.ballproject.knime.base.util.Helper;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -78,9 +74,8 @@ public class MimeFileViewerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
+		data = "";
+
 	}
 
 	/**
@@ -124,7 +119,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
 		byte[] BUFFER = new byte[BUFFSIZE];
 
 		while (entries.hasMoreElements()) {
-			ZipEntry entry = (ZipEntry) entries.nextElement();
+			ZipEntry entry = entries.nextElement();
 
 			if (entry.getName().equals("rawdata.bin")) {
 				int size = (int) entry.getSize();
@@ -170,46 +165,9 @@ public class MimeFileViewerNodeModel extends NodeModel {
 		File file = new File(po.getURIContents().get(0).getURI());
 
 		int maxLines = max_num_lines.getIntValue();
-		data = readFileSummary(file, maxLines);
+		data = Helper.readFileSummary(file, maxLines);
 
 		return new PortObject[] {};
-	}
-
-	public static String readFileSummary(File file, int maxLines)
-			throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		StringBuffer sb = new StringBuffer();
-
-		String line = "";
-
-		int cnt = 0;
-
-		sb.append("File path: " + file.getAbsolutePath()
-				+ System.getProperty("line.separator"));
-		sb.append("File size: " + file.length() + " bytes"
-				+ System.getProperty("line.separator"));
-
-		Date date = new Date(file.lastModified());
-		Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
-		String s = formatter.format(date);
-
-		sb.append("File time: " + s + System.getProperty("line.separator"));
-
-		sb.append(String.format(
-				"File content (first %d lines):"
-						+ System.getProperty("line.separator"), maxLines));
-
-		while ((line = br.readLine()) != null) {
-			sb.append(line + System.getProperty("line.separator"));
-			cnt++;
-			if (cnt > maxLines) {
-				sb.append("######### OUTPUT TRUNCATED #########"
-						+ System.getProperty("line.separator"));
-				break;
-			}
-		}
-
-		return sb.toString();
 	}
 
 }

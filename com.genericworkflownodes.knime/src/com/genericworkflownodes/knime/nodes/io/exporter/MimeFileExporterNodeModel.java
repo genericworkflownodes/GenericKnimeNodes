@@ -45,8 +45,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeModel;
-
 /**
  * This is the model implementation of MimeFileExporter.
  * 
@@ -80,10 +78,31 @@ public class MimeFileExporterNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
+		// check the incoming port
 		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
 			throw new InvalidSettingsException(
 					"no MIMEURIPortObject compatible port object at port 0");
 		}
+
+		// check the selected file
+		if ("".equals(m_filename.getStringValue())) {
+			throw new InvalidSettingsException(
+					"Please select a target file for the Output File node.");
+		}
+
+		boolean selectedExtensionIsValid = false;
+		String lcFile = m_filename.getStringValue().toLowerCase();
+		for (String ext : ((URIPortObjectSpec) inSpecs[0]).getFileExtensions()) {
+			if (lcFile.endsWith(ext.toLowerCase())) {
+				selectedExtensionIsValid = true;
+				break;
+			}
+		}
+		if (!selectedExtensionIsValid) {
+			throw new InvalidSettingsException(
+					"The selected output file and the incoming file have different mime types.");
+		}
+
 		return new PortObjectSpec[] {};
 	}
 
@@ -95,7 +114,7 @@ public class MimeFileExporterNodeModel extends NodeModel {
 
 		if (uris.size() == 0) {
 			throw new Exception(
-					"there were no URIs in the supplied MIMEURIPortObject at port 0");
+					"There were no URIs in the supplied MIMEURIPortObject at port 0");
 		}
 
 		String filename = m_filename.getStringValue();
@@ -103,13 +122,9 @@ public class MimeFileExporterNodeModel extends NodeModel {
 		File in = new File(uris.get(0).getURI());
 		File out = new File(filename);
 
-		// if(!out.createNewFile()||!out.canWrite())
-		// throw new
-		// Exception("choosen output file is not writable :"+filename);
-
 		Helper.copyFile(in, out);
 
-		data = MimeFileViewerNodeModel.readFileSummary(in, 50);
+		data = Helper.readFileSummary(in, 50);
 
 		return new PortObject[] {};
 	}
@@ -119,9 +134,7 @@ public class MimeFileExporterNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
+		data = "";
 	}
 
 	/**
@@ -166,7 +179,7 @@ public class MimeFileExporterNodeModel extends NodeModel {
 		byte[] BUFFER = new byte[BUFFSIZE];
 
 		while (entries.hasMoreElements()) {
-			ZipEntry entry = (ZipEntry) entries.nextElement();
+			ZipEntry entry = entries.nextElement();
 
 			if (entry.getName().equals("rawdata.bin")) {
 				int size = (int) entry.getSize();
