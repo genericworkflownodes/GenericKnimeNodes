@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
@@ -43,6 +42,7 @@ import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
+import com.genericworkflownodes.util.FileStash;
 
 /**
  * This is the model implementation of ManglerNodeModel.

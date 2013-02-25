@@ -18,13 +18,13 @@
  */
 package com.genericworkflownodes.knime;
 
-import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
 
 import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
+import com.genericworkflownodes.util.FileStash;
 
 /**
  * This is the OSGI bundle activator.

@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.ui.choice;
+package com.genericworkflownodes.util.ui;
 
 public interface ChoiceDialogListener {
 	void onChoice(int sel_idx);

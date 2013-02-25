@@ -27,8 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.ballproject.knime.base.util.FileStash;
-import org.ballproject.knime.base.util.Helper;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -60,6 +59,8 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+import com.genericworkflownodes.util.FileStash;
+import com.genericworkflownodes.util.Helper;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -485,7 +486,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		PortObject[] outports = processOutput(outputFiles, exec);
 
 		if (!GenericNodesPlugin.isDebug()) {
-			Helper.deleteDirectory(jobdir);
+			FileUtils.deleteDirectory(jobdir);
 		}
 
 		return outports;

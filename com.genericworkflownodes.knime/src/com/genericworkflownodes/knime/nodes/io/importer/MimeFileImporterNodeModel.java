@@ -31,7 +31,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.MimeType;
 
-import org.ballproject.knime.base.util.Helper;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
@@ -50,6 +49,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+import com.genericworkflownodes.util.Helper;
 
 /**
  * This is the model implementation of MimeFileImporter.

@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.preferences;
 
-import org.ballproject.knime.base.util.FileStash;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -29,6 +28,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.util.FileStash;
 
 /**
  * GKN preferences page.

@@ -22,9 +22,10 @@ package org.ballproject.knime.base.mime;
 import java.io.File;
 import java.io.IOException;
 
-import org.ballproject.knime.base.util.Helper;
 import org.knime.core.data.DataType;
 import org.knime.core.data.container.BlobDataCell;
+
+import com.genericworkflownodes.util.Helper;
 
 /**
  * The abstract MIMEFileCell class is the base class for any MIME-based cells

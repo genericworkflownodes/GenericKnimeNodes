@@ -20,8 +20,6 @@ package com.genericworkflownodes.knime.nodes.io.mangler;
 
 import javax.swing.DefaultComboBoxModel;
 
-import org.ballproject.knime.base.ui.choice.ChoiceDialog;
-import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
@@ -30,6 +28,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+import com.genericworkflownodes.util.ui.ChoiceDialog;
+import com.genericworkflownodes.util.ui.ChoiceDialogListener;
 
 /**
  * <code>NodeDialog</code> for the "Mangler" Node.
