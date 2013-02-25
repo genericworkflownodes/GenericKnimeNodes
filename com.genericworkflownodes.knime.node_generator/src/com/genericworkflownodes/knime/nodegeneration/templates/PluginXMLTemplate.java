@@ -81,7 +81,11 @@ public class PluginXMLTemplate {
 				.addAttribute("id", meta.getPackageRoot() + ".icons.splashIcon");
 	}
 
-	// TODO: documentation
+	/**
+	 * Registers recursively the category path of the current node.
+	 * 
+	 * @param path
+	 */
 	public void registerPath(String path) {
 		List<String> prefixes = Utils.getPathPrefixes(path);
 		for (String prefix : prefixes) {
@@ -89,11 +93,15 @@ public class PluginXMLTemplate {
 		}
 	}
 
-	// TODO: documentation
+	/**
+	 * Registers the current prefix of the path.
+	 * 
+	 * @param path
+	 */
 	private void registerPathPrefix(String path) {
 		// do not register any top level or root path
-		// TODO: why?
-		if (path.equals("/") || new File(path).getParent().equals("/")) {
+		if ("/".equals(path) || new File(path).getParent().equals("/")
+				|| "".equals(path)) {
 			return;
 		}
 
@@ -121,7 +129,12 @@ public class PluginXMLTemplate {
 				.addAttribute("level-id", categoryName);
 	}
 
-	// TODO: documentation
+	/**
+	 * Registers the given node (clazz, path) in the plugin.xml file.
+	 * 
+	 * @param clazz
+	 * @param path
+	 */
 	public void registerNode(String clazz, String path) {
 		LOGGER.info("registering Node " + clazz);
 		this.registerPath(path);
@@ -134,6 +147,11 @@ public class PluginXMLTemplate {
 				.addAttribute("id", clazz).addAttribute("category-path", path);
 	}
 
+	/**
+	 * Adds the preference page to the plugin.xml file.
+	 * 
+	 * @param meta
+	 */
 	public void registerPreferencePage(GeneratedPluginMeta meta) {
 		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
@@ -152,6 +170,11 @@ public class PluginXMLTemplate {
 
 	}
 
+	/**
+	 * Adds the startup class to the plugin.xml file.
+	 * 
+	 * @param meta
+	 */
 	public void registerStartupClass(GeneratedPluginMeta meta) {
 		Node node = doc
 				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
