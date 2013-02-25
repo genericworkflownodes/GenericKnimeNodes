@@ -38,8 +38,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 public class OutputFileNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
-	 * New pane for configuring MimeFileExporter node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
+	 * New pane for configuring MimeFileExporter node dialog.
 	 */
 	protected OutputFileNodeDialog() {
 		super();
@@ -51,7 +50,7 @@ public class OutputFileNodeDialog extends DefaultNodeSettingsPane {
 	}
 
 	static SettingsModelString createFileChooserModel() {
-		return new SettingsModelString(OutputFileNodeModel.CFG_FILENAME,
-				"");
+		return new SettingsModelString(OutputFileNodeModel.CFG_FILENAME, "");
 	}
+
 }

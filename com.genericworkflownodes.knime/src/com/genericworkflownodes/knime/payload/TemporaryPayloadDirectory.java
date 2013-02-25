@@ -21,8 +21,6 @@ package com.genericworkflownodes.knime.payload;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.ballproject.knime.base.model.TempDirectory;
-
 /**
  * Represents a payload directory that stores the payload data only temporarily
  * 
@@ -31,17 +29,39 @@ import org.ballproject.knime.base.model.TempDirectory;
 public class TemporaryPayloadDirectory extends AbstractPayloadDirectory
 		implements IPayloadDirectory {
 
+	private class TemporaryDirectory extends File {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7170512156177863153L;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param prefix
+		 *            Prefix to add in front of the temp directory.
+		 * @throws FileNotFoundException
+		 */
+		public TemporaryDirectory(String prefix) throws FileNotFoundException {
+			super(new File(System.getProperty("java.io.tmpdir"), prefix + "-"
+					+ Long.toString(System.nanoTime())).getAbsolutePath());
+
+			this.mkdirs();
+			this.deleteOnExit();
+		}
+	}
+
 	/**
 	 * A (hopefully) unique identifier to ensure that the temporary directory is
 	 * also unique.
 	 */
-	private TempDirectory tmpDirectory;
+	private TemporaryDirectory tmpDirectory;
 
 	public TemporaryPayloadDirectory(String prefix) {
 		try {
-			this.tmpDirectory = new TempDirectory(prefix);
+			tmpDirectory = new TemporaryDirectory(prefix);
 		} catch (FileNotFoundException e) {
-			// TODO: how do we log inside of such a plugin
 			e.printStackTrace();
 		}
 	}
