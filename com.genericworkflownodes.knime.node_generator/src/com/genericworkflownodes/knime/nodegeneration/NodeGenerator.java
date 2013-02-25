@@ -174,9 +174,9 @@ public class NodeGenerator {
 				private static final long serialVersionUID = 1L;
 				{
 					this.put("executor",
-							srcDir.getProperty("executor", "CLIExecutor"));
-					this.put("commandGenerator",
-							srcDir.getProperty("commandGenerator", ""));
+							srcDir.getProperty("executor", "LocalToolExecutor"));
+					this.put("commandGenerator", srcDir.getProperty(
+							"commandGenerator", "CLICommandGenerator"));
 				}
 			});
 
