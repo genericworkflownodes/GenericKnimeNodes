@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.ballproject.knime.base.util.Helper;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.UnknownMimeTypeException;
@@ -383,7 +382,8 @@ public class NodeGenerator {
 		if (categoryIcon != null && categoryIcon.canRead()) {
 			// TODO: only set icon file in plugin.xml for categories if this
 			// method was called
-			Helper.copyFile(categoryIcon, new File(iconsDest, "category.png"));
+			FileUtils.copyFile(categoryIcon,
+					new File(iconsDest, "category.png"));
 		}
 	}
 
@@ -392,7 +392,7 @@ public class NodeGenerator {
 			NodesBuildIconsDirectory iconsDest) throws IOException {
 		File splashIcon = iconsSrc.getSplashIcon();
 		if (splashIcon != null && splashIcon.canRead()) {
-			Helper.copyFile(splashIcon, new File(iconsDest, "splash.png"));
+			FileUtils.copyFile(splashIcon, new File(iconsDest, "splash.png"));
 			pluginXML.registerSplashIcon(meta, new File("icons/splash.png"));
 		}
 	}
@@ -453,7 +453,7 @@ public class NodeGenerator {
 		/*
 		 * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]/config
 		 */
-		Helper.copyFile(ctdFile, new File(nodeConfigDir, "config.xml"));
+		FileUtils.copyFile(ctdFile, new File(nodeConfigDir, "config.xml"));
 
 		return pluginMeta.getPackageRoot() + ".knime.nodes." + nodeName + "."
 				+ nodeName + "NodeFactory";

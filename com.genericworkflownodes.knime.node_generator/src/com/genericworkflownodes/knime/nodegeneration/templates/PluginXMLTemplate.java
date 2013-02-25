@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.ballproject.knime.base.util.Helper;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -18,6 +17,7 @@ import org.dom4j.io.SAXReader;
 
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
+import com.genericworkflownodes.util.Helper;
 
 public class PluginXMLTemplate {
 

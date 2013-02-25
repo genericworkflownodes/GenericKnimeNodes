@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.ballproject.knime.base.util.Helper;
+import org.apache.commons.io.FileUtils;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -43,6 +43,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.util.Helper;
 
 /**
  * This is the model implementation of MimeFileExporter.
@@ -121,7 +123,7 @@ public class OutputFileNodeModel extends NodeModel {
 		File in = new File(uris.get(0).getURI());
 		File out = new File(filename);
 
-		Helper.copyFile(in, out);
+		FileUtils.copyFile(in, out);
 
 		data = Helper.readFileSummary(in, 50);
 

@@ -23,8 +23,6 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 
-import org.ballproject.knime.base.ui.choice.ChoiceDialog;
-import org.ballproject.knime.base.ui.choice.ChoiceDialogListener;
 import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
@@ -36,6 +34,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
+import com.genericworkflownodes.util.ui.ChoiceDialog;
+import com.genericworkflownodes.util.ui.ChoiceDialogListener;
 
 /**
  * <code>NodeDialog</code> for the "IDemangler" Node.

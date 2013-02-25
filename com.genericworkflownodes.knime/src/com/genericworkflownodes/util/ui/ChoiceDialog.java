@@ -1,4 +1,4 @@
-package org.ballproject.knime.base.ui.choice;
+package com.genericworkflownodes.util.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ballproject.knime.base.util.FileStash;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.image.ImageContent;
 import org.knime.core.data.image.ImageValue;
@@ -44,6 +43,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
+
+import com.genericworkflownodes.util.FileStash;
 
 /**
  * This is the model implementation of Image2FilePort. Converts an Image Port to

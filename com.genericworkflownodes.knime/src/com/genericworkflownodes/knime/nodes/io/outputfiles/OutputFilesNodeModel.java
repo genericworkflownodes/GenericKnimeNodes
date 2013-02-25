@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.ballproject.knime.base.util.Helper;
+import org.apache.commons.io.FileUtils;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -172,7 +172,7 @@ public class OutputFilesNodeModel extends NodeModel {
 						+ out.getParentFile().getAbsolutePath());
 			}
 
-			Helper.copyFile(in, out);
+			FileUtils.copyFile(in, out);
 		}
 		return null;
 	}

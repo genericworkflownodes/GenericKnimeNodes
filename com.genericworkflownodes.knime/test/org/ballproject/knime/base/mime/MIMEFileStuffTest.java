@@ -8,10 +8,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.ballproject.knime.base.mime.mocks.MockMIMEFileCell;
-import org.ballproject.knime.base.util.Helper;
 import org.junit.Test;
 
 import com.genericworkflownodes.knime.test.data.TestDataSource;
+import com.genericworkflownodes.util.Helper;
 
 public class MIMEFileStuffTest {
 
