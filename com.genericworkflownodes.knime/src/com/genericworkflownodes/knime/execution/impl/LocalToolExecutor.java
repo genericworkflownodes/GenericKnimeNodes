@@ -318,10 +318,9 @@ public class LocalToolExecutor implements IToolExecutor {
 			throw new Exception("Could not find matching ToolLocatorService.");
 		}
 
-		executable = toolLocator
-				.getToolPath(new ExternalTool(
-						pluginConfiguration.getPluginId(), nodeConfiguration
-								.getName()));
+		executable = toolLocator.getToolPath(new ExternalTool(
+				pluginConfiguration.getPluginId(), nodeConfiguration.getName(),
+				nodeConfiguration.getExecutableName()));
 
 		if (executable == null) {
 			throw new Exception("Neither externally configured nor shipped "

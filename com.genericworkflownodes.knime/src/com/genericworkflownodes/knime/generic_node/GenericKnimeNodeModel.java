@@ -429,7 +429,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			}
 
 			File executable = toolLocator.getToolPath(new ExternalTool(
-					pluginConfig.getPluginId(), nodeConfig.getName()));
+					pluginConfig.getPluginId(), nodeConfig.getName(),
+					nodeConfig.getExecutableName()));
 
 			if (executable == null) {
 				throw new InvalidSettingsException(

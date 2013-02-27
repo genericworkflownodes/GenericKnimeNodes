@@ -29,12 +29,6 @@ public final class ExternalTool {
 	private String pluginName;
 	private String executableName;
 
-	public ExternalTool(String pluginName, String toolName) {
-		this.pluginName = pluginName;
-		this.toolName = toolName;
-		executableName = toolName;
-	}
-
 	public ExternalTool(String pluginName, String toolName,
 			String executableName) {
 		this.pluginName = pluginName;
@@ -69,12 +63,13 @@ public final class ExternalTool {
 		ExternalTool eTool = (ExternalTool) obj;
 		return (pluginName.equals(eTool.pluginName)
 				&& toolName.equals(eTool.toolName) && executableName
-				.equals(eTool.executableName));
+					.equals(eTool.executableName));
 	}
 
 	@Override
 	public int hashCode() {
-		return pluginName.hashCode() ^ toolName.hashCode();
+		return pluginName.hashCode() ^ toolName.hashCode()
+				^ executableName.hashCode();
 	}
 
 	@Override
