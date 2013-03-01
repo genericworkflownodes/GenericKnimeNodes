@@ -44,7 +44,7 @@ import org.knime.core.node.workflow.LoopStartNodeTerminator;
 /**
  * Node model for the ListZipLoopStart node.
  * 
- * @author aiche
+ * @author roettig, aiche
  */
 public class ListZipLoopStartNodeModel extends NodeModel implements
 		LoopStartNodeTerminator {
@@ -66,10 +66,10 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 
 	private static int NinPorts = 4;
 
-	static String CFG_RECYCLE = "recycle_1st_port";
-	static boolean DEFAULT_RECYCLE = false;
-	SettingsModelBoolean m_multiplex = new SettingsModelBoolean(CFG_RECYCLE,
-			DEFAULT_RECYCLE);
+	static String CFG_REUSE = "recycle_1st_port";
+	static boolean DEFAULT_REUSE = false;
+	private SettingsModelBoolean m_reuse = new SettingsModelBoolean(CFG_REUSE,
+			DEFAULT_REUSE);
 
 	/**
 	 * Creates a new model.
@@ -142,6 +142,19 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 		// check the loop conditions
 		if (m_iteration == 0) {
 			assert getLoopEndNode() == null : "1st iteration but end node set";
+
+			// check the content of the different Ports
+			if (!m_reuse.getBooleanValue()) {
+				int numberOfURIs = ((URIPortObject) inObjects[0])
+						.getURIContents().size();
+				for (int i = 1; i < m_numAssignedIncomingPorts; ++i) {
+					if (((URIPortObject) inObjects[i]).getURIContents().size() != numberOfURIs) {
+						throw new Exception(
+								"Invalid settings. The number of URIs at the incoming ports differ.");
+					}
+				}
+			}
+
 		} else {
 			assert getLoopEndNode() != null : "No end node set";
 		}
@@ -149,13 +162,24 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 		URIPortObject[] out = new URIPortObject[NinPorts];
 		m_rowCount = ((URIPortObject) inObjects[0]).getURIContents().size();
 
-		for (int i = 0; i < NinPorts; i++) {
+		// 1st port is handled separately
+		URIContent uri = ((URIPortObject) inObjects[0]).getURIContents().get(
+				m_iteration);
+		List<URIContent> uriContents = new ArrayList<URIContent>();
+		uriContents.add(uri);
+		out[0] = new URIPortObject(uriContents);
+
+		for (int i = 1; i < NinPorts; i++) {
 			URIPortObject in = (URIPortObject) inObjects[i];
 			if (i < m_numAssignedIncomingPorts) {
-				URIContent uri = in.getURIContents().get(m_iteration);
-				List<URIContent> uriContents = new ArrayList<URIContent>();
-				uriContents.add(uri);
-				out[i] = new URIPortObject(uriContents);
+				if (m_reuse.getBooleanValue()) {
+					out[i] = new URIPortObject(in.getURIContents());
+				} else {
+					List<URIContent> localUriContents = new ArrayList<URIContent>();
+					URIContent localUri = in.getURIContents().get(m_iteration);
+					localUriContents.add(localUri);
+					out[i] = new URIPortObject(localUriContents);
+				}
 			} else {
 				out[i] = new URIPortObject(new ArrayList<URIContent>());
 			}
@@ -176,8 +200,10 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	 */
 	@Override
 	protected void reset() {
+		// reset all internal states
 		m_iteration = 0;
-		m_multiplex.setBooleanValue(DEFAULT_RECYCLE);
+		m_numAssignedIncomingPorts = 0;
+		m_rowCount = 0;
 	}
 
 	/**
@@ -193,7 +219,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		m_multiplex.saveSettingsTo(settings);
+		m_reuse.saveSettingsTo(settings);
 	}
 
 	/**
@@ -202,7 +228,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_multiplex.validateSettings(settings);
+		m_reuse.validateSettings(settings);
 	}
 
 	/**
@@ -211,7 +237,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_multiplex.loadSettingsFrom(settings);
+		m_reuse.loadSettingsFrom(settings);
 	}
 
 	/**

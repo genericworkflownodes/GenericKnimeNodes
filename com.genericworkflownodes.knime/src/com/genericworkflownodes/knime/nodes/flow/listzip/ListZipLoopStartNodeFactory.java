@@ -62,7 +62,7 @@ public class ListZipLoopStartNodeFactory extends
 	 */
 	@Override
 	public boolean hasDialog() {
-		return false;
+		return true;
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class ListZipLoopStartNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return null;
+		return new ListZipLoopStartNodeDialog();
 	}
 
 }
