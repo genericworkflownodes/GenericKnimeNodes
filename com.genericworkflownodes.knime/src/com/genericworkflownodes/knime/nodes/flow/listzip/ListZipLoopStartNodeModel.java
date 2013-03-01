@@ -64,7 +64,10 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	 */
 	private int m_rowCount = 0;
 
-	private static int NinPorts = 4;
+	/**
+	 * Number of in-/ output ports of the loop node.
+	 */
+	private static int PORT_COUNT = 4;
 
 	static String CFG_REUSE = "recycle_1st_port";
 	static boolean DEFAULT_REUSE = false;
@@ -82,7 +85,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 			URIPortObject.class, true);
 
 	private static PortType[] createIncomingPortObjects() {
-		PortType[] portTypes = new PortType[NinPorts];
+		PortType[] portTypes = new PortType[PORT_COUNT];
 		Arrays.fill(portTypes, URIPortObject.TYPE);
 		portTypes[1] = OPTIONAL_PORT_TYPE;
 		portTypes[2] = OPTIONAL_PORT_TYPE;
@@ -91,7 +94,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	}
 
 	private static PortType[] createOutgoingPortObjects() {
-		PortType[] portTypes = new PortType[NinPorts];
+		PortType[] portTypes = new PortType[PORT_COUNT];
 		Arrays.fill(portTypes, URIPortObject.TYPE);
 		portTypes[1] = OPTIONAL_PORT_TYPE;
 		portTypes[2] = OPTIONAL_PORT_TYPE;
@@ -108,7 +111,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 
 		List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
 
-		for (int i = 0; i < NinPorts; i++) {
+		for (int i = 0; i < PORT_COUNT; i++) {
 			if (inSpecs[i] == null) {
 				break;
 			}
@@ -122,9 +125,9 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 	private PortObjectSpec[] getOutputSpec(List<URIPortObjectSpec> specs) {
 		m_numAssignedIncomingPorts = specs.size();
 
-		PortObjectSpec[] ret = new PortObjectSpec[NinPorts];
+		PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
 
-		for (int i = 0; i < NinPorts; i++) {
+		for (int i = 0; i < PORT_COUNT; i++) {
 			if (i < m_numAssignedIncomingPorts) {
 				ret[i] = specs.get(i);
 			} else {
@@ -159,7 +162,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 			assert getLoopEndNode() != null : "No end node set";
 		}
 
-		URIPortObject[] out = new URIPortObject[NinPorts];
+		URIPortObject[] uriOutputObjects = new URIPortObject[PORT_COUNT];
 		m_rowCount = ((URIPortObject) inObjects[0]).getURIContents().size();
 
 		// 1st port is handled separately
@@ -167,21 +170,21 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 				m_iteration);
 		List<URIContent> uriContents = new ArrayList<URIContent>();
 		uriContents.add(uri);
-		out[0] = new URIPortObject(uriContents);
+		uriOutputObjects[0] = new URIPortObject(uriContents);
 
-		for (int i = 1; i < NinPorts; i++) {
+		for (int i = 1; i < PORT_COUNT; i++) {
 			URIPortObject in = (URIPortObject) inObjects[i];
 			if (i < m_numAssignedIncomingPorts) {
 				if (m_reuse.getBooleanValue()) {
-					out[i] = new URIPortObject(in.getURIContents());
+					uriOutputObjects[i] = new URIPortObject(in.getURIContents());
 				} else {
 					List<URIContent> localUriContents = new ArrayList<URIContent>();
 					URIContent localUri = in.getURIContents().get(m_iteration);
 					localUriContents.add(localUri);
-					out[i] = new URIPortObject(localUriContents);
+					uriOutputObjects[i] = new URIPortObject(localUriContents);
 				}
 			} else {
-				out[i] = new URIPortObject(new ArrayList<URIContent>());
+				uriOutputObjects[i] = new URIPortObject(new ArrayList<URIContent>());
 			}
 		}
 
@@ -192,7 +195,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 		// proceed in the number of iterations
 		m_iteration++;
 
-		return out;
+		return uriOutputObjects;
 	}
 
 	/**

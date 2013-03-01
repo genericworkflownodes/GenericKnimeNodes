@@ -32,22 +32,23 @@ import org.knime.core.node.workflow.LoopStartNodeTerminator;
  */
 public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 	// the logger instance
+	@SuppressWarnings("unused")
 	private static final NodeLogger LOGGER = NodeLogger
 			.getLogger(ListZipLoopEndNodeModel.class);
+	private static int PORT_COUNT = 4;
 
-	private int m_count = 0;
-	private long m_startTime;
-	private static int NinPorts = 4;
+	private int m_numOfAssignedPorts;
+	private List<List<URIContent>> m_uris;
 
 	protected ListZipLoopEndNodeModel() {
-		super(createIPOs(), createOPOs());
+		super(createInputPortObjectSpecs(), createOutputPortObjectSpecs());
 	}
 
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
 			URIPortObject.class, true);
 
-	private static PortType[] createIPOs() {
-		PortType[] portTypes = new PortType[NinPorts];
+	private static PortType[] createInputPortObjectSpecs() {
+		PortType[] portTypes = new PortType[PORT_COUNT];
 		Arrays.fill(portTypes, URIPortObject.TYPE);
 		portTypes[1] = OPTIONAL_PORT_TYPE;
 		portTypes[2] = OPTIONAL_PORT_TYPE;
@@ -55,25 +56,21 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 		return portTypes;
 	}
 
-	private static PortType[] createOPOs() {
-		PortType[] portTypes = new PortType[NinPorts];
+	private static PortType[] createOutputPortObjectSpecs() {
+		PortType[] portTypes = new PortType[PORT_COUNT];
 		Arrays.fill(portTypes, URIPortObject.TYPE);
 		portTypes[1] = OPTIONAL_PORT_TYPE;
 		portTypes[2] = OPTIONAL_PORT_TYPE;
 		portTypes[3] = OPTIONAL_PORT_TYPE;
 		return portTypes;
 	}
-
-	private PortObjectSpec[] outspec;
-
-	private int K;
 
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 		List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
 
-		for (int i = 0; i < NinPorts; i++) {
+		for (int i = 0; i < PORT_COUNT; i++) {
 			if (inSpecs[i] == null) {
 				break;
 			}
@@ -81,18 +78,16 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 			specs.add(spec);
 		}
 
-		outspec = getOutSpec(specs);
-
-		return outspec;
+		return getOutSpec(specs);
 	}
 
 	private PortObjectSpec[] getOutSpec(List<URIPortObjectSpec> specs) {
-		K = specs.size();
+		m_numOfAssignedPorts = specs.size();
 
-		PortObjectSpec[] ret = new PortObjectSpec[NinPorts];
+		PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
 
-		for (int i = 0; i < NinPorts; i++) {
-			if (i < K) {
+		for (int i = 0; i < PORT_COUNT; i++) {
+			if (i < m_numOfAssignedPorts) {
 				ret[i] = specs.get(i);
 			} else {
 				ret[i] = null;
@@ -101,8 +96,6 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
 		return ret;
 	}
-
-	private List<List<URIContent>> uris;
 
 	@Override
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
@@ -114,125 +107,69 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 					+ " are trying to create an infinite loop!");
 		}
 
-		if (uris == null) {
+		if (m_uris == null) {
 			// first time we are getting to this: open container
-			m_startTime = System.currentTimeMillis();
-			m_count = 0;
-			uris = new ArrayList<List<URIContent>>();
-			for (int i = 0; i < K; i++) {
-				uris.add(new ArrayList<URIContent>());
+			m_uris = new ArrayList<List<URIContent>>();
+			for (int i = 0; i < m_numOfAssignedPorts; i++) {
+				m_uris.add(new ArrayList<URIContent>());
 			}
 		}
 
-		for (int i = 0; i < K; i++) {
+		for (int i = 0; i < m_numOfAssignedPorts; i++) {
 			URIPortObject po = (URIPortObject) inObjects[i];
-			// TODO check numbers
-			uris.get(i).add(po.getURIContents().get(0));
+			m_uris.get(i).add(po.getURIContents().get(0));
 		}
 
 		boolean terminateLoop = ((LoopStartNodeTerminator) this
 				.getLoopStartNode()).terminateLoop();
 
 		if (terminateLoop) {
-			URIPortObject[] ret = new URIPortObject[NinPorts];
+			URIPortObject[] ret = new URIPortObject[PORT_COUNT];
 
-			for (int i = 0; i < NinPorts; i++) {
-				if (i < K) {
-					ret[i] = new URIPortObject(uris.get(i));
+			for (int i = 0; i < PORT_COUNT; i++) {
+				if (i < m_numOfAssignedPorts) {
+					ret[i] = new URIPortObject(m_uris.get(i));
 				} else {
 					List<URIContent> uriC = new ArrayList<URIContent>();
 					ret[i] = new URIPortObject(uriC);
 				}
 			}
 
-			uris = null;
-			m_count = 0;
-			LOGGER.debug("Total loop execution time: "
-					+ (System.currentTimeMillis() - m_startTime) + "ms");
-			m_startTime = 0;
-
+			m_uris = null;
 			return ret;
 		} else {
 			continueLoop();
-			m_count++;
-			return new PortObject[NinPorts];
+			return new PortObject[PORT_COUNT];
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.knime.core.node.NodeModel#loadInternals(java.io.File,
-	 * org.knime.core.node.ExecutionMonitor)
-	 */
 	@Override
 	protected void loadInternals(File arg0, ExecutionMonitor arg1)
 			throws IOException, CanceledExecutionException {
-		// TODO Auto-generated method stub
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
-	 * .node.NodeSettingsRO)
-	 */
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO arg0)
 			throws InvalidSettingsException {
-		// TODO Auto-generated method stub
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.knime.core.node.NodeModel#reset()
-	 */
 	@Override
 	protected void reset() {
-		m_count = 0;
-		uris = null;
+		m_uris = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.knime.core.node.NodeModel#saveInternals(java.io.File,
-	 * org.knime.core.node.ExecutionMonitor)
-	 */
 	@Override
 	protected void saveInternals(File arg0, ExecutionMonitor arg1)
 			throws IOException, CanceledExecutionException {
-		// TODO Auto-generated method stub
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.knime.core.node.NodeModel#saveSettingsTo(org.knime.core.node.
-	 * NodeSettingsWO)
-	 */
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.knime.core.node.NodeModel#validateSettings(org.knime.core.node.
-	 * NodeSettingsRO)
-	 */
 	@Override
 	protected void validateSettings(NodeSettingsRO arg0)
 			throws InvalidSettingsException {
-		// TODO Auto-generated method stub
-
 	}
 
 }
