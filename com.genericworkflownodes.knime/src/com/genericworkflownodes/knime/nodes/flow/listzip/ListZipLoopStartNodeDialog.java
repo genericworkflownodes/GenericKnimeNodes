@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Marc Röttig.
+ * Copyright (c) 2013, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -18,42 +18,22 @@
  */
 package com.genericworkflownodes.knime.nodes.flow.listzip;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 
 /**
- * Node Factory for the ListZipEnd node.
+ * NodeDialog to configure the ListZipLoopNode.
  * 
- * @author roettig
+ * @author aiche
  */
-public class ListZipLoopEndNodeFactory extends
-		NodeFactory<ListZipLoopEndNodeModel> {
+public class ListZipLoopStartNodeDialog extends DefaultNodeSettingsPane {
 
-	@Override
-	protected NodeDialogPane createNodeDialogPane() {
-		return null;
+	protected ListZipLoopStartNodeDialog() {
+		super();
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				ListZipLoopStartNodeModel.CFG_REUSE,
+				ListZipLoopStartNodeModel.DEFAULT_REUSE), "Reuse ports"));
 	}
-
-	@Override
-	public ListZipLoopEndNodeModel createNodeModel() {
-		return new ListZipLoopEndNodeModel();
-	}
-
-	@Override
-	public NodeView<ListZipLoopEndNodeModel> createNodeView(int arg0,
-			ListZipLoopEndNodeModel arg1) {
-		return null;
-	}
-
-	@Override
-	protected int getNrNodeViews() {
-		return 0;
-	}
-
-	@Override
-	protected boolean hasDialog() {
-		return false;
-	}
-
 }
