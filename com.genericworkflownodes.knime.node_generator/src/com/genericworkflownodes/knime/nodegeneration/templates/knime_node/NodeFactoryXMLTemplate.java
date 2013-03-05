@@ -53,7 +53,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 */
 	private static String getInPorts(final INodeConfiguration nodeConfiguration) {
 		// ports
-		String ip = "<inPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
+		String ip = "\t\t<inPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
 		String inPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getInputPorts()) {
@@ -84,7 +84,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 */
 	private static String getOutPorts(final INodeConfiguration nodeConfiguration)
 			throws IOException {
-		String op = "<outPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
+		String op = "\t\t<outPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
 		String outPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getOutputPorts()) {
@@ -171,14 +171,13 @@ public class NodeFactoryXMLTemplate extends Template {
 		replace("__OPTIONS__", getOptions(nodeConfiguration));
 		replace("__DESCRIPTION__", nodeConfiguration.getDescription());
 		String pp = prettyPrint(nodeConfiguration.getManual());
-		replace("__MANUAL__", pp);
-		if (!nodeConfiguration.getDocUrl().equals("")) {
-			String ahref = "<a href=\"" + nodeConfiguration.getDocUrl()
-					+ "\">Web Documentation for " + nodeName + "</a>";
-			replace("__DOCLINK__", ahref);
-		} else {
-			replace("__DOCLINK__", "");
+
+		if (!"".equals(nodeConfiguration.getDocUrl().trim())) {
+			pp += String.format("\n\t\t<p>\n"
+					+ "\t\t\t<a href=\"%s\">Web Documentation for %s</a>\n"
+					+ "\t\t</p>\n", nodeConfiguration.getDocUrl(), nodeName);
 		}
+		replace("__MANUAL__", pp);
 	}
 
 }
