@@ -213,7 +213,9 @@ public class MimeFileImporterNodeModel extends NodeModel {
 			return new DataTableSpec[] { null };
 		}
 
-		return new PortObjectSpec[] { new URIPortObjectSpec(mt) };
+		return new PortObjectSpec[] { new URIPortObjectSpec(
+				getExtension((new File(m_filename.getStringValue()))
+						.getAbsolutePath())) };
 	}
 
 	@Override

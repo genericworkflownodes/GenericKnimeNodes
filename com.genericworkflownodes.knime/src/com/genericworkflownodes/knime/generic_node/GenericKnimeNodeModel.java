@@ -397,7 +397,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			String mismatch = "";
 
 			for (int j = 0; j < mimetypes_in[i].length; j++) {
-				if (mt.equals(mimetypes_in[i][j])) {
+				if (mt.toLowerCase().equals(mimetypes_in[i][j].toLowerCase())) {
 					ok = true;
 				} else {
 					mismatch = String.format("in: [%s] expected:[%s]", mt,

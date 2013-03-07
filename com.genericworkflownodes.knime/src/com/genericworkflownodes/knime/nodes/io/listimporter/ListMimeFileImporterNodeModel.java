@@ -129,7 +129,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		String[] filenames = this.m_filenames.getStringArrayValue();
+		String[] filenames = m_filenames.getStringArrayValue();
 
 		if (filenames == null || filenames.length == 0) {
 			return new PortObjectSpec[] { null };
@@ -159,13 +159,14 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 			}
 		}
 
-		return new PortObjectSpec[] { new URIPortObjectSpec(mt) };
+		return new PortObjectSpec[] { new URIPortObjectSpec(
+				getExtension(m_filenames.getStringArrayValue()[0])) };
 	}
 
 	@Override
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
-		String[] filenames = this.m_filenames.getStringArrayValue();
+		String[] filenames = m_filenames.getStringArrayValue();
 
 		List<URIContent> uris = new ArrayList<URIContent>();
 		for (String filename : filenames) {
