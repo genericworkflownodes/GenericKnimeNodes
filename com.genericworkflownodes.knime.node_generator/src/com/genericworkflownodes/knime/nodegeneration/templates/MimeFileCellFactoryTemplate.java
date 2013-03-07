@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
-import com.genericworkflownodes.knime.nodegeneration.model.mime.MimeType;
+import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile.MIMETypeEntry;
 
 public class MimeFileCellFactoryTemplate extends Template {
 
@@ -16,27 +16,27 @@ public class MimeFileCellFactoryTemplate extends Template {
 			.getLogger(MimeFileCellFactoryTemplate.class.getCanonicalName());
 
 	public MimeFileCellFactoryTemplate(String packageName,
-			List<MimeType> mimeTypes) throws IOException {
+			List<MIMETypeEntry> mimeTypes) throws IOException {
 		super(NodeGenerator.class
 				.getResourceAsStream("templates/MimeFileCellFactory.template"));
 
 		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(\"__EXT__\");\n";
 		String mimeTypeAddCode = "";
 
-		Set<MimeType> processedMimeTypes = new HashSet<MimeType>();
+		Set<MIMETypeEntry> processedMimeTypes = new HashSet<MIMETypeEntry>();
 
-		for (MimeType mimeType : mimeTypes) {
-			LOGGER.info("MIME Type read: " + mimeType.getName());
+		for (MIMETypeEntry mimeType : mimeTypes) {
+			LOGGER.info("MIME Type read: " + mimeType.getType());
 
 			if (processedMimeTypes.contains(mimeType)) {
 				LOGGER.log(Level.WARNING, "skipping duplicate mime type "
-						+ mimeType.getName());
+						+ mimeType.getType());
 			} else {
 				processedMimeTypes.add(mimeType);
 			}
 
 			mimeTypeAddCode += mimeTypeAddTemplateCodeLine.replace("__EXT__",
-					mimeType.getExt().toLowerCase());
+					mimeType.getExtensions().get(0).toLowerCase());
 		}
 
 		this.replace("__MIMETYPES__", mimeTypeAddCode);

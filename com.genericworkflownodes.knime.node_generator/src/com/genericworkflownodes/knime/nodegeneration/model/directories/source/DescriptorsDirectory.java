@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dom4j.DocumentException;
-import org.jaxen.JaxenException;
-
 import com.genericworkflownodes.knime.config.CTDNodeConfigurationReaderException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
@@ -57,16 +54,8 @@ public class DescriptorsDirectory extends Directory {
 			InvalidNodeNameException, DuplicateNodeNameException {
 		super(sourcesDirectory);
 
-		File mimeTypeFile = new File(this, "mimetypes.xml");
-		try {
-			mimeTypesFile = new MimeTypesFile(mimeTypeFile);
-		} catch (JaxenException e) {
-			throw new IOException("Error reading MIME types from "
-					+ mimeTypeFile.getPath(), e);
-		} catch (DocumentException e) {
-			throw new IOException("Error reading MIME types from "
-					+ mimeTypeFile.getPath(), e);
-		}
+		File mimeTypeFile = new File(this, "mime.types");
+		mimeTypesFile = new MimeTypesFile(mimeTypeFile.getAbsolutePath());
 
 		ctdFiles = new LinkedList<CTDFile>();
 		for (File file : this.listFiles()) {

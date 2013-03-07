@@ -1,90 +1,95 @@
 package com.genericworkflownodes.knime.nodegeneration.model.files;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.FileReader;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.dom.DOMDocumentFactory;
-import org.dom4j.io.SAXReader;
-import org.jaxen.JaxenException;
-import org.jaxen.SimpleNamespaceContext;
-import org.jaxen.dom4j.Dom4jXPath;
-
-import com.genericworkflownodes.knime.nodegeneration.model.mime.MimeType;
-import com.genericworkflownodes.knime.schemas.SchemaProvider;
-import com.genericworkflownodes.knime.schemas.SchemaValidator;
 
 public class MimeTypesFile extends File {
 
+	public final class MIMETypeEntry {
+
+		private String m_type;
+
+		private List<String> m_extensions;
+
+		/**
+		 * @param type
+		 *            Name of this MIME-Type
+		 */
+		public MIMETypeEntry(final String type) {
+			m_type = type;
+			m_extensions = new LinkedList<String>();
+		}
+
+		/**
+		 * @return The MIME-Types name
+		 */
+		public String getType() {
+			return m_type;
+		}
+
+		/**
+		 * @return The extensions of this MIME-Type
+		 */
+		public List<String> getExtensions() {
+			return m_extensions;
+		}
+
+		/**
+		 * @param extension
+		 *            Extension to register with this type
+		 */
+		void addExtension(final String extension) {
+			m_extensions.add(extension);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			String result = m_type;
+			for (int i = 0; i < m_extensions.size(); i++) {
+				result += " " + m_extensions.get(i);
+			}
+			return result;
+		}
+
+	}
+
 	private static final long serialVersionUID = -1620704972604551679L;
 
-	private static void validate(File file) throws DocumentException {
-		SchemaValidator val = new SchemaValidator();
-		val.addSchema(SchemaProvider.class.getResourceAsStream("mimetypes.xsd"));
-		if (!val.validates(file.getPath())) {
-			throw new DocumentException("Supplied \"" + file.getPath()
-					+ "\" does not conform to schema " + val.getErrorReport());
+	public MimeTypesFile(String pathname) {
+		super(pathname);
+	}
+
+	public List<MIMETypeEntry> getMIMETypeEntries() {
+		List<MIMETypeEntry> mimetypes = new LinkedList<MIMETypeEntry>();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(this));
+			String line;
+			// Every line is a new MIME-Type
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				if (!line.startsWith("#")) {
+					// Split on space or tab
+					String[] tokens = line.split("[ \t]+");
+					if (tokens.length > 0) {
+						// Create MIME-Entry (first token is always the name)
+						MIMETypeEntry entry = new MIMETypeEntry(tokens[0]);
+						// All other tokens are extensions to this MIME-Type
+						for (int i = 1; i < tokens.length; i++) {
+							entry.addExtension(tokens[i]);
+						}
+						mimetypes.add(entry);
+					}
+				}
+			}
+		} catch (Exception e) {
+			// If file is not readable return nothing
 		}
+		return mimetypes;
 	}
-
-	private static Document createDocument(File file)
-			throws FileNotFoundException, DocumentException {
-		DOMDocumentFactory factory = new DOMDocumentFactory();
-		SAXReader reader = new SAXReader();
-		reader.setDocumentFactory(factory);
-		return reader.read(new FileInputStream(file));
-	}
-
-	private static List<MimeType> readMimeTypes(Document doc)
-			throws JaxenException {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("bp", "http://www.ball-project.org/mimetypes"); // TODO
-
-		Dom4jXPath xpath = new Dom4jXPath("//bp:mimetype");
-		xpath.setNamespaceContext(new SimpleNamespaceContext(map));
-		@SuppressWarnings("unchecked")
-		List<Node> nodes = xpath.selectNodes(doc);
-		List<MimeType> mimeTypes = new ArrayList<MimeType>();
-		for (Node node : nodes) {
-			Element element = (Element) node;
-			mimeTypes.add(new MimeType(element));
-		}
-		return mimeTypes;
-	}
-
-	private List<MimeType> mimeTypes;
-
-	public MimeTypesFile(File file) throws IOException, DocumentException,
-			JaxenException {
-		super(file.getPath());
-
-		if (file == null || !file.canRead()) {
-			throw new IOException("Invalid MIME types file: " + file.getPath());
-		}
-
-		validate(file);
-
-		Document doc = createDocument(file);
-		this.mimeTypes = readMimeTypes(doc);
-	}
-
-	/**
-	 * A list of {@link MimeType}s contained in the given {@link MimeTypesFile}.
-	 * 
-	 * @return A list of {@link MimeType}s contained in the given
-	 *         {@link MimeTypesFile}.
-	 */
-	public final List<MimeType> getMimeTypes() {
-		return mimeTypes;
-	}
-
 }
