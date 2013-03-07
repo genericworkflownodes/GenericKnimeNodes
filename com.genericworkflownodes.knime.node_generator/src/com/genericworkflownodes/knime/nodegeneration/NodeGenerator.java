@@ -238,6 +238,9 @@ public class NodeGenerator {
 			// register startup
 			pluginXML.registerStartupClass(generatedPluginMeta);
 
+			// register the mime types
+			pluginXML.registerMIMETypeEntries(srcDir.getMIMETypes());
+
 			// plugin.xml
 			pluginXML.saveTo(pluginBuildDir.getPluginXml());
 

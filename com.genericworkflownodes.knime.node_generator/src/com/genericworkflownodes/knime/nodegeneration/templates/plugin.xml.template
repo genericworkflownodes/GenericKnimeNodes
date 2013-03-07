@@ -17,4 +17,7 @@
 	<extension point="org.eclipse.ui.startup">
 	</extension>
 
+	<extension point="org.knime.base.filehandling.mimetypes">
+	</extension> 
+
 </plugin>
