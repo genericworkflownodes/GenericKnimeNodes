@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.mime;
 
-
 /**
  * The interface {@link IMIMEtypeRegistry} defines methods needed to build a
  * (recursive) database or registry of MIME types known to GenericKnimeNodes.

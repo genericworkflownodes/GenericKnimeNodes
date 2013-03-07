@@ -21,8 +21,8 @@ package com.genericworkflownodes.knime.mime.servicefactory;
 import org.eclipse.ui.services.AbstractServiceFactory;
 import org.eclipse.ui.services.IServiceLocator;
 
-import com.genericworkflownodes.knime.mime.DefaultMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+import com.genericworkflownodes.knime.mime.KNIMEMIMETypeRegistry;
 
 /**
  * {@link AbstractServiceFactory} for the {@link IMIMEtypeRegistry}.
@@ -66,7 +66,7 @@ public class MIMETypeRegistryServiceFactory extends AbstractServiceFactory {
 	 */
 	private IMIMEtypeRegistry getMIMETypeRegistry() {
 		if (registry == null) {
-			registry = new DefaultMIMEtypeRegistry();
+			registry = new KNIMEMIMETypeRegistry();
 		}
 		return registry;
 	}
