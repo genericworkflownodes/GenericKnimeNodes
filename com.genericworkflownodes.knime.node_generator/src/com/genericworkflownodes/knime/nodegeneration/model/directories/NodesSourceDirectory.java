@@ -16,7 +16,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.source.De
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.PayloadDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
-import com.genericworkflownodes.knime.nodegeneration.model.mime.MimeType;
+import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile.MIMETypeEntry;
 
 public class NodesSourceDirectory extends Directory {
 
@@ -131,8 +131,8 @@ public class NodesSourceDirectory extends Directory {
 		return descriptorsDirectory.getCTDFiles();
 	}
 
-	public List<MimeType> getMimeTypes() {
-		return descriptorsDirectory.getMimeTypesFile().getMimeTypes();
+	public List<MIMETypeEntry> getMIMETypes() {
+		return descriptorsDirectory.getMimeTypesFile().getMIMETypeEntries();
 	}
 
 	public File getDescriptionFile() {

@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.custom;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -32,7 +31,6 @@ import org.osgi.framework.BundleContext;
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.payload.BinariesManager;
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
@@ -114,7 +112,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 				.getCanonicalPath());
 
 		loadPluginProperties();
-		registerMimeTypes();
 	}
 
 	/**
@@ -130,21 +127,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 					+ " plugin properties are ... ");
 			for (Object key : props.keySet()) {
 				GenericNodesPlugin.log(key + " -> " + props.get(key));
-			}
-		}
-	}
-
-	/**
-	 * Reads the list of {@link MIMEType}s associated with the plugin and
-	 * registers them in the central {@link IMIMEtypeRegistry}.
-	 */
-	private void registerMimeTypes() {
-		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-				.getWorkbench().getService(IMIMEtypeRegistry.class);
-		if (registry != null) {
-			for (String mimeType : getMIMETypes()) {
-				LOGGER.log(Level.FINEST, "Register MIME Type: " + mimeType);
-				registry.registerMIMEtype(mimeType);
 			}
 		}
 	}

@@ -38,14 +38,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * Dialog component to choose multiple files at once, as input for a KNIME
@@ -368,16 +367,10 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
 		int idx = 0;
 
-		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-				.getWorkbench().getService(IMIMEtypeRegistry.class);
-		if (registry == null)
-			throw new InvalidSettingsException(
-					"Could not find IMIMETypeRegistry to resolve MIMETypes.");
-
 		for (File file : ((FileListModel) listbox.getModel()).getFiles()) {
 			String filename = file.getAbsolutePath();
 			filenames[idx] = filename;
-			mts[idx] = registry.getMIMEtype(filename);
+			mts[idx] = MIMETypeHelper.getMIMEtype(filename);
 			if (mts[idx] == null) {
 				throw new InvalidSettingsException(
 						"file of unknown MIMEtype selected " + filename);

@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.ui.PlatformUI;
+import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -388,25 +389,24 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 			URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
 
-			// get input MIMEType
-			// TODO: why do we have more then one
-			String mt = spec.getFileExtensions().get(0);
+			// get MIMEType from incoming port
+			// TODO: we should check all file extensions, if its more then one
+			String mt = MIMEMap.getMIMEType(spec.getFileExtensions().get(0));
 
 			// check whether input MIMEType is in list of allowed MIMETypes
 			boolean ok = false;
-			String mismatch = "";
 
-			for (int j = 0; j < mimetypes_in[i].length; j++) {
-				if (mt.equals(mimetypes_in[i][j])) {
+			for (int j = 0; j < mimetypes_in[i].length && !ok; j++) {
+				if (mt.equals(MIMEMap.getMIMEType(mimetypes_in[i][j]))) {
 					ok = true;
-				} else {
-					mismatch = String.format("in: [%s] expected:[%s]", mt,
-							Arrays.toString(mimetypes_in[i]));
 				}
 			}
 			if (!ok) {
+				String mismatch = String.format(
+						"has extension: [%s]; expected on of:[%s]", mt,
+						Arrays.toString(mimetypes_in[i]));
 				throw new InvalidSettingsException(
-						"invalid MIMEtype at port number " + i + " : "
+						"Invalid MIMEtype at port number " + i + " : "
 								+ mismatch);
 			}
 		}

@@ -15,6 +15,7 @@ import org.dom4j.Node;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.dom4j.io.SAXReader;
 
+import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile.MIMETypeEntry;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 import com.genericworkflownodes.util.Helper;
@@ -185,6 +186,31 @@ public class PluginXMLTemplate {
 		Element startupExtensionPoint = (Element) node;
 		startupExtensionPoint.addElement("startup").addAttribute("class",
 				clazzName);
+
+	}
+
+	public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {
+		// <mimetype name="mzML">
+		// <fileextension name="mzML"></fileextension>
+		// </mimetype>
+		// <mimetype name="mzXML">
+		// <fileextension name="mzXML"></fileextension>
+		// </mimetype>
+
+		Node node = doc
+				.selectSingleNode("/plugin/extension[@point='org.knime.base.filehandling.mimetypes']");
+		Element mimeTypesExtensionPoint = (Element) node;
+
+		for (MIMETypeEntry mimeTypeEntry : mimeTypes) {
+			Element mimeTypeElement = mimeTypesExtensionPoint.addElement(
+					"mimetype").addAttribute("name", mimeTypeEntry.getType());
+
+			// register fileExtensions
+			for (String fileExtension : mimeTypeEntry.getExtensions()) {
+				mimeTypeElement.addElement("fileextension").addAttribute(
+						"name", fileExtension);
+			}
+		}
 
 	}
 }

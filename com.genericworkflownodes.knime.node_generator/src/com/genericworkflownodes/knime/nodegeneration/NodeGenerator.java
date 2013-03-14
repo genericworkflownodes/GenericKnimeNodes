@@ -182,7 +182,7 @@ public class NodeGenerator {
 
 			// src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
 			new MimeFileCellFactoryTemplate(
-					generatedPluginMeta.getPackageRoot(), srcDir.getMimeTypes())
+					generatedPluginMeta.getPackageRoot(), srcDir.getMIMETypes())
 					.write(new File(pluginBuildDir.getKnimeNodesDirectory(),
 							"mimetypes" + File.separator
 									+ "MimeFileCellFactory.java"));
@@ -237,6 +237,9 @@ public class NodeGenerator {
 
 			// register startup
 			pluginXML.registerStartupClass(generatedPluginMeta);
+
+			// register the mime types
+			pluginXML.registerMIMETypeEntries(srcDir.getMIMETypes());
 
 			// plugin.xml
 			pluginXML.saveTo(pluginBuildDir.getPluginXml());

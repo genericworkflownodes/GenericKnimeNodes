@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -39,7 +38,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of ListMimeFileImporter.
@@ -121,33 +120,22 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 			CanceledExecutionException {
 	}
 
-	/**
-	 * The {@link MIMEType} of the imported files.
-	 */
-	private String mt = null;
-
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		String[] filenames = this.m_filenames.getStringArrayValue();
+		String[] filenames = m_filenames.getStringArrayValue();
 
 		if (filenames == null || filenames.length == 0) {
 			return new PortObjectSpec[] { null };
 		}
 
 		List<String> mts = new ArrayList<String>();
-
-		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-				.getWorkbench().getService(IMIMEtypeRegistry.class);
-		if (registry == null)
-			throw new InvalidSettingsException(
-					"Could not find IMIMETypeRegistry to resolve MIMETypes.");
-
+		String mt = null;
 		for (String filename : filenames) {
-			mt = registry.getMIMEtype(filename);
+			mt = MIMETypeHelper.getMIMEtype(filename);
 			if (mt == null) {
 				throw new InvalidSettingsException(
-						"could not resolve MIMEType of file " + filename);
+						"Could not resolve MIMEType of file " + filename);
 			}
 			mts.add(mt);
 		}
@@ -159,13 +147,15 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 			}
 		}
 
-		return new PortObjectSpec[] { new URIPortObjectSpec(mt) };
+		return new PortObjectSpec[] { new URIPortObjectSpec(
+				MIMETypeHelper.getMIMEtypeExtension(m_filenames
+						.getStringArrayValue()[0])) };
 	}
 
 	@Override
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
-		String[] filenames = this.m_filenames.getStringArrayValue();
+		String[] filenames = m_filenames.getStringArrayValue();
 
 		List<URIContent> uris = new ArrayList<URIContent>();
 		for (String filename : filenames) {
@@ -176,18 +166,10 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 						+ in.getAbsolutePath());
 			}
 
-			uris.add(new URIContent(new File(filename).toURI(),
-					getExtension(filename)));
+			uris.add(new URIContent(new File(filename).toURI(), MIMETypeHelper
+					.getMIMEtypeExtension(filename)));
 		}
 
 		return new PortObject[] { new URIPortObject(uris) };
-	}
-
-	private String getExtension(String path) {
-		if (path.lastIndexOf('.') == -1) {
-			return "";
-		} else {
-			return path.substring(path.lastIndexOf('.') + 1);
-		}
 	}
 }

@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import com.genericworkflownodes.knime.custom.Architecture;
 import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 
@@ -36,41 +37,47 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginM
  * 
  * @author bkahlert, aiche
  */
-public class PayloadDirectory extends Directory {
+public class PayloadDirectory {
 	private static final Logger LOGGER = Logger
 			.getLogger(PayloadDirectory.class.getCanonicalName());
-
-	private static final long serialVersionUID = -400249694994228712L;
 
 	private static final Pattern payloadFormat = Pattern
 			.compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
 
+	private final List<FragmentMeta> containedFragments;
+	private Directory payloadDirectory = null;
+
 	public PayloadDirectory(File payloadDirectory)
 			throws PathnameIsNoDirectoryException {
-		super(payloadDirectory);
+		containedFragments = new ArrayList<FragmentMeta>();
+		try {
+			this.payloadDirectory = new Directory(payloadDirectory);
+		} catch (Exception e) {
+			LOGGER.warning("No payload directory available.");
+		}
 	}
 
 	public List<FragmentMeta> getFragmentMetas(
 			GeneratedPluginMeta generatedPluginMeta) {
 
-		List<FragmentMeta> containedFragments = new ArrayList<FragmentMeta>();
+		if (payloadDirectory != null) {
+			containedFragments.clear();
+			for (String payload : payloadDirectory.list()) {
+				Matcher m = payloadFormat.matcher(payload);
+				if (!m.find()) {
+					LOGGER.warning("Ignoring incompatible file in payload directory: "
+							+ payload);
+					continue;
+				}
+				LOGGER.info("Create payload fragment for " + payload);
 
-		for (String payload : list()) {
-			Matcher m = payloadFormat.matcher(payload);
-			if (!m.find()) {
-				LOGGER.warning("Ignoring incompatible file in payload directory: "
-						+ payload);
-				continue;
+				OperatingSystem os = OperatingSystem.fromString(m.group(1));
+				Architecture arch = Architecture.fromString(m.group(2));
+
+				containedFragments.add(new FragmentMeta(generatedPluginMeta,
+						arch, os, new File(payloadDirectory, payload)));
 			}
-			LOGGER.info("Create payload fragment for " + payload);
-
-			OperatingSystem os = OperatingSystem.fromString(m.group(1));
-			Architecture arch = Architecture.fromString(m.group(2));
-
-			containedFragments.add(new FragmentMeta(generatedPluginMeta, arch,
-					os, new File(this, payload)));
 		}
-
 		return containedFragments;
 	}
 }
