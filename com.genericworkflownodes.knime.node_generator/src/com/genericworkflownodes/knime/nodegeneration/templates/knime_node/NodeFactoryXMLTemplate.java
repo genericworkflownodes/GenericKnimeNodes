@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
@@ -53,7 +55,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 */
 	private static String getInPorts(final INodeConfiguration nodeConfiguration) {
 		// ports
-		String ip = "\t\t<inPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE____OPT__]]]></inPort>";
+		String ip = "\t\t<inPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\">__PORTDESCR__ [__MIMETYPE____OPT__]</inPort>";
 		String inPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getInputPorts()) {
@@ -62,7 +64,8 @@ public class NodeFactoryXMLTemplate extends Template {
 			String ipp = ip;
 
 			ipp = ip.replace("__PORTNAME__", parameter.getKey());
-			ipp = ipp.replace("__PORTDESCR__", port.getDescription());
+			ipp = ipp.replace("__PORTDESCR__",
+					StringEscapeUtils.escapeHtml(port.getDescription()));
 			ipp = ipp.replace("__IDX__", String.format("%d", idx++));
 			ipp = ipp.replace("__MIMETYPE__", join(port.getMimeTypes(), ","));
 
@@ -84,7 +87,7 @@ public class NodeFactoryXMLTemplate extends Template {
 	 */
 	private static String getOutPorts(final INodeConfiguration nodeConfiguration)
 			throws IOException {
-		String op = "\t\t<outPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\"><![CDATA[__PORTDESCR__ [__MIMETYPE__]]]></outPort>";
+		String op = "\t\t<outPort index=\"__IDX__\" name=\"__PORTNAME__ [__MIMETYPE__]\">__PORTDESCR__ [__MIMETYPE__]</outPort>";
 		String outPorts = "";
 		int idx = 0;
 		for (Port port : nodeConfiguration.getOutputPorts()) {
@@ -94,7 +97,8 @@ public class NodeFactoryXMLTemplate extends Template {
 			String opp = op;
 
 			opp = op.replace("__PORTNAME__", parameter.getKey());
-			opp = opp.replace("__PORTDESCR__", port.getDescription());
+			opp = opp.replace("__PORTDESCR__",
+					StringEscapeUtils.escapeHtml(port.getDescription()));
 			opp = opp.replace("__IDX__", String.format("%d", idx++));
 			opp = opp.replace("__MIMETYPE__", join(port.getMimeTypes(), ","));
 
@@ -119,8 +123,9 @@ public class NodeFactoryXMLTemplate extends Template {
 			if (p instanceof IFileParameter) {
 				continue;
 			}
-			sb.append("\t\t<option name=\"" + p.getKey() + "\"><![CDATA["
-					+ p.getDescription() + "]]></option>\n");
+			sb.append("\t\t<option name=\"" + p.getKey() + "\">"
+					+ StringEscapeUtils.escapeHtml(p.getDescription())
+					+ "</option>\n");
 		}
 		return sb.toString();
 	}
@@ -140,7 +145,7 @@ public class NodeFactoryXMLTemplate extends Template {
 		StringBuffer sb = new StringBuffer();
 		String[] toks = manual.split("\\n");
 		for (String tok : toks) {
-			sb.append("<p><![CDATA[" + tok + "]]></p>");
+			sb.append("<p>" + tok + "</p>");
 		}
 		return sb.toString();
 	}
