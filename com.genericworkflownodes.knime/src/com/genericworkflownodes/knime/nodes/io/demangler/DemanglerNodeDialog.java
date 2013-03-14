@@ -31,7 +31,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 import com.genericworkflownodes.util.ui.ChoiceDialog;
@@ -64,7 +63,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 	/**
 	 * The currently configured {@link MIMEType}.
 	 */
-	private String configuredMIMEType;
+	private String configuredFileExtension;
 
 	/**
 	 * Default c'tor.
@@ -88,8 +87,9 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 			throws InvalidSettingsException {
 		settings.addString(DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
 				demanglerClassName);
-		settings.addString(DemanglerNodeModel.CONFIGURED_MIMETYPE_SETTINGNAME,
-				configuredMIMEType);
+		settings.addString(
+				DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME,
+				configuredFileExtension);
 	}
 
 	@Override
@@ -101,14 +101,8 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 		try {
 			demanglerClassName = settings.getString(
 					DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
-			String configuredMIMEExtension = settings
-					.getString(DemanglerNodeModel.CONFIGURED_MIMETYPE_SETTINGNAME);
-
-			IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-					.getWorkbench().getService(IMIMEtypeRegistry.class);
-			if (registry != null)
-				configuredMIMEType = registry
-						.getMIMETypeByExtension(configuredMIMEExtension);
+			configuredFileExtension = settings
+					.getString(DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
 			IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
 					.getWorkbench().getService(IDemanglerRegistry.class);
@@ -117,7 +111,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 						"Could not find IDemanglerRegistry to find Demangler.");
 
 			availableDemangler = demanglerRegistry
-					.getDemangler(configuredMIMEType);
+					.getDemangler(configuredFileExtension);
 		} catch (InvalidSettingsException e) {
 			e.printStackTrace();
 		}

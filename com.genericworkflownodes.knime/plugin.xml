@@ -43,9 +43,6 @@
          <service serviceClass="com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService">
          </service>
       </serviceFactory>
-      <serviceFactory factoryClass="com.genericworkflownodes.knime.mime.servicefactory.MIMETypeRegistryServiceFactory">
-         <service serviceClass="com.genericworkflownodes.knime.mime.IMIMEtypeRegistry"/>
-      </serviceFactory>
       <serviceFactory factoryClass="com.genericworkflownodes.knime.mime.servicefactory.DemanglerRegistryServiceFactory">
          <service serviceClass="com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry"/>
       </serviceFactory>

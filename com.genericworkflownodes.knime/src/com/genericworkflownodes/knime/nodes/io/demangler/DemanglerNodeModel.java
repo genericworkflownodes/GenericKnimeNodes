@@ -43,7 +43,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
 import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 
@@ -63,7 +62,7 @@ public class DemanglerNodeModel extends NodeModel {
 	/**
 	 * Settings field where the currently configured {@link MIMEType} is stored.
 	 */
-	static final String CONFIGURED_MIMETYPE_SETTINGNAME = "configured_mime_type";
+	static final String CONFIGURED_FILE_EXTENSION_SETTINGNAME = "configured_mime_type";
 
 	/**
 	 * The selected {@link IDemangler}.
@@ -73,7 +72,7 @@ public class DemanglerNodeModel extends NodeModel {
 	/**
 	 * The currently configured {@link MIMEType}.
 	 */
-	private String configuredMIMEType;
+	private String fileExtension;
 
 	/**
 	 * Constructor for the node model.
@@ -131,7 +130,7 @@ public class DemanglerNodeModel extends NodeModel {
 	@Override
 	protected void reset() {
 		demangler = null;
-		configuredMIMEType = null;
+		fileExtension = null;
 	}
 
 	/**
@@ -139,7 +138,7 @@ public class DemanglerNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		settings.addString(CONFIGURED_MIMETYPE_SETTINGNAME, configuredMIMEType);
+		settings.addString(CONFIGURED_FILE_EXTENSION_SETTINGNAME, fileExtension);
 		settings.addStringArray(SELECTED_DEMANGLER_SETTINGNAME, demangler
 				.getClass().getName());
 	}
@@ -153,19 +152,7 @@ public class DemanglerNodeModel extends NodeModel {
 		String demanglerClassName = settings.getString(
 				SELECTED_DEMANGLER_SETTINGNAME, "");
 		String configuredMIMEExtension = settings
-				.getString(CONFIGURED_MIMETYPE_SETTINGNAME);
-
-		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-				.getWorkbench().getService(IMIMEtypeRegistry.class);
-
-		if (registry == null) {
-			throw new InvalidSettingsException(
-					"Could not resolve configured MIMEType since the IMIMETypeRegistry is not available.");
-		}
-
-		// get a list of registered MIMEType
-		configuredMIMEType = registry
-				.getMIMETypeByExtension(configuredMIMEExtension);
+				.getString(CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
 		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
 				.getWorkbench().getService(IDemanglerRegistry.class);
@@ -174,7 +161,7 @@ public class DemanglerNodeModel extends NodeModel {
 					"Could not find IDemanglerRegistry to find Demangler.");
 
 		List<IDemangler> availableDemangler = demanglerRegistry
-				.getDemangler(configuredMIMEType);
+				.getDemangler(fileExtension);
 
 		demangler = null;
 		if (!"".equals(demanglerClassName)) {
@@ -208,11 +195,11 @@ public class DemanglerNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
 			throw new InvalidSettingsException(
-					"no MIMEURIPortObject compatible port object at port 0");
+					"No URIPortObjectSpec compatible port object at port 0");
 		}
 
 		URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[0];
-		configuredMIMEType = spec.getFileExtensions().get(0);
+		fileExtension = spec.getFileExtensions().get(0);
 
 		// try to find a demangler for the data type ...
 		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
@@ -222,12 +209,12 @@ public class DemanglerNodeModel extends NodeModel {
 					"Could not find IDemanglerRegistry to find Demangler.");
 
 		List<IDemangler> availableDemanglers = demanglerRegistry
-				.getDemangler(configuredMIMEType);
+				.getDemangler(fileExtension);
 
 		if (availableDemanglers == null || availableDemanglers.size() == 0) {
 			throw new InvalidSettingsException(
-					"no IDemangler found for "
-							+ configuredMIMEType.toString()
+					"No IDemangler found for "
+							+ fileExtension.toString()
 							+ ". Please register before transforming the a file with this MIMEType to a KNIME table.");
 		}
 

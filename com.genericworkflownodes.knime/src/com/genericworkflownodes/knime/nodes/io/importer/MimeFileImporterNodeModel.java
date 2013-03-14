@@ -31,7 +31,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.activation.MimeType;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -48,8 +47,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.mime.IMIMEtypeRegistry;
 import com.genericworkflownodes.util.Helper;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of MimeFileImporter.
@@ -129,14 +128,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 					+ filename);
 		}
 
-		IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-				.getWorkbench().getService(IMIMEtypeRegistry.class);
-
-		if (registry == null) {
-			throw new InvalidSettingsException(
-					"Could not resolve MIMEType due to missing IMIMETypeRegistry.");
-		}
-		if (registry.getMIMEtype(filename) == null) {
+		if (MIMETypeHelper.getMIMEtype(filename) == null) {
 			throw new InvalidSettingsException(
 					"file of unknown MIMEtype selected: " + filename);
 		}
@@ -199,23 +191,14 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		try {
-			IMIMEtypeRegistry registry = (IMIMEtypeRegistry) PlatformUI
-					.getWorkbench().getService(IMIMEtypeRegistry.class);
-			// if service is unavailable it will be catched below
-			mt = registry.getMIMEtype(m_filename.getStringValue());
-		} catch (Exception e) {
-			throw new InvalidSettingsException(
-					"could not resolve MIME type of file");
-		}
+		mt = MIMETypeHelper.getMIMEtype(m_filename.getStringValue());
 
 		if (mt == null) {
 			return new DataTableSpec[] { null };
 		}
 
 		return new PortObjectSpec[] { new URIPortObjectSpec(
-				getExtension((new File(m_filename.getStringValue()))
-						.getAbsolutePath())) };
+				MIMETypeHelper.getMIMEtypeExtension(m_filename.getStringValue())) };
 	}
 
 	@Override
@@ -230,20 +213,11 @@ public class MimeFileImporterNodeModel extends NodeModel {
 					+ file.getAbsolutePath());
 		}
 
-		uris.add(new URIContent(file.toURI(), getExtension(file
-				.getAbsolutePath())));
+		uris.add(new URIContent(file.toURI(), MIMETypeHelper
+				.getMIMEtypeExtension(file.getAbsolutePath())));
 
 		data = Helper.readFileSummary(file, 50);
 
 		return new PortObject[] { new URIPortObject(uris) };
 	}
-
-	private String getExtension(String path) {
-		if (path.lastIndexOf('.') == -1) {
-			return "";
-		} else {
-			return path.substring(path.lastIndexOf('.') + 1);
-		}
-	}
-
 }

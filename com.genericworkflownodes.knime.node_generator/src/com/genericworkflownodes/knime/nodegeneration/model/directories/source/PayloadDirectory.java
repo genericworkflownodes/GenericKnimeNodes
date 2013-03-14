@@ -51,7 +51,7 @@ public class PayloadDirectory {
 			throws PathnameIsNoDirectoryException {
 		containedFragments = new ArrayList<FragmentMeta>();
 		try {
-			payloadDirectory = new Directory(payloadDirectory);
+			this.payloadDirectory = new Directory(payloadDirectory);
 		} catch (Exception e) {
 			LOGGER.warning("No payload directory available.");
 		}
