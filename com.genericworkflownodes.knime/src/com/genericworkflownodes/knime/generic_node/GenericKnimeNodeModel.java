@@ -88,16 +88,25 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	/**
 	 * stores the node configuration (i.e. parameters, ports, ..)
 	 */
-	protected INodeConfiguration nodeConfig;
+	private final INodeConfiguration nodeConfig;
 
+	/**
+	 * The configuration of the encapsulating plugin.
+	 */
 	private final IPluginConfiguration pluginConfig;
 
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
 			URIPortObject.class, true);
 
-	protected String[][] mimetypes_in;
-	protected String[][] mimetypes_out;
-	protected PortObjectSpec[] outspec_;
+	/**
+	 * The file endings supported by the input ports.
+	 */
+	private final String[][] fileEndingsInPorts;
+
+	/**
+	 * The file endings supported by the output ports.
+	 */
+	private final String[][] fileEndingsOutPorts;
 
 	/**
 	 * The actual executor used to run the tool.
@@ -107,12 +116,15 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	/**
 	 * Constructor for the node model.
 	 */
-	protected GenericKnimeNodeModel(INodeConfiguration config,
-			IPluginConfiguration pluginConfig) {
-		super(createOPOs(config.getInputPorts()), createOPOs(config
+	protected GenericKnimeNodeModel(INodeConfiguration nodeConfig,
+			IPluginConfiguration pluginConfig, String[][] fileEndingsInPorts,
+			String[][] fileEndingsOutPorts) {
+		super(createOPOs(nodeConfig.getInputPorts()), createOPOs(nodeConfig
 				.getOutputPorts()));
-		nodeConfig = config;
+		this.nodeConfig = nodeConfig;
 		this.pluginConfig = pluginConfig;
+		this.fileEndingsInPorts = fileEndingsInPorts;
+		this.fileEndingsOutPorts = fileEndingsOutPorts;
 		init();
 	}
 
@@ -373,7 +385,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			}
 		}
 
-		int nIn = mimetypes_in.length;
+		int nIn = fileEndingsInPorts.length;
 
 		for (int i = 0; i < nIn; i++) {
 			// not connected input ports have nulls in inSpec
@@ -396,25 +408,22 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			// check whether input MIMEType is in list of allowed MIMETypes
 			boolean ok = false;
 
-			for (int j = 0; j < mimetypes_in[i].length && !ok; j++) {
-				if (mt.equals(MIMEMap.getMIMEType(mimetypes_in[i][j]))) {
+			for (int j = 0; j < fileEndingsInPorts[i].length && !ok; j++) {
+				if (mt.equals(MIMEMap.getMIMEType(fileEndingsInPorts[i][j]))) {
 					ok = true;
 				}
 			}
 			if (!ok) {
 				String mismatch = String.format(
 						"has extension: [%s]; expected on of:[%s]", mt,
-						Arrays.toString(mimetypes_in[i]));
+						Arrays.toString(fileEndingsInPorts[i]));
 				throw new InvalidSettingsException(
 						"Invalid MIMEtype at port number " + i + " : "
 								+ mismatch);
 			}
 		}
 
-		// create output spec
-		outspec_ = createOutSpec();
-
-		return outspec_;
+		return createOutSpec();
 	}
 
 	private void checkIfToolExists() throws InvalidSettingsException {
@@ -447,7 +456,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	}
 
 	protected PortObjectSpec[] createOutSpec() {
-		int nOut = mimetypes_out.length;
+		int nOut = fileEndingsOutPorts.length;
 		PortObjectSpec[] out_spec = new PortObjectSpec[nOut];
 
 		// set selected MIMEURIPortObjectSpecs at output ports
@@ -456,7 +465,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			int selectedMIMETypeIndex = getOutputTypeIndex(i);
 			// TODO: check
 			out_spec[i] = new URIPortObjectSpec(
-					mimetypes_out[i][selectedMIMETypeIndex]);
+					fileEndingsOutPorts[i][selectedMIMETypeIndex]);
 		}
 
 		return out_spec;

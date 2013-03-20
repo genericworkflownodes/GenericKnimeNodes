@@ -45,7 +45,7 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
 
 /**
- * Manages the extraction and registriation of shipped binaries.
+ * Manages the extraction and registration of shipped binaries.
  * 
  * @author aiche
  */
