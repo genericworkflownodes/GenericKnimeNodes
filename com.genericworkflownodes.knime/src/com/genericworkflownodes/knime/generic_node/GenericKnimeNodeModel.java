@@ -95,8 +95,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
 			URIPortObject.class, true);
 
-	protected String[][] mimetypes_in;
-	protected String[][] mimetypes_out;
+	private final String[][] mimetypes_in;
+	private final String[][] mimetypes_out;
 
 	/**
 	 * The actual executor used to run the tool.
@@ -106,12 +106,15 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	/**
 	 * Constructor for the node model.
 	 */
-	protected GenericKnimeNodeModel(INodeConfiguration config,
-			IPluginConfiguration pluginConfig) {
-		super(createOPOs(config.getInputPorts()), createOPOs(config
+	protected GenericKnimeNodeModel(INodeConfiguration nodeConfig,
+			IPluginConfiguration pluginConfig, String[][] mimetypes_in,
+			String[][] mimetypes_out) {
+		super(createOPOs(nodeConfig.getInputPorts()), createOPOs(nodeConfig
 				.getOutputPorts()));
-		nodeConfig = config;
+		this.nodeConfig = nodeConfig;
 		this.pluginConfig = pluginConfig;
+		this.mimetypes_in = mimetypes_in;
+		this.mimetypes_out = mimetypes_out;
 		init();
 	}
 
