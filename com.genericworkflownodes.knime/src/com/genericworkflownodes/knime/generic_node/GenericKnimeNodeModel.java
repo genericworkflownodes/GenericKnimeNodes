@@ -97,7 +97,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 	protected String[][] mimetypes_in;
 	protected String[][] mimetypes_out;
-	protected PortObjectSpec[] outspec_;
 
 	/**
 	 * The actual executor used to run the tool.
@@ -411,10 +410,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			}
 		}
 
-		// create output spec
-		outspec_ = createOutSpec();
-
-		return outspec_;
+		return createOutSpec();
 	}
 
 	private void checkIfToolExists() throws InvalidSettingsException {
