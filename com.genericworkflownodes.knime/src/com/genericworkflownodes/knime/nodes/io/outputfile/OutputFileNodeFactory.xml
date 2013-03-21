@@ -11,7 +11,7 @@
     </shortDescription>
     
     <fullDescription>
-        <intro>Saves the incoming file to a specified folder.</intro>
+        <intro>Saves the incoming file with the specified filename.</intro>
     </fullDescription>
     
     <ports>
