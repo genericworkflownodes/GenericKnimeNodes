@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.outputfile;
+package com.genericworkflownodes.knime.nodes.io;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -53,7 +53,7 @@ import org.knime.core.node.port.PortObjectSpec;
  * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
  * 
- * @author roettig
+ * @author aiche, roettig
  */
 public class OutputFileNodeDialog extends NodeDialogPane {
 
@@ -63,11 +63,13 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 	private final JButton searchButton;
 	private String incomingFileExtension;
 	private FileNameExtensionFilter extensionFilter;
+	private final String settingsName;
 
 	/**
 	 * New pane for configuring MimeFileExporter node dialog.
 	 */
-	protected OutputFileNodeDialog() {
+	public OutputFileNodeDialog(final String settingsName) {
+		this.settingsName = settingsName;
 		dialogPanel = new JPanel();
 		componentContainer = new JPanel();
 		textField = new JTextField();
@@ -121,8 +123,7 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings)
 			throws InvalidSettingsException {
-		settings.addString(OutputFileNodeModel.CFG_FILENAME, textField
-				.getText().trim());
+		settings.addString(settingsName, textField.getText().trim());
 	}
 
 	@Override
@@ -135,8 +136,7 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 		}
 
 		// get information from settings and inspec
-		textField.setText(settings.getString(OutputFileNodeModel.CFG_FILENAME,
-				""));
+		textField.setText(settings.getString(settingsName, ""));
 		incomingFileExtension = ((URIPortObjectSpec) specs[0])
 				.getFileExtensions().get(0);
 
