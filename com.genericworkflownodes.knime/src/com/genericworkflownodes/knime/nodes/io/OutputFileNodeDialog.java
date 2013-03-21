@@ -129,7 +129,7 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 		componentContainer.add(textField);
 		componentContainer.add(searchButton);
 		componentContainer.setBorder(BorderFactory
-				.createTitledBorder("Select output file"));
+				.createTitledBorder("Selected output file:"));
 		dialogPanel.add(componentContainer);
 	}
 
