@@ -29,10 +29,12 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.lang.StringUtils;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -96,7 +98,18 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					// validate extension
 					if (!extensionFilter.accept(jfc.getSelectedFile())) {
-						// TODO: show warning
+						String message = "The selected output file has an invalid file extension.\n";
+						if (extensionFilter.getExtensions().length == 1) {
+							message += "Please choose a file with extension: "
+									+ extensionFilter.getExtensions()[0];
+						} else {
+							message += "Please choose a file with on of the following extensions: ";
+							message += StringUtils.join(
+									extensionFilter.getExtensions(), ", ");
+						}
+						JOptionPane.showMessageDialog(getPanel(), message,
+								"Selected Output File is invalid.",
+								JOptionPane.WARNING_MESSAGE);
 					}
 					textField.setText(jfc.getSelectedFile().getAbsolutePath());
 				}
