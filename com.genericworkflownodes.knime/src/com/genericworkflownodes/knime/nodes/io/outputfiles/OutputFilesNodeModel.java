@@ -47,8 +47,8 @@ public class OutputFilesNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	SettingsModelString m_filename = OutputFilesNodeDialog
-			.createFileChooserModel();
+	SettingsModelString m_filename = new SettingsModelString(
+			OutputFilesNodeModel.CFG_FILENAME, "");
 
 	/**
 	 * Constructor for the node model.

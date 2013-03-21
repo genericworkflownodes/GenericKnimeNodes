@@ -21,11 +21,12 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_ed
 import javax.swing.JLabel;
 import javax.swing.table.TableCellEditor;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.genericworkflownodes.knime.generic_node.dialogs.UIHelper;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ParamCellEditor;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
-import com.genericworkflownodes.util.StringUtils;
 
 /**
  * This component allows to edit lists of values in a separate window.

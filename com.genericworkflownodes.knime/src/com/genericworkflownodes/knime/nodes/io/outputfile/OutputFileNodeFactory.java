@@ -22,14 +22,15 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
+import com.genericworkflownodes.knime.nodes.io.OutputFileNodeDialog;
+
 /**
  * <code>NodeFactory</code> for the "MimeFileExporter" Node.
  * 
  * 
  * @author roettig
  */
-public class OutputFileNodeFactory extends
-		NodeFactory<OutputFileNodeModel> {
+public class OutputFileNodeFactory extends NodeFactory<OutputFileNodeModel> {
 
 	/**
 	 * {@inheritDoc}
@@ -51,8 +52,8 @@ public class OutputFileNodeFactory extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<OutputFileNodeModel> createNodeView(
-			final int viewIndex, final OutputFileNodeModel nodeModel) {
+	public NodeView<OutputFileNodeModel> createNodeView(final int viewIndex,
+			final OutputFileNodeModel nodeModel) {
 		if (viewIndex == 0)
 			return new OutputFileNodeView(nodeModel);
 		else
@@ -72,7 +73,7 @@ public class OutputFileNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new OutputFileNodeDialog();
+		return new OutputFileNodeDialog(OutputFileNodeModel.CFG_FILENAME);
 	}
 
 }

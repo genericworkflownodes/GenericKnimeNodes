@@ -29,6 +29,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -45,6 +46,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.util.Helper;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of MimeFileExporter.
@@ -56,8 +58,8 @@ public class OutputFileNodeModel extends NodeModel {
 
 	static final String CFG_FILENAME = "FILENAME";
 
-	SettingsModelString m_filename = OutputFileNodeDialog
-			.createFileChooserModel();
+	SettingsModelString m_filename = new SettingsModelString(
+			OutputFileNodeModel.CFG_FILENAME, "");
 
 	private String data;
 
@@ -91,20 +93,23 @@ public class OutputFileNodeModel extends NodeModel {
 					"Please select a target file for the Output File node.");
 		}
 
-		boolean selectedExtensionIsValid = false;
-		String lcFile = m_filename.getStringValue().toLowerCase();
-		for (String ext : ((URIPortObjectSpec) inSpecs[0]).getFileExtensions()) {
-			if (lcFile.endsWith(ext.toLowerCase())) {
-				selectedExtensionIsValid = true;
-				break;
-			}
-		}
+		boolean selectedExtensionIsValid = compareMIMETypes(inSpecs);
 		if (!selectedExtensionIsValid) {
 			throw new InvalidSettingsException(
 					"The selected output file and the incoming file have different mime types.");
 		}
 
 		return new PortObjectSpec[] {};
+	}
+
+	public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
+		String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
+				.getStringValue());
+		String incomingMimeType = MIMEMap
+				.getMIMEType(((URIPortObjectSpec) inSpecs[0])
+						.getFileExtensions().get(0));
+
+		return incomingMimeType.equals(selectedMimeType);
 	}
 
 	@Override
