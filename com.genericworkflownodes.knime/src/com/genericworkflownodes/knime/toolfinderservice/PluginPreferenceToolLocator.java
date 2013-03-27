@@ -29,13 +29,15 @@ import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
+
 /**
- * Implements the {@link IToolLocatorService} interface. The tool paths are
+ * Implements the {@link IToolLocator} interface. The tool paths are
  * stored using the {@link IPreferenceStore} of the base plugin.
  * 
  * @author aiche
  */
-class PluginPreferenceToolLocator implements IToolLocatorService {
+public class PluginPreferenceToolLocator implements IToolLocator {
 	IPreferenceStore pluginPreferenceStore;
 
 	/**
@@ -46,6 +48,11 @@ class PluginPreferenceToolLocator implements IToolLocatorService {
 	 * unknown an exception will be thrown.
 	 */
 	private static String CHOICE_SUFFIX = "-used-tool";
+
+	/**
+	 * Static tool locator instance.
+	 */
+	private static PluginPreferenceToolLocator toolLocatorService;
 
 	private Set<ExternalTool> tools;
 
@@ -155,5 +162,23 @@ class PluginPreferenceToolLocator implements IToolLocatorService {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Gives access to the instance specific tool locator service.
+	 * 
+	 * @return
+	 */
+	public static IToolLocator getToolLocatorService() {
+		if (toolLocatorService == null) {
+			toolLocatorService = new PluginPreferenceToolLocator();
+
+			// configure the tool locator service using the base plugin
+			// PreferenceStore
+			IPreferenceStore store = GenericNodesPlugin.getDefault()
+					.getPreferenceStore();
+			toolLocatorService.init(store);
+		}
+		return toolLocatorService;
 	}
 }

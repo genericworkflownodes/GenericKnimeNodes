@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.ui.PlatformUI;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -59,7 +58,7 @@ import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 import com.genericworkflownodes.util.FileStash;
 import com.genericworkflownodes.util.Helper;
 
@@ -427,19 +426,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	}
 
 	private void checkIfToolExists() throws InvalidSettingsException {
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-
 		try {
 
-			if (toolLocator == null) {
-				throw new InvalidSettingsException(
-						"Could not find matching ToolLocatorService.");
-			}
-
-			File executable = toolLocator.getToolPath(new ExternalTool(
-					pluginConfig.getPluginId(), nodeConfig.getName(),
-					nodeConfig.getExecutableName()));
+			File executable = PluginPreferenceToolLocator
+					.getToolLocatorService().getToolPath(
+							new ExternalTool(pluginConfig.getPluginId(),
+									nodeConfig.getName(), nodeConfig
+											.getExecutableName()));
 
 			if (executable == null) {
 				throw new InvalidSettingsException(

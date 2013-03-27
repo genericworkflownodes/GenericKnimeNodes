@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -40,8 +39,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
-import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 import com.genericworkflownodes.util.FileStash;
 
 /**
@@ -132,13 +131,7 @@ public class ManglerNodeModel extends NodeModel {
 
 			inputTalbeSpecification = (DataTableSpec) inSpecs[0];
 
-			IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
-					.getWorkbench().getService(IDemanglerRegistry.class);
-			if (demanglerRegistry == null)
-				throw new InvalidSettingsException(
-						"Could not find IDemanglerRegistry to find Demangler.");
-
-			availableMangler = demanglerRegistry
+			availableMangler = DemanglerRegistry.getDemanglerRegistry()
 					.getMangler(inputTalbeSpecification);
 
 			if (availableMangler == null || availableMangler.size() == 0) {
@@ -185,14 +178,8 @@ public class ManglerNodeModel extends NodeModel {
 		String manglerClassName = settings.getString(
 				SELECTED_DEMANGLER_SETTINGNAME, "");
 
-		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
-				.getWorkbench().getService(IDemanglerRegistry.class);
-		if (demanglerRegistry == null)
-			throw new InvalidSettingsException(
-					"Could not find IDemanglerRegistry to find Demangler.");
-
-		List<IDemangler> matchingManglers = demanglerRegistry
-				.getMangler(inputTalbeSpecification);
+		List<IDemangler> matchingManglers = DemanglerRegistry
+				.getDemanglerRegistry().getMangler(inputTalbeSpecification);
 
 		demangler = null;
 		for (IDemangler mangler : matchingManglers) {

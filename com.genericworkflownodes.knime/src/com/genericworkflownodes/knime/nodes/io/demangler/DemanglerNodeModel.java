@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
@@ -43,8 +42,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
-import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 
 /**
  * This is the model implementation of DemanglerNodeModel.
@@ -85,48 +84,6 @@ public class DemanglerNodeModel extends NodeModel {
 	/**
 	 * {@inheritDoc}
 	 */
-	/*
-	 * @Override protected BufferedDataTable[] execute(final BufferedDataTable[]
-	 * inData, final ExecutionContext exec) throws Exception {
-	 * BufferedDataContainer container = null; DataCell inCell0 =
-	 * inData[0].iterator().next().getCell(0);
-	 * 
-	 * if(inCell0.getType().isCollectionType()) { ListCell lc = (ListCell)
-	 * inCell0; int N = lc.size(); container =
-	 * exec.createDataContainer(adjustOutSpec(N)); List<Iterator<DataCell>>
-	 * iters = new ArrayList<Iterator<DataCell>>(); for(DataCell dc: lc) { if(!
-	 * (dc instanceof MIMEFileCell) ) { throw new
-	 * Exception("ListCell does not contain MIMEFileCells"); } MIMEFileCell mfc
-	 * = (MIMEFileCell) dc; iters.add( demangler.demangle(mfc) ); } fillTable(
-	 * iters, container); } else { container =
-	 * exec.createDataContainer(outspec); if(! (inCell0 instanceof MIMEFileCell)
-	 * ) { throw new Exception("first DataCell is not a MIMEFileCell"); }
-	 * List<Iterator<DataCell>> iters = new ArrayList<Iterator<DataCell>>();
-	 * MIMEFileCell mfc = (MIMEFileCell) inCell0; iters.add(
-	 * demangler.demangle(mfc) ); fillTable( iters, container); }
-	 * container.close();
-	 * 
-	 * BufferedDataTable out = container.getTable();
-	 * 
-	 * return new BufferedDataTable[]{ out }; }
-	 * 
-	 * private void fillTable(List<Iterator<DataCell>> iters,
-	 * BufferedDataContainer container) { int C = iters.size(); int idx = 1;
-	 * while(true) { DataCell[] rowcells = new DataCell[C]; int nDepleted = 0;
-	 * for(int i=0;i<C;i++) { if(iters.get(i).hasNext()) { rowcells[i] =
-	 * iters.get(i).next(); } else { nDepleted++; rowcells[i] =
-	 * DataType.getMissingCell(); } }
-	 * 
-	 * // all iterators are depleted if(nDepleted==C) { break; }
-	 * 
-	 * DataRow row = new DefaultRow("Row "+idx, rowcells);
-	 * 
-	 * container.addRowToTable(row); idx++; } }
-	 */
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void reset() {
 		demangler = null;
@@ -154,14 +111,8 @@ public class DemanglerNodeModel extends NodeModel {
 		String configuredMIMEExtension = settings
 				.getString(CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
-		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
-				.getWorkbench().getService(IDemanglerRegistry.class);
-		if (demanglerRegistry == null)
-			throw new InvalidSettingsException(
-					"Could not find IDemanglerRegistry to find Demangler.");
-
-		List<IDemangler> availableDemangler = demanglerRegistry
-				.getDemangler(fileExtension);
+		List<IDemangler> availableDemangler = DemanglerRegistry
+				.getDemanglerRegistry().getDemangler(fileExtension);
 
 		demangler = null;
 		if (!"".equals(demanglerClassName)) {
@@ -202,14 +153,9 @@ public class DemanglerNodeModel extends NodeModel {
 		fileExtension = spec.getFileExtensions().get(0);
 
 		// try to find a demangler for the data type ...
-		IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
-				.getWorkbench().getService(IDemanglerRegistry.class);
-		if (demanglerRegistry == null)
-			throw new InvalidSettingsException(
-					"Could not find IDemanglerRegistry to find Demangler.");
 
-		List<IDemangler> availableDemanglers = demanglerRegistry
-				.getDemangler(fileExtension);
+		List<IDemangler> availableDemanglers = DemanglerRegistry
+				.getDemanglerRegistry().getDemangler(fileExtension);
 
 		if (availableDemanglers == null || availableDemanglers.size() == 0) {
 			throw new InvalidSettingsException(

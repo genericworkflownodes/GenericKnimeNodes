@@ -20,12 +20,11 @@ package com.genericworkflownodes.knime.preferences;
 
 import java.io.File;
 
-import org.eclipse.ui.PlatformUI;
-
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * Abstraction of all settings related to single tool.
@@ -36,7 +35,7 @@ public class ExternalToolSettings {
 
 	private String localToolPath;
 	private boolean hasShippedBinary;
-	private IToolLocatorService.ToolPathType selectedToolPathType;
+	private IToolLocator.ToolPathType selectedToolPathType;
 
 	/**
 	 * The tool.
@@ -63,57 +62,42 @@ public class ExternalToolSettings {
 	 * Loads all related settings for the tool.
 	 */
 	public void load() {
-		// we load the path from the IToolLocatorService
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
+		// we load the path from the IToolLocator
+		try {
+			selectedToolPathType = PluginPreferenceToolLocator
+					.getToolLocatorService().getConfiguredToolPathType(tool);
 
-		if (toolLocator != null) {
-			try {
-				selectedToolPathType = toolLocator
-						.getConfiguredToolPathType(tool);
+			hasShippedBinary = PluginPreferenceToolLocator
+					.getToolLocatorService().hasValidToolPath(tool,
+							ToolPathType.SHIPPED);
 
-				hasShippedBinary = toolLocator.hasValidToolPath(tool,
-						ToolPathType.SHIPPED);
-
-				File lToolPath = toolLocator.getToolPath(tool,
-						IToolLocatorService.ToolPathType.USER_DEFINED);
-				if (lToolPath != null && lToolPath.exists())
-					localToolPath = lToolPath.getAbsolutePath();
-			} catch (Exception e) {
-				GenericNodesPlugin
-						.log("Could not load user-defined tool path for tool: "
-								+ tool);
-				GenericNodesPlugin.log(e.getMessage());
-			}
-		} else {
+			File lToolPath = PluginPreferenceToolLocator
+					.getToolLocatorService().getToolPath(tool,
+							IToolLocator.ToolPathType.USER_DEFINED);
+			if (lToolPath != null && lToolPath.exists())
+				localToolPath = lToolPath.getAbsolutePath();
+		} catch (Exception e) {
 			GenericNodesPlugin
-					.log("Unable to get service: IToolLocatorService");
+					.log("Could not load user-defined tool path for tool: "
+							+ tool);
+			GenericNodesPlugin.log(e.getMessage());
 		}
-
 	}
 
 	/**
 	 * Saves all related settings for the tool.
 	 */
 	public void save() {
-		// we load the path from the IToolLocatorService
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-
-		if (toolLocator != null) {
-			try {
-				toolLocator.setToolPath(tool, new File(localToolPath),
-						ToolPathType.USER_DEFINED);
-				toolLocator.updateToolPathType(tool, selectedToolPathType);
-			} catch (Exception e) {
-				GenericNodesPlugin
-						.log("Could not load user-defined tool path for tool: "
-								+ tool);
-				GenericNodesPlugin.log(e.getMessage());
-			}
-		} else {
+		try {
+			PluginPreferenceToolLocator.getToolLocatorService().setToolPath(
+					tool, new File(localToolPath), ToolPathType.USER_DEFINED);
+			PluginPreferenceToolLocator.getToolLocatorService()
+					.updateToolPathType(tool, selectedToolPathType);
+		} catch (Exception e) {
 			GenericNodesPlugin
-					.log("Unable to get service: IToolLocatorService");
+					.log("Could not load user-defined tool path for tool: "
+							+ tool);
+			GenericNodesPlugin.log(e.getMessage());
 		}
 	}
 
@@ -150,7 +134,7 @@ public class ExternalToolSettings {
 	/**
 	 * @return the selectedToolPathType
 	 */
-	public IToolLocatorService.ToolPathType getSelectedToolPathType() {
+	public IToolLocator.ToolPathType getSelectedToolPathType() {
 		return selectedToolPathType;
 	}
 
@@ -159,7 +143,7 @@ public class ExternalToolSettings {
 	 *            the selectedToolPathType to set
 	 */
 	public void setSelectedToolPathType(
-			IToolLocatorService.ToolPathType selectedToolPathType) {
+			IToolLocator.ToolPathType selectedToolPathType) {
 		this.selectedToolPathType = selectedToolPathType;
 	}
 

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -36,7 +35,7 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * The LocalToolExecutor handles the basic tasks associated with the execution
@@ -311,16 +310,11 @@ public class LocalToolExecutor implements IToolExecutor {
 	private void findExecutable(INodeConfiguration nodeConfiguration,
 			IPluginConfiguration pluginConfiguration) throws Exception {
 
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-
-		if (toolLocator == null) {
-			throw new Exception("Could not find matching ToolLocatorService.");
-		}
-
-		executable = toolLocator.getToolPath(new ExternalTool(
-				pluginConfiguration.getPluginId(), nodeConfiguration.getName(),
-				nodeConfiguration.getExecutableName()));
+		executable = PluginPreferenceToolLocator.getToolLocatorService()
+				.getToolPath(
+						new ExternalTool(pluginConfiguration.getPluginId(),
+								nodeConfiguration.getName(), nodeConfiguration
+										.getExecutableName()));
 
 		if (executable == null) {
 			throw new Exception("Neither externally configured nor shipped "

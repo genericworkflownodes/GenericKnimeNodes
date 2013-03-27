@@ -24,7 +24,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -34,7 +33,7 @@ import com.genericworkflownodes.knime.custom.payload.BinariesManager;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * This class is an abstract bundle activator which holds the code necessary to
@@ -138,14 +137,9 @@ public abstract class GenericActivator extends AbstractUIPlugin {
 	 * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator
 	 */
 	private void registerNodes() {
-
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-
-		if (toolLocator != null) {
-			for (ExternalTool tool : getTools()) {
-				toolLocator.registerTool(tool);
-			}
+		for (ExternalTool tool : getTools()) {
+			PluginPreferenceToolLocator.getToolLocatorService().registerTool(
+					tool);
 		}
 	}
 
