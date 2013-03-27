@@ -55,7 +55,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**

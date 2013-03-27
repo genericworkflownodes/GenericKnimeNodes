@@ -32,12 +32,12 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 
 /**
- * Implements the {@link IToolLocatorService} interface. The tool paths are
+ * Implements the {@link IToolLocator} interface. The tool paths are
  * stored using the {@link IPreferenceStore} of the base plugin.
  * 
  * @author aiche
  */
-public class PluginPreferenceToolLocator implements IToolLocatorService {
+public class PluginPreferenceToolLocator implements IToolLocator {
 	IPreferenceStore pluginPreferenceStore;
 
 	/**
@@ -169,7 +169,7 @@ public class PluginPreferenceToolLocator implements IToolLocatorService {
 	 * 
 	 * @return
 	 */
-	public static IToolLocatorService getToolLocatorService() {
+	public static IToolLocator getToolLocatorService() {
 		if (toolLocatorService == null) {
 			toolLocatorService = new PluginPreferenceToolLocator();
 

@@ -28,8 +28,8 @@ import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
@@ -142,7 +142,7 @@ public class GenericStartup implements IStartup {
 	 * @return A list containing all binaries that were not correctly
 	 *         initialized.
 	 * @throws Exception
-	 *             If the {@link IToolLocatorService} could not be initialized
+	 *             If the {@link IToolLocator} could not be initialized
 	 *             correctly.
 	 */
 	public List<String> findUnitializedBinaries() throws Exception {

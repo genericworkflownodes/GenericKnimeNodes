@@ -22,8 +22,8 @@ import java.io.File;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
@@ -35,7 +35,7 @@ public class ExternalToolSettings {
 
 	private String localToolPath;
 	private boolean hasShippedBinary;
-	private IToolLocatorService.ToolPathType selectedToolPathType;
+	private IToolLocator.ToolPathType selectedToolPathType;
 
 	/**
 	 * The tool.
@@ -62,7 +62,7 @@ public class ExternalToolSettings {
 	 * Loads all related settings for the tool.
 	 */
 	public void load() {
-		// we load the path from the IToolLocatorService
+		// we load the path from the IToolLocator
 		try {
 			selectedToolPathType = PluginPreferenceToolLocator
 					.getToolLocatorService().getConfiguredToolPathType(tool);
@@ -73,7 +73,7 @@ public class ExternalToolSettings {
 
 			File lToolPath = PluginPreferenceToolLocator
 					.getToolLocatorService().getToolPath(tool,
-							IToolLocatorService.ToolPathType.USER_DEFINED);
+							IToolLocator.ToolPathType.USER_DEFINED);
 			if (lToolPath != null && lToolPath.exists())
 				localToolPath = lToolPath.getAbsolutePath();
 		} catch (Exception e) {
@@ -134,7 +134,7 @@ public class ExternalToolSettings {
 	/**
 	 * @return the selectedToolPathType
 	 */
-	public IToolLocatorService.ToolPathType getSelectedToolPathType() {
+	public IToolLocator.ToolPathType getSelectedToolPathType() {
 		return selectedToolPathType;
 	}
 
@@ -143,7 +143,7 @@ public class ExternalToolSettings {
 	 *            the selectedToolPathType to set
 	 */
 	public void setSelectedToolPathType(
-			IToolLocatorService.ToolPathType selectedToolPathType) {
+			IToolLocator.ToolPathType selectedToolPathType) {
 		this.selectedToolPathType = selectedToolPathType;
 	}
 
