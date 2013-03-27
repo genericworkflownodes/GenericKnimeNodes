@@ -44,7 +44,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 	/**
 	 * The node configuration.
 	 */
-	private INodeConfiguration config;
+	private final INodeConfiguration config;
 
 	/**
 	 * The dialog for the parameters.
@@ -59,9 +59,9 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 	public GenericKnimeNodeDialog(INodeConfiguration config) {
 		this.config = config;
 		try {
-			dialog = new ParameterDialog(config);
+			dialog = new ParameterDialog(this.config);
 			addTab("Parameters", dialog);
-			mtc = new MimeTypeChooserDialog(config);
+			mtc = new MimeTypeChooserDialog(this.config);
 			addTab("OutputTypes", mtc);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -74,7 +74,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 	protected void saveSettingsTo(NodeSettingsWO settings)
 			throws InvalidSettingsException {
 		// ensure all edit operations are finished
-		dialog.stopEdition();
+		dialog.stopEditing();
 		// transfer values
 		for (String key : config.getParameterKeys()) {
 			Parameter<?> param = config.getParameter(key);

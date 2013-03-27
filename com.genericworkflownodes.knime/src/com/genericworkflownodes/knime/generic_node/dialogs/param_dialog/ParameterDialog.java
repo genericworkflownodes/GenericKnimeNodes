@@ -261,7 +261,7 @@ public class ParameterDialog extends JPanel {
 	/**
 	 * Ensures that all edit operations are finalized.
 	 */
-	public void stopEdition() {
+	public void stopEditing() {
 		model.getCellEditor().stopCellEditing();
 	}
 
