@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,29 +16,38 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.generic_node;
+
+import java.io.InputStream;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 
 /**
  * <code>NodeFactory</code> for the "GenericKnimeNode" Node.
  * 
- * 
- * @author
+ * @author roettig, aiche
  */
 public abstract class GenericKnimeNodeFactory extends
 		NodeFactory<GenericKnimeNodeModel> {
 
 	/**
-	 * The node configuration of the underlying node.
+	 * Reads the node configuration from configured input stream.
+	 * 
+	 * @return
+	 * @throws Exception
 	 */
-	protected INodeConfiguration m_nodeConfig;
+	protected INodeConfiguration getNodeConfiguration() throws Exception {
+		return new CTDConfigurationReader().read(getConfigAsStream());
+	}
 
+	/**
+	 * @param configStream
+	 */
 	public GenericKnimeNodeFactory() {
 	}
 
@@ -78,5 +87,12 @@ public abstract class GenericKnimeNodeFactory extends
 	 */
 	@Override
 	public abstract NodeDialogPane createNodeDialogPane();
+
+	/**
+	 * Returns a new stream pointing to the node configuration file.
+	 * 
+	 * @return
+	 */
+	protected abstract InputStream getConfigAsStream();
 
 }

@@ -2,38 +2,47 @@
 // DO NOT MODIFY
 package __BASE__.knime.nodes.__NODENAME__;
 
-import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
+import java.io.InputStream;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeFactory;
 
 import __BASE__.knime.PluginActivator;
 
-public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory
-{
+public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory {
 	
-	public __NODENAME__NodeFactory() 
-	{
-		// read NodeConfig from CTD
-		CTDConfigurationReader reader = new CTDConfigurationReader(); 
-		try
-		{
-			m_nodeConfig = reader.read(this.getClass().getResourceAsStream("config/config.xml"));
-		}
-		catch (Exception e)
-		{
+	public __NODENAME__NodeFactory() {
+	}
+
+	@Override
+	public __NODENAME__NodeModel createNodeModel() {
+		INodeConfiguration tmpConfig;
+		try {
+			tmpConfig = getNodeConfiguration();
+			return new __NODENAME__NodeModel(tmpConfig, PluginActivator
+					.getInstance().getPluginConfiguration());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}	
-	
+		return null;
+
+	}
+
 	@Override
-	public __NODENAME__NodeModel createNodeModel()
-	{
-		return new __NODENAME__NodeModel(m_nodeConfig, PluginActivator.getInstance().getPluginConfiguration());
-	}	
-	
+	public GenericKnimeNodeDialog createNodeDialogPane() {
+		INodeConfiguration tmpConfig;
+		try {
+			tmpConfig = getNodeConfiguration();
+			return new __NODENAME__NodeDialog(tmpConfig);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Override
-	public GenericKnimeNodeDialog createNodeDialogPane()
-	{
-		return new __NODENAME__NodeDialog(m_nodeConfig);
+	protected InputStream getConfigAsStream() {
+		return this.getClass().getResourceAsStream("config/config.xml");
 	}
 }
