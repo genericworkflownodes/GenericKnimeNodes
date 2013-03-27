@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 
-import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
@@ -31,8 +30,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
+import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
-import com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry;
 import com.genericworkflownodes.util.ui.ChoiceDialog;
 import com.genericworkflownodes.util.ui.ChoiceDialogListener;
 
@@ -104,13 +103,7 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
 			configuredFileExtension = settings
 					.getString(DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
-			IDemanglerRegistry demanglerRegistry = (IDemanglerRegistry) PlatformUI
-					.getWorkbench().getService(IDemanglerRegistry.class);
-			if (demanglerRegistry == null)
-				throw new InvalidSettingsException(
-						"Could not find IDemanglerRegistry to find Demangler.");
-
-			availableDemangler = demanglerRegistry
+			availableDemangler = DemanglerRegistry.getDemanglerRegistry()
 					.getDemangler(configuredFileExtension);
 		} catch (InvalidSettingsException e) {
 			e.printStackTrace();

@@ -38,9 +38,4 @@
    <extension point="org.eclipse.ui.preferencePages">
       <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.PreferencePage" name="Generic KNIME Nodes"/>
    </extension>
-   <extension point="org.eclipse.ui.services">
-      <serviceFactory factoryClass="com.genericworkflownodes.knime.mime.servicefactory.DemanglerRegistryServiceFactory">
-         <service serviceClass="com.genericworkflownodes.knime.mime.demangler.IDemanglerRegistry"/>
-      </serviceFactory>
-   </extension>
 </plugin>
