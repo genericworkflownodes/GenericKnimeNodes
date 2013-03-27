@@ -37,7 +37,7 @@ import com.genericworkflownodes.knime.GenericNodesPlugin;
  * 
  * @author aiche
  */
-class PluginPreferenceToolLocator implements IToolLocatorService {
+public class PluginPreferenceToolLocator implements IToolLocatorService {
 	IPreferenceStore pluginPreferenceStore;
 
 	/**

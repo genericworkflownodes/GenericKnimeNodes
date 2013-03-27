@@ -36,13 +36,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.PlatformUI;
 
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * Manages the extraction and registration of shipped binaries.
@@ -84,25 +83,22 @@ public class BinariesManager implements IRunnableWithProgress {
 		} else {
 			boolean extractedPayloadIsValid = true;
 			try {
-				IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-						.getWorkbench().getService(IToolLocatorService.class);
-
-				if (toolLocator != null) {
-					// for each node find the executable
-					for (ExternalTool tool : genericActivator.getTools()) {
-						File toolExecutable = toolLocator.getToolPath(tool,
-								ToolPathType.SHIPPED);
-						// check if it exists and if it is in our payload
-						if (!toolExecutable.exists()
-								|| !toolExecutable.getAbsolutePath()
-										.startsWith(
-												payloadDirectory.getPath()
-														.getAbsolutePath())) {
-							extractedPayloadIsValid = false;
-							if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.SHIPPED)
-								toolLocator.updateToolPathType(tool,
-										ToolPathType.UNKNOWN);
-						}
+				// for each node find the executable
+				for (ExternalTool tool : genericActivator.getTools()) {
+					File toolExecutable = PluginPreferenceToolLocator
+							.getToolLocatorService().getToolPath(tool,
+									ToolPathType.SHIPPED);
+					// check if it exists and if it is in our payload
+					if (!toolExecutable.exists()
+							|| !toolExecutable.getAbsolutePath().startsWith(
+									payloadDirectory.getPath()
+											.getAbsolutePath())) {
+						extractedPayloadIsValid = false;
+						if (PluginPreferenceToolLocator.getToolLocatorService()
+								.getConfiguredToolPathType(tool) == ToolPathType.SHIPPED)
+							PluginPreferenceToolLocator.getToolLocatorService()
+									.updateToolPathType(tool,
+											ToolPathType.UNKNOWN);
 					}
 				}
 			} catch (Exception e) {
@@ -234,40 +230,35 @@ public class BinariesManager implements IRunnableWithProgress {
 	 */
 	private void registerExtractedBinaries() {
 
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
+		// get binary path
+		File binaryDirectory = payloadDirectory.getExecutableDirectory();
 
-		if (toolLocator != null) {
+		// for each node find the executable
+		for (ExternalTool tool : genericActivator.getTools()) {
+			File executable = getExecutableName(binaryDirectory,
+					tool.getExecutableName());
+			if (executable != null) {
+				// make executable
+				executable.setExecutable(true);
+				// register executalbe in the ToolFinder
+				PluginPreferenceToolLocator.getToolLocatorService()
+						.setToolPath(tool, executable, ToolPathType.SHIPPED);
 
-			// get binary path
-			File binaryDirectory = payloadDirectory.getExecutableDirectory();
-
-			// for each node find the executable
-			for (ExternalTool tool : genericActivator.getTools()) {
-				File executable = getExecutableName(binaryDirectory,
-						tool.getExecutableName());
-				if (executable != null) {
-					// make executable
-					executable.setExecutable(true);
-					// register executalbe in the ToolFinder
-					toolLocator.setToolPath(tool, executable,
-							ToolPathType.SHIPPED);
-
-					try {
-						// check if we need to adjust the type
-						if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
-							toolLocator.updateToolPathType(tool,
-									ToolPathType.SHIPPED);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
+				try {
+					// check if we need to adjust the type
+					if (PluginPreferenceToolLocator.getToolLocatorService()
+							.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
+						PluginPreferenceToolLocator.getToolLocatorService()
+								.updateToolPathType(tool, ToolPathType.SHIPPED);
 					}
-
-				} else {
-					// TODO: handle non existent binaries, check if we have a
-					// configured one, otherwise warn
-					LOGGER.warning("Did not find any binaries for your platform.");
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+
+			} else {
+				// TODO: handle non existent binaries, check if we have a
+				// configured one, otherwise warn
+				LOGGER.warning("Did not find any binaries for your platform.");
 			}
 		}
 

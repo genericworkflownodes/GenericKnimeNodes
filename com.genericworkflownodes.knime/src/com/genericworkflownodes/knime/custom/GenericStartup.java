@@ -30,6 +30,7 @@ import org.knime.core.node.NodeLogger;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * @author aiche
@@ -145,16 +146,10 @@ public class GenericStartup implements IStartup {
 	 *             correctly.
 	 */
 	public List<String> findUnitializedBinaries() throws Exception {
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
-
-		if (toolLocator == null) {
-			throw new Exception("Could not find matching ToolLocatorService.");
-		}
-
 		List<String> uninitializedBinaries = new ArrayList<String>();
 		for (ExternalTool tool : m_pluginActivator.getTools()) {
-			if (toolLocator.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
+			if (PluginPreferenceToolLocator.getToolLocatorService()
+					.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
 				uninitializedBinaries.add(tool.getToolName());
 			}
 		}

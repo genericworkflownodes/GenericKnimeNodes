@@ -55,8 +55,8 @@ import org.eclipse.ui.PlatformUI;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocatorService.ToolPathType;
+import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * This class provides a base implementation of a plugin defaults preference
@@ -120,30 +120,24 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
 	}
 
 	private void createToolList() {
-		IToolLocatorService toolLocator = (IToolLocatorService) PlatformUI
-				.getWorkbench().getService(IToolLocatorService.class);
 
-		if (toolLocator != null) {
+		Map<String, List<ExternalTool>> plugin2tools = PluginPreferenceToolLocator
+				.getToolLocatorService().getToolsByPlugin();
 
-			Map<String, List<ExternalTool>> plugin2tools = toolLocator
-					.getToolsByPlugin();
+		List<ExternalTool> tools = plugin2tools.get(pluginName);
 
-			List<ExternalTool> tools = plugin2tools.get(pluginName);
-
-			// sort each plugin by name
-			Collections.sort(tools, new Comparator<ExternalTool>() {
-				@Override
-				public int compare(final ExternalTool o1, final ExternalTool o2) {
-					return o1.getToolName().compareToIgnoreCase(
-							o2.getToolName());
-				}
-			});
-
-			// add each tool shipped with the current plugin to the GUI
-			for (ExternalTool tool : tools) {
-				toolSettings.put(tool.getToolName(), new ExternalToolSettings(
-						tool));
+		// sort each plugin by name
+		Collections.sort(tools, new Comparator<ExternalTool>() {
+			@Override
+			public int compare(final ExternalTool o1, final ExternalTool o2) {
+				return o1.getToolName().compareToIgnoreCase(o2.getToolName());
 			}
+		});
+
+		// add each tool shipped with the current plugin to the GUI
+		for (ExternalTool tool : tools) {
+			toolSettings
+					.put(tool.getToolName(), new ExternalToolSettings(tool));
 		}
 	}
 
