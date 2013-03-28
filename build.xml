@@ -7,20 +7,17 @@
 	<property name="base.plugin.version.minor" value="7" />
 	<property name="base.plugin.version.patch" value="0" />
 
-	<property name="nodegenerator.name" value="org.ballproject.knime.node_generator" />
+	<property name="nodegenerator.name" value="com.genericworkflownodes.knime.node_generator" />
 
 	<!-- do not edit below this line -->
 
 	<property file="build.properties" />
-	<property file="${plugin.dir}/plugin.properties" />
 
 	<!-- DEFAULT: this works only if it was not set previously the build.properties -->
-	<property name="default.plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample-ball" description="Directory which contains the files from which you want to generate the KNIME plugin." />
+	<property name="default.plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample-openms" description="Directory containing the files from which you want to generate the KNIME plugin." />
 
 	<property name="base.plugin.version" value="${base.plugin.version.major}.${base.plugin.version.minor}.${base.plugin.version.patch}" />
-	<property name="custom.plugin.name" value="${pluginPackage}" />
-	<property name="custom.plugin.version" value="${pluginVersion}" />
-
+  
 	<tstamp>
 		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ss-SZ" />
 		<!-- about ISO8601 -->
@@ -34,11 +31,7 @@
 
 	<property name="nodegenerator.src" value="com.genericworkflownodes.knime.node_generator" />
 	<property name="nodegenerator.build.dir" value="${tmp}/nodeGenerator" />
-	<property name="nodegenerator.build.jar" value="build/${nodegenerator.name}.jar" />
-
-	<property name="custom.plugin.build.src" value="${tmp}/customPlugin-sources" />
-	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
-	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
+	<property name="nodegenerator.build.jar" value="build/${nodegenerator.name}_${base.plugin.version}.jar" />
 
 	<property name="src" value="src" />
 	<property name="test" value="test" />
@@ -117,6 +110,19 @@
 		<echo message="If you want to use a custom plugin dir, just add a plugin.dir property to the" />
 		<echo message="build.properties file." />
 	</target>
+  
+  <!-- Load Plugin Information -->
+  <target name="load-custom-plugin-info" depends="plugin.dir.check" >
+  	<property file="${plugin.dir}/plugin.properties" />
+  	
+    <property name="custom.plugin.name" value="${pluginPackage}" />
+  	<property name="custom.plugin.version" value="${pluginVersion}" />
+        
+  	<property name="custom.plugin.generator.target" value="generated_plugin/${custom.plugin.name}_${custom.plugin.version}/" />
+  	<property name="custom.plugin.build.src" value="generated_plugin/${custom.plugin.name}_${custom.plugin.version}/${custom.plugin.name}" />
+  	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
+  	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
+  </target>
 
 	<!-- knime.sdk checks -->
 	<target name="knime.sdk.condition">
@@ -132,7 +138,7 @@
 		<fail message="Cannot build without a valid knime.sdk." />
 	</target>
 
-	<target name="prepare" depends="knime.sdk.check,plugin.dir.check,clean">
+	<target name="prepare" depends="knime.sdk.check,clean,load-custom-plugin-info">
 		<echo message="knime.sdk.exists: ${knime.sdk.exists}" />
 		<echo message="plugin.dir: ${plugin.dir}" />
 		<mkdir dir="${tmp}" />
@@ -218,7 +224,6 @@
 	</target>
 
 	<target name="custom.plugin.build" depends="nodegenerator.build">
-		<mkdir dir="${custom.plugin.build.dir}" />
 		<antcall target="custom.plugin.generate_sources" />
 		<antcall target="custom.plugin.classes.build" />
 		<zip destfile="${custom.plugin.build.jar}" basedir="${custom.plugin.build.dir}" />
@@ -231,11 +236,12 @@
 			<!-- handle the to long classpath -->
 			<env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}" />
 			<arg value="${plugin.dir}" />
-			<arg value="${custom.plugin.build.src}" />
+			<arg value="${custom.plugin.generator.target}" />
 		</java>
 	</target>
 
 	<target name="custom.plugin.classes.build">
+		<mkdir dir="${custom.plugin.build.dir}/" />
 		<javac srcdir="${custom.plugin.build.src}" destdir="${custom.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="custom.plugin.build.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
