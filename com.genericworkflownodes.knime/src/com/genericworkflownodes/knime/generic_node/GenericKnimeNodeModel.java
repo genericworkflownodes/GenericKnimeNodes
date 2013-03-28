@@ -270,9 +270,17 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
+
 		for (String key : nodeConfig.getParameterKeys()) {
-			settings.addString(key, nodeConfig.getParameter(key).getStringRep());
+			Parameter<?> param = nodeConfig.getParameter(key);
+
+			// skip file parameters
+			if (param instanceof IFileParameter)
+				continue;
+
+			settings.addString(key, param.getStringRep());
 		}
+
 		for (int i = 0; i < nodeConfig.getNumberOfOutputPorts(); i++) {
 			settings.addInt("GENERIC_KNIME_NODES_outtype#" + i,
 					getOutputTypeIndex(i));
