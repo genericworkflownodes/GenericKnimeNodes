@@ -17,7 +17,7 @@
 	<property name="default.plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample-openms" description="Directory containing the files from which you want to generate the KNIME plugin." />
 
 	<property name="base.plugin.version" value="${base.plugin.version.major}.${base.plugin.version.minor}.${base.plugin.version.patch}" />
-  
+
 	<tstamp>
 		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ss-SZ" />
 		<!-- about ISO8601 -->
@@ -110,16 +110,24 @@
 		<echo message="If you want to use a custom plugin dir, just add a plugin.dir property to the" />
 		<echo message="build.properties file." />
 	</target>
-  
+
   <!-- Load Plugin Information -->
   <target name="load-custom-plugin-info" depends="plugin.dir.check" >
   	<property file="${plugin.dir}/plugin.properties" />
-  	
+
     <property name="custom.plugin.name" value="${pluginPackage}" />
   	<property name="custom.plugin.version" value="${pluginVersion}" />
-        
-  	<property name="custom.plugin.generator.target" value="generated_plugin/${custom.plugin.name}_${custom.plugin.version}/" />
-  	<property name="custom.plugin.build.src" value="generated_plugin/${custom.plugin.name}_${custom.plugin.version}/${custom.plugin.name}" />
+
+  	<property name="default.custom.plugin.generator.target" value="generated_plugin/${custom.plugin.name}_${custom.plugin.version}/" />
+
+		<condition property="custom.plugin.generator.target" value="${default.custom.plugin.generator.target}">
+			<not>
+				<isset property="custom.plugin.generator.target" />
+			</not>
+		</condition>
+
+  	<property name="custom.plugin.build.src" value="${custom.plugin.generator.target}/${custom.plugin.name}" />
+
   	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
   	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
   </target>
