@@ -29,8 +29,8 @@ public class FileStash {
 		String slotpath = STASH_DIR + File.separator + slot;
 		File slotfile = new File(slotpath);
 		slotfile.mkdirs();
-		return new File(Helper.getTemporaryFilename(STASH_DIR + File.separator
-				+ slot, extension, false));
+		return Helper.getTempFile(STASH_DIR + File.separator + slot, extension,
+				false);
 	}
 
 	public File getStashDirectory() {

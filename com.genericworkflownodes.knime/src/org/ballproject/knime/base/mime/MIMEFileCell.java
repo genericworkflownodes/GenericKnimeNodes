@@ -84,9 +84,8 @@ public abstract class MIMEFileCell extends BlobDataCell implements
 	}
 
 	public File writeTemp(String directory) throws IOException {
-		String filename = Helper.getTemporaryFilename(directory,
-				getExtension(), false);
-		return data_delegate.writeTemp(filename);
+		File file = Helper.getTempFile(directory, getExtension(), false);
+		return data_delegate.writeTemp(file.getAbsolutePath());
 	}
 
 	@Override

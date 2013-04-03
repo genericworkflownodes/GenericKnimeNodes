@@ -479,8 +479,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		String nodeName = nodeConfig.getName();
 
 		// create job directory
-		File jobdir = new File(Helper.getTemporaryDirectory(nodeName,
-				!GenericNodesPlugin.isDebug()));
+		File jobdir = Helper.getTempDir(nodeName,
+				!GenericNodesPlugin.isDebug());
 		GenericNodesPlugin.log("jobdir=" + jobdir);
 
 		// transfer the incoming files into the nodeConfiguration
