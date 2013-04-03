@@ -48,7 +48,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 		// set default values
 		store.setDefault(PREF_FILE_STASH_LOCATION, FileStash.getInstance()
-				.getStashDirectory());
+				.getStashDirectory().getAbsolutePath());
 		store.setDefault(PREF_DEBUG_MODE, GenericNodesPlugin.isDebug());
 	}
 

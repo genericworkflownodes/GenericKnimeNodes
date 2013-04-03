@@ -12,22 +12,20 @@ import java.util.Random;
 public class FileStash {
 	public static FileStash instance;
 
-	private static String STASH_DIR_ROOT = System.getProperty("java.io.tmpdir");
-	private static String STASH_DIR;
+	private static File STASH_DIR;
 	private static DateFormat fmt = new SimpleDateFormat("MM-dd-yyyy");
 
 	private static Random RANDOM_NUMBER_GENERATOR = new Random();
 
 	public static synchronized String getRelativeTemporaryFilename(
-			String directory, String suffix, boolean autodelete)
+			File stashDir, String suffix, boolean autodelete)
 			throws IOException {
 
 		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-		File f = new File(directory + File.separator
-				+ String.format("%06d.%s", num, suffix));
+		File f = new File(stashDir, String.format("%06d.%s", num, suffix));
 		while (f.exists()) {
 			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-			f = new File(directory + File.separator
+			f = new File(stashDir + File.separator
 					+ String.format("%06d.%s", num, suffix));
 		}
 		f.createNewFile();
@@ -47,7 +45,8 @@ public class FileStash {
 	}
 
 	private FileStash() {
-		STASH_DIR = STASH_DIR_ROOT + File.separator + "GKN_STASH";
+		File tempDir = new File(System.getProperty("java.io.tmpdir"));
+		STASH_DIR = new File(tempDir, "GKN_STASH");
 	}
 
 	public String allocateFile(String extension) throws IOException {
@@ -59,21 +58,7 @@ public class FileStash {
 				extension, false);
 	}
 
-	public String getAbsolutePath(String relURI) {
-		return new File(STASH_DIR, relURI).getAbsolutePath();
-	}
-
-	public URI getAbsoluteURI(URI relURI) {
-		URI ret = null;
-		try {
-			ret = new URI(STASH_DIR + File.separator + relURI.getPath());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return ret;
-	}
-
-	public String getStashDirectory() {
+	public File getStashDirectory() {
 		return STASH_DIR;
 	}
 
@@ -86,7 +71,7 @@ public class FileStash {
 			throw new IllegalArgumentException(
 					"no valid directory path was supplied");
 		} else {
-			STASH_DIR = dir;
+			STASH_DIR = sdir;
 		}
 	}
 
