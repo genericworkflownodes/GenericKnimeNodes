@@ -49,13 +49,13 @@ public class FileStash {
 		STASH_DIR = new File(tempDir, "GKN_STASH");
 	}
 
-	public String allocateFile(String extension) throws IOException {
+	public File allocateFile(String extension) throws IOException {
 		String slot = fmt.format(new Date());
 		String slotpath = STASH_DIR + File.separator + slot;
 		File slotfile = new File(slotpath);
 		slotfile.mkdirs();
-		return Helper.getTemporaryFilename(STASH_DIR + File.separator + slot,
-				extension, false);
+		return new File(Helper.getTemporaryFilename(STASH_DIR + File.separator
+				+ slot, extension, false));
 	}
 
 	public URI allocatePortableFile(String extension) throws IOException {

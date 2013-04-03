@@ -121,8 +121,8 @@ public class Image2FilePortNodeModel extends NodeModel {
 
 	private File writeImageFile(ImageContent content) throws IOException,
 			FileNotFoundException {
-		File outFile = new File(FileStash.getInstance().allocateFile(
-				IMAGE_FILE_EXTENSION));
+		File outFile = FileStash.getInstance().allocateFile(
+				IMAGE_FILE_EXTENSION);
 		logger.debug("Created output file " + outFile.getAbsolutePath());
 
 		final FileOutputStream out = new FileOutputStream(outFile);
