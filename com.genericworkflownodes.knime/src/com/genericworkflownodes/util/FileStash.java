@@ -17,7 +17,7 @@ public class FileStash {
 
 	private static Random RANDOM_NUMBER_GENERATOR = new Random();
 
-	public static synchronized String getRelativeTemporaryFilename(
+	private static synchronized String getRelativeTemporaryFilename(
 			File stashDir, String suffix, boolean autodelete)
 			throws IOException {
 
@@ -58,6 +58,17 @@ public class FileStash {
 				extension, false);
 	}
 
+	public URI allocatePortableFile(String extension) throws IOException {
+		String file = getRelativeTemporaryFilename(STASH_DIR, extension, true);
+		URI ret = null;
+		try {
+			ret = new URI(file);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
 	public File getStashDirectory() {
 		return STASH_DIR;
 	}
@@ -73,17 +84,6 @@ public class FileStash {
 		} else {
 			STASH_DIR = sdir;
 		}
-	}
-
-	public URI allocatePortableFile(String extension) throws IOException {
-		String file = getRelativeTemporaryFilename(STASH_DIR, extension, true);
-		URI ret = null;
-		try {
-			ret = new URI(file);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return ret;
 	}
 
 }
