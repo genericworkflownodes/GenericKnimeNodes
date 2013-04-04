@@ -95,8 +95,7 @@ public class ManglerNodeModel extends NodeModel {
 		BufferedDataTable table = (BufferedDataTable) inData[0];
 
 		// create a file where we can write to
-		File file = FileStash.getInstance().allocateFile(
-				demangler.getMIMEType());
+		File file = FileStash.getInstance().getFile(demangler.getMIMEType());
 
 		// translate the filename to a URIContent
 		URIContent outputURI = new URIContent(file.toURI(),

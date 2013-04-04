@@ -479,8 +479,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		String nodeName = nodeConfig.getName();
 
 		// create job directory
-		File jobdir = Helper.getTempDir(nodeName,
-				!GenericNodesPlugin.isDebug());
+		File jobdir = Helper
+				.getTempDir(nodeName, !GenericNodesPlugin.isDebug());
 		GenericNodesPlugin.log("jobdir=" + jobdir);
 
 		// transfer the incoming files into the nodeConfiguration
@@ -537,7 +537,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				List<String> fileNames = new ArrayList<String>();
 
 				for (int f = 0; f < numberOfOutputFiles; ++f) {
-					File file = FileStash.getInstance().allocateFile(ext);
+					File file = FileStash.getInstance().getFile(ext);
 					fileNames.add(file.getAbsolutePath());
 					fileURIs.add(file.toURI());
 				}
@@ -547,7 +547,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				flp.setValue(fileNames);
 
 			} else if (p instanceof FileParameter && !port.isMultiFile()) {
-				File file = FileStash.getInstance().allocateFile(ext);
+				File file = FileStash.getInstance().getFile(ext);
 				((FileParameter) p).setValue(file.getAbsolutePath());
 				GenericNodesPlugin.log("> setting param " + name + "->" + file);
 
