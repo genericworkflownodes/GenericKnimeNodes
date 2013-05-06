@@ -43,9 +43,9 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
-import org.knime.core.node.workflow.NodeID;
 
-import com.genericworkflownodes.util.FileStash;
+import com.genericworkflownodes.util.FileStashFactory;
+import com.genericworkflownodes.util.IFileStash;
 
 /**
  * This is the model implementation of Image2FilePort. Converts an Image Port to
@@ -82,6 +82,8 @@ public class Image2FilePortNodeModel extends NodeModel {
 	private static PortType[] getOutgoingPorts() {
 		return new PortType[] { URIPortObject.TYPE };
 	}
+
+	private IFileStash fileStash = null;
 
 	/**
 	 * Constructor for the node model.
@@ -122,9 +124,9 @@ public class Image2FilePortNodeModel extends NodeModel {
 
 	private File writeImageFile(ImageContent content) throws IOException,
 			FileNotFoundException {
-		NodeID x;
-		this.loadInternals(internDir, exec)
-		File outFile = FileStash.getInstance().getFile(IMAGE_FILE_EXTENSION);
+		File outFile = this.fileStash.getFile(
+				Image2FilePortNodeModel.class.getSimpleName(),
+				IMAGE_FILE_EXTENSION);
 		logger.debug("Created output file " + outFile.getAbsolutePath());
 
 		final FileOutputStream out = new FileOutputStream(outFile);
@@ -195,6 +197,7 @@ public class Image2FilePortNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
+		this.fileStash = FileStashFactory.createSemiPersistent(internDir);
 	}
 
 	/**

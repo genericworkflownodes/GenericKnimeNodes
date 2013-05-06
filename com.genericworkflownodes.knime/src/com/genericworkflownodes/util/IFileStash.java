@@ -11,9 +11,7 @@ import java.io.IOException;
  */
 public interface IFileStash {
 
-	public abstract File getStashDirectory();
-
-	public abstract void setStashDirectory(String dir);
+	public abstract File getLocation();
 
 	/**
 	 * Returns a {@link File} identified by the given basename and extension. If

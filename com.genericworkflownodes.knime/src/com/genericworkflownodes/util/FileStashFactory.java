@@ -17,6 +17,20 @@ import org.apache.commons.lang.RandomStringUtils;
 public class FileStashFactory {
 
 	/**
+	 * Directory used to store temporary {@link IFileStash}s.
+	 */
+	private static File TEMP_PARENT_DIR = new File(new File(
+			System.getProperty("java.io.tmpdir")), "GKN-STASH");
+
+	public static File getTempParentDirectory() {
+		return TEMP_PARENT_DIR;
+	}
+
+	public static void setTempParentDirectory(File tempParentDirectory) {
+		TEMP_PARENT_DIR = tempParentDirectory;
+	}
+
+	/**
 	 * Creates a new {@link IFileStash} that stores its files somewhere in the
 	 * OS's temporary directory.
 	 * <p>
@@ -26,8 +40,7 @@ public class FileStashFactory {
 	 * @return
 	 */
 	public static IFileStash createTemporary() {
-		File tempDirectory = new File(System.getProperty("java.io.tmpdir"));
-		File stashDirectory = new File(tempDirectory, "GKN-STASH-"
+		File stashDirectory = new File(TEMP_PARENT_DIR, "GKN-STASH-"
 				+ RandomStringUtils.randomAlphanumeric(16));
 		return new FileStash(stashDirectory);
 	}
@@ -71,13 +84,12 @@ public class FileStashFactory {
 			fileStash = createPersistent(new File(fileStashPath));
 		} else {
 			fileStash = createTemporary();
-			properties.setProperty("location", fileStash.getStashDirectory()
+			properties.setProperty("location", fileStash.getLocation()
 					.getAbsolutePath());
 			properties.store(new FileWriter(configFile), "Written by "
 					+ FileStashFactory.class.getName());
 		}
 
-		System.err.println(fileStash.getStashDirectory());
 		return fileStash;
 	}
 

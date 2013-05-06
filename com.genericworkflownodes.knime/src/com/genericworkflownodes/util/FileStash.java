@@ -38,13 +38,13 @@ public class FileStash implements IFileStash {
 		return string;
 	}
 
-	private File stashDirectory;
+	private File location;
 
 	public FileStash(File stashDirectory) {
 		Assert.isLegal(stashDirectory != null
 				&& ((stashDirectory.exists() && stashDirectory.isDirectory()) || !stashDirectory
 						.exists()));
-		this.stashDirectory = stashDirectory;
+		this.location = stashDirectory;
 	}
 
 	/*
@@ -53,29 +53,8 @@ public class FileStash implements IFileStash {
 	 * @see com.genericworkflownodes.util.IFileStash#getStashDirectory()
 	 */
 	@Override
-	public File getStashDirectory() {
-		return stashDirectory;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.genericworkflownodes.util.IFileStash#setStashDirectory(java.lang.
-	 * String)
-	 */
-	@Override
-	public void setStashDirectory(String dir) {
-		File sdir = new File(dir);
-		if (!sdir.exists()) {
-			sdir.mkdirs();
-		}
-		if (!sdir.isDirectory()) {
-			throw new IllegalArgumentException(
-					"no valid directory path was supplied");
-		} else {
-			stashDirectory = sdir;
-		}
+	public File getLocation() {
+		return location;
 	}
 
 	/*
@@ -102,7 +81,7 @@ public class FileStash implements IFileStash {
 		}
 
 		String filename = hash(basename) + "." + extension;
-		File file = new File(stashDirectory, filename);
+		File file = new File(location, filename);
 		if (!file.exists()) {
 			file.getParentFile().mkdirs();
 			file.createNewFile();
@@ -122,7 +101,7 @@ public class FileStash implements IFileStash {
 			File parent = file.getAbsoluteFile().getCanonicalFile()
 					.getParentFile();
 			Assert.isLegal(
-					this.getStashDirectory().getCanonicalFile().equals(parent),
+					this.getLocation().getCanonicalFile().equals(parent),
 					FileStash.class.getSimpleName()
 							+ " is not responsible for " + file + "!");
 			if (file.exists())
@@ -142,7 +121,7 @@ public class FileStash implements IFileStash {
 	public void deleteFiles(String basename) {
 		Assert.isLegal(basename != null && !basename.isEmpty());
 		final String hash = hash(basename);
-		for (File file : this.getStashDirectory().listFiles(
+		for (File file : this.getLocation().listFiles(
 				new FilenameFilter() {
 					@Override
 					public boolean accept(File stashDir, String filename) {
