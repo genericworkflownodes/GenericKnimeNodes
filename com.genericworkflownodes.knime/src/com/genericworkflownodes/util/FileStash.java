@@ -50,9 +50,16 @@ public class FileStash {
 		return instance;
 	}
 
-	private FileStash() {
+	public FileStash() {
 		File tempDir = new File(System.getProperty("java.io.tmpdir"));
 		STASH_DIR = new File(tempDir, "GKN_STASH");
+	}
+
+	public FileStash(File stashDirectory) {
+		Assert.isLegal(stashDirectory != null
+				&& ((stashDirectory.exists() && stashDirectory.isDirectory()) || !stashDirectory
+						.exists()));
+		STASH_DIR = stashDirectory;
 	}
 
 	public File getStashDirectory() {
