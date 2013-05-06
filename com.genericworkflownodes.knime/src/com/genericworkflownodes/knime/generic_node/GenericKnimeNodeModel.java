@@ -60,6 +60,7 @@ import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 import com.genericworkflownodes.util.FileStashFactory;
+import com.genericworkflownodes.util.FileStashProperties;
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.IFileStash;
 
@@ -124,7 +125,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		this.pluginConfig = pluginConfig;
 		this.fileEndingsInPorts = fileEndingsInPorts;
 		this.fileEndingsOutPorts = fileEndingsOutPorts;
-		this.fileStash = null;
+		this.fileStash = FileStashFactory.createTemporary();
 		init();
 	}
 
@@ -264,6 +265,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		 * for(Parameter<?> param: config.getParameters()) {
 		 * param.setValue(null); }
 		 */
+		try {
+			this.fileStash.deleteAllFiles();
+		} catch (IOException e) {
+			LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
+					e);
+		}
 	}
 
 	/**
@@ -366,7 +373,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		this.fileStash = FileStashFactory.createSemiPersistent(internDir);
+		File file = FileStashProperties.readLocation(internDir);
+		if (file != null) {
+			this.fileStash = FileStashFactory.createPersistent(file);
+		} else {
+			// leave temporary file stash
+		}
 	}
 
 	/**
@@ -376,6 +388,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
+		FileStashProperties.saveLocation(this.fileStash, internDir);
 	}
 
 	@Override

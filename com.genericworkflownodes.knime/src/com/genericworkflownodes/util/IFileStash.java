@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public interface IFileStash {
 
-	public abstract File getLocation();
+	public File getLocation();
 
 	/**
 	 * Returns a {@link File} identified by the given basename and extension. If
@@ -30,8 +30,7 @@ public interface IFileStash {
 	 * @return
 	 * @throws IOException
 	 */
-	public abstract File getFile(String basename, String extension)
-			throws IOException;
+	public File getFile(String basename, String extension) throws IOException;
 
 	/**
 	 * Deletes the given {@link File} if it's in the responsibility of this
@@ -39,7 +38,7 @@ public interface IFileStash {
 	 * 
 	 * @param file
 	 */
-	public abstract void deleteFile(File file);
+	public void deleteFile(File file);
 
 	/**
 	 * Deletes <strong>all</strong> {@link File}s that share the same given
@@ -47,6 +46,15 @@ public interface IFileStash {
 	 * 
 	 * @param file
 	 */
-	public abstract void deleteFiles(String basename);
+	public void deleteFiles(String basename);
+
+	/**
+	 * Deletes <strong>all</strong> {@link File}s managed by this
+	 * {@link IFileStash}.
+	 * 
+	 * @param file
+	 * @throws IOException
+	 */
+	public void deleteAllFiles() throws IOException;
 
 }

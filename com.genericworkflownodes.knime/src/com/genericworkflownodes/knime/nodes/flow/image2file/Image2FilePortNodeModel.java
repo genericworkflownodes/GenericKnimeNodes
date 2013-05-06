@@ -45,6 +45,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
 
 import com.genericworkflownodes.util.FileStashFactory;
+import com.genericworkflownodes.util.FileStashProperties;
 import com.genericworkflownodes.util.IFileStash;
 
 /**
@@ -54,6 +55,9 @@ import com.genericworkflownodes.util.IFileStash;
  * @author GenericKnimeNodes
  */
 public class Image2FilePortNodeModel extends NodeModel {
+
+	private static final NodeLogger LOGGER = NodeLogger
+			.getLogger(Image2FilePortNodeModel.class);
 
 	/**
 	 * We assume that we always write png files. We need to check in future if
@@ -83,13 +87,14 @@ public class Image2FilePortNodeModel extends NodeModel {
 		return new PortType[] { URIPortObject.TYPE };
 	}
 
-	private IFileStash fileStash = null;
+	private IFileStash fileStash;
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected Image2FilePortNodeModel() {
 		super(getIncomingPorts(), getOutgoingPorts());
+		this.fileStash = FileStashFactory.createTemporary();
 	}
 
 	/**
@@ -151,6 +156,12 @@ public class Image2FilePortNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
+		try {
+			this.fileStash.deleteAllFiles();
+		} catch (IOException e) {
+			LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
+					e);
+		}
 	}
 
 	/**
@@ -197,7 +208,12 @@ public class Image2FilePortNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		this.fileStash = FileStashFactory.createSemiPersistent(internDir);
+		File file = FileStashProperties.readLocation(internDir);
+		if (file != null) {
+			this.fileStash = FileStashFactory.createPersistent(file);
+		} else {
+			// leave temporary file stash
+		}
 	}
 
 	/**
@@ -207,6 +223,7 @@ public class Image2FilePortNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
+		FileStashProperties.saveLocation(this.fileStash, internDir);
 	}
 
 }

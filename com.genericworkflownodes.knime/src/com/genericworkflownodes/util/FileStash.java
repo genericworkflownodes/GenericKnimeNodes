@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.Assert;
 
 public class FileStash implements IFileStash {
@@ -121,17 +122,21 @@ public class FileStash implements IFileStash {
 	public void deleteFiles(String basename) {
 		Assert.isLegal(basename != null && !basename.isEmpty());
 		final String hash = hash(basename);
-		for (File file : this.getLocation().listFiles(
-				new FilenameFilter() {
-					@Override
-					public boolean accept(File stashDir, String filename) {
-						String[] parts = filename.split("\\.");
-						return parts.length > 0 ? parts[0].equals(hash) : false;
-					}
-				})) {
+		for (File file : this.getLocation().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File stashDir, String filename) {
+				String[] parts = filename.split("\\.");
+				return parts.length > 0 ? parts[0].equals(hash) : false;
+			}
+		})) {
 			if (!file.isFile())
 				continue;
 			file.delete();
 		}
+	}
+
+	@Override
+	public void deleteAllFiles() throws IOException {
+		FileUtils.cleanDirectory(this.getLocation());
 	}
 }
