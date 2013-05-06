@@ -18,6 +18,8 @@
  */
 package com.genericworkflownodes.knime.preferences;
 
+import java.io.File;
+
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -28,7 +30,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.util.FileStash;
+import com.genericworkflownodes.util.FileStashFactory;
 
 /**
  * GKN preferences page.
@@ -86,7 +88,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 				.getPreferenceStore();
 		//
 		String dir = fileStashLocationFieldEditor.getStringValue();
-		FileStash.getInstance().setStashDirectory(dir);
+		FileStashFactory.setTempParentDirectory(new File(dir));
 		store.setValue(PreferenceInitializer.PREF_FILE_STASH_LOCATION, dir);
 
 		//

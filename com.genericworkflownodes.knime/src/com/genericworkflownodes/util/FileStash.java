@@ -1,104 +1,137 @@
 package com.genericworkflownodes.util;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class FileStash {
-	public static FileStash instance;
+import org.eclipse.core.runtime.Assert;
 
-	private static String STASH_DIR_ROOT = System.getProperty("java.io.tmpdir");
-	private static String STASH_DIR;
-	private static DateFormat fmt = new SimpleDateFormat("MM-dd-yyyy");
+public class FileStash implements IFileStash {
 
-	private static Random RANDOM_NUMBER_GENERATOR = new Random();
+	private static final Logger LOGGER = Logger.getLogger(FileStash.class
+			.getName());
 
-	public static synchronized String getRelativeTemporaryFilename(
-			String directory, String suffix, boolean autodelete)
-			throws IOException {
-
-		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-		File f = new File(directory + File.separator
-				+ String.format("%06d.%s", num, suffix));
-		while (f.exists()) {
-			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-			f = new File(directory + File.separator
-					+ String.format("%06d.%s", num, suffix));
-		}
-		f.createNewFile();
-
-		if (autodelete) {
-			f.deleteOnExit();
-		}
-
-		return f.getName();
-	}
-
-	public static FileStash getInstance() {
-		if (instance == null) {
-			instance = new FileStash();
-		}
-		return instance;
-	}
-
-	private FileStash() {
-		STASH_DIR = STASH_DIR_ROOT + File.separator + "GKN_STASH";
-	}
-
-	public String allocateFile(String extension) throws IOException {
-		String slot = fmt.format(new Date());
-		String slotpath = STASH_DIR + File.separator + slot;
-		File slotfile = new File(slotpath);
-		slotfile.mkdirs();
-		return Helper.getTemporaryFilename(STASH_DIR + File.separator + slot,
-				extension, false);
-	}
-
-	public String getAbsolutePath(String relURI) {
-		return new File(STASH_DIR, relURI).getAbsolutePath();
-	}
-
-	public URI getAbsoluteURI(URI relURI) {
-		URI ret = null;
+	private static MessageDigest MD5_DIGEST;
+	{
 		try {
-			ret = new URI(STASH_DIR + File.separator + relURI.getPath());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return ret;
-	}
-
-	public String getStashDirectory() {
-		return STASH_DIR;
-	}
-
-	public void setStashDirectory(String dir) {
-		File sdir = new File(dir);
-		if (!sdir.exists()) {
-			sdir.mkdirs();
-		}
-		if (!sdir.isDirectory()) {
-			throw new IllegalArgumentException(
-					"no valid directory path was supplied");
-		} else {
-			STASH_DIR = dir;
+			MD5_DIGEST = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			MD5_DIGEST = null;
 		}
 	}
 
-	public URI allocatePortableFile(String extension) throws IOException {
-		String file = getRelativeTemporaryFilename(STASH_DIR, extension, true);
-		URI ret = null;
+	private static String hash(String string) {
+		if (MD5_DIGEST != null) {
+			MD5_DIGEST.reset();
+			MD5_DIGEST.update(string.getBytes());
+			String hash = new BigInteger(1, MD5_DIGEST.digest()).toString(16);
+			while (hash.length() < 32) {
+				hash = "0" + hash;
+			}
+			return hash;
+		}
+		return string;
+	}
+
+	private File location;
+
+	public FileStash(File stashDirectory) {
+		Assert.isLegal(stashDirectory != null
+				&& ((stashDirectory.exists() && stashDirectory.isDirectory()) || !stashDirectory
+						.exists()));
+		this.location = stashDirectory;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.genericworkflownodes.util.IFileStash#getStashDirectory()
+	 */
+	@Override
+	public File getLocation() {
+		return location;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.genericworkflownodes.util.IFileStash#getFile(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public File getFile(String basename, String extension) throws IOException {
+		Assert.isLegal(basename != null && !basename.isEmpty());
+		Assert.isLegal(extension != null && !extension.isEmpty());
+
+		if (MD5_DIGEST != null) {
+			MD5_DIGEST.reset();
+			MD5_DIGEST.update(basename.getBytes());
+			BigInteger bigInt = new BigInteger(1, MD5_DIGEST.digest());
+			String hashtext = bigInt.toString(16);
+			// Now we need to zero pad it if you actually want the full 32
+			// chars.
+			while (hashtext.length() < 32) {
+				hashtext = "0" + hashtext;
+			}
+		}
+
+		String filename = hash(basename) + "." + extension;
+		File file = new File(location, filename);
+		if (!file.exists()) {
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+		}
+		return file;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.genericworkflownodes.util.IFileStash#deleteFile(java.io.File)
+	 */
+	@Override
+	public void deleteFile(File file) {
+		Assert.isLegal(file != null);
 		try {
-			ret = new URI(file);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			File parent = file.getAbsoluteFile().getCanonicalFile()
+					.getParentFile();
+			Assert.isLegal(
+					this.getLocation().getCanonicalFile().equals(parent),
+					FileStash.class.getSimpleName()
+							+ " is not responsible for " + file + "!");
+			if (file.exists())
+				file.delete();
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Error while deleting file " + file, e);
 		}
-		return ret;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.genericworkflownodes.util.IFileStash#deleteFiles(java.lang.String)
+	 */
+	@Override
+	public void deleteFiles(String basename) {
+		Assert.isLegal(basename != null && !basename.isEmpty());
+		final String hash = hash(basename);
+		for (File file : this.getLocation().listFiles(
+				new FilenameFilter() {
+					@Override
+					public boolean accept(File stashDir, String filename) {
+						String[] parts = filename.split("\\.");
+						return parts.length > 0 ? parts[0].equals(hash) : false;
+					}
+				})) {
+			if (!file.isFile())
+				continue;
+			file.delete();
+		}
+	}
 }

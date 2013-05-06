@@ -17,26 +17,25 @@ public class MIMEFileStuffTest {
 
 	@Test
 	public void test1() throws IOException {
-		String tmpfile1 = Helper.getTemporaryFilename("unk", true);
+		File tmpfile1 = Helper.getTempFile("unk", true);
 		Helper.copyStream(TestDataSource.class.getResourceAsStream("test.unk"),
-				new File(tmpfile1));
+				tmpfile1);
 
-		String tmpfile2 = Helper.getTemporaryFilename("ctd", true);
+		File tmpfile2 = Helper.getTempFile("ctd", true);
 		Helper.copyStream(
-				TestDataSource.class.getResourceAsStream("test2.ctd"),
-				new File(tmpfile2));
+				TestDataSource.class.getResourceAsStream("test2.ctd"), tmpfile2);
 
 		MockMIMEFileCell mfc1 = new MockMIMEFileCell();
-		mfc1.read(new File(tmpfile1));
+		mfc1.read(tmpfile1);
 		assertEquals(mfc1.toString(), "UNKMimeFileCell");
 
 		MockMIMEFileCell mfc2 = new MockMIMEFileCell();
-		mfc2.read(new File(tmpfile1));
+		mfc2.read(tmpfile1);
 
 		assertTrue(mfc1.equals(mfc2));
 
 		MockMIMEFileCell mfc3 = new MockMIMEFileCell();
-		mfc3.read(new File(tmpfile2));
+		mfc3.read(tmpfile2);
 
 		assertEquals(mfc1.getExtension(), "unk");
 

@@ -47,56 +47,58 @@ public class Helper {
 
 	private static Random RANDOM_NUMBER_GENERATOR = new Random();
 
-	public static synchronized String getTemporaryFilename(String directory,
+	public static synchronized File getTempFile(String directory,
 			String suffix, boolean autodelete) throws IOException {
 
 		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-		File f = new File(directory + File.separator
+		File file = new File(directory + File.separator
 				+ String.format("%06d.%s", num, suffix));
-		while (f.exists()) {
+		while (file.exists()) {
 			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-			f = new File(directory + File.separator
+			file = new File(directory + File.separator
 					+ String.format("%06d.%s", num, suffix));
 		}
-		f.createNewFile();
+		file.createNewFile();
 
 		if (autodelete) {
-			f.deleteOnExit();
+			file.deleteOnExit();
 		}
 
-		return f.getAbsolutePath();
+		return file;
 	}
 
-	public static synchronized String getTemporaryFilename(String suffix,
+	public static synchronized File getTempFile(String suffix,
 			boolean autodelete) throws IOException {
-		return getTemporaryFilename(System.getProperty("java.io.tmpdir"),
-				suffix, autodelete);
+		File file = File.createTempFile("GKN", suffix);
+		if (autodelete)
+			file.deleteOnExit();
+		return file;
 	}
 
-	public static synchronized String getTemporaryDirectory(String directory,
-			String prefix, boolean autodelete) throws IOException {
+	public static synchronized File getTempDir(String directory, String prefix,
+			boolean autodelete) throws IOException {
 
 		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-		File f = new File(directory + File.separator
+		File dir = new File(directory + File.separator
 				+ String.format("%s%06d", prefix, num));
-		while (f.exists()) {
+		while (dir.exists()) {
 			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
-			f = new File(directory + File.separator
+			dir = new File(directory + File.separator
 					+ String.format("%s%06d", prefix, num));
 		}
-		f.mkdirs();
+		dir.mkdirs();
 
 		if (autodelete) {
-			f.deleteOnExit();
+			dir.deleteOnExit();
 		}
 
-		return f.getAbsolutePath();
+		return dir;
 	}
 
-	public static synchronized String getTemporaryDirectory(String prefix,
+	public static synchronized File getTempDir(String prefix,
 			boolean autodelete) throws IOException {
-		return getTemporaryDirectory(System.getProperty("java.io.tmpdir"),
-				prefix, autodelete);
+		return getTempDir(System.getProperty("java.io.tmpdir"), prefix,
+				autodelete);
 	}
 
 	public static String readFileSummary(File file, int maxLines)
@@ -135,4 +137,5 @@ public class Helper {
 
 		return sb.toString();
 	}
+
 }

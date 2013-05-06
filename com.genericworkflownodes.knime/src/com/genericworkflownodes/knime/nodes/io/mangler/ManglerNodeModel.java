@@ -41,7 +41,8 @@ import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
-import com.genericworkflownodes.util.FileStash;
+import com.genericworkflownodes.util.FileStashFactory;
+import com.genericworkflownodes.util.IFileStash;
 
 /**
  * This is the model implementation of ManglerNodeModel.
@@ -75,6 +76,8 @@ public class ManglerNodeModel extends NodeModel {
 	 */
 	private DataTableSpec inputTalbeSpecification;
 
+	private IFileStash fileStash = null;
+
 	/**
 	 * Constructor for the node model.
 	 */
@@ -95,11 +98,10 @@ public class ManglerNodeModel extends NodeModel {
 		BufferedDataTable table = (BufferedDataTable) inData[0];
 
 		// create a file where we can write to
-		String filename = FileStash.getInstance().allocateFile(
-				demangler.getMIMEType());
+		File file = this.fileStash.getFile(demangler.getMIMEType(), "mime");
 
 		// translate the filename to a URIContent
-		URIContent outputURI = new URIContent(new File(filename).toURI(),
+		URIContent outputURI = new URIContent(file.toURI(),
 				demangler.getMIMEType());
 
 		// write file
@@ -211,6 +213,7 @@ public class ManglerNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
+		this.fileStash = FileStashFactory.createSemiPersistent(internDir);
 	}
 
 	/**
