@@ -31,9 +31,9 @@ public class FileStashTest {
 		return parameters;
 	}
 
-	private FileStash fileStash;
+	private IFileStash fileStash;
 
-	public FileStashTest(FileStash fileStash) {
+	public FileStashTest(IFileStash fileStash) {
 		this.fileStash = fileStash;
 	}
 

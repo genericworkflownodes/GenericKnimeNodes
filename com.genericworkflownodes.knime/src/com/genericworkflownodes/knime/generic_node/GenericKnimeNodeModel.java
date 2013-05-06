@@ -63,6 +63,7 @@ import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 import com.genericworkflownodes.util.FileStash;
 import com.genericworkflownodes.util.Helper;
+import com.genericworkflownodes.util.IFileStash;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -113,7 +114,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 */
 	IToolExecutor executor;
 
-	private FileStash fileStash;
+	private IFileStash fileStash;
 
 	/**
 	 * Constructor for the node model.

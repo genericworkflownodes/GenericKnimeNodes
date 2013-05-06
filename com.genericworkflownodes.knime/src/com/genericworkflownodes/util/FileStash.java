@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.Assert;
 
-public class FileStash {
+public class FileStash implements IFileStash {
 
 	private static final Logger LOGGER = Logger.getLogger(FileStash.class
 			.getName());
@@ -39,11 +39,11 @@ public class FileStash {
 		return string;
 	}
 
-	public static FileStash instance;
+	public static IFileStash instance;
 
 	private static File STASH_DIR;
 
-	public static FileStash getInstance() {
+	public static IFileStash getInstance() {
 		if (instance == null) {
 			instance = new FileStash();
 		}
@@ -62,10 +62,18 @@ public class FileStash {
 		STASH_DIR = stashDirectory;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.genericworkflownodes.util.IFileStash#getStashDirectory()
+	 */
+	@Override
 	public File getStashDirectory() {
 		return STASH_DIR;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.genericworkflownodes.util.IFileStash#setStashDirectory(java.lang.String)
+	 */
+	@Override
 	public void setStashDirectory(String dir) {
 		File sdir = new File(dir);
 		if (!sdir.exists()) {
@@ -79,23 +87,10 @@ public class FileStash {
 		}
 	}
 
-	/**
-	 * Returns a {@link File} identified by the given basename and extension. If
-	 * the file does not exist yet it is created.
-	 * <p>
-	 * Each {@link File} returned by this method is uniquely identified by a
-	 * basename and an extension within the scope of the directory this
-	 * {@link FileStash} works on.
-	 * 
-	 * @param basename
-	 *            by which the returned {@link File} is identified; all
-	 *            characters are allowed as long as the system's JVM knows MD5;
-	 *            otherwise only filename save characters should be used
-	 * @param extension
-	 *            of the file to be returned (without preceding period)
-	 * @return
-	 * @throws IOException
+	/* (non-Javadoc)
+	 * @see com.genericworkflownodes.util.IFileStash#getFile(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public File getFile(String basename, String extension) throws IOException {
 		Assert.isLegal(basename != null && !basename.isEmpty());
 		Assert.isLegal(extension != null && !extension.isEmpty());
@@ -124,12 +119,10 @@ public class FileStash {
 		return file;
 	}
 
-	/**
-	 * Deletes the given {@link File} if it's in the responsibility of this
-	 * {@link FileStash}.
-	 * 
-	 * @param file
+	/* (non-Javadoc)
+	 * @see com.genericworkflownodes.util.IFileStash#deleteFile(java.io.File)
 	 */
+	@Override
 	public void deleteFile(File file) {
 		Assert.isLegal(file != null);
 		try {
@@ -146,12 +139,10 @@ public class FileStash {
 		}
 	}
 
-	/**
-	 * Deletes <strong>all</strong> {@link File}s that share the same given
-	 * basename but differ in their extensions.
-	 * 
-	 * @param file
+	/* (non-Javadoc)
+	 * @see com.genericworkflownodes.util.IFileStash#deleteFiles(java.lang.String)
 	 */
+	@Override
 	public void deleteFiles(String basename) {
 		Assert.isLegal(basename != null && !basename.isEmpty());
 		final String hash = hash(basename);
