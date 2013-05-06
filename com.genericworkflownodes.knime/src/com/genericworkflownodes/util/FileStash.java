@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.Assert;
 
 public class FileStash {
@@ -107,6 +108,10 @@ public class FileStash {
 		String filename = hash(basename) + "." + extension;
 		File file = new File(STASH_DIR, filename);
 		if (!file.exists()) {
+			File parentDirectory = new File(
+					FilenameUtils.getFullPathNoEndSeparator(file
+							.getAbsolutePath()));
+			parentDirectory.mkdirs();
 			file.createNewFile();
 		}
 		return file;

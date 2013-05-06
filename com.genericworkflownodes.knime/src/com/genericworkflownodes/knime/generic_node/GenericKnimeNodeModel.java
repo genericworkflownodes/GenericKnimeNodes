@@ -365,6 +365,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
+
 	}
 
 	/**
