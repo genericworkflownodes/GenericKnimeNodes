@@ -76,9 +76,6 @@ import com.genericworkflownodes.util.Helper;
  * @author
  */
 public abstract class GenericKnimeNodeModel extends NodeModel {
-	/**
-	 * The local LOGGER.
-	 */
 	private static final NodeLogger LOGGER = NodeLogger
 			.getLogger(GenericKnimeNodeModel.class);
 
