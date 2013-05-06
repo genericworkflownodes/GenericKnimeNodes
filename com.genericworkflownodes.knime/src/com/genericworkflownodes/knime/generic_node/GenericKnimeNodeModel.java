@@ -20,13 +20,11 @@
 package com.genericworkflownodes.knime.generic_node;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
@@ -61,7 +59,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
-import com.genericworkflownodes.util.FileStash;
+import com.genericworkflownodes.util.FileStashFactory;
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.IFileStash;
 
@@ -81,8 +79,6 @@ import com.genericworkflownodes.util.IFileStash;
 public abstract class GenericKnimeNodeModel extends NodeModel {
 	private static final NodeLogger LOGGER = NodeLogger
 			.getLogger(GenericKnimeNodeModel.class);
-
-	private static final String FILE_STASH_CONFIG_FILE = "stash.properties";
 
 	protected int[] selected_output_type;
 
@@ -370,19 +366,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		File configFile = new File(internDir, FILE_STASH_CONFIG_FILE);
-		if (!configFile.exists())
-			configFile.createNewFile();
-		Properties properties = new Properties();
-		properties.load(new FileReader(configFile));
-		String fileStashPath = properties.getProperty("location", null);
-		if (fileStashPath != null) {
-			this.fileStash = new FileStash(new File(fileStashPath));
-		} else {
-			this.fileStash = new FileStash();
-			properties.setProperty("location", this.fileStash
-					.getStashDirectory().getAbsolutePath());
-		}
+		this.fileStash = FileStashFactory.createSemiPersistent(internDir);
 	}
 
 	/**

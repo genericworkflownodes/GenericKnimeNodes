@@ -1,17 +1,20 @@
 package com.genericworkflownodes.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -20,46 +23,89 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value = Parameterized.class)
 public class FileStashTest {
 
-	private static final Random RANDOM = new Random();
+	private static final SecureRandom RANDOM = new SecureRandom();
+
+	private static final String random(int numChars) {
+		return RandomStringUtils.randomAlphanumeric(numChars);
+	}
+
+	private static final File TMP = new File(
+			System.getProperty("java.io.tmpdir"));
 
 	@Parameters
 	public static Collection<Object[]> data() throws Exception {
 		List<Object[]> parameters = new ArrayList<Object[]>();
-		parameters.add(new Object[] { new FileStash() });
-		parameters.add(new Object[] { new FileStash(new File(new File(System
-				.getProperty("java.io.tmpdir")), "TEST_STASH")) });
+
+		// different temp stashes
+		parameters.add(new Object[] { FileStashFactory.createTemporary(),
+				FileStashFactory.createTemporary(), false });
+
+		// same temp stash
+		IFileStash tmpStash = FileStashFactory.createTemporary();
+		parameters.add(new Object[] { tmpStash, tmpStash, true });
+
+		// different persistent stashes
+		parameters.add(new Object[] {
+				FileStashFactory.createPersistent(new File(TMP, random(8))),
+				FileStashFactory.createPersistent(new File(TMP, random(8))),
+				false });
+
+		// same persistent stash
+		IFileStash persistentStash = FileStashFactory
+				.createPersistent(new File(TMP, random(8)));
+		parameters.add(new Object[] { persistentStash, persistentStash, true });
+
+		// different semi persistent stashes
+		parameters
+				.add(new Object[] {
+						FileStashFactory.createSemiPersistent(new File(TMP,
+								random(8))),
+						FileStashFactory.createSemiPersistent(new File(TMP,
+								random(8))), false });
+
+		// same semi persistent stashes
+		File configDir = new File(TMP, random(8));
+		parameters.add(new Object[] {
+				FileStashFactory.createSemiPersistent(configDir),
+				FileStashFactory.createSemiPersistent(configDir), true });
+
 		return parameters;
 	}
 
-	private IFileStash fileStash;
+	private IFileStash fileStash1;
+	private IFileStash fileStash2;
+	private boolean equals;
 
-	public FileStashTest(IFileStash fileStash) {
-		this.fileStash = fileStash;
+	public FileStashTest(IFileStash fileStash1, IFileStash fileStash2,
+			boolean equals) {
+		this.fileStash1 = fileStash1;
+		this.fileStash2 = fileStash2;
+		this.equals = equals;
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCreateEmptyBasename() throws IOException {
-		fileStash.getFile(null, "txt");
+		fileStash1.getFile(null, "txt");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCreateEmptyBasename2() throws IOException {
-		fileStash.getFile("", "txt");
+		fileStash1.getFile("", "txt");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCreateEmptyExtension() throws IOException {
-		fileStash.getFile("test", null);
+		fileStash1.getFile("test", null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCreateEmptyExtension2() throws IOException {
-		fileStash.getFile("test", "");
+		fileStash1.getFile("test", "");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCreateAndDeleteNonManaged() throws IOException {
-		File file = fileStash.getFile(String.valueOf(RANDOM.nextInt()), "txt");
+		File file = fileStash1.getFile(String.valueOf(RANDOM.nextInt()), "txt");
 		assertNotNull(file);
 		assertTrue(file.exists());
 		assertTrue(file.canRead());
@@ -71,39 +117,65 @@ public class FileStashTest {
 		File newFile = new File(StringUtils.join(Arrays.asList(parts),
 				File.separator));
 
-		fileStash.deleteFile(newFile);
+		fileStash1.deleteFile(newFile);
 	}
 
 	@Test
 	public void testCreateAndDelete() throws IOException {
-		File file = fileStash.getFile(String.valueOf(RANDOM.nextInt()), "txt");
-		assertNotNull(file);
-		assertTrue(file.exists());
-		assertTrue(file.canRead());
-		assertTrue(file.canWrite());
+		String basename1 = random(8);
+		String basename2 = basename1;
+		if (!equals)
+			basename2 = random(8);
 
-		fileStash.deleteFile(file);
-		assertNotNull(file);
-		assertFalse(file.exists());
-		assertFalse(file.canRead());
-		assertFalse(file.canWrite());
+		File file1 = fileStash1.getFile(basename1, "txt");
+		File file2 = fileStash2.getFile(basename2, "txt");
+
+		assertNotNull(file1);
+		assertTrue(file1.exists());
+		assertTrue(file1.canRead());
+		assertTrue(file1.canWrite());
+
+		assertNotNull(file2);
+		assertTrue(file2.exists());
+		assertTrue(file2.canRead());
+		assertTrue(file2.canWrite());
+
+		fileStash1.deleteFile(file1);
+
+		assertNotNull(file1);
+		assertFalse(file1.exists());
+		assertFalse(file1.canRead());
+		assertFalse(file1.canWrite());
+
+		if (equals) {
+			assertNotNull(file2);
+			assertFalse(file2.exists());
+			assertFalse(file2.canRead());
+			assertFalse(file2.canWrite());
+		} else {
+			assertNotNull(file2);
+			assertTrue(file2.exists());
+			assertTrue(file2.canRead());
+			assertTrue(file2.canWrite());
+		}
 	}
 
 	@Test
+	// TODO test fileStash2
 	public void testCreateMultipleAndDelete() throws IOException {
-		File file1 = fileStash.getFile(String.valueOf(RANDOM.nextInt()), "txt");
+		File file1 = fileStash1.getFile(random(8), "txt");
 		assertNotNull(file1);
 		assertTrue(file1.exists());
 		assertTrue(file1.canRead());
 		assertTrue(file1.canWrite());
 
-		File file2 = fileStash.getFile(String.valueOf(RANDOM.nextInt()), "txt");
+		File file2 = fileStash1.getFile(random(8), "txt");
 		assertNotNull(file2);
 		assertTrue(file2.exists());
 		assertTrue(file2.canRead());
 		assertTrue(file2.canWrite());
 
-		fileStash.deleteFile(file1);
+		fileStash1.deleteFile(file1);
 		assertNotNull(file1);
 		assertFalse(file1.exists());
 		assertFalse(file1.canRead());
@@ -114,7 +186,7 @@ public class FileStashTest {
 		assertTrue(file2.canRead());
 		assertTrue(file2.canWrite());
 
-		fileStash.deleteFile(file2);
+		fileStash1.deleteFile(file2);
 		assertNotNull(file2);
 		assertFalse(file2.exists());
 		assertFalse(file2.canRead());
@@ -122,22 +194,23 @@ public class FileStashTest {
 	}
 
 	@Test
+	// TODO test fileStash2
 	public void testCreateMultipleSameBasenameAndDelete() throws IOException {
-		String basename = String.valueOf(RANDOM.nextInt());
+		String basename = random(8);
 
-		File file1 = fileStash.getFile(basename, "txt");
+		File file1 = fileStash1.getFile(basename, "txt");
 		assertNotNull(file1);
 		assertTrue(file1.exists());
 		assertTrue(file1.canRead());
 		assertTrue(file1.canWrite());
 
-		File file2 = fileStash.getFile(basename, "gkn");
+		File file2 = fileStash1.getFile(basename, "gkn");
 		assertNotNull(file2);
 		assertTrue(file2.exists());
 		assertTrue(file2.canRead());
 		assertTrue(file2.canWrite());
 
-		fileStash.deleteFile(file1);
+		fileStash1.deleteFile(file1);
 		assertNotNull(file1);
 		assertFalse(file1.exists());
 		assertFalse(file1.canRead());
@@ -148,7 +221,7 @@ public class FileStashTest {
 		assertTrue(file2.canRead());
 		assertTrue(file2.canWrite());
 
-		fileStash.deleteFile(file2);
+		fileStash1.deleteFile(file2);
 		assertNotNull(file2);
 		assertFalse(file2.exists());
 		assertFalse(file2.canRead());
@@ -156,23 +229,24 @@ public class FileStashTest {
 	}
 
 	@Test
+	// TODO test fileStash2
 	public void testCreateMultipleSameBasenameAndDeleteBasenameBased()
 			throws IOException {
-		String basename = String.valueOf(RANDOM.nextInt());
+		String basename = random(8);
 
-		File file1 = fileStash.getFile(basename, "txt");
+		File file1 = fileStash1.getFile(basename, "txt");
 		assertNotNull(file1);
 		assertTrue(file1.exists());
 		assertTrue(file1.canRead());
 		assertTrue(file1.canWrite());
 
-		File file2 = fileStash.getFile(basename, "gkn");
+		File file2 = fileStash1.getFile(basename, "gkn");
 		assertNotNull(file2);
 		assertTrue(file2.exists());
 		assertTrue(file2.canRead());
 		assertTrue(file2.canWrite());
 
-		fileStash.deleteFiles(basename);
+		fileStash1.deleteFiles(basename);
 
 		assertFalse(file1.exists());
 		assertFalse(file1.canRead());
@@ -184,4 +258,17 @@ public class FileStashTest {
 		assertFalse(file2.canWrite());
 	}
 
+	@Test
+	public void testIsolation() throws IOException {
+		File file1 = fileStash1.getFile("test", "txt");
+		FileUtils.writeStringToFile(file1, "Hello World!");
+
+		File file2 = fileStash2.getFile("test", "txt");
+		String content2 = FileUtils.readFileToString(file2);
+		if (equals) {
+			assertEquals("Hello World!", content2);
+		} else {
+			assertEquals("", content2);
+		}
+	}
 }

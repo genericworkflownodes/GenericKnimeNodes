@@ -9,7 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.Assert;
 
 public class FileStash implements IFileStash {
@@ -39,39 +38,31 @@ public class FileStash implements IFileStash {
 		return string;
 	}
 
-	public static IFileStash instance;
-
-	private static File STASH_DIR;
-
-	public static IFileStash getInstance() {
-		if (instance == null) {
-			instance = new FileStash();
-		}
-		return instance;
-	}
-
-	public FileStash() {
-		File tempDir = new File(System.getProperty("java.io.tmpdir"));
-		STASH_DIR = new File(tempDir, "GKN_STASH");
-	}
+	private File stashDirectory;
 
 	public FileStash(File stashDirectory) {
 		Assert.isLegal(stashDirectory != null
 				&& ((stashDirectory.exists() && stashDirectory.isDirectory()) || !stashDirectory
 						.exists()));
-		STASH_DIR = stashDirectory;
+		this.stashDirectory = stashDirectory;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.genericworkflownodes.util.IFileStash#getStashDirectory()
 	 */
 	@Override
 	public File getStashDirectory() {
-		return STASH_DIR;
+		return stashDirectory;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.genericworkflownodes.util.IFileStash#setStashDirectory(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.genericworkflownodes.util.IFileStash#setStashDirectory(java.lang.
+	 * String)
 	 */
 	@Override
 	public void setStashDirectory(String dir) {
@@ -83,12 +74,15 @@ public class FileStash implements IFileStash {
 			throw new IllegalArgumentException(
 					"no valid directory path was supplied");
 		} else {
-			STASH_DIR = sdir;
+			stashDirectory = sdir;
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.genericworkflownodes.util.IFileStash#getFile(java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.genericworkflownodes.util.IFileStash#getFile(java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
 	public File getFile(String basename, String extension) throws IOException {
@@ -108,18 +102,17 @@ public class FileStash implements IFileStash {
 		}
 
 		String filename = hash(basename) + "." + extension;
-		File file = new File(STASH_DIR, filename);
+		File file = new File(stashDirectory, filename);
 		if (!file.exists()) {
-			File parentDirectory = new File(
-					FilenameUtils.getFullPathNoEndSeparator(file
-							.getAbsolutePath()));
-			parentDirectory.mkdirs();
+			file.getParentFile().mkdirs();
 			file.createNewFile();
 		}
 		return file;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.genericworkflownodes.util.IFileStash#deleteFile(java.io.File)
 	 */
 	@Override
@@ -139,8 +132,11 @@ public class FileStash implements IFileStash {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.genericworkflownodes.util.IFileStash#deleteFiles(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.genericworkflownodes.util.IFileStash#deleteFiles(java.lang.String)
 	 */
 	@Override
 	public void deleteFiles(String basename) {
