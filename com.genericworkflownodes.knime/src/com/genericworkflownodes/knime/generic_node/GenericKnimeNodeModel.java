@@ -125,7 +125,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		this.pluginConfig = pluginConfig;
 		this.fileEndingsInPorts = fileEndingsInPorts;
 		this.fileEndingsOutPorts = fileEndingsOutPorts;
-		this.fileStash = FileStashFactory.createTemporary();
+		fileStash = FileStashFactory.createTemporary();
 		init();
 	}
 
@@ -266,7 +266,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		 * param.setValue(null); }
 		 */
 		try {
-			this.fileStash.deleteAllFiles();
+			fileStash.deleteAllFiles();
 		} catch (IOException e) {
 			LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
 					e);
@@ -375,7 +375,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			CanceledExecutionException {
 		File file = FileStashProperties.readLocation(internDir);
 		if (file != null) {
-			this.fileStash = FileStashFactory.createPersistent(file);
+			fileStash = FileStashFactory.createPersistent(file);
 		} else {
 			// leave temporary file stash
 		}
@@ -388,7 +388,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		FileStashProperties.saveLocation(this.fileStash, internDir);
+		FileStashProperties.saveLocation(fileStash, internDir);
 	}
 
 	@Override
@@ -552,8 +552,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				List<String> fileNames = new ArrayList<String>();
 
 				for (int f = 0; f < numberOfOutputFiles; ++f) {
-					File file = this.fileStash.getFile(
-							GenericKnimeNodeModel.class.getSimpleName(), ext);
+					// create basename: <clazz_name>_<port_nr>_<outfile_nr>
+					String file_basename = String.format("%s_%d_%d",
+							GenericKnimeNodeModel.class.getSimpleName(), i, f);
+					File file = fileStash.getFile(file_basename, ext);
 					fileNames.add(file.getAbsolutePath());
 					fileURIs.add(file.toURI());
 				}
@@ -563,8 +565,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				flp.setValue(fileNames);
 
 			} else if (p instanceof FileParameter && !port.isMultiFile()) {
-				File file = this.fileStash.getFile(
-						GenericKnimeNodeModel.class.getSimpleName(), ext);
+				// create basename: <clazz_name>_<port_nr>_<outfile_nr>
+				String file_basename = String.format("%s_%d",
+						GenericKnimeNodeModel.class.getSimpleName(), i);
+				File file = fileStash.getFile(file_basename, ext);
 				((FileParameter) p).setValue(file.getAbsolutePath());
 				GenericNodesPlugin.log("> setting param " + name + "->" + file);
 
