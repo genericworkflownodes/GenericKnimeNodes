@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +17,7 @@ public class FileStash implements IFileStash {
 
 	private static final Logger LOGGER = Logger.getLogger(FileStash.class
 			.getName());
+	private static Random RANDOM_NUMBER_GENERATOR = new Random();
 
 	private static MessageDigest MD5_DIGEST;
 	{
@@ -45,7 +47,7 @@ public class FileStash implements IFileStash {
 		Assert.isLegal(stashDirectory != null
 				&& ((stashDirectory.exists() && stashDirectory.isDirectory()) || !stashDirectory
 						.exists()));
-		this.location = stashDirectory;
+		location = stashDirectory;
 	}
 
 	/*
@@ -69,19 +71,23 @@ public class FileStash implements IFileStash {
 		Assert.isLegal(basename != null && !basename.isEmpty());
 		Assert.isLegal(extension != null && !extension.isEmpty());
 
-		if (MD5_DIGEST != null) {
-			MD5_DIGEST.reset();
-			MD5_DIGEST.update(basename.getBytes());
-			BigInteger bigInt = new BigInteger(1, MD5_DIGEST.digest());
-			String hashtext = bigInt.toString(16);
-			// Now we need to zero pad it if you actually want the full 32
-			// chars.
-			while (hashtext.length() < 32) {
-				hashtext = "0" + hashtext;
-			}
-		}
+		// add some uniqueness w.r.t. to loops to the names
+		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
+		basename = String.format("%s-%06d", basename, num);
 
-		String filename = hash(basename) + "." + extension;
+		// if (MD5_DIGEST != null) {
+		// MD5_DIGEST.reset();
+		// MD5_DIGEST.update(basename.getBytes());
+		// BigInteger bigInt = new BigInteger(1, MD5_DIGEST.digest());
+		// String hashtext = bigInt.toString(16);
+		// // Now we need to zero pad it if you actually want the full 32
+		// // chars.
+		// while (hashtext.length() < 32) {
+		// hashtext = "0" + hashtext;
+		// }
+		// }
+
+		String filename = basename + "." + extension;
 		File file = new File(location, filename);
 		if (!file.exists()) {
 			file.getParentFile().mkdirs();
