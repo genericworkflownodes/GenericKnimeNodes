@@ -19,6 +19,7 @@
 package com.genericworkflownodes.knime.config.reader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -47,6 +48,7 @@ public class CTDConfigurationReaderTest {
 		assertEquals("Map Alignment", config.getCategory());
 		assertNotNull(config.getParameter("FeatureLinkerUnlabeled.1.in"));
 		assertTrue(config.getParameter("FeatureLinkerUnlabeled.1.in") instanceof FileListParameter);
+		assertEquals("1.11.0", config.getVersion());
 
 		FileListParameter flp = (FileListParameter) config
 				.getParameter("FeatureLinkerUnlabeled.1.in");
@@ -60,6 +62,7 @@ public class CTDConfigurationReaderTest {
 		INodeConfiguration config = reader.read(TestDataSource.class
 				.getResourceAsStream("TMTAnalyzer.ctd"));
 		assertEquals("Quantitation", config.getCategory());
+		assertEquals("1.11.0", config.getVersion());
 		assertNotNull(config.getParameter("TMTAnalyzer.1.in"));
 		assertTrue(config.getParameter("TMTAnalyzer.1.in") instanceof FileParameter);
 
@@ -70,5 +73,15 @@ public class CTDConfigurationReaderTest {
 		assertEquals(2, slp.getValue().size());
 		assertEquals("126:liver", slp.getValue().get(0));
 		assertEquals("131:lung", slp.getValue().get(1));
+		assertTrue(config
+				.getParameter(
+						"TMTAnalyzer.1.algorithm.Quantification.isotope_correction.tmt-6plex")
+				.isAdvanced());
+		assertTrue(config
+				.getParameter(
+						"TMTAnalyzer.1.algorithm.Quantification.isotope_correction.tmt-6plex")
+				.isOptional());
+		assertFalse(config.getParameter("TMTAnalyzer.1.in").isAdvanced());
+		assertFalse(config.getParameter("TMTAnalyzer.1.in").isOptional());
 	}
 }

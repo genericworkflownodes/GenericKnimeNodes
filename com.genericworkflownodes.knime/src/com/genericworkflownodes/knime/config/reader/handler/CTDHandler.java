@@ -34,17 +34,18 @@ import com.genericworkflownodes.knime.config.NodeConfiguration;
  */
 public class CTDHandler extends DefaultHandler {
 
-	private static String TAG_NAME = "name";
-	private static String TAG_VERSION = "version";
+	private static String ATTR_NAME = "name";
+	private static String ATTR_VERSION = "version";
 	private static String TAG_DESCRIPTION = "description";
 	private static String TAG_MANUAL = "manual";
-	private static String TAG_DOCURL = "docurl";
-	private static String TAG_CATEGORY = "category";
+	private static String ATTR_DOCURL = "docurl";
+	private static String ATTR_CATEGORY = "category";
 	private static String TAG_CLI = "cli";
 	private static String TAG_RELOCATORS = "relocators";
 	private static String TAG_PARAMETERS = "PARAMETERS";
 	private static String TAG_EXECUTABLE_NAME = "executableName";
 	private static String TAG_EXECUTABLE_PATH = "executablePath";
+	private static String TAG_TOOL = "tool";
 
 	/**
 	 * The {@link INodeConfiguration} generated while parsing the CTD document.
@@ -101,32 +102,30 @@ public class CTDHandler extends DefaultHandler {
 		} else if (TAG_CLI.equals(name)) {
 			xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this,
 					config));
+		} else if (TAG_TOOL.equals(name)) {
+			// root tag -> parse out the attribute values
+			config.setName(attributes.getValue(ATTR_NAME));
+			config.setVersion(attributes.getValue(ATTR_VERSION));
+			if (attributes.getValue(ATTR_DOCURL) != null) {
+				config.setDocUrl(attributes.getValue(ATTR_DOCURL));
+			}
+			if (attributes.getValue(ATTR_CATEGORY) != null) {
+				config.setCategory(attributes.getValue(ATTR_CATEGORY));
+			}
 		}
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
-		if (TAG_NAME.equals(name)) {
-			config.setName(currentContent.toString());
-		} else if (TAG_VERSION.equals(name)) {
-			config.setVersion(currentContent.toString());
-		} else if (TAG_DESCRIPTION.equals(name)) {
+		if (TAG_DESCRIPTION.equals(name)) {
 			config.setDescription(currentContent.toString());
 		} else if (TAG_MANUAL.equals(name)) {
 			config.setManual(currentContent.toString());
-		} else if (TAG_DOCURL.equals(name)) {
-			config.setDocUrl(currentContent.toString());
-		} else if (TAG_CATEGORY.equals(name)) {
-			config.setCategory(currentContent.toString());
 		} else if (TAG_EXECUTABLE_PATH.equals(name)) {
 			config.setExecutablePath(currentContent.toString());
 		} else if (TAG_EXECUTABLE_NAME.equals(name)) {
 			config.setExecutableName(currentContent.toString());
-		} else if (TAG_RELOCATORS.equals(name)) {
-			// will not happen since we handle this element in sub handler
-		} else if (TAG_PARAMETERS.equals(name)) {
-			// will not happen since we handle this element in sub handler
 		}
 	}
 }

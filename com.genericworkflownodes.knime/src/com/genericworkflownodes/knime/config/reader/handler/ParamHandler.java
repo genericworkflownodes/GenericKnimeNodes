@@ -78,6 +78,8 @@ public class ParamHandler extends DefaultHandler {
 	private static String TYPE_FLOAT = "float";
 	private static String TYPE_DOUBLE = "double";
 	private static String TYPE_STRING = "string";
+	private static String TYPE_INPUT_FILE = "output-file";
+	private static String TYPE_OUTPUT_FILE = "input-file";
 
 	private static String ATTR_NAME = "name";
 	private static String ATTR_VALUE = "value";
@@ -86,6 +88,8 @@ public class ParamHandler extends DefaultHandler {
 	private static String ATTR_TAGS = "tags";
 	private static String ATTR_SUPPORTED_FORMATS = "supported_formats";
 	private static String ATTR_RESTRICTIONS = "restrictions";
+	private static String ATTR_ADVANCED = "advanced";
+	private static String ATTR_REQUIRED = "required";
 
 	// is contained in the schema but currently we do not handle this tag
 	@SuppressWarnings("unused")
@@ -203,7 +207,8 @@ public class ParamHandler extends DefaultHandler {
 				handleIntType(paramName, paramValue, attributes);
 			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
 				handleDoubleType(paramName, paramValue, attributes);
-			} else if (TYPE_STRING.equals(type)) {
+			} else if (TYPE_STRING.equals(type) || TYPE_INPUT_FILE.equals(type)
+					|| TYPE_OUTPUT_FILE.equals(type)) {
 				handleStringType(paramName, paramValue, attributes);
 			}
 
@@ -227,7 +232,8 @@ public class ParamHandler extends DefaultHandler {
 				handleIntList(paramName, attributes);
 			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
 				handleDoubleList(paramName, attributes);
-			} else if (TYPE_STRING.equals(type)) {
+			} else if (TYPE_STRING.equals(type) || TYPE_INPUT_FILE.equals(type)
+					|| TYPE_OUTPUT_FILE.equals(type)) {
 				handleStringList(paramName, attributes);
 			}
 			// initialize list for storing the list values
@@ -313,7 +319,8 @@ public class ParamHandler extends DefaultHandler {
 			((FileParameter) currentParameter).setIsOptional(p.isOptional());
 		}
 
-		if (getTags(attributes).contains(INPUTFILE_TAG)) {
+		if (attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
+				|| getTags(attributes).contains(INPUTFILE_TAG)) {
 			inputPorts.add(p);
 		} else {
 			outputPorts.add(p);
@@ -321,8 +328,7 @@ public class ParamHandler extends DefaultHandler {
 	}
 
 	/**
-	 * Extract the list of supported FileExtensions from the given
-	 * attributes.
+	 * Extract the list of supported FileExtensions from the given attributes.
 	 * 
 	 * @param attributes
 	 *            The attributes containing the FileExtension information.
@@ -338,8 +344,7 @@ public class ParamHandler extends DefaultHandler {
 			String attrValue = attributes.getValue(ATTR_SUPPORTED_FORMATS);
 			String[] fileExtension = attrValue.split(",");
 			for (String ext : fileExtension) {
-				mimeTypes.add(ext.replaceAll("^\\s*\\*\\.", "")
-						.trim());
+				mimeTypes.add(ext.replaceAll("^\\s*\\*\\.", "").trim());
 			}
 		} else if (attributes.getValue(ATTR_RESTRICTIONS) != null
 				&& attributes.getValue(ATTR_RESTRICTIONS).length() > 0
@@ -347,8 +352,7 @@ public class ParamHandler extends DefaultHandler {
 			String attrValue = attributes.getValue(ATTR_RESTRICTIONS);
 			String[] fileExtension = attrValue.split(",");
 			for (String ext : fileExtension) {
-				mimeTypes.add(ext.replaceAll("^\\s*\\*\\.", "")
-						.trim());
+				mimeTypes.add(ext.replaceAll("^\\s*\\*\\.", "").trim());
 			}
 		}
 
@@ -426,8 +430,14 @@ public class ParamHandler extends DefaultHandler {
 
 	private boolean isPort(final Attributes attributes) {
 		Set<String> tagSet = getTags(attributes);
-		return (tagSet.contains(INPUTFILE_TAG) || tagSet
+		boolean isPort = (tagSet.contains(INPUTFILE_TAG) || tagSet
 				.contains(OUTPUTFILE_TAG));
+
+		// additionally we check if type is equal to input-file, output-file
+		isPort = attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
+				|| attributes.getValue(ATTR_TYPE).equals(TYPE_OUTPUT_FILE);
+
+		return isPort;
 	}
 
 	private void handleIntType(final String paramName, final String paramValue,
@@ -464,12 +474,30 @@ public class ParamHandler extends DefaultHandler {
 
 	private boolean isOptional(final Attributes attributes) {
 		Set<String> tagSet = getTags(attributes);
-		return !(tagSet.contains("mandatory") || tagSet.contains("required"));
+		boolean isOptional = !(tagSet.contains("mandatory") || tagSet
+				.contains("required"));
+
+		// attribute value overrides legacy
+		if (attributes.getValue(ATTR_REQUIRED) != null) {
+			isOptional = !Boolean.parseBoolean(attributes
+					.getValue(ATTR_REQUIRED));
+		}
+
+		return isOptional;
 	}
 
 	private boolean isAdvanced(final Attributes attributes) {
+		// legacy support for advanced tag
 		Set<String> tagSet = getTags(attributes);
-		return tagSet.contains("advanced");
+		boolean isAdvanced = tagSet.contains("advanced");
+
+		// attribute value overrides legacy
+		if (attributes.getValue(ATTR_ADVANCED) != null) {
+			isAdvanced = Boolean.parseBoolean(attributes
+					.getValue(ATTR_ADVANCED));
+		}
+
+		return isAdvanced;
 	}
 
 	/**
