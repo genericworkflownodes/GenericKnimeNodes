@@ -78,8 +78,8 @@ public class ParamHandler extends DefaultHandler {
 	private static String TYPE_FLOAT = "float";
 	private static String TYPE_DOUBLE = "double";
 	private static String TYPE_STRING = "string";
-	private static String TYPE_INPUT_FILE = "output-file";
-	private static String TYPE_OUTPUT_FILE = "input-file";
+	private static String TYPE_INPUT_FILE = "input-file";
+	private static String TYPE_OUTPUT_FILE = "output-file";
 
 	private static String ATTR_NAME = "name";
 	private static String ATTR_VALUE = "value";

@@ -48,6 +48,7 @@ public class CTDConfigurationReaderTest {
 		assertEquals("Map Alignment", config.getCategory());
 		assertNotNull(config.getParameter("FeatureLinkerUnlabeled.1.in"));
 		assertTrue(config.getParameter("FeatureLinkerUnlabeled.1.in") instanceof FileListParameter);
+		assertNotNull(config.getInputPortByName("FeatureLinkerUnlabeled.1.in"));
 		assertEquals("1.11.0", config.getVersion());
 
 		FileListParameter flp = (FileListParameter) config
