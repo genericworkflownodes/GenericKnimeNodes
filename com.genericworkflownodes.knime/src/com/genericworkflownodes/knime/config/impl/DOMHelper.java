@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.genericworkflownodes.knime.config;
+package com.genericworkflownodes.knime.config.impl;
 
 import java.util.List;
 

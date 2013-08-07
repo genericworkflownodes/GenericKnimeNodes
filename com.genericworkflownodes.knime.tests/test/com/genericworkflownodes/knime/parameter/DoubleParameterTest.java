@@ -36,9 +36,9 @@ public class DoubleParameterTest {
 		DoubleParameter dp = new DoubleParameter("dp", 2.9);
 		assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
 		dp.setLowerBound(-3.0);
-		assertEquals(dp.getMnemonic(), "double [-3.000000:+inf]");
+		assertEquals(dp.getMnemonic(), "double [-3.0:+inf]");
 		dp.setUpperBound(3.0);
-		assertEquals(dp.getMnemonic(), "double [-3.000000:3.000000]");
+		assertEquals(dp.getMnemonic(), "double [-3.0:3.0]");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class DoubleParameterTest {
 	public void testToString() {
 		DoubleParameter dp = new DoubleParameter("dp", 2.9);
 		assertEquals(new Double(2.9), dp.getValue());
-		assertEquals("2.900000", dp.toString());
+		assertEquals("2.9", dp.toString());
 	}
 
 	@Test

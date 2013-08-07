@@ -67,7 +67,7 @@ public class CTDHandlerTest {
 		CLIElement firstCLIElement = config.getCLI().getCLIElement().get(0);
 
 		assertEquals("-i", firstCLIElement.getOptionIdentifier());
-		assertEquals(true, firstCLIElement.isList());
+		assertEquals(false, firstCLIElement.isList());
 		assertEquals(false, firstCLIElement.isRequired());
 
 		assertEquals(1, firstCLIElement.getMapping().size());

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.genericworkflownodes.knime.config;
+package com.genericworkflownodes.knime.config.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -30,6 +29,9 @@ import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.INodeConfigurationReader;
+import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;

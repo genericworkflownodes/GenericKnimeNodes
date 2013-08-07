@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.genericworkflownodes.knime.config.CTDNodeConfigurationReaderException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
@@ -75,13 +74,6 @@ public class DescriptorsDirectory extends Directory {
 					}
 
 					ctdFiles.add(ctdFile);
-				} catch (CTDNodeConfigurationReaderException e) {
-					System.out.println(String.format("Invalid ctd-format: %s",
-							file.getName()));
-					System.out.println(String.format("Reason: %s",
-							e.getMessage()));
-					// throw new IOException("Error reading " + file.getPath(),
-					// e);
 				} catch (Exception e) {
 					// throw new IOException("Error reading " + file.getPath(),
 					// e);
