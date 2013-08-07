@@ -84,7 +84,12 @@ public class CTDConfigurationWriter {
 	 */
 	private void openCTDDocument() throws IOException {
 		streamPut("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		streamPut("<tool>");
+		streamPut(String
+				.format("<tool name=\"%s\" version=\"%s\" docurl=\"%s\" category=\"%s\">",
+						xmlEscapeText(currentConfig.getName()),
+						xmlEscapeText(currentConfig.getVersion()),
+						xmlEscapeText(currentConfig.getDocUrl()),
+						xmlEscapeText(currentConfig.getCategory())));
 		indent();
 	}
 
@@ -111,18 +116,10 @@ public class CTDConfigurationWriter {
 	 * @param config
 	 */
 	private void writeHeader() throws IOException {
-		streamPut(String.format("<name>%s</name>",
-				xmlEscapeText(currentConfig.getName()))); // name
-		streamPut(String.format("<version>%s</version>",
-				xmlEscapeText(currentConfig.getVersion()))); // version
 		streamPut(String.format("<description>%s</description>",
 				xmlEscapeText(currentConfig.getDescription()))); // description
 		streamPut(String.format("<manual>%s</manual>",
 				xmlEscapeText(currentConfig.getManual()))); // manual
-		streamPut(String.format("<docurl>%s</docurl>",
-				xmlEscapeText(currentConfig.getDocUrl()))); // docurl
-		streamPut(String.format("<category>%s</category>",
-				xmlEscapeText(currentConfig.getCategory()))); // docurl
 
 		if (currentConfig.getExecutableName() != null)
 			streamPut(String.format("<executableName>%s</executableName>",
@@ -203,8 +200,8 @@ public class CTDConfigurationWriter {
 
 		currentNodeState = new ArrayList<String>();
 
-		streamPut("<PARAMETERS version=\"1.3\" "
-				+ "xsi:noNamespaceSchemaLocation=\"http://open-ms.sourceforge.net/schemas/Param_1_3.xsd\" "
+		streamPut("<PARAMETERS version=\"1.6.2\" "
+				+ "xsi:noNamespaceSchemaLocation=\"http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd\" "
 				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 		indent();
 
@@ -222,8 +219,13 @@ public class CTDConfigurationWriter {
 
 				// type
 				item.append(" type=\"");
-				if (p instanceof StringListParameter
-						|| p instanceof FileListParameter) {
+				if (p instanceof FileListParameter) {
+					if (currentConfig.getInputPortByName(key) != null) {
+						item.append("input-file");
+					} else if (currentConfig.getOutputPortByName(key) != null) {
+						item.append("output-file");
+					}
+				} else if (p instanceof StringListParameter) {
 					item.append("string");
 				} else if (p instanceof DoubleListParameter) {
 					item.append("double");
@@ -247,7 +249,7 @@ public class CTDConfigurationWriter {
 				}
 
 				// add tags
-				addParameterTags(p, item, key);
+				addParameterAttributes(p, item, key);
 
 				indent();
 				for (String val : ((ListParameter) p).getStrings()) {
@@ -270,7 +272,14 @@ public class CTDConfigurationWriter {
 
 				// type
 				item.append(" type=\"");
-				if (p instanceof BoolParameter || p instanceof StringParameter
+				if (p instanceof FileParameter) {
+					if (currentConfig.getInputPortByName(key) != null) {
+						item.append("input-file");
+					} else if (currentConfig.getOutputPortByName(key) != null) {
+						item.append("output-file");
+					}
+				} else if (p instanceof BoolParameter
+						|| p instanceof StringParameter
 						|| p instanceof StringChoiceParameter) {
 					item.append("string");
 				} else if (p instanceof DoubleParameter) {
@@ -284,7 +293,7 @@ public class CTDConfigurationWriter {
 				addDescription(p, item);
 
 				// add tags
-				addParameterTags(p, item, key);
+				addParameterAttributes(p, item, key);
 
 				// restrictions
 				if (p instanceof BoolParameter) {
@@ -312,7 +321,7 @@ public class CTDConfigurationWriter {
 	private void addMimeTypeRestrictions(StringBuffer item, Parameter<?> p) {
 		Port associatedPort = ((IFileParameter) p).getPort();
 
-		item.append(" restrictions=\"");
+		item.append(" supported_formats=\"");
 		String sep = "";
 		for (String mt : associatedPort.getMimeTypes()) {
 			item.append(sep);
@@ -322,38 +331,10 @@ public class CTDConfigurationWriter {
 		item.append("\"");
 	}
 
-	private void addParameterTags(Parameter<?> p, StringBuffer item, String key)
-			throws Exception {
-		List<String> tags = new ArrayList<String>();
-		if (p instanceof FileParameter || p instanceof FileListParameter) {
-			// check if we have an in- or output port
-			if (currentConfig.getInputPortByName(key) != null) {
-				tags.add("input file");
-			} else if (currentConfig.getOutputPortByName(key) != null) {
-				tags.add("output file");
-			} else {
-				throw new Exception(
-						"Could not find a port for the given parameter: "
-								+ p.getKey());
-			}
-		}
-		if (p.isAdvanced()) {
-			tags.add("advanced");
-		}
-		if (!p.isOptional()) {
-			tags.add("required");
-		}
-
-		if (tags.size() > 0) {
-			item.append(" tags=\"");
-			String sep = "";
-			for (String tag : tags) {
-				item.append(sep);
-				item.append(tag);
-				sep = ",";
-			}
-			item.append("\"");
-		}
+	private void addParameterAttributes(Parameter<?> p, StringBuffer item,
+			String key) throws Exception {
+		item.append(" advanced=\"" + (p.isAdvanced() ? "true" : "false") + "\"");
+		item.append(" required=\"" + (p.isOptional() ? "false" : "true") + "\"");
 	}
 
 	private void addDescription(Parameter<?> p, StringBuffer item) {

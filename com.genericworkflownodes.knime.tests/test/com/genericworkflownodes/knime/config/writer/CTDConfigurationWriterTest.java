@@ -60,21 +60,23 @@ public class CTDConfigurationWriterTest {
 
 		File tmp = File.createTempFile("testing_", ".ini");
 		tmp.deleteOnExit();
+
 		BufferedWriter bWriter = new BufferedWriter(new FileWriter(tmp));
 		CTDConfigurationWriter writer = new CTDConfigurationWriter(bWriter);
 		writer.write(config);
 
-		// TODO: Add some tests if the the config we write out is valid.
 		config = reader.read(new FileInputStream(tmp));
 
 		StringParameter mz = (StringParameter) config
 				.getParameter("FileFilter.1.mz");
-		assertEquals("m/z range to extract", mz.getDescription());
+		assertEquals("m/z range to extract (applies to ALL ms levels!)",
+				mz.getDescription());
 		assertEquals(":", mz.getValue());
 		assertEquals("mz", mz.getKey());
 
 		IntegerListParameter levels = (IntegerListParameter) config
-				.getParameter("FileFilter.1.level");
+				.getParameter("FileFilter.1.peak_options.level");
+		assertNotNull(levels);
 		assertEquals("MS levels to extract", levels.getDescription());
 		assertEquals(3, levels.getValue().size());
 		assertEquals(1, levels.getValue().get(0).intValue());
@@ -83,7 +85,7 @@ public class CTDConfigurationWriterTest {
 		assertEquals(false, levels.isAdvanced());
 
 		StringChoiceParameter int_precision = (StringChoiceParameter) config
-				.getParameter("FileFilter.1.int_precision");
+				.getParameter("FileFilter.1.peak_options.int_precision");
 		assertEquals("32", int_precision.getValue());
 		assertEquals(3, int_precision.getAllowedValues().size());
 
@@ -92,7 +94,7 @@ public class CTDConfigurationWriterTest {
 		assertEquals(false, no_progress.getValue());
 		assertEquals(true, no_progress.isAdvanced());
 
-		assertEquals(1, config.getInputPorts().size());
+		assertEquals(3, config.getInputPorts().size());
 		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
 	}
 }
