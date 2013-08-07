@@ -39,9 +39,9 @@ public class DoubleListParameterTest {
 		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
 		assertEquals(dlp.getMnemonic(), "double list [-inf:+inf]");
 		dlp.setLowerBound(-3.0);
-		assertEquals(dlp.getMnemonic(), "double list [-3.000000:+inf]");
+		assertEquals(dlp.getMnemonic(), "double list [-3.0:+inf]");
 		dlp.setUpperBound(3.0);
-		assertEquals(dlp.getMnemonic(), "double list [-3.000000:3.000000]");
+		assertEquals(dlp.getMnemonic(), "double list [-3.0:3.0]");
 	}
 
 	@Test

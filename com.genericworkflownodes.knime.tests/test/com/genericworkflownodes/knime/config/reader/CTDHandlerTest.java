@@ -67,7 +67,7 @@ public class CTDHandlerTest {
 		CLIElement firstCLIElement = config.getCLI().getCLIElement().get(0);
 
 		assertEquals("-i", firstCLIElement.getOptionIdentifier());
-		assertEquals(true, firstCLIElement.isList());
+		assertEquals(false, firstCLIElement.isList());
 		assertEquals(false, firstCLIElement.isRequired());
 
 		assertEquals(1, firstCLIElement.getMapping().size());
@@ -107,12 +107,13 @@ public class CTDHandlerTest {
 
 		StringParameter mz = (StringParameter) config
 				.getParameter("FileFilter.1.mz");
-		assertEquals("m/z range to extract", mz.getDescription());
+		assertEquals("m/z range to extract (applies to ALL ms levels!)",
+				mz.getDescription());
 		assertEquals(":", mz.getValue());
 		assertEquals("mz", mz.getKey());
 
 		IntegerListParameter levels = (IntegerListParameter) config
-				.getParameter("FileFilter.1.level");
+				.getParameter("FileFilter.1.peak_options.level");
 		assertEquals("MS levels to extract", levels.getDescription());
 		assertEquals(3, levels.getValue().size());
 		assertEquals(1, levels.getValue().get(0).intValue());
@@ -121,7 +122,7 @@ public class CTDHandlerTest {
 		assertEquals(false, levels.isAdvanced());
 
 		StringChoiceParameter int_precision = (StringChoiceParameter) config
-				.getParameter("FileFilter.1.int_precision");
+				.getParameter("FileFilter.1.peak_options.int_precision");
 		assertEquals("32", int_precision.getValue());
 		assertEquals(3, int_precision.getAllowedValues().size());
 
@@ -130,9 +131,8 @@ public class CTDHandlerTest {
 		assertEquals(false, no_progress.getValue());
 		assertEquals(true, no_progress.isAdvanced());
 
-		assertEquals(1, config.getInputPorts().size());
+		assertEquals(3, config.getInputPorts().size());
 		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
-
 	}
 
 	@Test
