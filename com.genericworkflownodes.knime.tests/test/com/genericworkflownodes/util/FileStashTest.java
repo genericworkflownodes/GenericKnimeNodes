@@ -130,17 +130,13 @@ public class FileStashTest {
 		assertFalse(file1.canRead());
 		assertFalse(file1.canWrite());
 
-		if (equals) {
-			assertNotNull(file2);
-			assertFalse(file2.exists());
-			assertFalse(file2.canRead());
-			assertFalse(file2.canWrite());
-		} else {
-			assertNotNull(file2);
-			assertTrue(file2.exists());
-			assertTrue(file2.canRead());
-			assertTrue(file2.canWrite());
-		}
+		// file2 must exist as it was created with an attached random number to
+		// ensure multiple files can be created with basename extension
+		// combination
+		assertNotNull(file2);
+		assertTrue(file2.exists());
+		assertTrue(file2.canRead());
+		assertTrue(file2.canWrite());
 	}
 
 	@Test
@@ -301,10 +297,6 @@ public class FileStashTest {
 
 		File file2 = fileStash2.getFile("test", "txt");
 		String content2 = FileUtils.readFileToString(file2);
-		if (equals) {
-			assertEquals("Hello World!", content2);
-		} else {
-			assertEquals("", content2);
-		}
+		assertEquals("", content2);
 	}
 }

@@ -3,9 +3,6 @@ package com.genericworkflownodes.util;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,28 +15,6 @@ public class FileStash implements IFileStash {
 	private static final Logger LOGGER = Logger.getLogger(FileStash.class
 			.getName());
 	private static Random RANDOM_NUMBER_GENERATOR = new Random();
-
-	private static MessageDigest MD5_DIGEST;
-	{
-		try {
-			MD5_DIGEST = MessageDigest.getInstance("MD5");
-		} catch (NoSuchAlgorithmException e) {
-			MD5_DIGEST = null;
-		}
-	}
-
-	private static String hash(String string) {
-		if (MD5_DIGEST != null) {
-			MD5_DIGEST.reset();
-			MD5_DIGEST.update(string.getBytes());
-			String hash = new BigInteger(1, MD5_DIGEST.digest()).toString(16);
-			while (hash.length() < 32) {
-				hash = "0" + hash;
-			}
-			return hash;
-		}
-		return string;
-	}
 
 	private File location;
 
@@ -74,18 +49,6 @@ public class FileStash implements IFileStash {
 		// add some uniqueness w.r.t. to loops to the names
 		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
 		basename = String.format("%s-%06d", basename, num);
-
-		// if (MD5_DIGEST != null) {
-		// MD5_DIGEST.reset();
-		// MD5_DIGEST.update(basename.getBytes());
-		// BigInteger bigInt = new BigInteger(1, MD5_DIGEST.digest());
-		// String hashtext = bigInt.toString(16);
-		// // Now we need to zero pad it if you actually want the full 32
-		// // chars.
-		// while (hashtext.length() < 32) {
-		// hashtext = "0" + hashtext;
-		// }
-		// }
 
 		String filename = basename + "." + extension;
 		File file = new File(location, filename);
@@ -125,14 +88,12 @@ public class FileStash implements IFileStash {
 	 * com.genericworkflownodes.util.IFileStash#deleteFiles(java.lang.String)
 	 */
 	@Override
-	public void deleteFiles(String basename) {
+	public void deleteFiles(final String basename) {
 		Assert.isLegal(basename != null && !basename.isEmpty());
-		final String hash = hash(basename);
 		for (File file : this.getLocation().listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File stashDir, String filename) {
-				String[] parts = filename.split("\\.");
-				return parts.length > 0 ? parts[0].equals(hash) : false;
+				return (filename.startsWith(basename));
 			}
 		})) {
 			if (!file.isFile())
