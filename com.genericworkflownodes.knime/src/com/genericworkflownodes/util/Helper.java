@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011, Marc Röttig.
+/**
+ * Copyright (c) 2011, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -31,6 +31,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+/**
+ * Collection of Helper methods.
+ * 
+ * @author roettig, aiche
+ */
 public class Helper {
 
 	public static void copyStream(InputStream in, File dest) throws IOException {
@@ -95,8 +100,8 @@ public class Helper {
 		return dir;
 	}
 
-	public static synchronized File getTempDir(String prefix,
-			boolean autodelete) throws IOException {
+	public static synchronized File getTempDir(String prefix, boolean autodelete)
+			throws IOException {
 		return getTempDir(System.getProperty("java.io.tmpdir"), prefix,
 				autodelete);
 	}
@@ -138,4 +143,20 @@ public class Helper {
 		return sb.toString();
 	}
 
+	/**
+	 * Copies the content of to_copy into target. Assumes that src and target
+	 * have the same size.
+	 * 
+	 * @param src
+	 * @param target
+	 */
+	public static void array2dcopy(final String[][] src, final String[][] target) {
+		assert (target.length == src.length);
+
+		for (int i = 0; i < target.length; ++i) {
+			int array_length = src[i].length;
+			target[i] = new String[src[i].length];
+			System.arraycopy(src[i], 0, target[i], 0, array_length);
+		}
+	}
 }
