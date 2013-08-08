@@ -26,9 +26,6 @@
 		<private name="jar.contents">
 			<attribute name="knime.create.helpfiles" />
 		</private>
-		<public name="eclipse.build.source">
-            <remove name="eclipse.build.source_0"/>
-        </public>
 	</alterGroups>
 	<alterArtifacts>
 		<private name="bin.includes">
