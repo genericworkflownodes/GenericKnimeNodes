@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+
 /**
  * The StringListParameter class is used to store lists of string values.
  * 
@@ -66,7 +68,7 @@ public class StringListParameter extends Parameter<List<String>> implements
 
 	public String[] getRestrictions() {
 		if (!validValues.isEmpty())
-			return (String[]) validValues.toArray();
+			return validValues.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
 		else
 			return null;
 	}
