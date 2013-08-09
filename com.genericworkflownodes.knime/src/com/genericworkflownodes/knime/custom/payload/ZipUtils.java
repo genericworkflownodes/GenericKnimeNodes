@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.custom.payload;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -46,6 +47,7 @@ public class ZipUtils {
 	public static void decompressTo(File targetDir, InputStream zipStream,
 			IProgressMonitor monitor) {
 		targetDir.mkdirs();
+		FileOutputStream fout = null;
 		try {
 			ZipInputStream zin = new ZipInputStream(zipStream);
 			ZipEntry ze = null;
@@ -64,7 +66,7 @@ public class ZipUtils {
 						targetFile.getParentFile().mkdirs();
 					}
 
-					FileOutputStream fout = new FileOutputStream(targetFile);
+					fout = new FileOutputStream(targetFile);
 
 					int size;
 					while ((size = zin.read(buffer, 0, 2048)) != -1) {
@@ -79,6 +81,14 @@ public class ZipUtils {
 			}
 			zin.close();
 		} catch (Exception e) {
+			// try to close the streams
+			if (fout != null) {
+				try {
+					fout.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
 			e.printStackTrace();
 		}
 	}

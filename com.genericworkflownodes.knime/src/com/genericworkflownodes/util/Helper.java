@@ -38,18 +38,38 @@ import java.util.Random;
  */
 public class Helper {
 
+	/**
+	 * Copies the content of the {@link InputStream} in to the {@link File}
+	 * dest.
+	 * 
+	 * @param in
+	 *            Strean to copy.
+	 * @param dest
+	 * @throws IOException
+	 */
 	public static void copyStream(InputStream in, File dest) throws IOException {
 		FileOutputStream out = new FileOutputStream(dest);
 		BufferedInputStream bin = new BufferedInputStream(in);
-		byte[] buffer = new byte[2048];
-		int len;
-		while ((len = bin.read(buffer, 0, 2048)) != -1) {
-			out.write(buffer, 0, len);
+
+		try {
+			byte[] buffer = new byte[2048];
+			int len;
+			while ((len = bin.read(buffer, 0, 2048)) != -1) {
+				out.write(buffer, 0, len);
+			}
+			out.close();
+			bin.close();
+		} catch (IOException ex) {
+			// try to close the streams
+			out.close();
+			bin.close();
 		}
-		out.close();
-		bin.close();
+
 	}
 
+	/**
+	 * Local random number generator to ensure uniqueness of file names.
+	 */
 	private static Random RANDOM_NUMBER_GENERATOR = new Random();
 
 	public static synchronized File getTempFile(String directory,
@@ -106,6 +126,18 @@ public class Helper {
 				autodelete);
 	}
 
+	/**
+	 * Reads the first lines of the file into a string. At maximum maxLines will
+	 * be read.
+	 * 
+	 * @param file
+	 *            The file to read.
+	 * @param maxLines
+	 *            The number of maximal lines to read.
+	 * @return The string containing the first maxLines lines.
+	 * @throws IOException
+	 *             if the file does not exist or cannot be opened or read.
+	 */
 	public static String readFileSummary(File file, int maxLines)
 			throws IOException {
 		FileReader fr = new FileReader(file);
