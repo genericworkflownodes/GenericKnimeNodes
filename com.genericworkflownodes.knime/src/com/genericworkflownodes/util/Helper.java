@@ -55,11 +55,11 @@ public class Helper {
 	public static synchronized File getTempFile(String directory,
 			String suffix, boolean autodelete) throws IOException {
 
-		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
+		int num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
 		File file = new File(directory + File.separator
 				+ String.format("%06d.%s", num, suffix));
 		while (file.exists()) {
-			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
+			num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
 			file = new File(directory + File.separator
 					+ String.format("%06d.%s", num, suffix));
 		}
@@ -83,11 +83,11 @@ public class Helper {
 	public static synchronized File getTempDir(String directory, String prefix,
 			boolean autodelete) throws IOException {
 
-		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
+		int num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
 		File dir = new File(directory + File.separator
 				+ String.format("%s%06d", prefix, num));
 		while (dir.exists()) {
-			num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
+			num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
 			dir = new File(directory + File.separator
 					+ String.format("%s%06d", prefix, num));
 		}
