@@ -19,7 +19,6 @@
 package com.genericworkflownodes.knime.custom.payload;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +41,7 @@ import com.genericworkflownodes.knime.payload.IPayloadDirectory;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
+import com.genericworkflownodes.util.PropertiesUtils;
 
 /**
  * Manages the extraction and registration of shipped binaries.
@@ -293,8 +293,6 @@ public class BinariesManager implements IRunnableWithProgress {
 	 *             I thrown in case of IO errors.
 	 */
 	private void loadEnvironmentVariables() throws IOException {
-		Properties envProperites = new Properties();
-
 		File iniFile = new File(payloadDirectory.getPath(), getINIFileName());
 
 		// check if we extracted also an ini file
@@ -304,7 +302,7 @@ public class BinariesManager implements IRunnableWithProgress {
 		}
 
 		// load the properties file
-		envProperites.load(new FileInputStream(iniFile));
+		Properties envProperites = PropertiesUtils.load(iniFile);
 
 		Map<String, String> environmentVariables = new HashMap<String, String>();
 		for (Object key : envProperites.keySet()) {

@@ -108,37 +108,51 @@ public class Helper {
 
 	public static String readFileSummary(File file, int maxLines)
 			throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
+		FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr);
+
 		StringBuffer sb = new StringBuffer();
+		try {
 
-		String line = "";
+			String line = "";
 
-		int cnt = 0;
+			int cnt = 0;
 
-		sb.append("File path: " + file.getAbsolutePath()
-				+ System.getProperty("line.separator"));
-		sb.append("File size: " + file.length() + " bytes"
-				+ System.getProperty("line.separator"));
+			sb.append("File path: " + file.getAbsolutePath()
+					+ System.getProperty("line.separator"));
+			sb.append("File size: " + file.length() + " bytes"
+					+ System.getProperty("line.separator"));
 
-		Date date = new Date(file.lastModified());
-		Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
-		String s = formatter.format(date);
+			Date date = new Date(file.lastModified());
+			Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
+			String s = formatter.format(date);
 
-		sb.append("File time: " + s + System.getProperty("line.separator"));
+			sb.append("File time: " + s + System.getProperty("line.separator"));
 
-		sb.append(String.format(
-				"File content (first %d lines):"
-						+ System.getProperty("line.separator"), maxLines));
+			sb.append(String.format(
+					"File content (first %d lines):"
+							+ System.getProperty("line.separator"), maxLines));
 
-		while ((line = br.readLine()) != null) {
-			sb.append(line + System.getProperty("line.separator"));
-			cnt++;
-			if (cnt > maxLines) {
-				sb.append("######### OUTPUT TRUNCATED #########"
-						+ System.getProperty("line.separator"));
-				break;
+			while ((line = br.readLine()) != null) {
+				sb.append(line + System.getProperty("line.separator"));
+				cnt++;
+				if (cnt > maxLines) {
+					sb.append("######### OUTPUT TRUNCATED #########"
+							+ System.getProperty("line.separator"));
+					break;
+				}
 			}
+		} catch (IOException ex) {
+			// close readers
+			br.close();
+			fr.close();
+			// rethrow
+			throw ex;
 		}
+
+		// close readers
+		br.close();
+		fr.close();
 
 		return sb.toString();
 	}

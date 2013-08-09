@@ -22,7 +22,16 @@ public class PropertiesUtils {
 	public static Properties load(File file) throws IOException {
 		Properties properties = new Properties();
 		if (file.isFile()) {
-			properties.load(new FileReader(file));
+			FileReader fr = new FileReader(file);
+			try {
+				properties.load(fr);
+			} catch (IOException ex) {
+				// close file reader and rethrow
+				fr.close();
+				throw ex;
+			}
+			// ensure closed file reader
+			fr.close();
 		}
 		return properties;
 	}
@@ -41,6 +50,14 @@ public class PropertiesUtils {
 			file.getParentFile().mkdirs();
 			file.createNewFile();
 		}
-		properties.store(new FileWriter(file), null);
+		FileWriter f_writer = new FileWriter(file);
+		try {
+			properties.store(f_writer, null);
+		} catch (IOException ex) {
+			// close file writer and rethrow
+			f_writer.close();
+			throw ex;
+		}
+		f_writer.close();
 	}
 }
