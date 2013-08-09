@@ -46,6 +46,7 @@ import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.relocator.Relocator;
+import com.genericworkflownodes.util.StringUtils;
 
 /**
  * @author aiche
@@ -478,14 +479,10 @@ public class CTDConfigurationWriter {
 	}
 
 	private String concatenate(List<String> prefix, int end) {
-		String ret = "";
-		String sep = "";
-		for (int i = 0; i <= end && i < prefix.size(); ++i) {
-			ret += sep;
-			ret += prefix.get(i);
-			sep = String.valueOf(ParamHandler.PATH_SEPARATOR);
-		}
-		return ret;
+		return StringUtils.join(
+				prefix.subList(0,
+						((end + 1) < prefix.size() ? end + 1 : prefix.size())),
+				String.valueOf(ParamHandler.PATH_SEPARATOR));
 	}
 
 	/**
