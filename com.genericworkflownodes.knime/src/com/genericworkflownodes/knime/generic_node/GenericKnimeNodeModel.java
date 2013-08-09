@@ -123,8 +123,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				.getOutputPorts()));
 		this.nodeConfig = nodeConfig;
 		this.pluginConfig = pluginConfig;
-		this.fileEndingsInPorts = fileEndingsInPorts;
-		this.fileEndingsOutPorts = fileEndingsOutPorts;
+
+		this.fileEndingsInPorts = new String[fileEndingsInPorts.length][];
+		Helper.array2dcopy(fileEndingsInPorts, this.fileEndingsInPorts);
+
+		this.fileEndingsOutPorts = new String[fileEndingsOutPorts.length][];
+		Helper.array2dcopy(fileEndingsOutPorts, this.fileEndingsOutPorts);
+
 		fileStash = FileStashFactory.createTemporary();
 		init();
 	}

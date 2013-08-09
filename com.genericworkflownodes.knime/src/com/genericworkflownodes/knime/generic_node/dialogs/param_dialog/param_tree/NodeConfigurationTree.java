@@ -96,15 +96,15 @@ public class NodeConfigurationTree {
 	private static List<String> getPrefixes(String key) {
 		List<String> ret = new ArrayList<String>();
 		String[] toks = key.split("\\.");
-		String pref = "";
+		StringBuilder pref = new StringBuilder("");
 		int currentToken = 0;
 		for (String tok : toks) {
 			// skip the "1" node in OpenMS/CADDSuite
 			if (currentToken == 1 && "1".equals(tok))
 				continue;
-			pref += tok;
-			ret.add(pref);
-			pref += ".";
+			pref.append(tok);
+			ret.add(pref.toString());
+			pref.append(".");
 			++currentToken;
 		}
 		return ret;

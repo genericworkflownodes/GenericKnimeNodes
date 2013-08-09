@@ -58,12 +58,15 @@ public class CTDConfigurationWriterTest {
 		INodeConfiguration config = reader.read(TestDataSource.class
 				.getResourceAsStream("FileFilter.ctd"));
 
+		// write to test file
 		File tmp = File.createTempFile("testing_", ".ini");
 		tmp.deleteOnExit();
 
-		BufferedWriter bWriter = new BufferedWriter(new FileWriter(tmp));
-		CTDConfigurationWriter writer = new CTDConfigurationWriter(bWriter);
-		writer.write(config);
+		BufferedWriter buffered_file_writer = new BufferedWriter(
+				new FileWriter(tmp));
+		CTDConfigurationWriter file_writer = new CTDConfigurationWriter(
+				buffered_file_writer);
+		file_writer.write(config);
 
 		config = reader.read(new FileInputStream(tmp));
 

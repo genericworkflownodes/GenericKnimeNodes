@@ -47,7 +47,7 @@ public class FileStash implements IFileStash {
 		Assert.isLegal(extension != null && !extension.isEmpty());
 
 		// add some uniqueness w.r.t. to loops to the names
-		int num = Math.abs(RANDOM_NUMBER_GENERATOR.nextInt());
+		int num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
 		basename = String.format("%s-%06d", basename, num);
 
 		String filename = basename + "." + extension;

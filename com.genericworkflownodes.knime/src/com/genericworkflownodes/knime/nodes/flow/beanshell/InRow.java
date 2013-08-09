@@ -6,7 +6,8 @@ public class InRow {
 	private DataCell[] row;
 
 	public InRow(DataCell[] row) {
-		this.row = row;
+		this.row = new DataCell[row.length];
+		System.arraycopy(row, 0, this.row, 0, row.length);
 	}
 
 	public int getNumCols() {

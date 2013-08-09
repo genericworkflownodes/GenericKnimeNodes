@@ -75,7 +75,8 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
 	}
 
 	public void setSelectedTypes(int[] sel_ports) {
-		this.sel_ports = sel_ports;
+		this.sel_ports = new int[sel_ports.length];
+		System.arraycopy(sel_ports, 0, this.sel_ports, 0, sel_ports.length);
 		for (int i = 0; i < cbs.length; i++) {
 			cbs[i].setSelectedIndex(sel_ports[i]);
 		}

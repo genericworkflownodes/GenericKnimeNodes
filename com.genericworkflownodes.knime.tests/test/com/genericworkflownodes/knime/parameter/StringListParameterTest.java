@@ -18,6 +18,7 @@
  */
 package com.genericworkflownodes.knime.parameter;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -121,4 +122,33 @@ public class StringListParameterTest {
 		assertEquals("c", slp.getValue().get(2));
 	}
 
+	@Test
+	public void testGetSetRestrictions() {
+		StringListParameter slp = new StringListParameter(key, null);
+		List<String> restrictions = new ArrayList<String>();
+		restrictions.add("valid-value-a");
+		restrictions.add("valid-value-b");
+		restrictions.add("valid-value-c");
+		// setRestrictions does not guarantee uniqueness
+		restrictions.add("valid-value-c");
+		slp.setRestrictions(restrictions);
+
+		String[] res = slp.getRestrictions();
+		assertArrayEquals(new String[] { "valid-value-a", "valid-value-b",
+				"valid-value-c", "valid-value-c" }, res);
+	}
+
+	@Test
+	public void testAddRestrictions() {
+		StringListParameter slp = new StringListParameter(key, null);
+		slp.addRestrictions("valid-value-a");
+		slp.addRestrictions("valid-value-b");
+		slp.addRestrictions("valid-value-c");
+		// check if slp ensures uniqueness
+		slp.addRestrictions("valid-value-c");
+
+		String[] res = slp.getRestrictions();
+		assertArrayEquals(new String[] { "valid-value-a", "valid-value-b",
+				"valid-value-c" }, res);
+	}
 }
