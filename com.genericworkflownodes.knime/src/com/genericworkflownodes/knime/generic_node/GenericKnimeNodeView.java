@@ -48,10 +48,10 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 
 		String stdout = "", stderr = "";
 
-		if (nodeModel.executor != null) {
-			stdout = nodeModel.executor.getToolOutput() != null ? nodeModel.executor
+		if (nodeModel.m_executor != null) {
+			stdout = nodeModel.m_executor.getToolOutput() != null ? nodeModel.m_executor
 					.getToolOutput() : "";
-			stderr = nodeModel.executor.getToolErrorOutput() != null ? nodeModel.executor
+			stderr = nodeModel.m_executor.getToolErrorOutput() != null ? nodeModel.m_executor
 					.getToolErrorOutput() : "";
 		}
 
@@ -60,7 +60,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 
 		// we generally prefer stderr (if available), since it should be more
 		// important
-		if (nodeModel.executor.getToolErrorOutput().length() > 0) {
+		if (nodeModel.m_executor.getToolErrorOutput().length() > 0) {
 			tabs.setSelectedIndex(1);
 		}
 
