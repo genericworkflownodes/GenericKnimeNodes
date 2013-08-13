@@ -46,27 +46,32 @@ public class Port implements Serializable {
 	/**
 	 * Flag to show if the port is optional for the tool.
 	 */
-	protected boolean m_isOptional;
+	private boolean m_isOptional;
 
 	/**
 	 * The name of the port.
 	 */
-	protected String m_name;
+	private String m_name;
 
 	/**
 	 * The description of the port.
 	 */
-	protected String m_description;
+	private String m_description;
 
 	/**
 	 * Flag to indicate if this port can handle lists of files.
 	 */
-	protected boolean m_isMultiFile;
+	private boolean m_isMultiFile;
 
 	/**
 	 * The list of supported file extensions.
 	 */
-	protected List<String> m_types = new ArrayList<String>();
+	private List<String> m_types = new ArrayList<String>();
+
+	/**
+	 * Flag to indicate that this port represents an output prefix.
+	 */
+	private boolean m_isOutputPrefix;
 
 	/**
 	 * Adds a supported {@link MIMEType} to the port.
@@ -166,5 +171,24 @@ public class Port implements Serializable {
 	 */
 	public void setMultiFile(boolean isMultiFile) {
 		m_isMultiFile = isMultiFile;
+	}
+
+	/**
+	 * Returns whether this port is an output prefix.
+	 * 
+	 * @return True if the port is an output prefix, false otherwise.
+	 */
+	public boolean isOutputPrefix() {
+		return m_isOutputPrefix;
+	}
+
+	/**
+	 * Sets whether this port is an output prefix.
+	 * 
+	 * @param isOutputPrefix
+	 *            New value for the output prefix flag.
+	 */
+	public void setOutputPrefix(boolean isOutputPrefix) {
+		m_isOutputPrefix = isOutputPrefix;
 	}
 }
