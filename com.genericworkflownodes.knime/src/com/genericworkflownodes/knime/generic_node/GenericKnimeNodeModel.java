@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -191,7 +192,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		String commandGeneratorClassName = "";
 		try {
 			executorClassName = m_pluginConfig.getPluginProperties()
-					.getProperty("m_executor");
+					.getProperty("executor");
 			commandGeneratorClassName = m_pluginConfig.getPluginProperties()
 					.getProperty("commandGenerator");
 			if (executorClassName == null || "".equals(executorClassName)) {
@@ -556,16 +557,20 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			Parameter<?> p = m_nodeConfig.getParameter(name);
 			// used to remember which files we actually generated here
 			List<URI> fileURIs = new ArrayList<URI>();
+
+			// basenames and number of output files guessed from input
+			List<String> basenames = getOutputBaseNames();
+
 			if (p instanceof FileListParameter && port.isMultiFile()) {
 
 				FileListParameter flp = (FileListParameter) p;
-				int numberOfOutputFiles = getNumberOfOutputFiles();
+
 				List<String> fileNames = new ArrayList<String>();
 
-				for (int f = 0; f < numberOfOutputFiles; ++f) {
-					// create basename: <clazz_name>_<port_nr>_<outfile_nr>
+				for (int f = 0; f < basenames.size(); ++f) {
+					// create basename: <base_name>_<port_nr>_<outfile_nr>
 					String file_basename = String.format("%s_%d_%d",
-							m_nodeConfig.getName(), i, f);
+							basenames.get(i), i, f);
 					File file = m_fileStash.getFile(file_basename, ext);
 					fileNames.add(file.getAbsolutePath());
 					fileURIs.add(file.toURI());
@@ -576,9 +581,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				flp.setValue(fileNames);
 
 			} else if (p instanceof FileParameter && !port.isMultiFile()) {
-				// create basename: <clazz_name>_<port_nr>_<outfile_nr>
-				String file_basename = String.format("%s_%d",
-						m_nodeConfig.getName(), i);
+				// create basename: <base_name>_<port_nr>_<outfile_nr>
+				String file_basename = String.format("%s_%d", basenames.get(0),
+						i);
 				File file = m_fileStash.getFile(file_basename, ext);
 				((FileParameter) p).setValue(file.getAbsolutePath());
 				GenericNodesPlugin.log("> setting param " + name + "->" + file);
@@ -597,43 +602,83 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	}
 
 	/**
-	 * Determines the number of output files based on the incoming ports.
+	 * Tries to guess the optimal output file names given all the input edges.
+	 * The file names will be extracted from the configuration, hence the file
+	 * names need to be transferred into config prior to using this method. See
+	 * {@link GenericKnimeNodeModel#transferIncomingPorts2Config(PortObject[])}.
 	 * 
-	 * @param flp
-	 * @return
+	 * @return A list of base names for the output files.
 	 * @throws Exception
 	 */
-	private int getNumberOfOutputFiles() throws Exception {
-		int numberOfOutputFiles = -1;
+	private List<String> getOutputBaseNames() throws Exception {
 
-		// check for input lists
+		// 1. we select always the list with the highest number of files.
+		// 2. we prefer lists over files (independent of the number of
+		// elements).
+		// 3.
+
+		List<String> basenames = new ArrayList<String>();
+
+		// find the port
+		int naming_port = 0;
+		int max_size = -1;
+		boolean is_fileParameter = false;
 		for (int i = 0; i < m_nodeConfig.getInputPorts().size(); ++i) {
 			Port port = m_nodeConfig.getInputPorts().get(i);
 			String name = port.getName();
 			Parameter<?> p = m_nodeConfig.getParameter(name);
 
-			// we only check FileListParameter
 			if (p instanceof FileListParameter) {
-				if (numberOfOutputFiles == -1)
-					numberOfOutputFiles = ((FileListParameter) p).getValue()
-							.size();
-				else {
-					// check if the values agree
-					if (((FileListParameter) p).getValue().size() != numberOfOutputFiles)
-						throw new Exception(
-								"The number of output files cannot be determined since multiple input file lists with disagreeing numbers exist.");
+				FileListParameter flp = (FileListParameter) p;
+				if (max_size == -1
+						|| (is_fileParameter && (max_size <= flp.getValue()
+								.size()))) {
+					max_size = flp.getValue().size();
+					naming_port = i;
+				} else if (flp.getValue().size() != max_size) {
+					throw new Exception(
+							"The number of output files cannot be determined since multiple input file lists with disagreeing numbers exist.");
+
 				}
+			} else if (max_size == -1) {
+				// is a regular incoming port but we have no better option
+				max_size = 1;
+				naming_port = i;
+				// indicating that we have (for now) selected a file parameter
+				// which will be overruled by any FileListParameter
+				is_fileParameter = true;
 			}
 		}
 
-		if (numberOfOutputFiles == -1) {
-			throw new Exception(
-					"The number of output files cannot be determined since no input file list was found to determine the output size.");
+		// generate the filenames
+		Port port = m_nodeConfig.getInputPorts().get(naming_port);
+		String name = port.getName();
+		Parameter<?> p = m_nodeConfig.getParameter(name);
+
+		if (p instanceof FileListParameter) {
+			// we have multiple base names
+			FileListParameter flp = (FileListParameter) p;
+			for (String fName : flp.getValue()) {
+				basenames.add(FilenameUtils.getBaseName(fName));
+			}
+		} else {
+			// we only have a single basename
+			// FilenameUtils.getBaseName()
+			basenames.add(FilenameUtils.getBaseName(((FileParameter) p)
+					.getValue()));
 		}
 
-		return numberOfOutputFiles;
+		return basenames;
 	}
 
+	/**
+	 * Transfers the incoming ports into the config, that it can be written out
+	 * into a config file or can be tranferred to the command line.
+	 * 
+	 * @param inData
+	 *            The incoming port objects.
+	 * @throws Exception
+	 */
 	private void transferIncomingPorts2Config(PortObject[] inData)
 			throws Exception {
 		// Transfer settings from the input ports into the configuration object
@@ -695,10 +740,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 	 * @param exec
 	 *            The execution context of the current node.
 	 * @return
-	 * @throws Exception
+	 * @throws NonExistingMimeTypeException
 	 */
 	private PortObject[] processOutput(final List<List<URI>> outputFileNames,
-			final ExecutionContext exec) throws Exception {
+			final ExecutionContext exec) throws NonExistingMimeTypeException {
 		int nOut = m_nodeConfig.getOutputPorts().size();
 
 		// create output tables
@@ -724,6 +769,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		return outports;
 	}
 
+	/**
+	 * Extracts the extension from the given path.
+	 * 
+	 * @param path
+	 * @return
+	 */
 	private String getExtension(String path) {
 		if (path.lastIndexOf('.') == -1) {
 			return "";
