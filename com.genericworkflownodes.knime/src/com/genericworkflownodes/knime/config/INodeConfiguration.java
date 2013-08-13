@@ -37,28 +37,28 @@ public interface INodeConfiguration {
 	 * 
 	 * @return The name of the tool.
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * A short description of the tool.
 	 * 
 	 * @return The description.
 	 */
-	public String getDescription();
+	String getDescription();
 
 	/**
 	 * The manual text that should be displayed in the GUI.
 	 * 
 	 * @return The manual text.
 	 */
-	public String getManual();
+	String getManual();
 
 	/**
 	 * The link to the online documentation of this tool.
 	 * 
 	 * @return The link to the online documentation.
 	 */
-	public String getDocUrl();
+	String getDocUrl();
 
 	/**
 	 * Returns the name of the executable file as it was defined in the CTD. If
@@ -66,7 +66,7 @@ public interface INodeConfiguration {
 	 * 
 	 * @return The name of the tool executable.
 	 */
-	public String getExecutableName();
+	String getExecutableName();
 
 	/**
 	 * Returns the path to the executable as it was defined in the CTD. Note
@@ -75,14 +75,14 @@ public interface INodeConfiguration {
 	 * 
 	 * @return The path to the executable.
 	 */
-	public String getExecutablePath();
+	String getExecutablePath();
 
 	/**
 	 * Returns the version of the node.
 	 * 
 	 * @return the version.
 	 */
-	public String getVersion();
+	String getVersion();
 
 	/**
 	 * Returns the xml source of this configuration as {@link String}.
@@ -91,21 +91,21 @@ public interface INodeConfiguration {
 	 * @deprecated
 	 */
 	@Deprecated
-	public String getXML();
+	String getXML();
 
 	/**
 	 * Returns the category of the tool.
 	 * 
 	 * @return the category.
 	 */
-	public String getCategory();
+	String getCategory();
 
 	/**
 	 * Returns the command line interface mapping of the tool.
 	 * 
 	 * @return The {@link CLI} mapping.
 	 */
-	public CLI getCLI();
+	CLI getCLI();
 
 	/**
 	 * Returns the list of all relocators used to find and move files after tool
@@ -114,35 +114,35 @@ public interface INodeConfiguration {
 	 * @return The list of available relocators, if no relocators were set an
 	 *         empty list is returned.
 	 */
-	public List<Relocator> getRelocators();
+	List<Relocator> getRelocators();
 
 	/**
 	 * Returns the number of output ports of this tool.
 	 * 
 	 * @return The number of output ports.
 	 */
-	public int getNumberOfOutputPorts();
+	int getNumberOfOutputPorts();
 
 	/**
 	 * Returns the number of input ports of this tool.
 	 * 
 	 * @return The number of input ports.
 	 */
-	public int getNumberOfInputPorts();
+	int getNumberOfInputPorts();
 
 	/**
 	 * The input ports of this tool.
 	 * 
 	 * @return The input ports.
 	 */
-	public List<Port> getInputPorts();
+	List<Port> getInputPorts();
 
 	/**
 	 * The output ports of this tool.
 	 * 
 	 * @return The output ports.
 	 */
-	public List<Port> getOutputPorts();
+	List<Port> getOutputPorts();
 
 	/**
 	 * Returns the specified port if it is a registered input port or null if
@@ -153,7 +153,7 @@ public interface INodeConfiguration {
 	 * 
 	 * @return The port object or null if no such port exists.
 	 */
-	public Port getInputPortByName(String portName);
+	Port getInputPortByName(String portName);
 
 	/**
 	 * Returns the specified port if it is a registered output port or null if
@@ -164,7 +164,7 @@ public interface INodeConfiguration {
 	 * 
 	 * @return The port object or null if no such port exists.
 	 */
-	public Port getOutputPortByName(String portName);
+	Port getOutputPortByName(String portName);
 
 	/**
 	 * Returns the parameter of this tool having the given key.
@@ -173,21 +173,21 @@ public interface INodeConfiguration {
 	 *            The key of the parameter that should be returned.
 	 * @return The parameter associated with the given key.
 	 */
-	public Parameter<?> getParameter(String key);
+	Parameter<?> getParameter(String key);
 
 	/**
 	 * A list of all parameter names of this tool.
 	 * 
 	 * @return A list of parameter names.
 	 */
-	public List<String> getParameterKeys();
+	List<String> getParameterKeys();
 
 	/**
 	 * The list of all parameters of this tool.
 	 * 
 	 * @return The list of all parameters of this tool.
 	 */
-	public List<Parameter<?>> getParameters();
+	List<Parameter<?>> getParameters();
 
 	/**
 	 * Returns the description of the given section or null if the section is
@@ -197,5 +197,5 @@ public interface INodeConfiguration {
 	 *            The section name.
 	 * @return The section description.
 	 */
-	public String getSectionDescription(String section);
+	String getSectionDescription(String section);
 }

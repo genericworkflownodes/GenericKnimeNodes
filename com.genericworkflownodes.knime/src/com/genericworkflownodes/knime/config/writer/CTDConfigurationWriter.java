@@ -223,9 +223,17 @@ public class CTDConfigurationWriter {
 				item.append(" type=\"");
 				if (p instanceof FileListParameter) {
 					if (currentConfig.getInputPortByName(key) != null) {
-						item.append("input-file");
+						if (currentConfig.getInputPortByName(key).isPrefix()) {
+							item.append("input-prefix");
+						} else {
+							item.append("input-file");
+						}
 					} else if (currentConfig.getOutputPortByName(key) != null) {
-						item.append("output-file");
+						if (currentConfig.getOutputPortByName(key).isPrefix()) {
+							item.append("output-prefix");
+						} else {
+							item.append("output-file");
+						}
 					}
 				} else if (p instanceof StringListParameter) {
 					item.append("string");
@@ -276,9 +284,17 @@ public class CTDConfigurationWriter {
 				item.append(" type=\"");
 				if (p instanceof FileParameter) {
 					if (currentConfig.getInputPortByName(key) != null) {
-						item.append("input-file");
+						if (currentConfig.getInputPortByName(key).isPrefix()) {
+							item.append("input-prefix");
+						} else {
+							item.append("input-file");
+						}
 					} else if (currentConfig.getOutputPortByName(key) != null) {
-						item.append("output-file");
+						if (currentConfig.getOutputPortByName(key).isPrefix()) {
+							item.append("output-prefix");
+						} else {
+							item.append("output-file");
+						}
 					}
 				} else if (p instanceof BoolParameter
 						|| p instanceof StringParameter

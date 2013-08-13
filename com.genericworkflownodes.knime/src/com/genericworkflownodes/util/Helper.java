@@ -39,20 +39,34 @@ import java.util.Random;
 public class Helper {
 
 	/**
+	 * Size of the buffer when copying streams to files.
+	 */
+	private static final int BUFFER_SIZE = 2048;
+
+	/**
+	 * Private c'tor to avoid instantiation of Util class.
+	 */
+	private Helper() {
+	}
+
+	/**
 	 * Copies the content of the {@link InputStream} in to the {@link File}
 	 * dest.
 	 * 
 	 * @param in
-	 *            Strean to copy.
+	 *            Stream to copy.
 	 * @param dest
+	 *            File to put content of stream into.
 	 * @throws IOException
+	 *             Is thrown if operations on target file fail.
 	 */
-	public static void copyStream(InputStream in, File dest) throws IOException {
+	public static void copyStream(final InputStream in, final File dest)
+			throws IOException {
 		FileOutputStream out = new FileOutputStream(dest);
 		BufferedInputStream bin = new BufferedInputStream(in);
 
 		try {
-			byte[] buffer = new byte[2048];
+			byte[] buffer = new byte[BUFFER_SIZE];
 			int len;
 			while ((len = bin.read(buffer, 0, 2048)) != -1) {
 				out.write(buffer, 0, len);
@@ -63,6 +77,9 @@ public class Helper {
 			// try to close the streams
 			out.close();
 			bin.close();
+
+			// rethrow exception
+			throw ex;
 		}
 
 	}
@@ -70,20 +87,38 @@ public class Helper {
 	/**
 	 * Local random number generator to ensure uniqueness of file names.
 	 */
-	private static Random RANDOM_NUMBER_GENERATOR = new Random();
+	private static Random randomNumberGenerator = new Random();
 
-	public static synchronized File getTempFile(String directory,
-			String suffix, boolean autodelete) throws IOException {
+	/**
+	 * Creates a temporary file in the given directory, with the given suffix.
+	 * 
+	 * @param directory
+	 *            Directory to create the file in.
+	 * @param suffix
+	 *            File suffix/extension.
+	 * @param autodelete
+	 *            Indicator if the created file should be deleted when exiting
+	 *            the JVM.
+	 * @return A {@link File} object pointing to the new file.
+	 * @throws IOException
+	 *             In case of problems when creating the file.
+	 */
+	public static synchronized File getTempFile(final String directory,
+			final String suffix, boolean autodelete) throws IOException {
 
-		int num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
+		int num = randomNumberGenerator.nextInt(Integer.MAX_VALUE);
 		File file = new File(directory + File.separator
 				+ String.format("%06d.%s", num, suffix));
 		while (file.exists()) {
-			num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
+			num = randomNumberGenerator.nextInt(Integer.MAX_VALUE);
 			file = new File(directory + File.separator
 					+ String.format("%06d.%s", num, suffix));
 		}
-		file.createNewFile();
+
+		if (!file.createNewFile()) {
+			throw new IOException("Failed to create file "
+					+ file.getAbsolutePath());
+		}
 
 		if (autodelete) {
 			file.deleteOnExit();
@@ -92,22 +127,50 @@ public class Helper {
 		return file;
 	}
 
-	public static synchronized File getTempFile(String suffix,
+	/**
+	 * Creates a temporary file in the systems temporary directory with the
+	 * given suffix.
+	 * 
+	 * @param suffix
+	 *            File suffix/extension.
+	 * @param autodelete
+	 *            Indicator if the created file should be deleted when exiting
+	 *            the JVM.
+	 * @return A {@link File} object pointing to the new file.
+	 * @throws IOException
+	 *             In case of problems when creating the file.
+	 */
+	public static synchronized File getTempFile(final String suffix,
 			boolean autodelete) throws IOException {
 		File file = File.createTempFile("GKN", suffix);
-		if (autodelete)
+		if (autodelete) {
 			file.deleteOnExit();
+		}
 		return file;
 	}
 
-	public static synchronized File getTempDir(String directory, String prefix,
-			boolean autodelete) throws IOException {
+	/**
+	 * Creates a temporary directory in the given directory with the given
+	 * prefix.
+	 * 
+	 * @param directory
+	 *            The directory to create the directory in.
+	 * @param prefix
+	 *            The prefix of the generated directory.
+	 * @param autodelete
+	 *            If true the file will be deleted when JVM shuts down.
+	 * @return A {@link File} pointing to the newly generated directory.
+	 * @throws IOException
+	 *             In case of problems when creating the directory.
+	 */
+	public static synchronized File getTempDir(final String directory,
+			final String prefix, boolean autodelete) throws IOException {
 
-		int num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
+		int num = randomNumberGenerator.nextInt(Integer.MAX_VALUE);
 		File dir = new File(directory + File.separator
 				+ String.format("%s%06d", prefix, num));
 		while (dir.exists()) {
-			num = RANDOM_NUMBER_GENERATOR.nextInt(Integer.MAX_VALUE);
+			num = randomNumberGenerator.nextInt(Integer.MAX_VALUE);
 			dir = new File(directory + File.separator
 					+ String.format("%s%06d", prefix, num));
 		}
@@ -120,8 +183,20 @@ public class Helper {
 		return dir;
 	}
 
-	public static synchronized File getTempDir(String prefix, boolean autodelete)
-			throws IOException {
+	/**
+	 * Creates a temporary directory in the systems temporary directory with the
+	 * given prefix.
+	 * 
+	 * @param prefix
+	 *            The prefix of the generated directory.
+	 * @param autodelete
+	 *            If true the file will be deleted when JVM shuts down.
+	 * @return A {@link File} pointing to the newly generated directory.
+	 * @throws IOException
+	 *             In case of problems when creating the directory.
+	 */
+	public static synchronized File getTempDir(final String prefix,
+			boolean autodelete) throws IOException {
 		return getTempDir(System.getProperty("java.io.tmpdir"), prefix,
 				autodelete);
 	}
@@ -138,7 +213,7 @@ public class Helper {
 	 * @throws IOException
 	 *             if the file does not exist or cannot be opened or read.
 	 */
-	public static String readFileSummary(File file, int maxLines)
+	public static String readFileSummary(final File file, int maxLines)
 			throws IOException {
 		FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr);
@@ -150,27 +225,27 @@ public class Helper {
 
 			int cnt = 0;
 
-			sb.append("File path: " + file.getAbsolutePath()
-					+ System.getProperty("line.separator"));
-			sb.append("File size: " + file.length() + " bytes"
-					+ System.getProperty("line.separator"));
+			sb.append("File path: ").append(file.getAbsolutePath())
+					.append(System.getProperty("line.separator"));
+			sb.append("File size: ").append(file.length()).append(" bytes")
+					.append(System.getProperty("line.separator"));
 
 			Date date = new Date(file.lastModified());
 			Format formatter = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss");
 			String s = formatter.format(date);
 
-			sb.append("File time: " + s + System.getProperty("line.separator"));
+			sb.append("File time: ").append(s)
+					.append(System.getProperty("line.separator"));
 
-			sb.append(String.format(
-					"File content (first %d lines):"
-							+ System.getProperty("line.separator"), maxLines));
+			sb.append(String.format("File content (first %d lines):", maxLines))
+					.append(System.getProperty("line.separator"));
 
 			while ((line = br.readLine()) != null) {
 				sb.append(line + System.getProperty("line.separator"));
 				cnt++;
 				if (cnt > maxLines) {
-					sb.append("######### OUTPUT TRUNCATED #########"
-							+ System.getProperty("line.separator"));
+					sb.append("######### OUTPUT TRUNCATED #########").append(
+							System.getProperty("line.separator"));
 					break;
 				}
 			}

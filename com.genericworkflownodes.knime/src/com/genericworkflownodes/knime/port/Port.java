@@ -42,31 +42,36 @@ public class Port implements Serializable {
 	 * The serialVersionUID.
 	 */
 	private static final long serialVersionUID = -3038975820102785198L;
-	
+
 	/**
 	 * Flag to show if the port is optional for the tool.
 	 */
-	protected boolean isOptional;
-	
+	private boolean m_isOptional;
+
 	/**
 	 * The name of the port.
 	 */
-	protected String name;
-	
+	private String m_name;
+
 	/**
 	 * The description of the port.
 	 */
-	protected String description;
-	
+	private String m_description;
+
 	/**
-	 * Flag to indicate if this port can handle lists of files. 
+	 * Flag to indicate if this port can handle lists of files.
 	 */
-	protected boolean isMultiFile;
+	private boolean m_isMultiFile;
 
 	/**
 	 * The list of supported file extensions.
 	 */
-	protected List<String> types = new ArrayList<String>();
+	private List<String> m_types = new ArrayList<String>();
+
+	/**
+	 * Flag to indicate that this port represents an output prefix.
+	 */
+	private boolean m_isPrefix;
 
 	/**
 	 * Adds a supported {@link MIMEType} to the port.
@@ -74,8 +79,8 @@ public class Port implements Serializable {
 	 * @param MIMEtype
 	 *            A new {@link MIMEType} supported by this port.
 	 */
-	public void addMimeType(String type) {
-		types.add(type);
+	public void addMimeType(final String type) {
+		m_types.add(type);
 	}
 
 	/**
@@ -84,7 +89,7 @@ public class Port implements Serializable {
 	 * @return List of all {@link MIMEType}s supported by this port.
 	 */
 	public List<String> getMimeTypes() {
-		return types;
+		return m_types;
 	}
 
 	/**
@@ -94,19 +99,19 @@ public class Port implements Serializable {
 	 * @return True if the port is optional, false otherwise.
 	 */
 	public boolean isOptional() {
-		return isOptional;
+		return m_isOptional;
 	}
 
 	/**
 	 * Sets whether this port is optional or needs a mandatory incoming
 	 * connection.
 	 * 
-	 * @param isOptional
+	 * @param m_isOptional
 	 *            New indicator if the given port is optional or not.
 	 * 
 	 */
 	public void setOptional(boolean isOptional) {
-		this.isOptional = isOptional;
+		m_isOptional = isOptional;
 	}
 
 	/**
@@ -115,7 +120,7 @@ public class Port implements Serializable {
 	 * @return port The name of the port.
 	 */
 	public String getName() {
-		return name;
+		return m_name;
 	}
 
 	/**
@@ -125,8 +130,8 @@ public class Port implements Serializable {
 	 *            The new port name.
 	 * 
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setName(final String name) {
+		m_name = name;
 	}
 
 	/**
@@ -135,7 +140,7 @@ public class Port implements Serializable {
 	 * @return The port description.
 	 */
 	public String getDescription() {
-		return description;
+		return m_description;
 	}
 
 	/**
@@ -144,8 +149,8 @@ public class Port implements Serializable {
 	 * @param description
 	 *            The new description of the port.
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDescription(final String description) {
+		m_description = description;
 	}
 
 	/**
@@ -154,7 +159,7 @@ public class Port implements Serializable {
 	 * @return True if the port allows multiple files, false otherwise.
 	 */
 	public boolean isMultiFile() {
-		return isMultiFile;
+		return m_isMultiFile;
 	}
 
 	/**
@@ -165,6 +170,25 @@ public class Port implements Serializable {
 	 *            allowed.
 	 */
 	public void setMultiFile(boolean isMultiFile) {
-		this.isMultiFile = isMultiFile;
+		m_isMultiFile = isMultiFile;
+	}
+
+	/**
+	 * Returns whether this port is an output prefix.
+	 * 
+	 * @return True if the port is an output prefix, false otherwise.
+	 */
+	public boolean isPrefix() {
+		return m_isPrefix;
+	}
+
+	/**
+	 * Sets whether this port is an output prefix.
+	 * 
+	 * @param isPrefix
+	 *            New value for the output prefix flag.
+	 */
+	public void setIsPrefix(boolean isPrefix) {
+		m_isPrefix = isPrefix;
 	}
 }

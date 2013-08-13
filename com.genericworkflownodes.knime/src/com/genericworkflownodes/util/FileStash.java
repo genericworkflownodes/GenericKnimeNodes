@@ -54,7 +54,6 @@ public class FileStash implements IFileStash {
 		File file = new File(location, filename);
 		if (!file.exists()) {
 			file.getParentFile().mkdirs();
-			file.createNewFile();
 		}
 		return file;
 	}

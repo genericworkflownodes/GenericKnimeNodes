@@ -85,6 +85,8 @@ public class ParamHandler extends DefaultHandler {
 	private static String TYPE_STRING = "string";
 	private static String TYPE_INPUT_FILE = "input-file";
 	private static String TYPE_OUTPUT_FILE = "output-file";
+	private static String TYPE_OUTPUT_PREFIX = "output-prefix";
+	private static String TYPE_INPUT_PREFIX = "input-prefix";
 
 	private static String ATTR_NAME = "name";
 	private static String ATTR_VALUE = "value";
@@ -227,7 +229,9 @@ public class ParamHandler extends DefaultHandler {
 			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
 				handleDoubleType(paramName, paramValue, attributes);
 			} else if (TYPE_STRING.equals(type) || TYPE_INPUT_FILE.equals(type)
-					|| TYPE_OUTPUT_FILE.equals(type)) {
+					|| TYPE_OUTPUT_FILE.equals(type)
+					|| TYPE_OUTPUT_PREFIX.equals(type)
+					|| TYPE_INPUT_PREFIX.equals(type)) {
 				handleStringType(paramName, paramValue, attributes);
 			}
 
@@ -362,8 +366,13 @@ public class ParamHandler extends DefaultHandler {
 			((FileParameter) m_currentParameter).setIsOptional(p.isOptional());
 		}
 
-		if (attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
-				|| getTags(attributes).contains(INPUTFILE_TAG)) {
+		String attr_type = attributes.getValue(ATTR_TYPE);
+		p.setIsPrefix(TYPE_OUTPUT_PREFIX.equals(attr_type)
+				|| TYPE_INPUT_PREFIX.equals(attr_type));
+
+		if (TYPE_INPUT_FILE.equals(attr_type)
+				|| getTags(attributes).contains(INPUTFILE_TAG)
+				|| TYPE_INPUT_PREFIX.equals(attr_type)) {
 			m_inputPorts.add(p);
 		} else {
 			m_outputPorts.add(p);
@@ -518,8 +527,11 @@ public class ParamHandler extends DefaultHandler {
 				.contains(OUTPUTFILE_TAG));
 
 		// additionally we check if type is equal to input-file, output-file
-		isPort = attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
-				|| attributes.getValue(ATTR_TYPE).equals(TYPE_OUTPUT_FILE);
+		final String attr_type = attributes.getValue(ATTR_TYPE);
+		isPort = TYPE_INPUT_FILE.equals(attr_type)
+				|| TYPE_OUTPUT_FILE.equals(attr_type)
+				|| TYPE_OUTPUT_PREFIX.equals(attr_type)
+				|| TYPE_INPUT_PREFIX.equals(attr_type);
 
 		return isPort;
 	}

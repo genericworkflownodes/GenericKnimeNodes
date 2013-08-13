@@ -20,6 +20,7 @@
 package com.genericworkflownodes.knime.generic_node;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.base.data.prefixport.PrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
@@ -415,7 +417,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			if (!param.isOptional() && param.getValue() != null
 					&& "".equals(param.getStringRep())
 					&& !(param instanceof IFileParameter)) {
-				setWarningMessage("some mandatory parameters might not be set");
+				setWarningMessage("Some mandatory parameters might are not set.");
 			}
 		}
 
@@ -429,7 +431,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 					continue;
 				} else {
 					throw new InvalidSettingsException(
-							"non-optional input port not connected");
+							"Non-optional input port is not connected.");
 				}
 			}
 
@@ -447,7 +449,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 					ok = true;
 				}
 			}
-			if (!ok) {
+			// we require consistent file endings for non prefix ports
+			if (!ok && !m_nodeConfig.getInputPorts().get(i).isPrefix()) {
 				String mismatch = String.format(
 						"has extension: [%s]; expected on of:[%s]", mt,
 						Arrays.toString(m_fileEndingsInPorts[i]));
@@ -595,6 +598,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 				// create basename: <base_name>_<port_nr>_<outfile_nr>
 				String file_basename = String.format("%s_%d", basename, i);
+				// we do not append the file extension if we have a prefix
+
 				File file = m_fileStash.getFile(file_basename, ext);
 				((FileParameter) p).setValue(file.getAbsolutePath());
 				GenericNodesPlugin.log("> setting param " + name + "->" + file);
@@ -626,13 +631,15 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 		// 1. we select always the list with the highest number of files.
 		// 2. we prefer lists over files (independent of the number of
 		// elements).
-		// 3.
+		// 3. we prefer files over prefixes since we assume that prefixes are
+		// often indices or reference data
 
 		List<String> basenames = new ArrayList<String>();
 
 		// find the port
 		int naming_port = 0;
 		int max_size = -1;
+		boolean seen_prefix = false;
 		boolean is_fileParameter = false;
 		for (int i = 0; i < m_nodeConfig.getInputPorts().size(); ++i) {
 			Port port = m_nodeConfig.getInputPorts().get(i);
@@ -651,13 +658,14 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 							"The number of output files cannot be determined since multiple input file lists with disagreeing numbers exist.");
 
 				}
-			} else if (max_size == -1) {
+			} else if (max_size == -1 || seen_prefix) {
 				// is a regular incoming port but we have no better option
 				max_size = 1;
 				naming_port = i;
 				// indicating that we have (for now) selected a file parameter
 				// which will be overruled by any FileListParameter
 				is_fileParameter = true;
+				seen_prefix = port.isPrefix();
 			}
 		}
 
@@ -710,8 +718,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 			String name = port.getName();
 			boolean isMultiFile = port.isMultiFile();
+			boolean isPrefix = port.isPrefix();
 
-			if (uris.size() > 1 && !isMultiFile) {
+			if (uris.size() > 1 && (!isMultiFile && !isPrefix)) {
 				throw new Exception(
 						"URIPortObject with multiple URIs supplied at single URI port #"
 								+ i);
@@ -727,7 +736,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 								+ i);
 			}
 
-			if (isMultiFile) {
+			if (isPrefix) {
+				// we pass only the prefix to the tool
+				PrefixURIPortObject puri = (PrefixURIPortObject) inData[i];
+				((FileParameter) p).setValue(puri.getPrefix());
+			} else if (isMultiFile) {
 				// we need to collect all filenames and then set them as a batch
 				// in the config
 				List<String> filenames = new ArrayList<String>();
@@ -767,17 +780,43 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			List<URIContent> uris = new ArrayList<URIContent>();
 
 			String someFileName = "";
-			// multi output file
-			for (URI filename : outputFileNames.get(i)) {
-				someFileName = filename.getPath();
-				uris.add(new URIContent(filename, getExtension(filename
-						.getPath())));
+
+			if (m_nodeConfig.getOutputPorts().get(i).isPrefix()) {
+				// we have generated a list of files based on a prefix
+				URI filename = outputFileNames.get(i).get(0);
+				final File f = new File(filename);
+				final String f_name = f.getName();
+
+				// list a files sharing the prefix
+				String[] files = f.getParentFile().list(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						return name.startsWith(f_name);
+					}
+				});
+
+				// add prefix to and files to output list
+				for (String file_name : files) {
+					uris.add(new URIContent(new File(f.getParentFile(),
+							file_name).toURI(), getExtension(file_name)));
+				}
+
+				outports[i] = new PrefixURIPortObject(uris, f.getAbsolutePath());
+			} else {
+				// multi output file
+				for (URI filename : outputFileNames.get(i)) {
+					someFileName = filename.getPath();
+					uris.add(new URIContent(filename, getExtension(filename
+							.getPath())));
+				}
+
+				String mimeType = getExtension(someFileName);
+				if (mimeType == null)
+					throw new NonExistingMimeTypeException(someFileName);
+
+				outports[i] = new URIPortObject(uris);
 			}
 
-			String mimeType = getExtension(someFileName);
-			if (mimeType == null)
-				throw new NonExistingMimeTypeException(someFileName);
-			outports[i] = new URIPortObject(uris);
 		}
 
 		return outports;
