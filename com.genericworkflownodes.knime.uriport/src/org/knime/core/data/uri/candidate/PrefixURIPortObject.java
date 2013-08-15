@@ -100,7 +100,7 @@ public class PrefixURIPortObject extends URIPortObject {
 		int i = 0;
 
 		for (String key : model.keySet()) {
-			if (!"prefix".equals(key)) {
+			if (key.startsWith("child-")) {
 				// load child into temp object and store this in temp
 				// ModelContent
 				ModelContentRO load_child = model.getModelContent(key);
