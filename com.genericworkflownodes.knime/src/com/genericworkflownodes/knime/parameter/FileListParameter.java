@@ -28,7 +28,6 @@ import com.genericworkflownodes.knime.port.Port;
  * This is a convenience class to handle user supplied output filenames.
  * 
  * @author roettig
- * 
  */
 public class FileListParameter extends StringListParameter implements
 		IFileParameter {
@@ -39,9 +38,9 @@ public class FileListParameter extends StringListParameter implements
 	private static final long serialVersionUID = 3010211738983269403L;
 
 	/**
-	 * The port associated to the file list.
+	 * The m_port associated to the file list.
 	 */
-	private Port port;
+	private Port m_port;
 
 	/**
 	 * Constructor.
@@ -57,11 +56,11 @@ public class FileListParameter extends StringListParameter implements
 
 	@Override
 	public void setPort(final Port port) {
-		this.port = port;
+		m_port = port;
 	}
 
 	@Override
 	public Port getPort() {
-		return port;
+		return m_port;
 	}
 }

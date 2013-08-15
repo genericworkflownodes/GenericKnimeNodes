@@ -71,7 +71,7 @@ public class Port implements Serializable {
 	/**
 	 * Flag to indicate that this port represents an output prefix.
 	 */
-	private boolean m_isOutputPrefix;
+	private boolean m_isPrefix;
 
 	/**
 	 * Adds a supported {@link MIMEType} to the port.
@@ -178,17 +178,17 @@ public class Port implements Serializable {
 	 * 
 	 * @return True if the port is an output prefix, false otherwise.
 	 */
-	public boolean isOutputPrefix() {
-		return m_isOutputPrefix;
+	public boolean isPrefix() {
+		return m_isPrefix;
 	}
 
 	/**
 	 * Sets whether this port is an output prefix.
 	 * 
-	 * @param isOutputPrefix
+	 * @param isPrefix
 	 *            New value for the output prefix flag.
 	 */
-	public void setOutputPrefix(boolean isOutputPrefix) {
-		m_isOutputPrefix = isOutputPrefix;
+	public void setIsPrefix(boolean isPrefix) {
+		m_isPrefix = isPrefix;
 	}
 }

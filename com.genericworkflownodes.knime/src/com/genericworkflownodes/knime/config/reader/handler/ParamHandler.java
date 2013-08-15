@@ -80,6 +80,8 @@ public class ParamHandler extends DefaultHandler {
 	private static String TYPE_STRING = "string";
 	private static String TYPE_INPUT_FILE = "input-file";
 	private static String TYPE_OUTPUT_FILE = "output-file";
+	private static String TYPE_OUTPUT_PREFIX = "output-prefix";
+	private static String TYPE_INPUT_PREFIX = "input-prefix";
 
 	private static String ATTR_NAME = "name";
 	private static String ATTR_VALUE = "value";
@@ -119,74 +121,74 @@ public class ParamHandler extends DefaultHandler {
 	/**
 	 * The list of extracted parameters.
 	 */
-	private LinkedHashMap<String, Parameter<?>> extractedParameters;
+	private LinkedHashMap<String, Parameter<?>> m_extractedParameters;
 
 	/**
 	 * The currently generated parameter.
 	 */
-	private Parameter<?> currentParameter;
+	private Parameter<?> m_currentParameter;
 
 	/**
 	 * Store the current list entries to finally add them to the created list
 	 * parameter.
 	 */
-	private List<String> listValues;
+	private List<String> m_listValues;
 
 	/**
 	 * The parent handler that invoked this handler for a sub tree of the XML
 	 * document.
 	 */
-	private CTDHandler parentHandler;
+	private CTDHandler m_parentHandler;
 
 	/**
 	 * The {@link XMLReader} that processes the entire document.
 	 */
-	private XMLReader xmlReader;
+	private XMLReader m_xmlReader;
 
 	/**
 	 * Stores the current path inside the xml tree.
 	 */
-	private String currentPath;
+	private String m_currentPath;
 
 	/**
 	 * The output ports recorded for this parameter block.
 	 */
-	private ArrayList<Port> inputPorts;
+	private ArrayList<Port> m_inputPorts;
 
 	/**
 	 * The input ports recorded for this parameter block.
 	 */
-	private ArrayList<Port> outputPorts;
+	private ArrayList<Port> m_outputPorts;
 
 	/**
 	 * The {@link NodeConfiguration} that will be filled while parsing the
 	 * document.
 	 */
-	private NodeConfiguration config;
+	private NodeConfiguration m_config;
 
 	/**
 	 * C'tor accepting the parent handler and the xml reader.
 	 * 
-	 * @param xmlReader
+	 * @param m_xmlReader
 	 *            The xml reader of the global document.
-	 * @param parentHandler
+	 * @param m_parentHandler
 	 *            The parent handler for the global document.
-	 * @param config
+	 * @param m_config
 	 *            The {@link NodeConfiguration} that will be filled while
 	 *            parsing the document.
 	 */
 	public ParamHandler(XMLReader xmlReader, CTDHandler parentHandler,
 			NodeConfiguration config) {
-		this.xmlReader = xmlReader;
-		this.parentHandler = parentHandler;
-		this.config = config;
+		m_xmlReader = xmlReader;
+		m_parentHandler = parentHandler;
+		m_config = config;
 
 		// prepare state of SAXHandler
-		currentPath = "";
-		extractedParameters = new LinkedHashMap<String, Parameter<?>>();
+		m_currentPath = "";
+		m_extractedParameters = new LinkedHashMap<String, Parameter<?>>();
 
-		inputPorts = new ArrayList<Port>();
-		outputPorts = new ArrayList<Port>();
+		m_inputPorts = new ArrayList<Port>();
+		m_outputPorts = new ArrayList<Port>();
 	}
 
 	@Override
@@ -195,9 +197,9 @@ public class ParamHandler extends DefaultHandler {
 		if (TAG_NODE.equals(name)) {
 			String nodeName = attributes.getValue(ATTR_NAME);
 			String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
-			currentPath += nodeName;
-			config.setSectionDescription(currentPath, nodeDescription);
-			currentPath += PATH_SEPARATOR;
+			m_currentPath += nodeName;
+			m_config.setSectionDescription(m_currentPath, nodeDescription);
+			m_currentPath += PATH_SEPARATOR;
 		} else if (TAG_ITEM.equals(name)) {
 			String type = attributes.getValue(ATTR_TYPE);
 			String paramName = attributes.getValue(ATTR_NAME);
@@ -208,20 +210,22 @@ public class ParamHandler extends DefaultHandler {
 			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
 				handleDoubleType(paramName, paramValue, attributes);
 			} else if (TYPE_STRING.equals(type) || TYPE_INPUT_FILE.equals(type)
-					|| TYPE_OUTPUT_FILE.equals(type)) {
+					|| TYPE_OUTPUT_FILE.equals(type)
+					|| TYPE_OUTPUT_PREFIX.equals(type)
+					|| TYPE_INPUT_PREFIX.equals(type)) {
 				handleStringType(paramName, paramValue, attributes);
 			}
 
 			// did we create a parameter
-			if (currentParameter != null) {
+			if (m_currentParameter != null) {
 				setCommonParameters(attributes);
 
-				extractedParameters.put(
-						currentPath + currentParameter.getKey(),
-						currentParameter);
+				m_extractedParameters.put(
+						m_currentPath + m_currentParameter.getKey(),
+						m_currentParameter);
 
 				// reset for the next iteration
-				currentParameter = null;
+				m_currentParameter = null;
 			}
 		} else if (TAG_ITEMLIST.equals(name)) {
 			// start the list parameter
@@ -237,13 +241,13 @@ public class ParamHandler extends DefaultHandler {
 				handleStringList(paramName, attributes);
 			}
 			// initialize list for storing the list values
-			listValues = new ArrayList<String>();
+			m_listValues = new ArrayList<String>();
 
 			// set extra values for this parameter
 			setCommonParameters(attributes);
 		} else if (TAG_LISTITEM.equals(name)) {
 			String listValue = attributes.getValue(ATTR_VALUE);
-			listValues.add(listValue);
+			m_listValues.add(listValue);
 		}
 	}
 
@@ -256,24 +260,24 @@ public class ParamHandler extends DefaultHandler {
 	 */
 	private void setCommonParameters(Attributes attributes) {
 		// set flags for parameter
-		currentParameter.setAdvanced(isAdvanced(attributes));
-		currentParameter.setIsOptional(isOptional(attributes));
+		m_currentParameter.setAdvanced(isAdvanced(attributes));
+		m_currentParameter.setIsOptional(isOptional(attributes));
 
 		// extract the description
 		String description = attributes.getValue(ATTR_DESCRIPTION);
-		currentParameter.setDescription(description);
+		m_currentParameter.setDescription(description);
 	}
 
 	private void handleStringList(String paramName, Attributes attributes) {
 		if (isPort(attributes)) {
 			createPort(paramName, attributes, true);
 		} else {
-			currentParameter = new StringListParameter(paramName,
+			m_currentParameter = new StringListParameter(paramName,
 					new ArrayList<String>());
 			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
 			if (restrictions != null && !"".equals(restrictions.trim())) {
-				((StringListParameter) currentParameter).setRestrictions(Arrays
-						.asList(restrictions.split(",")));
+				((StringListParameter) m_currentParameter)
+						.setRestrictions(Arrays.asList(restrictions.split(",")));
 			}
 		}
 	}
@@ -288,7 +292,7 @@ public class ParamHandler extends DefaultHandler {
 		}
 
 		Port p = new Port();
-		p.setName(currentPath + paramName);
+		p.setName(m_currentPath + paramName);
 		p.setMultiFile(isList);
 
 		List<String> mimetypes = extractMIMETypes(attributes);
@@ -301,29 +305,34 @@ public class ParamHandler extends DefaultHandler {
 
 		p.setOptional(isOptional(attributes));
 
-		currentParameter = null;
+		m_currentParameter = null;
 		// create port parameter
 		if (isList) {
-			currentParameter = new FileListParameter(paramName,
+			m_currentParameter = new FileListParameter(paramName,
 					new ArrayList<String>());
-			((FileListParameter) currentParameter).setPort(p);
-			((FileListParameter) currentParameter).setDescription(p
+			((FileListParameter) m_currentParameter).setPort(p);
+			((FileListParameter) m_currentParameter).setDescription(p
 					.getDescription());
-			((FileListParameter) currentParameter)
-					.setIsOptional(p.isOptional());
+			((FileListParameter) m_currentParameter).setIsOptional(p
+					.isOptional());
 		} else {
-			currentParameter = new FileParameter(paramName, "");
-			((FileParameter) currentParameter).setPort(p);
-			((FileParameter) currentParameter).setDescription(p
+			m_currentParameter = new FileParameter(paramName, "");
+			((FileParameter) m_currentParameter).setPort(p);
+			((FileParameter) m_currentParameter).setDescription(p
 					.getDescription());
-			((FileParameter) currentParameter).setIsOptional(p.isOptional());
+			((FileParameter) m_currentParameter).setIsOptional(p.isOptional());
 		}
 
-		if (attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
-				|| getTags(attributes).contains(INPUTFILE_TAG)) {
-			inputPorts.add(p);
+		String attr_type = attributes.getValue(ATTR_TYPE);
+		p.setIsPrefix(TYPE_OUTPUT_PREFIX.equals(attr_type)
+				|| TYPE_INPUT_PREFIX.equals(attr_type));
+
+		if (TYPE_INPUT_FILE.equals(attr_type)
+				|| getTags(attributes).contains(INPUTFILE_TAG)
+				|| TYPE_INPUT_PREFIX.equals(attr_type)) {
+			m_inputPorts.add(p);
 		} else {
-			outputPorts.add(p);
+			m_outputPorts.add(p);
 		}
 	}
 
@@ -360,32 +369,32 @@ public class ParamHandler extends DefaultHandler {
 	}
 
 	private void handleDoubleList(String paramName, Attributes attributes) {
-		currentParameter = new DoubleListParameter(paramName,
+		m_currentParameter = new DoubleListParameter(paramName,
 				new ArrayList<Double>());
 
 		// check for restrictions
 		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrs != null) {
-			((DoubleListParameter) currentParameter)
+			((DoubleListParameter) m_currentParameter)
 					.setLowerBound(new DoubleRangeExtractor()
 							.getLowerBound(restrs));
-			((DoubleListParameter) currentParameter)
+			((DoubleListParameter) m_currentParameter)
 					.setUpperBound(new DoubleRangeExtractor()
 							.getUpperBound(restrs));
 		}
 	}
 
 	private void handleIntList(String paramName, Attributes attributes) {
-		currentParameter = new IntegerListParameter(paramName,
+		m_currentParameter = new IntegerListParameter(paramName,
 				new ArrayList<Integer>());
 
 		// check for restrictions
 		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrs != null) {
-			((IntegerListParameter) currentParameter)
+			((IntegerListParameter) m_currentParameter)
 					.setLowerBound(new IntegerRangeExtractor()
 							.getLowerBound(restrs));
-			((IntegerListParameter) currentParameter)
+			((IntegerListParameter) m_currentParameter)
 					.setUpperBound(new IntegerRangeExtractor()
 							.getUpperBound(restrs));
 		}
@@ -399,15 +408,15 @@ public class ParamHandler extends DefaultHandler {
 			// check if we have a boolean
 			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
 			if (isBooleanParameter(restrictions)) {
-				currentParameter = new BoolParameter(paramName, paramValue);
+				m_currentParameter = new BoolParameter(paramName, paramValue);
 			} else {
 				if (restrictions != null && restrictions.length() > 0) {
-					currentParameter = new StringChoiceParameter(paramName,
+					m_currentParameter = new StringChoiceParameter(paramName,
 							restrictions.split(","));
-					((StringChoiceParameter) currentParameter)
+					((StringChoiceParameter) m_currentParameter)
 							.setValue(paramValue);
 				} else {
-					currentParameter = new StringParameter(paramName,
+					m_currentParameter = new StringParameter(paramName,
 							paramValue);
 				}
 			}
@@ -434,23 +443,26 @@ public class ParamHandler extends DefaultHandler {
 				.contains(OUTPUTFILE_TAG));
 
 		// additionally we check if type is equal to input-file, output-file
-		isPort = attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
-				|| attributes.getValue(ATTR_TYPE).equals(TYPE_OUTPUT_FILE);
+		final String attr_type = attributes.getValue(ATTR_TYPE);
+		isPort = TYPE_INPUT_FILE.equals(attr_type)
+				|| TYPE_OUTPUT_FILE.equals(attr_type)
+				|| TYPE_OUTPUT_PREFIX.equals(attr_type)
+				|| TYPE_INPUT_PREFIX.equals(attr_type);
 
 		return isPort;
 	}
 
 	private void handleIntType(final String paramName, final String paramValue,
 			Attributes attributes) {
-		currentParameter = new IntegerParameter(paramName, paramValue);
+		m_currentParameter = new IntegerParameter(paramName, paramValue);
 
 		// check for restrictions
 		String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrictions != null) {
-			((IntegerParameter) currentParameter)
+			((IntegerParameter) m_currentParameter)
 					.setLowerBound(new IntegerRangeExtractor()
 							.getLowerBound(restrictions));
-			((IntegerParameter) currentParameter)
+			((IntegerParameter) m_currentParameter)
 					.setUpperBound(new IntegerRangeExtractor()
 							.getUpperBound(restrictions));
 		}
@@ -458,15 +470,15 @@ public class ParamHandler extends DefaultHandler {
 
 	private void handleDoubleType(final String paramName,
 			final String paramValue, Attributes attributes) {
-		currentParameter = new DoubleParameter(paramName, paramValue);
+		m_currentParameter = new DoubleParameter(paramName, paramValue);
 
 		// check for restrictions
 		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrs != null) {
-			((DoubleParameter) currentParameter)
+			((DoubleParameter) m_currentParameter)
 					.setLowerBound(new DoubleRangeExtractor()
 							.getLowerBound(restrs));
-			((DoubleParameter) currentParameter)
+			((DoubleParameter) m_currentParameter)
 					.setUpperBound(new DoubleRangeExtractor()
 							.getUpperBound(restrs));
 		}
@@ -530,26 +542,28 @@ public class ParamHandler extends DefaultHandler {
 			removeSuffix();
 		} else if (TAG_ITEMLIST.equals(name)) {
 			try {
-				if (listValues.size() > 0) {
-					String[] values = new String[listValues.size()];
+				if (m_listValues.size() > 0) {
+					String[] values = new String[m_listValues.size()];
 					int i = 0;
-					for (String v : listValues) {
+					for (String v : m_listValues) {
 						values[i++] = v;
 					}
-					((ListParameter) currentParameter).fillFromStrings(values);
+					((ListParameter) m_currentParameter)
+							.fillFromStrings(values);
 				}
 			} catch (InvalidParameterValueException e) {
 				// should not happen
 				e.printStackTrace();
 			}
-			extractedParameters.put(currentPath + currentParameter.getKey(),
-					currentParameter);
+			m_extractedParameters.put(
+					m_currentPath + m_currentParameter.getKey(),
+					m_currentParameter);
 
 			// reset for the next iteration
-			currentParameter = null;
+			m_currentParameter = null;
 		} else if (TAG_PARAMETERS.equals(name)) {
 			transferValuesToConfig();
-			xmlReader.setContentHandler(parentHandler);
+			m_xmlReader.setContentHandler(m_parentHandler);
 		} else if (TAG_LISTITEM.equals(name)) {
 			// nothing to do here
 		} else if (TAG_ITEM.equals(name)) {
@@ -558,26 +572,27 @@ public class ParamHandler extends DefaultHandler {
 	}
 
 	private void transferValuesToConfig() {
-		for (Entry<String, Parameter<?>> entry : extractedParameters.entrySet()) {
-			config.addParameter(entry.getKey(), entry.getValue());
+		for (Entry<String, Parameter<?>> entry : m_extractedParameters
+				.entrySet()) {
+			m_config.addParameter(entry.getKey(), entry.getValue());
 		}
 
-		config.setInports(inputPorts);
-		config.setOutports(outputPorts);
+		m_config.setInports(m_inputPorts);
+		m_config.setOutports(m_outputPorts);
 	}
 
 	private void removeSuffix() {
 		// find suffix border
-		int i = currentPath.length() - 2;
+		int i = m_currentPath.length() - 2;
 		for (; i > 0; --i) {
-			if (currentPath.charAt(i) == PATH_SEPARATOR)
+			if (m_currentPath.charAt(i) == PATH_SEPARATOR)
 				break;
 		}
 
 		// i should point to the prefix position
 		if (i != 0)
-			currentPath = currentPath.substring(0, i + 1);
+			m_currentPath = m_currentPath.substring(0, i + 1);
 		else
-			currentPath = ""; // reset prefix if we reached the top level
+			m_currentPath = ""; // reset prefix if we reached the top level
 	}
 }
