@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: UriPort extensions
+Bundle-SymbolicName: com.genericworkflownodes.knime.uriport
+Bundle-Version: 0.7.0.qualifier
+Bundle-Activator: com.genericworkflownodes.knime.uriport.Activator
+Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
+Eclipse-RegisterBuddy: org.knime.core
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
+ org.knime.workbench.core;bundle-version="[2.6.0,3.0.0)",
+ org.knime.workbench.repository;bundle-version="[2.6.0,3.0.0)",
+ org.knime.base;bundle-version="[2.6.0,3.0.0)",
+ org.knime.core.data.uritype;bundle-version="[2.7.0,3.0.0)",
+ org.apache.commons.io;bundle-version="[1.4.0,2.0.0)",
+ org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)",
+ org.knime.base.filehandling;bundle-version="[2.7.2,3.0.0)"
+Export-Package: org.knime.core.data.uri.candidate 
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
