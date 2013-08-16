@@ -26,7 +26,6 @@ import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.ModelContent;
 import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
 import org.knime.core.node.port.PortObjectSpec;
@@ -38,6 +37,20 @@ import org.knime.core.node.port.PortObjectSpec;
  * @author aiche
  */
 public class PrefixURIPortObject extends URIPortObject {
+
+	/**
+	 * The key used to save the additional model settings or the
+	 * {@link PrefixURIPortObject}.
+	 */
+	private static final String SETTINGS_KEY_PREFIX = "prefix";
+
+	/**
+	 * The key used to store the subtree of settings reserved for the parent
+	 * object.
+	 * 
+	 * @see URIPortObject
+	 */
+	private static final String SETTINGS_KEY_PARENT_OBJECT = "parent";
 
 	/**
 	 * The prefix associated with the content of this {@link URIPortObject}.
@@ -94,30 +107,18 @@ public class PrefixURIPortObject extends URIPortObject {
 	protected void load(ModelContentRO model, PortObjectSpec spec,
 			ExecutionMonitor exec) throws InvalidSettingsException,
 			CanceledExecutionException {
-		m_prefix = model.getString("prefix");
-		ModelContent mc = new ModelContent("");
-
-		int i = 0;
-
-		for (String key : model.keySet()) {
-			if (key.startsWith("child-")) {
-				// load child into temp object and store this in temp
-				// ModelContent
-				ModelContentRO load_child = model.getModelContent(key);
-				ModelContentWO save_child = mc.addModelContent("child-" + i);
-				URIContent.load(load_child).save(save_child);
-				i++;
-			}
-		}
-
-		super.load(mc, spec, exec);
+		// load parent settings from parent reserved subtree
+		super.load(model.getModelContent(SETTINGS_KEY_PARENT_OBJECT), spec,
+				exec);
+		// get our own model settings
+		m_prefix = model.getString(SETTINGS_KEY_PREFIX);
 	}
 
 	@Override
 	protected void save(ModelContentWO model, ExecutionMonitor exec)
 			throws CanceledExecutionException {
-		super.save(model, exec);
-		// also save the prefix
-		model.addString("prefix", m_prefix);
+		super.save(model.addModelContent(SETTINGS_KEY_PARENT_OBJECT), exec);
+		// save our own settings
+		model.addString(SETTINGS_KEY_PREFIX, m_prefix);
 	}
 }
