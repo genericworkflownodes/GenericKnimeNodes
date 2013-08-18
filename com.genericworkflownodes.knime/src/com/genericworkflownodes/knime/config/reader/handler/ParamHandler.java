@@ -93,6 +93,8 @@ public class ParamHandler extends DefaultHandler {
 	private static String ATTR_ADVANCED = "advanced";
 	private static String ATTR_REQUIRED = "required";
 
+	private static String TAG_VALUE_FILE_EXT_OVERRIDE = "file-ext-override";
+
 	// is contained in the schema but currently we do not handle this tag
 	@SuppressWarnings("unused")
 	private static String ATTR_OUTPUT_FORMAT_SOURCE = "output_format_source";
@@ -262,6 +264,10 @@ public class ParamHandler extends DefaultHandler {
 		// set flags for parameter
 		m_currentParameter.setAdvanced(isAdvanced(attributes));
 		m_currentParameter.setIsOptional(isOptional(attributes));
+
+		// check whether the parameter is to be ignored (has tag file-ext-override).
+		Set<String> tags = getTags(attributes);
+		m_currentParameter.setIsIgnored(tags.contains(TAG_VALUE_FILE_EXT_OVERRIDE));
 
 		// extract the description
 		String description = attributes.getValue(ATTR_DESCRIPTION);
