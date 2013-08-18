@@ -194,6 +194,8 @@ public class CLICommandGenerator implements ICommandGenerator {
 						extractedParameterValues.add(((ListParameter) p)
 								.getStrings());
 					} else {
+						if (p.isIgnored())
+							continue;  // Ignored parameters are not passed to CLI.
 						List<String> l = new ArrayList<String>();
 						l.add(p.getStringRep());
 						extractedParameterValues.add(l);

@@ -67,6 +67,11 @@ public abstract class Parameter<T> implements Serializable {
 	private boolean advanced;
 
 	/**
+	 * Flag indicating if the parameter is to be ignored.
+	 */
+	private boolean isIgnored;
+
+	/**
 	 * Constructor with unique key of parameter and generic value to store.
 	 * 
 	 * @param key
@@ -82,6 +87,7 @@ public abstract class Parameter<T> implements Serializable {
 		this.setSection("default");
 		this.setIsOptional(true);
 		this.setAdvanced(false);
+		this.setIsIgnored(false);
 	}
 
 	/**
@@ -260,4 +266,20 @@ public abstract class Parameter<T> implements Serializable {
 	 */
 	public static String SEPARATOR_TOKEN = "@@@__@@@";
 
+	/**
+	 * Return whether the parameter is to be ignored.
+	 */
+	public boolean isIgnored() {
+		return this.isIgnored;
+	}
+
+	/**
+	 * Sets whether the parameter is to be ignored (is the case if tagged with
+	 * "file-ext-override).
+	 *
+	 * @param val The new "is ignored" value.
+	 */
+	public void setIsIgnored(boolean val) {
+		this.isIgnored = val;
+	}
 }
