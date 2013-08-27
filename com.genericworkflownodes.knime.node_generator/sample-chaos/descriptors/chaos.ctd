@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="external">
-	<name>Chaos</name>
-	<version>6.5.0</version>
+<tool name="Chaos" version="6.5.0" docurl="http://emboss.sourceforge.net/apps/cvs/emboss/apps/chaos.html" category="Sequence Analysis">
 	<description><![CDATA[Draw a chaos game representation plot for a nucleotide sequence.]]></description>
 	<manual><![CDATA[chaos creates a chaos game representation (CGR) plot for a nucleotide sequence. A CGR plot represents a nucleotide sequence as a square box with an A, G, C, or T nucleotide at each corner. The box contains dots, each one representing a dinucleotide. All overlapping dinucleotides from the start to the end of the sequence are plotted. Regions which are devoid of dots (or heavily covered with dots) indicate short sequence motifs that are unusually infrequent (or frequent). CGR plots depict base composition and sequentiality and is a unique visual representation of a sequence that complements more traditional linear representations.]]></manual>
-	<docurl>http://emboss.sourceforge.net/apps/cvs/emboss/apps/chaos.html</docurl>
-	<category>Sequence Analysis</category>
 	<cli>
 		<clielement optionIdentifier="-sequence">
 			<mapping referenceName="chaos.sequence" />
@@ -15,15 +11,10 @@
 		</clielement>
 		<clielement optionIdentifier="-graph ps"/>
 	</cli>
-	<outputConverters>
-		<converter ref="chaos.outputfile">
-			/\.ps$/.ps.ps/
-		</converter>
-	</outputConverters>
-	<PARAMETERS version="1.3" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<NODE name="chaos" description="Draw a chaos game representation plot for a nucleotide sequence">
-			<ITEM name="sequence" value="" type="string" description="Nucleotide sequence filename and optional format, or reference (input USA)" tags="input file" restrictions="*.fasta"/>
-			<ITEM name="outputfile" value="" type="string" description="Output file." tags="output file" restrictions="*.ps"/>
+			<ITEM name="sequence" value="" type="input-file" description="Nucleotide sequence filename and optional format, or reference (input USA)" supported_formats="*.fasta"/>
+			<ITEM name="outputfile" value="" type="output-file" description="Output file." supported_formats="*.ps"/>
 		</NODE>
 	</PARAMETERS>
 </tool>

@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.config.reader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -84,5 +85,25 @@ public class CTDConfigurationReaderTest {
 				.isOptional());
 		assertFalse(config.getParameter("TMTAnalyzer.1.in").isAdvanced());
 		assertFalse(config.getParameter("TMTAnalyzer.1.in").isOptional());
+	}
+
+	@Test
+	public void testGKNIgnoreTag() throws Exception {
+		CTDConfigurationReader reader = new CTDConfigurationReader();
+		assertNotNull(reader);
+		INodeConfiguration config = reader.read(TestDataSource.class
+				.getResourceAsStream("test_app.ctd"));
+		assertEquals("SeqAn/Testing", config.getCategory());
+		assertEquals("http://www.seqan.de", config.getDocUrl());
+
+		FileParameter fp = (FileParameter) config.getParameter("test_app.out");
+		assertNotNull(fp);
+		assertEquals("set an output file", fp.getDescription());
+
+		// the parameter following parameters were tagged with gkn-ignore and
+		// hence should not be parsed
+		assertNull(config.getParameter("test_app.write-ctd-file-ext"));
+		assertNull(config.getParameter("test_app.in-file-ext"));
+		assertNull(config.getParameter("test_app.out-file-ext"));
 	}
 }
