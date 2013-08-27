@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.config.reader.handler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -33,12 +34,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.genericworkflownodes.knime.cliwrapper.CLIElement;
+import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
+import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
@@ -91,9 +96,10 @@ public class ParamHandler extends DefaultHandler {
 	private static String ATTR_ADVANCED = "advanced";
 	private static String ATTR_REQUIRED = "required";
 
-	// is contained in the schema but currently we do not handle this tag
-	@SuppressWarnings("unused")
-	private static String ATTR_OUTPUT_FORMAT_SOURCE = "output_format_source";
+	/**
+	 * List of all parameters that were ignores while parsing.
+	 */
+	private List<String> m_ignoredParameters;
 
 	/**
 	 * Tag used to identify input ports.
@@ -104,6 +110,11 @@ public class ParamHandler extends DefaultHandler {
 	 * Tag used to identify output ports.
 	 */
 	private static final String OUTPUTFILE_TAG = "output file";
+
+	/**
+	 * Tag signaling that this parameter should be ignored by the parser.
+	 */
+	private static final String GKN_IGNORE_TAG = "gkn-ignore";
 
 	/**
 	 * Separates two nodes.
@@ -119,74 +130,75 @@ public class ParamHandler extends DefaultHandler {
 	/**
 	 * The list of extracted parameters.
 	 */
-	private LinkedHashMap<String, Parameter<?>> extractedParameters;
+	private LinkedHashMap<String, Parameter<?>> m_extractedParameters;
 
 	/**
 	 * The currently generated parameter.
 	 */
-	private Parameter<?> currentParameter;
+	private Parameter<?> m_currentParameter;
 
 	/**
 	 * Store the current list entries to finally add them to the created list
 	 * parameter.
 	 */
-	private List<String> listValues;
+	private List<String> m_listValues;
 
 	/**
 	 * The parent handler that invoked this handler for a sub tree of the XML
 	 * document.
 	 */
-	private CTDHandler parentHandler;
+	private CTDHandler m_parentHandler;
 
 	/**
 	 * The {@link XMLReader} that processes the entire document.
 	 */
-	private XMLReader xmlReader;
+	private XMLReader m_xmlReader;
 
 	/**
 	 * Stores the current path inside the xml tree.
 	 */
-	private String currentPath;
+	private String m_currentPath;
 
 	/**
 	 * The output ports recorded for this parameter block.
 	 */
-	private ArrayList<Port> inputPorts;
+	private ArrayList<Port> m_inputPorts;
 
 	/**
 	 * The input ports recorded for this parameter block.
 	 */
-	private ArrayList<Port> outputPorts;
+	private ArrayList<Port> m_outputPorts;
 
 	/**
 	 * The {@link NodeConfiguration} that will be filled while parsing the
 	 * document.
 	 */
-	private NodeConfiguration config;
+	private NodeConfiguration m_config;
 
 	/**
 	 * C'tor accepting the parent handler and the xml reader.
 	 * 
-	 * @param xmlReader
+	 * @param m_xmlReader
 	 *            The xml reader of the global document.
-	 * @param parentHandler
+	 * @param m_parentHandler
 	 *            The parent handler for the global document.
-	 * @param config
+	 * @param m_config
 	 *            The {@link NodeConfiguration} that will be filled while
 	 *            parsing the document.
 	 */
 	public ParamHandler(XMLReader xmlReader, CTDHandler parentHandler,
 			NodeConfiguration config) {
-		this.xmlReader = xmlReader;
-		this.parentHandler = parentHandler;
-		this.config = config;
+		m_xmlReader = xmlReader;
+		m_parentHandler = parentHandler;
+		m_config = config;
 
 		// prepare state of SAXHandler
-		currentPath = "";
-		extractedParameters = new LinkedHashMap<String, Parameter<?>>();
+		m_currentPath = "";
+		m_extractedParameters = new LinkedHashMap<String, Parameter<?>>();
+		m_ignoredParameters = new ArrayList<String>();
 
-		inputPorts = new ArrayList<Port>();
-		outputPorts = new ArrayList<Port>();
+		m_inputPorts = new ArrayList<Port>();
+		m_outputPorts = new ArrayList<Port>();
 	}
 
 	@Override
@@ -195,13 +207,20 @@ public class ParamHandler extends DefaultHandler {
 		if (TAG_NODE.equals(name)) {
 			String nodeName = attributes.getValue(ATTR_NAME);
 			String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
-			currentPath += nodeName;
-			config.setSectionDescription(currentPath, nodeDescription);
-			currentPath += PATH_SEPARATOR;
+			m_currentPath += nodeName;
+			m_config.setSectionDescription(m_currentPath, nodeDescription);
+			m_currentPath += PATH_SEPARATOR;
 		} else if (TAG_ITEM.equals(name)) {
 			String type = attributes.getValue(ATTR_TYPE);
 			String paramName = attributes.getValue(ATTR_NAME);
 			String paramValue = attributes.getValue(ATTR_VALUE);
+
+			// skip this tag completely if this element is tagged with the
+			// GKN_IGNORE_TAG
+			if (getTags(attributes).contains(GKN_IGNORE_TAG)) {
+				m_ignoredParameters.add(m_currentPath + paramName);
+				return;
+			}
 
 			if (TYPE_INT.equals(type)) {
 				handleIntType(paramName, paramValue, attributes);
@@ -213,20 +232,27 @@ public class ParamHandler extends DefaultHandler {
 			}
 
 			// did we create a parameter
-			if (currentParameter != null) {
+			if (m_currentParameter != null) {
 				setCommonParameters(attributes);
 
-				extractedParameters.put(
-						currentPath + currentParameter.getKey(),
-						currentParameter);
+				m_extractedParameters.put(
+						m_currentPath + m_currentParameter.getKey(),
+						m_currentParameter);
 
 				// reset for the next iteration
-				currentParameter = null;
+				m_currentParameter = null;
 			}
 		} else if (TAG_ITEMLIST.equals(name)) {
 			// start the list parameter
 			String type = attributes.getValue(ATTR_TYPE);
 			String paramName = attributes.getValue(ATTR_NAME);
+
+			// skip this tag completely if this element is tagged with the
+			// GKN_IGNORE_TAG
+			if (getTags(attributes).contains(GKN_IGNORE_TAG)) {
+				m_ignoredParameters.add(m_currentPath + paramName);
+				return;
+			}
 
 			if (TYPE_INT.equals(type)) {
 				handleIntList(paramName, attributes);
@@ -237,13 +263,13 @@ public class ParamHandler extends DefaultHandler {
 				handleStringList(paramName, attributes);
 			}
 			// initialize list for storing the list values
-			listValues = new ArrayList<String>();
+			m_listValues = new ArrayList<String>();
 
 			// set extra values for this parameter
 			setCommonParameters(attributes);
 		} else if (TAG_LISTITEM.equals(name)) {
 			String listValue = attributes.getValue(ATTR_VALUE);
-			listValues.add(listValue);
+			m_listValues.add(listValue);
 		}
 	}
 
@@ -256,28 +282,45 @@ public class ParamHandler extends DefaultHandler {
 	 */
 	private void setCommonParameters(Attributes attributes) {
 		// set flags for parameter
-		currentParameter.setAdvanced(isAdvanced(attributes));
-		currentParameter.setIsOptional(isOptional(attributes));
+		m_currentParameter.setAdvanced(isAdvanced(attributes));
+		m_currentParameter.setIsOptional(isOptional(attributes));
 
 		// extract the description
 		String description = attributes.getValue(ATTR_DESCRIPTION);
-		currentParameter.setDescription(description);
+		m_currentParameter.setDescription(description);
 	}
 
+	/**
+	 * Convert the current element into a {@link StringListParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void handleStringList(String paramName, Attributes attributes) {
 		if (isPort(attributes)) {
 			createPort(paramName, attributes, true);
 		} else {
-			currentParameter = new StringListParameter(paramName,
+			m_currentParameter = new StringListParameter(paramName,
 					new ArrayList<String>());
 			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
 			if (restrictions != null && !"".equals(restrictions.trim())) {
-				((StringListParameter) currentParameter).setRestrictions(Arrays
-						.asList(restrictions.split(",")));
+				((StringListParameter) m_currentParameter)
+						.setRestrictions(Arrays.asList(restrictions.split(",")));
 			}
 		}
 	}
 
+	/**
+	 * Convert the current element into a Port and the respective
+	 * {@link IFileParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void createPort(String paramName, Attributes attributes,
 			boolean isList) {
 		// check if we want to create this port
@@ -288,7 +331,7 @@ public class ParamHandler extends DefaultHandler {
 		}
 
 		Port p = new Port();
-		p.setName(currentPath + paramName);
+		p.setName(m_currentPath + paramName);
 		p.setMultiFile(isList);
 
 		List<String> mimetypes = extractMIMETypes(attributes);
@@ -301,29 +344,29 @@ public class ParamHandler extends DefaultHandler {
 
 		p.setOptional(isOptional(attributes));
 
-		currentParameter = null;
+		m_currentParameter = null;
 		// create port parameter
 		if (isList) {
-			currentParameter = new FileListParameter(paramName,
+			m_currentParameter = new FileListParameter(paramName,
 					new ArrayList<String>());
-			((FileListParameter) currentParameter).setPort(p);
-			((FileListParameter) currentParameter).setDescription(p
+			((FileListParameter) m_currentParameter).setPort(p);
+			((FileListParameter) m_currentParameter).setDescription(p
 					.getDescription());
-			((FileListParameter) currentParameter)
-					.setIsOptional(p.isOptional());
+			((FileListParameter) m_currentParameter).setIsOptional(p
+					.isOptional());
 		} else {
-			currentParameter = new FileParameter(paramName, "");
-			((FileParameter) currentParameter).setPort(p);
-			((FileParameter) currentParameter).setDescription(p
+			m_currentParameter = new FileParameter(paramName, "");
+			((FileParameter) m_currentParameter).setPort(p);
+			((FileParameter) m_currentParameter).setDescription(p
 					.getDescription());
-			((FileParameter) currentParameter).setIsOptional(p.isOptional());
+			((FileParameter) m_currentParameter).setIsOptional(p.isOptional());
 		}
 
 		if (attributes.getValue(ATTR_TYPE).equals(TYPE_INPUT_FILE)
 				|| getTags(attributes).contains(INPUTFILE_TAG)) {
-			inputPorts.add(p);
+			m_inputPorts.add(p);
 		} else {
-			outputPorts.add(p);
+			m_outputPorts.add(p);
 		}
 	}
 
@@ -359,38 +402,64 @@ public class ParamHandler extends DefaultHandler {
 		return mimeTypes;
 	}
 
+	/**
+	 * Convert the current element into a {@link DoubleListParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void handleDoubleList(String paramName, Attributes attributes) {
-		currentParameter = new DoubleListParameter(paramName,
+		m_currentParameter = new DoubleListParameter(paramName,
 				new ArrayList<Double>());
 
 		// check for restrictions
 		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrs != null) {
-			((DoubleListParameter) currentParameter)
+			((DoubleListParameter) m_currentParameter)
 					.setLowerBound(new DoubleRangeExtractor()
 							.getLowerBound(restrs));
-			((DoubleListParameter) currentParameter)
+			((DoubleListParameter) m_currentParameter)
 					.setUpperBound(new DoubleRangeExtractor()
 							.getUpperBound(restrs));
 		}
 	}
 
+	/**
+	 * Convert the current element into a {@link IntegerListParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void handleIntList(String paramName, Attributes attributes) {
-		currentParameter = new IntegerListParameter(paramName,
+		m_currentParameter = new IntegerListParameter(paramName,
 				new ArrayList<Integer>());
 
 		// check for restrictions
 		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrs != null) {
-			((IntegerListParameter) currentParameter)
+			((IntegerListParameter) m_currentParameter)
 					.setLowerBound(new IntegerRangeExtractor()
 							.getLowerBound(restrs));
-			((IntegerListParameter) currentParameter)
+			((IntegerListParameter) m_currentParameter)
 					.setUpperBound(new IntegerRangeExtractor()
 							.getUpperBound(restrs));
 		}
 	}
 
+	/**
+	 * Convert the current element into a {@link StringParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param paramValue
+	 *            The value of the {@link Parameter} as given in the param file.
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void handleStringType(String paramName, String paramValue,
 			Attributes attributes) {
 		if (isPort(attributes)) {
@@ -399,21 +468,29 @@ public class ParamHandler extends DefaultHandler {
 			// check if we have a boolean
 			String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
 			if (isBooleanParameter(restrictions)) {
-				currentParameter = new BoolParameter(paramName, paramValue);
+				m_currentParameter = new BoolParameter(paramName, paramValue);
 			} else {
 				if (restrictions != null && restrictions.length() > 0) {
-					currentParameter = new StringChoiceParameter(paramName,
+					m_currentParameter = new StringChoiceParameter(paramName,
 							restrictions.split(","));
-					((StringChoiceParameter) currentParameter)
+					((StringChoiceParameter) m_currentParameter)
 							.setValue(paramValue);
 				} else {
-					currentParameter = new StringParameter(paramName,
+					m_currentParameter = new StringParameter(paramName,
 							paramValue);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Returns true if the {@link Parameter} is a {@link BoolParameter}.
+	 * 
+	 * @param restrictions
+	 *            The restrictions encoding the bool restrictions.
+	 * @return True if the parameter is a {@link BoolParameter}, false
+	 *         otherwise.
+	 */
 	private boolean isBooleanParameter(final String restrictions) {
 		if (restrictions == null || restrictions.trim().length() == 0)
 			return false;
@@ -428,6 +505,13 @@ public class ParamHandler extends DefaultHandler {
 		}
 	}
 
+	/**
+	 * Returns true if the given parameter is an input or output port.
+	 * 
+	 * @param attributes
+	 *            The attributes of the parameter to check.
+	 * @return True if the parameter is a port, false otherwise.
+	 */
 	private boolean isPort(final Attributes attributes) {
 		Set<String> tagSet = getTags(attributes);
 		boolean isPort = (tagSet.contains(INPUTFILE_TAG) || tagSet
@@ -440,38 +524,68 @@ public class ParamHandler extends DefaultHandler {
 		return isPort;
 	}
 
+	/**
+	 * Convert the current element into a {@link IntegerParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param paramValue
+	 *            The value of the {@link Parameter} as given in the param file.
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void handleIntType(final String paramName, final String paramValue,
 			Attributes attributes) {
-		currentParameter = new IntegerParameter(paramName, paramValue);
+		m_currentParameter = new IntegerParameter(paramName, paramValue);
 
 		// check for restrictions
 		String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrictions != null) {
-			((IntegerParameter) currentParameter)
+			((IntegerParameter) m_currentParameter)
 					.setLowerBound(new IntegerRangeExtractor()
 							.getLowerBound(restrictions));
-			((IntegerParameter) currentParameter)
+			((IntegerParameter) m_currentParameter)
 					.setUpperBound(new IntegerRangeExtractor()
 							.getUpperBound(restrictions));
 		}
 	}
 
+	/**
+	 * Convert the current element into a {@link DoubleParameter}.
+	 * 
+	 * @param paramName
+	 *            The name of the {@link Parameter}
+	 * @param paramValue
+	 *            The value of the {@link Parameter} as given in the param file.
+	 * @param attributes
+	 *            Attributes of the {@link Parameter}.
+	 */
 	private void handleDoubleType(final String paramName,
 			final String paramValue, Attributes attributes) {
-		currentParameter = new DoubleParameter(paramName, paramValue);
+		m_currentParameter = new DoubleParameter(paramName, paramValue);
 
 		// check for restrictions
 		String restrs = attributes.getValue(ATTR_RESTRICTIONS);
 		if (restrs != null) {
-			((DoubleParameter) currentParameter)
+			((DoubleParameter) m_currentParameter)
 					.setLowerBound(new DoubleRangeExtractor()
 							.getLowerBound(restrs));
-			((DoubleParameter) currentParameter)
+			((DoubleParameter) m_currentParameter)
 					.setUpperBound(new DoubleRangeExtractor()
 							.getUpperBound(restrs));
 		}
 	}
 
+	/**
+	 * Returns true if the given attributes contain either the attribute
+	 * "required" with the value false or not the deprecated "required" or
+	 * "mandatory" tags.
+	 * 
+	 * @param attributes
+	 *            The attributes to check.
+	 * @return True if the element associated to the given attributes is an an
+	 *         optional parameter, false otherwise.
+	 */
 	private boolean isOptional(final Attributes attributes) {
 		Set<String> tagSet = getTags(attributes);
 		boolean isOptional = !(tagSet.contains("mandatory") || tagSet
@@ -486,6 +600,15 @@ public class ParamHandler extends DefaultHandler {
 		return isOptional;
 	}
 
+	/**
+	 * Returns true if the given attributes contain either the attribute
+	 * "advanced" set to true or the deprecated "advanced" tag.
+	 * 
+	 * @param attributes
+	 *            The attributes to check.
+	 * @return True if the element associated to the given attributes is an
+	 *         advanced parameter, false otherwise.
+	 */
 	private boolean isAdvanced(final Attributes attributes) {
 		// legacy support for advanced tag
 		Set<String> tagSet = getTags(attributes);
@@ -530,54 +653,82 @@ public class ParamHandler extends DefaultHandler {
 			removeSuffix();
 		} else if (TAG_ITEMLIST.equals(name)) {
 			try {
-				if (listValues.size() > 0) {
-					String[] values = new String[listValues.size()];
+				if (m_listValues.size() > 0) {
+					String[] values = new String[m_listValues.size()];
 					int i = 0;
-					for (String v : listValues) {
+					for (String v : m_listValues) {
 						values[i++] = v;
 					}
-					((ListParameter) currentParameter).fillFromStrings(values);
+					((ListParameter) m_currentParameter)
+							.fillFromStrings(values);
 				}
 			} catch (InvalidParameterValueException e) {
 				// should not happen
 				e.printStackTrace();
 			}
-			extractedParameters.put(currentPath + currentParameter.getKey(),
-					currentParameter);
+			m_extractedParameters.put(
+					m_currentPath + m_currentParameter.getKey(),
+					m_currentParameter);
 
 			// reset for the next iteration
-			currentParameter = null;
+			m_currentParameter = null;
 		} else if (TAG_PARAMETERS.equals(name)) {
 			transferValuesToConfig();
-			xmlReader.setContentHandler(parentHandler);
-		} else if (TAG_LISTITEM.equals(name)) {
-			// nothing to do here
-		} else if (TAG_ITEM.equals(name)) {
-			// nothing to do here
+			m_xmlReader.setContentHandler(m_parentHandler);
 		}
 	}
 
+	/**
+	 * Translate all parameters extracted from the ParamXML file into the given
+	 * {@link INodeConfiguration}.
+	 */
 	private void transferValuesToConfig() {
-		for (Entry<String, Parameter<?>> entry : extractedParameters.entrySet()) {
-			config.addParameter(entry.getKey(), entry.getValue());
+		// add parameters
+		for (Entry<String, Parameter<?>> entry : m_extractedParameters
+				.entrySet()) {
+			m_config.addParameter(entry.getKey(), entry.getValue());
 		}
 
-		config.setInports(inputPorts);
-		config.setOutports(outputPorts);
+		// set ports
+		m_config.setInports(m_inputPorts);
+		m_config.setOutports(m_outputPorts);
+
+		// remove cli mappings of ignored parameters
+		if (m_config.getCLI() != null && !m_ignoredParameters.isEmpty()) {
+			Iterator<CLIElement> element_iterator = m_config.getCLI()
+					.getCLIElement().iterator();
+			while (element_iterator.hasNext()) {
+				CLIElement current_element = element_iterator.next();
+				// check the mapping elements
+				for (CLIMapping mapping : current_element.getMapping()) {
+					if (m_ignoredParameters
+							.contains(mapping.getReferenceName())) {
+						// remove this element and stop the loop
+						element_iterator.remove();
+						break;
+					}
+				}
+			}
+		}
 	}
 
+	/**
+	 * Removes the last added suffix from the current path in the param tree.
+	 * E.g., given the path test_app.file_parameters.subsection it will remove
+	 * subsection, given only test_app it will remove test_app.
+	 */
 	private void removeSuffix() {
 		// find suffix border
-		int i = currentPath.length() - 2;
+		int i = m_currentPath.length() - 2;
 		for (; i > 0; --i) {
-			if (currentPath.charAt(i) == PATH_SEPARATOR)
+			if (m_currentPath.charAt(i) == PATH_SEPARATOR)
 				break;
 		}
 
 		// i should point to the prefix position
 		if (i != 0)
-			currentPath = currentPath.substring(0, i + 1);
+			m_currentPath = m_currentPath.substring(0, i + 1);
 		else
-			currentPath = ""; // reset prefix if we reached the top level
+			m_currentPath = ""; // reset prefix if we reached the top level
 	}
 }
