@@ -562,10 +562,13 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			List<String> basenames = getOutputBaseNames();
 
 			if (p instanceof FileListParameter && port.isMultiFile()) {
-
 				FileListParameter flp = (FileListParameter) p;
-
 				List<String> fileNames = new ArrayList<String>();
+
+				if (basenames.size() == 0) {
+					throw new Exception(
+							"Cannot determine number of output files if no input file is given.");
+				}
 
 				for (int f = 0; f < basenames.size(); ++f) {
 					// create basename: <base_name>_<port_nr>_<outfile_nr>
@@ -581,9 +584,17 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				flp.setValue(fileNames);
 
 			} else if (p instanceof FileParameter && !port.isMultiFile()) {
+				// if we have no basename to use (e.g., Node without input-file)
+				// we use the nodename
+				String basename;
+				if (basenames.isEmpty()) {
+					basename = m_nodeConfig.getName();
+				} else {
+					basename = basenames.get(0);
+				}
+
 				// create basename: <base_name>_<port_nr>_<outfile_nr>
-				String file_basename = String.format("%s_%d", basenames.get(0),
-						i);
+				String file_basename = String.format("%s_%d", basename, i);
 				File file = m_fileStash.getFile(file_basename, ext);
 				((FileParameter) p).setValue(file.getAbsolutePath());
 				GenericNodesPlugin.log("> setting param " + name + "->" + file);
@@ -699,7 +710,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
 			if (uris.size() > 1 && !isMultiFile) {
 				throw new Exception(
-						"MIMEURIPortObject with multiple URIs supplied at single URI port #"
+						"URIPortObject with multiple URIs supplied at single URI port #"
 								+ i);
 			}
 
