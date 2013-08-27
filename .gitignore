@@ -4,3 +4,4 @@ build/*
 *.class
 build.properties
 generated_plugin/
+/bin
