@@ -661,22 +661,25 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 			}
 		}
 
-		// generate the filenames
-		Port port = m_nodeConfig.getInputPorts().get(naming_port);
-		String name = port.getName();
-		Parameter<?> p = m_nodeConfig.getParameter(name);
-
-		if (p instanceof FileListParameter) {
-			// we have multiple base names
-			FileListParameter flp = (FileListParameter) p;
-			for (String fName : flp.getValue()) {
-				basenames.add(FilenameUtils.getBaseName(fName));
+		if (m_nodeConfig.getInputPorts().size() > 0) {
+			// generate the filenames if there are input ports
+			// without ports, the names are set in transferOutgoingPorts2Config
+			Port port = m_nodeConfig.getInputPorts().get(naming_port);
+			String name = port.getName();
+			Parameter<?> p = m_nodeConfig.getParameter(name);
+	
+			if (p instanceof FileListParameter) {
+				// we have multiple base names
+				FileListParameter flp = (FileListParameter) p;
+				for (String fName : flp.getValue()) {
+					basenames.add(FilenameUtils.getBaseName(fName));
+				}
+			} else {
+				// we only have a single basename
+				// FilenameUtils.getBaseName()
+				basenames.add(FilenameUtils.getBaseName(((FileParameter) p)
+						.getValue()));
 			}
-		} else {
-			// we only have a single basename
-			// FilenameUtils.getBaseName()
-			basenames.add(FilenameUtils.getBaseName(((FileParameter) p)
-					.getValue()));
 		}
 
 		return basenames;
