@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -371,14 +372,16 @@ public class CTDConfigurationWriter {
 			boolean ubSet = Double.POSITIVE_INFINITY != dp.getUpperBound()
 					.doubleValue();
 			if (lbSet) {
-				restriction.append(String.format("%f", dp.getLowerBound())
+				restriction.append(String
+						.format(Locale.ENGLISH, "%f", dp.getLowerBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 			if (ubSet || lbSet) {
 				restriction.append(":");
 			}
 			if (ubSet) {
-				restriction.append(String.format("%f", dp.getUpperBound())
+				restriction.append(String
+						.format(Locale.ENGLISH, "%f", dp.getUpperBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 		} else if (p instanceof IntegerParameter) {
@@ -419,14 +422,16 @@ public class CTDConfigurationWriter {
 			boolean ubSet = Double.POSITIVE_INFINITY != dlp.getUpperBound()
 					.doubleValue();
 			if (lbSet) {
-				restriction.append(String.format("%f", dlp.getLowerBound())
+				restriction.append(String
+						.format(Locale.ENGLISH, "%f", dlp.getLowerBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 			if (ubSet || lbSet) {
 				restriction.append(":");
 			}
 			if (ubSet) {
-				restriction.append(String.format("%f", dlp.getUpperBound())
+				restriction.append(String
+						.format(Locale.ENGLISH, "%f", dlp.getUpperBound())
 						.replaceAll("0*$", "").replaceAll("\\.$", ""));
 			}
 		}

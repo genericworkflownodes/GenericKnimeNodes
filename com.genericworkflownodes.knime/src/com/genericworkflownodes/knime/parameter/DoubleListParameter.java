@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The DoubleListParameter class is used to store lists of double values.
@@ -99,7 +100,7 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 		}
 		StringBuffer sb = new StringBuffer();
 		for (Double d : getValue()) {
-			sb.append(String.format("%f", d) + SEPARATOR_TOKEN);
+			sb.append(String.format(Locale.ENGLISH, "%f", d) + SEPARATOR_TOKEN);
 		}
 		return sb.toString();
 	}
@@ -108,7 +109,7 @@ public class DoubleListParameter extends NumberListParameter<Double> {
 	public List<String> getStrings() {
 		List<String> ret = new ArrayList<String>();
 		for (Double d : getValue()) {
-			ret.add(String.format("%f", d));
+			ret.add(String.format(Locale.ENGLISH, "%f", d));
 		}
 		return ret;
 	}
