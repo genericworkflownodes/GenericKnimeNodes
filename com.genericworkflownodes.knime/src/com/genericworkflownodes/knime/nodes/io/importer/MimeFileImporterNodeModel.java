@@ -29,8 +29,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import javax.activation.MimeType;
-
+import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -42,6 +41,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -58,15 +58,21 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 public class MimeFileImporterNodeModel extends NodeModel {
 
 	/**
-	 * Config name.
+	 * Config name for file name.
 	 */
 	static final String CFG_FILENAME = "FILENAME";
+	/**
+	 * Config name for file extension.
+	 */
+	static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
 
 	/**
 	 * SettingsModel to the filename.
 	 */
-	private SettingsModelString m_filename = MimeFileImporterNodeDialog
-			.createFileChooserModel();
+	private SettingsModelString m_filename = new SettingsModelString(
+			MimeFileImporterNodeModel.CFG_FILENAME, "");
+	private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
+			CFG_FILE_EXTENSION, "", false);
 
 	/**
 	 * Data member.
@@ -103,6 +109,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
 		m_filename.saveSettingsTo(settings);
+		m_file_extension.saveSettingsTo(settings);
 	}
 
 	/**
@@ -112,6 +119,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 		m_filename.loadSettingsFrom(settings);
+		m_file_extension.loadSettingsFrom(settings);
 	}
 
 	/**
@@ -120,17 +128,28 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_filename.validateSettings(settings);
-		String filename = settings.getString(CFG_FILENAME);
-		File in = new File(filename);
+
+		SettingsModelString tmp_filename = m_filename
+				.createCloneWithValidatedValue(settings);
+		File in = new File(tmp_filename.getStringValue());
 		if (!in.canRead()) {
 			throw new InvalidSettingsException("input file cannot be read: "
-					+ filename);
+					+ tmp_filename.getStringValue());
 		}
 
-		if (MIMETypeHelper.getMIMEtype(filename) == null) {
+		SettingsModelOptionalString tmp_file_extension = m_file_extension
+				.createCloneWithValidatedValue(settings);
+
+		if (tmp_file_extension.isActive()) {
+			if (MIMEMap.getMIMEType(tmp_file_extension.getStringValue()) == null) {
+				throw new InvalidSettingsException(
+						"No mime type registered for file extension: "
+								+ tmp_file_extension.getStringValue());
+			}
+		} else if (MIMETypeHelper.getMIMEtype(tmp_filename.getStringValue()) == null) {
 			throw new InvalidSettingsException(
-					"file of unknown MIMEtype selected: " + filename);
+					"File of unknown MIMEtype selected: "
+							+ tmp_filename.getStringValue());
 		}
 	}
 
@@ -183,22 +202,30 @@ public class MimeFileImporterNodeModel extends NodeModel {
 		out.close();
 	}
 
-	/**
-	 * {@link MimeType} of the loaded file.
-	 */
-	private String mt = null;
-
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		mt = MIMETypeHelper.getMIMEtype(m_filename.getStringValue());
+		String mime_type = null;
+		if (m_file_extension.isActive()) {
+			mime_type = MIMEMap.getMIMEType(m_file_extension.getStringValue());
+		} else {
+			mime_type = MIMETypeHelper.getMIMEtype(m_filename.getStringValue());
+		}
 
-		if (mt == null) {
+		if (mime_type == null) {
 			return new DataTableSpec[] { null };
 		}
 
-		return new PortObjectSpec[] { new URIPortObjectSpec(
-				MIMETypeHelper.getMIMEtypeExtension(m_filename.getStringValue())) };
+		URIPortObjectSpec uri_spec = null;
+		if (m_file_extension.isActive()) {
+			uri_spec = new URIPortObjectSpec(m_file_extension.getStringValue());
+		} else {
+			uri_spec = new URIPortObjectSpec(
+					MIMETypeHelper.getMIMEtypeExtension(m_filename
+							.getStringValue()));
+		}
+
+		return new PortObjectSpec[] { uri_spec };
 	}
 
 	@Override
@@ -213,8 +240,10 @@ public class MimeFileImporterNodeModel extends NodeModel {
 					+ file.getAbsolutePath());
 		}
 
-		uris.add(new URIContent(file.toURI(), MIMETypeHelper
-				.getMIMEtypeExtension(file.getAbsolutePath())));
+		uris.add(new URIContent(file.toURI(),
+				(m_file_extension.isActive() ? m_file_extension
+						.getStringValue() : MIMETypeHelper
+						.getMIMEtypeExtension(file.getAbsolutePath()))));
 
 		data = Helper.readFileSummary(file, 50);
 
