@@ -60,7 +60,7 @@ public class PayloadDirectory {
 	public List<FragmentMeta> getFragmentMetas(
 			GeneratedPluginMeta generatedPluginMeta) {
 
-		if (payloadDirectory != null) {
+		if (payloadDirectory != null && payloadDirectory.exists()) {
 			containedFragments.clear();
 			for (String payload : payloadDirectory.list()) {
 				Matcher m = payloadFormat.matcher(payload);
