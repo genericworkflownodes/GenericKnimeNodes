@@ -50,14 +50,16 @@ public class GeneratedPluginMeta extends PluginMeta {
 	}
 
 	/**
-	 * Checks whether a given package version is valid.
+	 * Checks whether a given package version is a proper OSGI version, i.e., it
+	 * should match ^\d+(\.\d+(\.\d+(.[a-zA-Z0-9]+)?)?)?$.
 	 * 
 	 * @param pluginVersion
-	 * @return
+	 *            The plugin version as string which should be tested.
+	 * @return True if it is a valid version, false otherwise.
 	 */
 	private static boolean isPluginVersionValid(final String pluginVersion) {
-		// TODO
-		return true;
+		return pluginVersion
+				.matches("^\\d+(\\.\\d+(\\.\\d+(.[a-zA-Z0-9]+)?)?)?$");
 	}
 
 	/**
@@ -123,14 +125,12 @@ public class GeneratedPluginMeta extends PluginMeta {
 					+ getPackageRoot() + "\" is invalid");
 		}
 
-		this.name = getPluginName(sourceDirectory.getProperties(),
-				getPackageRoot());
-		if (this.name == null || this.name.isEmpty()) {
+		name = getPluginName(sourceDirectory.getProperties(), getPackageRoot());
+		if (name == null || name.isEmpty()) {
 			throw new InvalidParameterException("No plugin name was specified");
 		}
-		if (!isPluginNameValid(this.name)) {
-			throw new InvalidParameterException("The plugin name \""
-					+ this.name
+		if (!isPluginNameValid(name)) {
+			throw new InvalidParameterException("The plugin name \"" + name
 					+ "\" must only contain alpha numeric characters");
 		}
 
@@ -143,15 +143,15 @@ public class GeneratedPluginMeta extends PluginMeta {
 					+ getVersion() + "\" is not valid");
 		}
 
-		this.nodeRepositoyPath = getNodeRepositoyPath(sourceDirectory
+		nodeRepositoyPath = getNodeRepositoyPath(sourceDirectory
 				.getProperties());
-		if (this.nodeRepositoyPath == null || this.nodeRepositoyPath.isEmpty()) {
+		if (nodeRepositoyPath == null || nodeRepositoyPath.isEmpty()) {
 			throw new InvalidParameterException(
 					"No path within the node repository was specified");
 		}
 		if (!isNodeRepositoyPathValid(getVersion())) {
 			throw new InvalidParameterException("The node repository path \""
-					+ this.nodeRepositoyPath + "\" is not valid");
+					+ nodeRepositoyPath + "\" is not valid");
 		}
 	}
 
@@ -163,7 +163,7 @@ public class GeneratedPluginMeta extends PluginMeta {
 	 * @return The plugin's name.
 	 */
 	public final String getName() {
-		return this.name;
+		return name;
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class GeneratedPluginMeta extends PluginMeta {
 	 *         registry.
 	 */
 	public final String getNodeRepositoryRoot() {
-		return this.nodeRepositoyPath;
+		return nodeRepositoyPath;
 	}
 
 }
