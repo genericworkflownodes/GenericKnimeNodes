@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>PrecursorMassCorrector</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="PrecursorMassCorrector" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_PrecursorMassCorrector.html" category="Signal processing and preprocessing" >
 <description><![CDATA[Corrects the precursor entries of MS/MS spectra, by using MS1 information.]]></description>
 <manual><![CDATA[Corrects the precursor entries of MS/MS spectra, by using MS1 information.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="PrecursorMassCorrector" description="Corrects the precursor entries of MS/MS spectra, by using MS1 information.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;PrecursorMassCorrector&apos;">
-      <ITEM name="in" value="" type="string" description="Input mzML file containing the spectra." tags="input file,required" supported_formats="*.mzML" />
-      <ITEM name="out" value="" type="string" description="Output mzML file." tags="output file,required" supported_formats="*.mzML" />
-      <ITEM name="feature_in" value="" type="string" description="Input featureXML file, containing features; if set, the MS/MS spectra precursor entries #br#will be matched to the feature m/z values if possible." tags="input file" supported_formats="*.featureXML" />
-      <ITEM name="precursor_mass_tolerance" value="1.5" type="float" description="Maximal deviation in Th which is acceptable to be corrected;#br#this value should be set to the instruments selection window." restrictions="0:" />
-      <ITEM name="max_charge" value="3" type="int" description="Maximal charge that should be assumed for precursor peaks" tags="advanced" />
-      <ITEM name="intensity_threshold" value="-1" type="float" description="Intensity threshold value for isotope wavelet feature finder, please look at the documentation of the class for details." tags="advanced" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="Input mzML file containing the spectra." required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="Output mzML file." required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="feature_in" value="" type="input-file" description="Input featureXML file, containing features; if set, the MS/MS spectra precursor entries #br#will be matched to the feature m/z values if possible." required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="precursor_mass_tolerance" value="1.5" type="double" description="Maximal deviation in Th which is acceptable to be corrected;#br#this value should be set to the instruments selection window." required="false" advanced="false" restrictions="0:" />
+      <ITEM name="max_charge" value="3" type="int" description="Maximal charge that should be assumed for precursor peaks" required="false" advanced="true" />
+      <ITEM name="intensity_threshold" value="-1" type="double" description="Intensity threshold value for isotope wavelet feature finder, please look at the documentation of the class for details." required="false" advanced="true" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

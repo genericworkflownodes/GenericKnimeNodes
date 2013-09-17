@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>SequenceCoverageCalculator</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="SequenceCoverageCalculator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_SequenceCoverageCalculator.html" category="Utilities" >
 <description><![CDATA[Prints information about idXML files.]]></description>
 <manual><![CDATA[Prints information about idXML files.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="SequenceCoverageCalculator" description="Prints information about idXML files.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;SequenceCoverageCalculator&apos;">
-      <ITEM name="in_database" value="" type="string" description="input file containing the database in FASTA format" tags="input file,required" supported_formats="*.fasta" />
-      <ITEM name="in_peptides" value="" type="string" description="input file containing the identified peptides" tags="input file,required" supported_formats="*.idXML" />
-      <ITEM name="out" value="" type="string" description="Optional text output file. If left out, the output is written to the command line." tags="output file" supported_formats="*.txt" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in_database" value="" type="input-file" description="input file containing the database in FASTA format" required="true" advanced="false" supported_formats="*.fasta" />
+      <ITEM name="in_peptides" value="" type="input-file" description="input file containing the identified peptides" required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="output-file" description="Optional text output file. If left out, the output is written to the command line." required="false" advanced="false" supported_formats="*.txt" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>OpenSwathDecoyGenerator</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="OpenSwathDecoyGenerator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_OpenSwathDecoyGenerator.html" category="Targeted Experiments" >
 <description><![CDATA[Generates decoys according to different models for a specific TraML]]></description>
 <manual><![CDATA[Generates decoys according to different models for a specific TraML]]></manual>
-<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__OpenSwathDecoyGenerator.html</docurl>
-<category>Targeted Experiments</category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="OpenSwathDecoyGenerator" description="Generates decoys according to different models for a specific TraML">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;OpenSwathDecoyGenerator&apos;">
-      <ITEM name="in" value="" type="string" description="input file (&apos;traML&apos;)" tags="input file,required" supported_formats="*.traML" />
-      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.traML" />
-      <ITEM name="method" value="shuffle" type="string" description="decoy generation method (&apos;shuffle&apos;,&apos;pseudo-reverse&apos;,&apos;reverse&apos;,&apos;shift&apos;)" />
-      <ITEM name="decoy_tag" value="DECOY_" type="string" description="decoy tag" />
-      <ITEM name="min_transitions" value="2" type="int" description="minimal number of transitions" />
-      <ITEM name="max_transitions" value="6" type="int" description="maximal number of transitions" />
-      <ITEM name="theoretical" value="false" type="string" description="set this flag if only annotated transitions should be used and be corrected to the theoretical mz." restrictions="true,false" />
-      <ITEM name="mz_threshold" value="0.8" type="float" description="MZ threshold in Thomson for fragment ion annotation" />
-      <ITEM name="exclude_similar" value="false" type="string" description="set this flag if decoy assays with similarity of the peptide sequence to the target assays higher than the identity_threshold should be excluded. If similarity_threshold is over 0, decoy assays with an absolute difference of the decoy and target product mz smaller than similarity_threshold are further excluded." restrictions="true,false" />
-      <ITEM name="similarity_threshold" value="-1" type="float" description="Similarity threshold for absolute difference of the product mz of target and decoy assays for exclusion in Dalton. Suggested value: 0.05" />
-      <ITEM name="append" value="false" type="string" description="set this flag if non-decoy TraML should be appended to the output." restrictions="true,false" />
-      <ITEM name="remove_CNterm_mods" value="false" type="string" description="set this flag to remove decoy peptides with C/N terminal modifications (may be necessary depending on the decoy generation method)." restrictions="true,false" />
-      <ITEM name="identity_threshold" value="0.7" type="float" description="shuffle: identity threshold for the shuffle algorithm" />
-      <ITEM name="max_attempts" value="10" type="int" description="shuffle: maximum attempts to lower the sequence identity between target and decoy for the shuffle algorithm" />
-      <ITEM name="mz_shift" value="20" type="float" description="shift: MZ shift in Thomson for shift decoy method" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="input file (&apos;traML&apos;)" required="true" advanced="false" supported_formats="*.traML" />
+      <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.traML" />
+      <ITEM name="method" value="shuffle" type="string" description="decoy generation method (&apos;shuffle&apos;,&apos;pseudo-reverse&apos;,&apos;reverse&apos;,&apos;shift&apos;)" required="false" advanced="false" />
+      <ITEM name="decoy_tag" value="DECOY_" type="string" description="decoy tag" required="false" advanced="false" />
+      <ITEM name="min_transitions" value="2" type="int" description="minimal number of transitions" required="false" advanced="false" />
+      <ITEM name="max_transitions" value="6" type="int" description="maximal number of transitions" required="false" advanced="false" />
+      <ITEM name="theoretical" value="false" type="string" description="set this flag if only annotated transitions should be used and be corrected to the theoretical mz." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="mz_threshold" value="0.8" type="double" description="MZ threshold in Thomson for fragment ion annotation" required="false" advanced="false" />
+      <ITEM name="exclude_similar" value="false" type="string" description="set this flag if decoy assays with similarity of the peptide sequence to the target assays higher than the identity_threshold should be excluded. If similarity_threshold is over 0, decoy assays with an absolute difference of the decoy and target product mz smaller than similarity_threshold are further excluded." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="similarity_threshold" value="-1" type="double" description="Similarity threshold for absolute difference of the product mz of target and decoy assays for exclusion in Dalton. Suggested value: 0.05" required="false" advanced="false" />
+      <ITEM name="append" value="false" type="string" description="set this flag if non-decoy TraML should be appended to the output." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="remove_CNterm_mods" value="false" type="string" description="set this flag to remove decoy peptides with C/N terminal modifications (may be necessary depending on the decoy generation method)." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="identity_threshold" value="0.7" type="double" description="shuffle: identity threshold for the shuffle algorithm" required="false" advanced="false" />
+      <ITEM name="max_attempts" value="10" type="int" description="shuffle: maximum attempts to lower the sequence identity between target and decoy for the shuffle algorithm" required="false" advanced="false" />
+      <ITEM name="mz_shift" value="20" type="double" description="shift: MZ shift in Thomson for shift decoy method" required="false" advanced="false" />
+      <ITEM name="precursor_mass_shift" value="0" type="double" description="Mass shift to apply to the precursor ion" required="false" advanced="false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

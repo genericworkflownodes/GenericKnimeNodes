@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>PTPredict</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="PTPredict" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_PTPredict.html" category="Peptide property prediction" >
 <description><![CDATA[predicts the likelihood of peptides to be proteotypic via svm_model which is trained by PTModel]]></description>
 <manual><![CDATA[predicts the likelihood of peptides to be proteotypic via svm_model which is trained by PTModel]]></manual>
-<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__PTPredict.html</docurl>
-<category>Peptide property prediction</category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="PTPredict" description="predicts the likelihood of peptides to be proteotypic via svm_model which is trained by PTModel">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;PTPredict&apos;">
-      <ITEM name="in" value="" type="string" description="input file " tags="input file,required" supported_formats="*.idXML" />
-      <ITEM name="out" value="" type="string" description="output file#br#" tags="output file" supported_formats="*.idXML" />
-      <ITEM name="svm_model" value="" type="string" description="svm model in libsvm format (can be produced by PTModel)" tags="input file,required" supported_formats="*.txt" />
-      <ITEM name="max_number_of_peptides" value="100000" type="int" description="the maximum number of peptides considered at once (bigger number will lead to faster results but needs more memory).#br#" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="input file " required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="output-file" description="output file#br#" required="false" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="svm_model" value="" type="input-file" description="svm model in libsvm format (can be produced by PTModel)" required="true" advanced="false" supported_formats="*.txt" />
+      <ITEM name="max_number_of_peptides" value="100000" type="int" description="the maximum number of peptides considered at once (bigger number will lead to faster results but needs more memory).#br#" required="false" advanced="false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

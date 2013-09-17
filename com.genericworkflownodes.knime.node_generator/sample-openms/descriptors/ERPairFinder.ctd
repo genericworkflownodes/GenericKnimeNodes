@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>ERPairFinder</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="ERPairFinder" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_ERPairFinder.html" category="Utilities" >
 <description><![CDATA[Util which can be used to evaluate pair ratios on enhanced resolution (zoom) scans.]]></description>
 <manual><![CDATA[Util which can be used to evaluate pair ratios on enhanced resolution (zoom) scans.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="ERPairFinder" description="Util which can be used to evaluate pair ratios on enhanced resolution (zoom) scans.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;ERPairFinder&apos;">
-      <ITEM name="in" value="" type="string" description="Input mzML file containing the ER spectra." tags="input file,required" supported_formats="*.mzML" />
-      <ITEM name="pair_in" value="" type="string" description="Pair-file in the format: m/z-light m/z-heavy charge rt" tags="input file,required" supported_formats="*.txt" />
-      <ITEM name="out" value="" type="string" description="Output consensusXML file were the pairs of the feature are written into." tags="output file,required" supported_formats="*.consensusXML" />
-      <ITEM name="feature_out" value="" type="string" description="Output featureXML file, only written if given, skipped otherwise." tags="output file" supported_formats="*.featureXML" />
-      <ITEM name="precursor_mass_tolerance" value="0.3" type="float" description="Precursor mass tolerance which is used for the pair finding and the matching of the given pair m/z values to the features." restrictions="0:" />
-      <ITEM name="RT_tolerance" value="200" type="float" description="Maximal deviation in RT dimension in seconds a feature can have when comparing to the RT values given in the pair file" tags="advanced" restrictions="1:" />
-      <ITEM name="max_charge" value="3" type="int" description="Maximal charge state features should be search for." tags="advanced" restrictions="1:" />
-      <ITEM name="intensity_threshold" value="-1" type="float" description="Intensity threshold, for the meaning see the documentation of the IsotopeWaveletFeatureFinder documentation." tags="advanced" restrictions="-1:" />
-      <ITEM name="max_isotope" value="3" type="int" description="Max isotope of the isotope distribution to be considered" tags="advanced" restrictions="2:" />
-      <ITEM name="expansion_range" value="5" type="float" description="The range that is used to extend the isotope distribution with null intensity peaks in Th." tags="advanced" restrictions="0:" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="Input mzML file containing the ER spectra." required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="pair_in" value="" type="input-file" description="Pair-file in the format: m/z-light m/z-heavy charge rt" required="true" advanced="false" supported_formats="*.txt" />
+      <ITEM name="out" value="" type="output-file" description="Output consensusXML file were the pairs of the feature are written into." required="true" advanced="false" supported_formats="*.consensusXML" />
+      <ITEM name="feature_out" value="" type="output-file" description="Output featureXML file, only written if given, skipped otherwise." required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="precursor_mass_tolerance" value="0.3" type="double" description="Precursor mass tolerance which is used for the pair finding and the matching of the given pair m/z values to the features." required="false" advanced="false" restrictions="0:" />
+      <ITEM name="RT_tolerance" value="200" type="double" description="Maximal deviation in RT dimension in seconds a feature can have when comparing to the RT values given in the pair file" required="false" advanced="true" restrictions="1:" />
+      <ITEM name="max_charge" value="3" type="int" description="Maximal charge state features should be search for." required="false" advanced="true" restrictions="1:" />
+      <ITEM name="intensity_threshold" value="-1" type="double" description="Intensity threshold, for the meaning see the documentation of the IsotopeWaveletFeatureFinder documentation." required="false" advanced="true" restrictions="-1:" />
+      <ITEM name="max_isotope" value="3" type="int" description="Max isotope of the isotope distribution to be considered" required="false" advanced="true" restrictions="2:" />
+      <ITEM name="expansion_range" value="5" type="double" description="The range that is used to extend the isotope distribution with null intensity peaks in Th." required="false" advanced="true" restrictions="0:" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

@@ -1,37 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>RNPxl</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="RNPxl" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_RNPxl.html" category="Utilities" >
 <description><![CDATA[Tool for RNP cross linking experiment analysis.]]></description>
 <manual><![CDATA[Tool for RNP cross linking experiment analysis.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="RNPxl" description="Tool for RNP cross linking experiment analysis.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;RNPxl&apos;">
-      <ITEM name="in_mzML" value="" type="string" description="Input file" tags="input file,required" supported_formats="*.mzML" />
-      <ITEM name="length" value="4" type="int" description="Oligonucleotide maximum length." />
-      <ITEM name="sequence" value="" type="string" description="Sequence to restrict the generation of oligonucleotide chains. (disabled for empty sequence)" />
-      <ITEMLIST name="target_nucleotides" type="string" description="format:  target nucleotide=empirical formula of nucleoside monophosphate #br# e.g. A=C10H14N5O7P, ..., U=C10H14N5O7P, X=C9H13N2O8PS  where X represents e.g. tU #br# or e.g. Y=C10H14N5O7PS where Y represents tG">
+      <ITEM name="in_mzML" value="" type="input-file" description="Input file" required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="length" value="4" type="int" description="Oligonucleotide maximum length." required="false" advanced="false" />
+      <ITEM name="sequence" value="" type="string" description="Sequence to restrict the generation of oligonucleotide chains. (disabled for empty sequence)" required="false" advanced="false" />
+      <ITEMLIST name="target_nucleotides" type="string" description="format:  target nucleotide=empirical formula of nucleoside monophosphate #br# e.g. A=C10H14N5O7P, ..., U=C10H14N5O7P, X=C9H13N2O8PS  where X represents e.g. tU #br# or e.g. Y=C10H14N5O7PS where Y represents tG" required="false" advanced="false">
         <LISTITEM value="A=C10H14N5O7P"/>
         <LISTITEM value="C=C9H14N3O8P"/>
         <LISTITEM value="G=C10H14N5O8P"/>
         <LISTITEM value="U=C9H13N2O9P"/>
       </ITEMLIST>
-      <ITEMLIST name="mapping" type="string" description="format: source-&gt;target e.g. A-&gt;A, ..., U-&gt;U, U-&gt;X">
+      <ITEMLIST name="mapping" type="string" description="format: source-&gt;target e.g. A-&gt;A, ..., U-&gt;U, U-&gt;X" required="false" advanced="false">
         <LISTITEM value="A-&gt;A"/>
         <LISTITEM value="C-&gt;C"/>
         <LISTITEM value="G-&gt;G"/>
         <LISTITEM value="U-&gt;U"/>
       </ITEMLIST>
-      <ITEMLIST name="restrictions" type="string" description="format: target nucleotide=min_count: e.g U=1 if at least one U must be in the generated sequence.">
+      <ITEMLIST name="restrictions" type="string" description="format: target nucleotide=min_count: e.g U=1 if at least one U must be in the generated sequence." required="false" advanced="false">
         <LISTITEM value="A=0"/>
         <LISTITEM value="C=0"/>
         <LISTITEM value="U=0"/>
         <LISTITEM value="G=0"/>
       </ITEMLIST>
-      <ITEMLIST name="modifications" type="string" description="format: empirical formula e.g -H2O, ..., H2O+PO3">
+      <ITEMLIST name="modifications" type="string" description="format: empirical formula e.g -H2O, ..., H2O+PO3" required="false" advanced="false">
         <LISTITEM value="-H2O"/>
         <LISTITEM value=""/>
         <LISTITEM value="-H2O-HPO3"/>
@@ -39,19 +35,19 @@
         <LISTITEM value="-H2O+HPO3"/>
         <LISTITEM value="+HPO3"/>
       </ITEMLIST>
-      <ITEM name="peptide_mass_threshold" value="600" type="float" description="Lower peptide mass (Da) threshold." />
-      <ITEM name="precursor_variant_mz_threshold" value="260" type="float" description="Lower m/z (Th) threshold for precursor variant." />
-      <ITEM name="CysteineAdduct" value="false" type="string" description="Use this flag if the +152 adduct is expected." restrictions="true,false" />
-      <ITEM name="in_OMSSA_ini" value="" type="string" description="Ini file for the OMSSA search engine#br#" tags="input file,required" supported_formats="*.ini" />
-      <ITEM name="in_fasta" value="" type="string" description="Fasta file for search result annotation#br#" tags="input file,required" supported_formats="*.fasta" />
-      <ITEM name="marker_ions_tolerance" value="0.05" type="float" description="mz tolerance used to determine marker ions." />
-      <ITEM name="out_idXML" value="" type="string" description="idXML output file#br#" tags="output file,required" supported_formats="*.idXML" />
-      <ITEM name="out_csv" value="" type="string" description="csv output file#br#" tags="output file,required" supported_formats="*.csv" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="peptide_mass_threshold" value="600" type="double" description="Lower peptide mass (Da) threshold." required="false" advanced="false" />
+      <ITEM name="precursor_variant_mz_threshold" value="260" type="double" description="Lower m/z (Th) threshold for precursor variant." required="false" advanced="false" />
+      <ITEM name="CysteineAdduct" value="false" type="string" description="Use this flag if the +152 adduct is expected." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="in_OMSSA_ini" value="" type="input-file" description="Ini file for the OMSSA search engine#br#" required="true" advanced="false" supported_formats="*.ini" />
+      <ITEM name="in_fasta" value="" type="input-file" description="Fasta file for search result annotation#br#" required="true" advanced="false" supported_formats="*.fasta" />
+      <ITEM name="marker_ions_tolerance" value="0.05" type="double" description="mz tolerance used to determine marker ions." required="false" advanced="false" />
+      <ITEM name="out_idXML" value="" type="output-file" description="idXML output file#br#" required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="out_csv" value="" type="output-file" description="csv output file#br#" required="true" advanced="false" supported_formats="*.csv" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>
