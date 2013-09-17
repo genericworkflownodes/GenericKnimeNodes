@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>MapStatistics</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="MapStatistics" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_MapStatistics.html" category="File Handling" >
 <description><![CDATA[Extract extended statistics on the features of a map for quality control.]]></description>
 <manual><![CDATA[Extract extended statistics on the features of a map for quality control.]]></manual>
-<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__MapStatistics.html</docurl>
-<category>File Handling</category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="MapStatistics" description="Extract extended statistics on the features of a map for quality control.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;MapStatistics&apos;">
-      <ITEM name="in" value="" type="string" description="Input file" tags="input file,required" supported_formats="*.featureXML,*.consensusXML" />
-      <ITEM name="in_type" value="" type="string" description="Input file type -- default: determined from file extension or content" restrictions="featureXML,consensusXML" />
-      <ITEM name="out" value="" type="string" description="Optional output txt file. If &apos;-&apos; or left out, the output is written to the command line." tags="output file" supported_formats="*.txt" />
-      <ITEM name="n" value="4" type="int" description="Report separate statistics for each of n RT slices of the map." restrictions="1:100" />
-      <ITEM name="m" value="false" type="string" description="Show meta information about the whole experiment" restrictions="true,false" />
-      <ITEM name="p" value="false" type="string" description="Shows data processing information" restrictions="true,false" />
-      <ITEM name="s" value="false" type="string" description="Computes a summary statistics of intensities, qualities, and widths" restrictions="true,false" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="Input file" required="true" advanced="false" supported_formats="*.featureXML,*.consensusXML" />
+      <ITEM name="in_type" value="" type="string" description="Input file type -- default: determined from file extension or content" required="false" advanced="false" restrictions="featureXML,consensusXML" />
+      <ITEM name="out" value="" type="output-file" description="Optional output txt file. If &apos;-&apos; or left out, the output is written to the command line." required="false" advanced="false" supported_formats="*.txt" />
+      <ITEM name="n" value="4" type="int" description="Report separate statistics for each of n RT slices of the map." required="false" advanced="false" restrictions="1:100" />
+      <ITEM name="m" value="false" type="string" description="Show meta information about the whole experiment" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="p" value="false" type="string" description="Shows data processing information" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="s" value="false" type="string" description="Computes a summary statistics of intensities, qualities, and widths" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

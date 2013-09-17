@@ -1,29 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>FeatureFinderMRM</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="FeatureFinderMRM" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_FeatureFinderMRM.html" category="Quantitation" >
 <description><![CDATA[Detects two-dimensional features in LC-MS data.]]></description>
 <manual><![CDATA[Detects two-dimensional features in LC-MS data.]]></manual>
-<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__FeatureFinderMRM.html</docurl>
-<category>Quantitation</category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="FeatureFinderMRM" description="Detects two-dimensional features in LC-MS data.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FeatureFinderMRM&apos;">
-      <ITEM name="in" value="" type="string" description="input file" tags="input file,required" supported_formats="*.mzML" />
-      <ITEM name="out" value="" type="string" description="output file" tags="output file,required" supported_formats="*.featureXML" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="input file" required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
       <NODE name="algorithm" description="Algorithm section">
-        <ITEM name="min_rt_distance" value="10" type="float" description="Minimal distance of MRM features in seconds." restrictions="0:" />
-        <ITEM name="min_num_peaks_per_feature" value="5" type="int" description="Minimal number of peaks which are needed for a single feature" tags="advanced" restrictions="1:" />
-        <ITEM name="min_signal_to_noise_ratio" value="2" type="float" description="Minimal S/N ratio a peak must have to be taken into account. Set to zero if the MRM-traces contains mostly signals, and no noise." restrictions="0:" />
-        <ITEM name="write_debug_files" value="false" type="string" description="If set to true, for each feature a plot will be created, in the subdirectory &apos;debug&apos;" tags="advanced" restrictions="true,false" />
-        <ITEM name="resample_traces" value="false" type="string" description="If set to true, each trace, which is in this case a part of the MRM monitoring trace with signal is resampled, using the minimal distance of two data points in RT dimension" tags="advanced" restrictions="true,false" />
-        <ITEM name="write_debuginfo" value="false" type="string" description="If set to true, debug messages are written, the output can be somewhat lengthy." tags="advanced" restrictions="true,false" />
+        <ITEM name="min_rt_distance" value="10" type="double" description="Minimal distance of MRM features in seconds." required="false" advanced="false" restrictions="0:" />
+        <ITEM name="min_num_peaks_per_feature" value="5" type="int" description="Minimal number of peaks which are needed for a single feature" required="false" advanced="true" restrictions="1:" />
+        <ITEM name="min_signal_to_noise_ratio" value="2" type="double" description="Minimal S/N ratio a peak must have to be taken into account. Set to zero if the MRM-traces contains mostly signals, and no noise." required="false" advanced="false" restrictions="0:" />
+        <ITEM name="write_debug_files" value="false" type="string" description="If set to true, for each feature a plot will be created, in the subdirectory &apos;debug&apos;" required="false" advanced="true" restrictions="true,false" />
+        <ITEM name="resample_traces" value="false" type="string" description="If set to true, each trace, which is in this case a part of the MRM monitoring trace with signal is resampled, using the minimal distance of two data points in RT dimension" required="false" advanced="true" restrictions="true,false" />
+        <ITEM name="write_debuginfo" value="false" type="string" description="If set to true, debug messages are written, the output can be somewhat lengthy." required="false" advanced="true" restrictions="true,false" />
       </NODE>
     </NODE>
   </NODE>

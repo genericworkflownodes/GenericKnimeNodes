@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>SemanticValidator</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="SemanticValidator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_SemanticValidator.html" category="Utilities" >
 <description><![CDATA[SemanticValidator for analysisXML and mzML files.]]></description>
 <manual><![CDATA[SemanticValidator for analysisXML and mzML files.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="SemanticValidator" description="SemanticValidator for analysisXML and mzML files.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;SemanticValidator&apos;">
-      <ITEM name="in" value="" type="string" description="Input file, either analysisXML or mzML." tags="input file,required" supported_formats="*.analysisXML,*.mzML" />
-      <ITEM name="mapping_file" value="" type="string" description="Mapping file which is used to semantically validate the given XML file against this mapping file (see &apos;share/OpenMS/MAPPING&apos; for templates)." tags="input file,required" supported_formats="*.xml" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="Input file, either analysisXML or mzML." required="true" advanced="false" supported_formats="*.analysisXML,*.mzML" />
+      <ITEM name="mapping_file" value="" type="input-file" description="Mapping file which is used to semantically validate the given XML file against this mapping file (see &apos;share/OpenMS/MAPPING&apos; for templates)." required="true" advanced="false" supported_formats="*.xml" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

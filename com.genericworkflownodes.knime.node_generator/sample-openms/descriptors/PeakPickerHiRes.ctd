@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>PeakPickerHiRes</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="PeakPickerHiRes" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_PeakPickerHiRes.html" category="Signal processing and preprocessing" >
 <description><![CDATA[Finds mass spectrometric peaks in profile mass spectra.]]></description>
 <manual><![CDATA[Finds mass spectrometric peaks in profile mass spectra.]]></manual>
-<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__PeakPickerHiRes.html</docurl>
-<category>Signal processing and preprocessing</category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="PeakPickerHiRes" description="Finds mass spectrometric peaks in profile mass spectra.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;PeakPickerHiRes&apos;">
-      <ITEM name="in" value="" type="string" description="input profile data file " tags="input file,required" supported_formats="*.mzML" />
-      <ITEM name="out" value="" type="string" description="output peak file " tags="output file,required" supported_formats="*.mzML" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="input profile data file " required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="output peak file " required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
       <NODE name="algorithm" description="Algorithm parameters section">
-        <ITEM name="signal_to_noise" value="1" type="float" description="Minimal signal-to-noise ratio for a peak to be picked (0.0 disables SNT estimation!)" restrictions="0:" />
-        <ITEM name="ms1_only" value="false" type="string" description="If true, peak picking is only applied to MS1 scans. Other scans are copied to the output without changes." restrictions="true,false" />
+        <ITEM name="signal_to_noise" value="1" type="double" description="Minimal signal-to-noise ratio for a peak to be picked (0.0 disables SNT estimation!)" required="false" advanced="false" restrictions="0:" />
+        <ITEM name="ms1_only" value="false" type="string" description="If true, peak picking is only applied to MS1 scans. Other scans are copied to the output without changes." required="false" advanced="false" restrictions="true,false" />
       </NODE>
     </NODE>
   </NODE>

@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>DecoyDatabase</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="DecoyDatabase" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_DecoyDatabase.html" category="Utilities" >
 <description><![CDATA[Create decoy peptide databases from normal ones.]]></description>
 <manual><![CDATA[Create decoy peptide databases from normal ones.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="DecoyDatabase" description="Create decoy peptide databases from normal ones.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;DecoyDatabase&apos;">
-      <ITEM name="in" value="" type="string" description="Input FASTA file containing the database." tags="input file,required" supported_formats="*.fasta" />
-      <ITEM name="out" value="" type="string" description="Output FASTA file where the decoy database will be written to." tags="output file,required" supported_formats="*.fasta" />
-      <ITEM name="decoy_string" value="_rev" type="string" description="String that is appended to the accession of the protein database to indicate a decoy protein." />
-      <ITEM name="decoy_string_position" value="suffix" type="string" description="Should the &apos;decoy_string&apos; be prepended (prefix) or appended (suffix) to the protein accession?" restrictions="prefix,suffix" />
-      <ITEM name="append" value="false" type="string" description="If this flag is used, the decoy database is appended to the target database, allowing combined target decoy searches." restrictions="true,false" />
-      <ITEM name="shuffle" value="false" type="string" description="If &apos;true&apos; then the decoy hit are shuffled from the target sequences, otherwise they are reversed" restrictions="true,false" />
-      <ITEM name="contaminants" value="" type="string" description="Input a FASTA file containing contaminants - if given they are included in the database (recommended)" tags="input file" supported_formats="*.fasta" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEMLIST name="in" type="input-file" description="Input FASTA file(s), each containing a database. It is recommended to include a contaminant database as well." required="true" advanced="false" supported_formats="*.fasta">
+      </ITEMLIST>
+      <ITEM name="out" value="" type="output-file" description="Output FASTA file where the decoy database will be written to." required="true" advanced="false" supported_formats="*.fasta" />
+      <ITEM name="decoy_string" value="_rev" type="string" description="String that is appended to the accession of the protein database to indicate a decoy protein." required="false" advanced="false" />
+      <ITEM name="decoy_string_position" value="suffix" type="string" description="Should the &apos;decoy_string&apos; be prepended (prefix) or appended (suffix) to the protein accession?" required="false" advanced="false" restrictions="prefix,suffix" />
+      <ITEM name="append" value="false" type="string" description="If this flag is used, the decoy database is appended to the target database, allowing combined target decoy searches." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="shuffle" value="false" type="string" description="If &apos;true&apos; then the decoy hit are shuffled from the target sequences, otherwise they are reversed" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

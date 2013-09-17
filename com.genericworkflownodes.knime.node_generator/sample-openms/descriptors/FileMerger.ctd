@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>FileMerger</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="FileMerger" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_FileMerger.html" category="File Handling" >
 <description><![CDATA[Merges several MS files into one file.]]></description>
 <manual><![CDATA[Merges several MS files into one file.]]></manual>
-<docurl>http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP__FileMerger.html</docurl>
-<category>File Handling</category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="FileMerger" description="Merges several MS files into one file.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FileMerger&apos;">
-      <ITEMLIST name="in" type="string" description="Input files separated by blank" tags="input file,required" supported_formats="*.mzData,*.mzXML,*.mzML,*.dta,*.dta2d,*.mgf,*.featureXML,*.consensusXML,*.fid,*.traML">
+      <ITEMLIST name="in" type="input-file" description="Input files separated by blank" required="true" advanced="false" supported_formats="*.mzData,*.mzXML,*.mzML,*.dta,*.dta2d,*.mgf,*.featureXML,*.consensusXML,*.fid,*.traML">
       </ITEMLIST>
-      <ITEM name="in_type" value="" type="string" description="Input file type (default: determined from file extension or content)" restrictions="mzData,mzXML,mzML,dta,dta2d,mgf,featureXML,consensusXML,fid,traML" />
-      <ITEM name="out" value="" type="string" description="Output file" tags="output file,required" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.traML" />
-      <ITEM name="annotate_file_origin" value="false" type="string" description="Store the original filename in each feature (MetaValue: file_origin)." restrictions="true,false" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in_type" value="" type="string" description="Input file type (default: determined from file extension or content)" required="false" advanced="false" restrictions="mzData,mzXML,mzML,dta,dta2d,mgf,featureXML,consensusXML,fid,traML" />
+      <ITEM name="out" value="" type="output-file" description="Output file" required="true" advanced="false" supported_formats="*.mzML,*.featureXML,*.consensusXML,*.traML" />
+      <ITEM name="annotate_file_origin" value="false" type="string" description="Store the original filename in each feature using meta value &quot;file_origin&quot; (for featureXML and consensusXML only)." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
       <NODE name="raw" description="Flags for non-featureXML input/output">
-        <ITEM name="rt_auto" value="false" type="string" description="Assign retention times automatically (integers starting at 1)" restrictions="true,false" />
-        <ITEMLIST name="rt_custom" type="float" description="List of custom retention times that are assigned to the files. The number of given retention times must be equal to the number of given input file.">
+        <ITEM name="rt_auto" value="false" type="string" description="Assign retention times automatically (integers starting at 1)" required="false" advanced="false" restrictions="true,false" />
+        <ITEMLIST name="rt_custom" type="double" description="List of custom retention times that are assigned to the files. The number of given retention times must be equal to the number of given input file." required="false" advanced="false">
         </ITEMLIST>
-        <ITEM name="rt_filename" value="false" type="string" description="If this flag is set FileMerger tries to guess the rt of the file name.#br#This option is useful for merging DTA file, which should contain the string#br#&apos;rt&apos; directly followed by a floating point number:#br#i.e. my_spectrum_rt2795.15.dta" restrictions="true,false" />
-        <ITEM name="ms_level" value="2" type="int" description="This option is useful for use with DTA files which does not contain MS level information. The given level is assigned to the spectra." />
-        <ITEM name="user_ms_level" value="false" type="string" description="If this flag is set, the MS level given above is used" restrictions="true,false" />
+        <ITEM name="rt_filename" value="false" type="string" description="If this flag is set FileMerger tries to guess the rt of the file name.#br#This option is useful for merging DTA file, which should contain the string#br#&apos;rt&apos; directly followed by a floating point number:#br#i.e. my_spectrum_rt2795.15.dta" required="false" advanced="false" restrictions="true,false" />
+        <ITEM name="ms_level" value="2" type="int" description="This option is useful for use with DTA files which does not contain MS level information. The given level is assigned to the spectra." required="false" advanced="false" />
+        <ITEM name="user_ms_level" value="false" type="string" description="If this flag is set, the MS level given above is used" required="false" advanced="false" restrictions="true,false" />
       </NODE>
     </NODE>
   </NODE>

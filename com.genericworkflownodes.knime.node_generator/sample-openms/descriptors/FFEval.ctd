@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>FFEval</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="FFEval" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_FFEval.html" category="Utilities" >
 <description><![CDATA[Evaluation tool for feature detection algorithms.]]></description>
 <manual><![CDATA[Evaluation tool for feature detection algorithms.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="FFEval" description="Evaluation tool for feature detection algorithms.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FFEval&apos;">
-      <ITEM name="in" value="" type="string" description="Feature input file, which contains the data to be tested against the truth file." tags="input file,required" supported_formats="*.featureXML" />
-      <ITEM name="truth" value="" type="string" description="Truth feature file that defines what features should be found." tags="input file,required" supported_formats="*.featureXML" />
-      <ITEM name="rt_tol" value="0.3" type="float" description="Allowed tolerance of RT relative to average feature RT span." restrictions="0:" />
-      <ITEM name="rt_tol_abs" value="-1" type="float" description="Allowed absolute tolerance of RT (overwrites &apos;rt_tol&apos; if set above zero)." restrictions="-1:" />
-      <ITEM name="mz_tol" value="0.25" type="float" description="Allowed tolerance in m/z (is divided by charge)." restrictions="0:" />
-      <ITEM name="out" value="" type="string" description="Feature output file. If given, an annotated input file is written." tags="output file" supported_formats="*.featureXML" />
-      <ITEM name="abort_reasons" value="" type="string" description="Feature file containing seeds with abort reasons." tags="input file" supported_formats="*.featureXML" />
-      <ITEM name="out_roc" value="" type="string" description="If given, a ROC curve file is created (ROC points based on intensity threshold)" tags="output file" supported_formats="*.csv" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="in" value="" type="input-file" description="Feature input file, which contains the data to be tested against the truth file." required="true" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="truth" value="" type="input-file" description="Truth feature file that defines what features should be found." required="true" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="rt_tol" value="0.3" type="double" description="Allowed tolerance of RT relative to average feature RT span." required="false" advanced="false" restrictions="0:" />
+      <ITEM name="rt_tol_abs" value="-1" type="double" description="Allowed absolute tolerance of RT (overwrites &apos;rt_tol&apos; if set above zero)." required="false" advanced="false" restrictions="-1:" />
+      <ITEM name="mz_tol" value="0.25" type="double" description="Allowed tolerance in m/z (is divided by charge)." required="false" advanced="false" restrictions="0:" />
+      <ITEM name="out" value="" type="output-file" description="Feature output file. If given, an annotated input file is written." required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="abort_reasons" value="" type="input-file" description="Feature file containing seeds with abort reasons." required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="out_roc" value="" type="output-file" description="If given, a ROC curve file is created (ROC points based on intensity threshold)" required="false" advanced="false" supported_formats="*.csv" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>

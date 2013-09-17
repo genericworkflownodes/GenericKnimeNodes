@@ -1,279 +1,275 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>MSSimulator</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="MSSimulator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_MSSimulator.html" category="Utilities" >
 <description><![CDATA[A highly configurable simulator for mass spectrometry experiments.]]></description>
 <manual><![CDATA[A highly configurable simulator for mass spectrometry experiments.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="MSSimulator" description="A highly configurable simulator for mass spectrometry experiments.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;MSSimulator&apos;">
-      <ITEMLIST name="in" type="string" description="Input protein sequences in FASTA format" tags="input file,required" supported_formats="*.fasta">
+      <ITEMLIST name="in" type="input-file" description="Input protein sequences in FASTA format" required="true" advanced="false" supported_formats="*.fasta">
       </ITEMLIST>
-      <ITEM name="out" value="" type="string" description="output (simulated MS map) in mzML format" tags="output file" supported_formats="*.mzML" />
-      <ITEM name="out_pm" value="" type="string" description="output (simulated MS map) in mzML format (picked GT)" tags="output file" supported_formats="*.mzML" />
-      <ITEM name="out_fm" value="" type="string" description="output (simulated MS map) in featureXML format" tags="output file" supported_formats="*.featureXML" />
-      <ITEM name="out_cm" value="" type="string" description="output (simulated MS map) in consensusXML format (grouping charge variants from a parent peptide from ESI)" tags="output file" supported_formats="*.consensusXML" />
-      <ITEM name="out_lcm" value="" type="string" description="output (simulated MS map) in consensusXML format (grouping labeled variants)" tags="output file" supported_formats="*.consensusXML" />
-      <ITEM name="out_cntm" value="" type="string" description="output (simulated MS map) in featureXML format (contaminants)" tags="output file" supported_formats="*.featureXML" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="out" value="" type="output-file" description="output (simulated MS map) in mzML format" required="false" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out_pm" value="" type="output-file" description="output (simulated MS map) in mzML format (picked GT)" required="false" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out_fm" value="" type="output-file" description="output (simulated MS map) in featureXML format" required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="out_cm" value="" type="output-file" description="output (simulated MS map) in consensusXML format (grouping charge variants from a parent peptide from ESI)" required="false" advanced="false" supported_formats="*.consensusXML" />
+      <ITEM name="out_lcm" value="" type="output-file" description="output (simulated MS map) in consensusXML format (grouping labeled variants)" required="false" advanced="false" supported_formats="*.consensusXML" />
+      <ITEM name="out_cntm" value="" type="output-file" description="output (simulated MS map) in featureXML format (contaminants)" required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
       <NODE name="algorithm" description="Algorithm parameters section">
         <NODE name="MSSim" description="">
           <NODE name="Digestion" description="">
-            <ITEM name="enzyme" value="Trypsin" type="string" description="Enzyme to use for digestion (select &apos;none&apos; to skip digestion)" restrictions="Trypsin,none" />
-            <ITEM name="model" value="naive" type="string" description="The cleavage model to use for digestion. &apos;Trained&apos; is based on a log likelihood model (see DOI:10.1021/pr060507u)." restrictions="trained,naive" />
-            <ITEM name="min_peptide_length" value="3" type="int" description="Minimum peptide length after digestion (shorter ones will be discarded)" restrictions="1:" />
+            <ITEM name="enzyme" value="Trypsin" type="string" description="Enzyme to use for digestion (select &apos;none&apos; to skip digestion)" required="false" advanced="false" restrictions="Trypsin,none" />
+            <ITEM name="model" value="naive" type="string" description="The cleavage model to use for digestion. &apos;Trained&apos; is based on a log likelihood model (see DOI:10.1021/pr060507u)." required="false" advanced="false" restrictions="trained,naive" />
+            <ITEM name="min_peptide_length" value="3" type="int" description="Minimum peptide length after digestion (shorter ones will be discarded)" required="false" advanced="false" restrictions="1:" />
             <NODE name="model_trained" description="">
-              <ITEM name="threshold" value="0.5" type="float" description="Model threshold for calling a cleavage. Higher values increase the number of cleavages. -2 will give no cleavages, +4 almost full cleavage." restrictions="-2:4" />
+              <ITEM name="threshold" value="0.5" type="double" description="Model threshold for calling a cleavage. Higher values increase the number of cleavages. -2 will give no cleavages, +4 almost full cleavage." required="false" advanced="false" restrictions="-2:4" />
             </NODE>
             <NODE name="model_naive" description="">
-              <ITEM name="missed_cleavages" value="1" type="int" description="Maximum number of missed cleavages considered. All possible resulting peptides will be created." restrictions="0:" />
+              <ITEM name="missed_cleavages" value="1" type="int" description="Maximum number of missed cleavages considered. All possible resulting peptides will be created." required="false" advanced="false" restrictions="0:" />
             </NODE>
           </NODE>
           <NODE name="RT" description="">
-            <ITEM name="rt_column" value="HPLC" type="string" description="Modelling of an RT or CE column" restrictions="none,HPLC,CE" />
-            <ITEM name="auto_scale" value="true" type="string" description="Scale predicted RT&apos;s/MT&apos;s to given &apos;total_gradient_time&apos;? If &apos;true&apos;, for CE this means that &apos;CE:lenght_d&apos;, &apos;CE:length_total&apos;, &apos;CE:voltage&apos; have no influence." restrictions="true,false" />
-            <ITEM name="total_gradient_time" value="2500" type="float" description="The duration [s] of the gradient." restrictions="1e-05:" />
-            <ITEM name="sampling_rate" value="2" type="float" description="Time interval [s] between consecutive scans" restrictions="0.01:60" />
+            <ITEM name="rt_column" value="HPLC" type="string" description="Modelling of an RT or CE column" required="false" advanced="false" restrictions="none,HPLC,CE" />
+            <ITEM name="auto_scale" value="true" type="string" description="Scale predicted RT&apos;s/MT&apos;s to given &apos;total_gradient_time&apos;? If &apos;true&apos;, for CE this means that &apos;CE:lenght_d&apos;, &apos;CE:length_total&apos;, &apos;CE:voltage&apos; have no influence." required="false" advanced="false" restrictions="true,false" />
+            <ITEM name="total_gradient_time" value="2500" type="double" description="The duration [s] of the gradient." required="false" advanced="false" restrictions="1e-05:" />
+            <ITEM name="sampling_rate" value="2" type="double" description="Time interval [s] between consecutive scans" required="false" advanced="false" restrictions="0.01:60" />
             <NODE name="scan_window" description="">
-              <ITEM name="min" value="500" type="float" description="Start of RT Scan Window [s]" restrictions="0:" />
-              <ITEM name="max" value="1500" type="float" description="End of RT Scan Window [s]" restrictions="1:" />
+              <ITEM name="min" value="500" type="double" description="Start of RT Scan Window [s]" required="false" advanced="false" restrictions="0:" />
+              <ITEM name="max" value="1500" type="double" description="End of RT Scan Window [s]" required="false" advanced="false" restrictions="1:" />
             </NODE>
             <NODE name="variation" description="Random component that simulates technical/biological variation">
-              <ITEM name="feature_stddev" value="3" type="int" description="Standard deviation of shift in retention time [s] from predicted model (applied to every single feature independently)" />
-              <ITEM name="affine_offset" value="0" type="int" description="Global offset in retention time [s] from predicted model" />
-              <ITEM name="affine_scale" value="1" type="int" description="Global scaling in retention time from predicted model" />
+              <ITEM name="feature_stddev" value="3" type="int" description="Standard deviation of shift in retention time [s] from predicted model (applied to every single feature independently)" required="false" advanced="false" />
+              <ITEM name="affine_offset" value="0" type="int" description="Global offset in retention time [s] from predicted model" required="false" advanced="false" />
+              <ITEM name="affine_scale" value="1" type="int" description="Global scaling in retention time from predicted model" required="false" advanced="false" />
             </NODE>
             <NODE name="column_condition" description="">
-              <ITEM name="distortion" value="0" type="int" description="Distortion of the elution profiles. Good presets are 0 for a perfect elution profile, 1 for a slightly distorted elution profile etc... For trapping instruments (e.g. Orbitrap) distortion should be &gt;4." restrictions="0:10" />
+              <ITEM name="distortion" value="0" type="int" description="Distortion of the elution profiles. Good presets are 0 for a perfect elution profile, 1 for a slightly distorted elution profile etc... For trapping instruments (e.g. Orbitrap) distortion should be &gt;4." required="false" advanced="false" restrictions="0:10" />
             </NODE>
             <NODE name="profile_shape" description="">
               <NODE name="width" description="Width of the EGH elution shape, i.e. the sigma^2 parameter, which is computed using &apos;value&apos; + rnd_cauchy(&apos;variance&apos;)">
-                <ITEM name="value" value="9" type="float" description="Width of the Exponential Gaussian Hybrid distribution shape of the elution profile. This does not correspond directly to the width in [s]." restrictions="0:" />
-                <ITEM name="variance" value="1.6" type="float" description="Random component of the width (set to 0 to disable randomness), i.e. scale parameter for the lorentzian variation of the variance (Note: The scale parameter has to be &gt;= 0)." restrictions="0:" />
+                <ITEM name="value" value="9" type="double" description="Width of the Exponential Gaussian Hybrid distribution shape of the elution profile. This does not correspond directly to the width in [s]." required="false" advanced="false" restrictions="0:" />
+                <ITEM name="variance" value="1.6" type="double" description="Random component of the width (set to 0 to disable randomness), i.e. scale parameter for the lorentzian variation of the variance (Note: The scale parameter has to be &gt;= 0)." required="false" advanced="false" restrictions="0:" />
               </NODE>
               <NODE name="skewness" description="Skewness of the EGH elution shape, i.e. the tau parameter, which is computed using &apos;value&apos; + rnd_cauchy(&apos;variance&apos;)">
-                <ITEM name="value" value="0.1" type="float" description="Asymmetric component of the EGH. Higher absolute(!) values lead to more skewness (negative values cause fronting, positive values cause tailing). Tau parameter of the EGH, i.e. time constant of the exponential decay of the Exponential Gaussian Hybrid distribution shape of the elution profile." />
-                <ITEM name="variance" value="0.3" type="float" description="Random component of skewness (set to 0 to disable randomness), i.e. scale parameter for the lorentzian variation of the time constant (Note: The scale parameter has to be &gt; 0)." restrictions="0:" />
+                <ITEM name="value" value="0.1" type="double" description="Asymmetric component of the EGH. Higher absolute(!) values lead to more skewness (negative values cause fronting, positive values cause tailing). Tau parameter of the EGH, i.e. time constant of the exponential decay of the Exponential Gaussian Hybrid distribution shape of the elution profile." required="false" advanced="false" />
+                <ITEM name="variance" value="0.3" type="double" description="Random component of skewness (set to 0 to disable randomness), i.e. scale parameter for the lorentzian variation of the time constant (Note: The scale parameter has to be &gt; 0)." required="false" advanced="false" restrictions="0:" />
               </NODE>
             </NODE>
             <NODE name="HPLC" description="">
-              <ITEM name="model_file" value="examples/simulation/RTPredict.model" type="string" description="SVM model for retention time prediction" />
+              <ITEM name="model_file" value="examples/simulation/RTPredict.model" type="string" description="SVM model for retention time prediction" required="false" advanced="false" />
             </NODE>
             <NODE name="CE" description="">
-              <ITEM name="pH" value="3" type="float" description="pH of buffer" restrictions="0:14" />
-              <ITEM name="alpha" value="0.5" type="float" description="Exponent Alpha used to calculate mobility" restrictions="0:1" />
-              <ITEM name="mu_eo" value="0" type="float" description="Electroosmotic flow" restrictions="0:5" />
-              <ITEM name="lenght_d" value="70" type="float" description="Length of capillary [cm] from injection site to MS" restrictions="0:1000" />
-              <ITEM name="length_total" value="75" type="float" description="Total length of capillary [cm]" restrictions="0:1000" />
-              <ITEM name="voltage" value="1000" type="float" description="Voltage applied to capillary" restrictions="0:" />
+              <ITEM name="pH" value="3" type="double" description="pH of buffer" required="false" advanced="false" restrictions="0:14" />
+              <ITEM name="alpha" value="0.5" type="double" description="Exponent Alpha used to calculate mobility" required="false" advanced="false" restrictions="0:1" />
+              <ITEM name="mu_eo" value="0" type="double" description="Electroosmotic flow" required="false" advanced="false" restrictions="0:5" />
+              <ITEM name="lenght_d" value="70" type="double" description="Length of capillary [cm] from injection site to MS" required="false" advanced="false" restrictions="0:1000" />
+              <ITEM name="length_total" value="75" type="double" description="Total length of capillary [cm]" required="false" advanced="false" restrictions="0:1000" />
+              <ITEM name="voltage" value="1000" type="double" description="Voltage applied to capillary" required="false" advanced="false" restrictions="0:" />
             </NODE>
           </NODE>
           <NODE name="Detectability" description="">
-            <ITEM name="dt_simulation_on" value="false" type="string" description="Modelling detectibility enabled? This can serve as a filter to remove peptides which ionize badly, thus reducing peptide count" restrictions="true,false" />
-            <ITEM name="min_detect" value="0.5" type="float" description="Minimum peptide detectability accepted. Peptides with a lower score will be removed" />
-            <ITEM name="dt_model_file" value="examples/simulation/DTPredict.model" type="string" description="SVM model for peptide detectability prediction" />
+            <ITEM name="dt_simulation_on" value="false" type="string" description="Modelling detectibility enabled? This can serve as a filter to remove peptides which ionize badly, thus reducing peptide count" required="false" advanced="false" restrictions="true,false" />
+            <ITEM name="min_detect" value="0.5" type="double" description="Minimum peptide detectability accepted. Peptides with a lower score will be removed" required="false" advanced="false" />
+            <ITEM name="dt_model_file" value="examples/simulation/DTPredict.model" type="string" description="SVM model for peptide detectability prediction" required="false" advanced="false" />
           </NODE>
           <NODE name="Ionization" description="">
             <NODE name="esi" description="">
-              <ITEMLIST name="ionized_residues" type="string" description="List of residues (as three letter code) that will be considered during ES ionization. The N-term is always assumed to carry a charge. This parameter will be ignored during MALDI ionization." restrictions="Ala,Cys,Asp,Glu,Phe,Gly,His,Ile,Lys,Leu,Met,Asn,Pro,Gln,Arg,Sec,Ser,Thr,Val,Trp,Tyr">
+              <ITEMLIST name="ionized_residues" type="string" description="List of residues (as three letter code) that will be considered during ES ionization. The N-term is always assumed to carry a charge. This parameter will be ignored during MALDI ionization." required="false" advanced="false" restrictions="Ala,Cys,Asp,Glu,Phe,Gly,His,Ile,Lys,Leu,Met,Asn,Pro,Gln,Arg,Sec,Ser,Thr,Val,Trp,Tyr">
                 <LISTITEM value="Arg"/>
                 <LISTITEM value="Lys"/>
                 <LISTITEM value="His"/>
               </ITEMLIST>
-              <ITEMLIST name="charge_impurity" type="string" description="List of charged ions that contribute to charge with weight of occurrence (their sum is scaled to 1 internally), e.g. [&apos;H:1&apos;] or [&apos;H:0.7&apos; &apos;Na:0.3&apos;], [&apos;H:4&apos; &apos;Na:1&apos;] (which internally translates to [&apos;H:0.8&apos; &apos;Na:0.2&apos;])">
+              <ITEMLIST name="charge_impurity" type="string" description="List of charged ions that contribute to charge with weight of occurrence (their sum is scaled to 1 internally), e.g. [&apos;H:1&apos;] or [&apos;H:0.7&apos; &apos;Na:0.3&apos;], [&apos;H:4&apos; &apos;Na:1&apos;] (which internally translates to [&apos;H:0.8&apos; &apos;Na:0.2&apos;])" required="false" advanced="false">
                 <LISTITEM value="H+:1"/>
               </ITEMLIST>
-              <ITEM name="max_impurity_set_size" value="3" type="int" description="Maximal #combinations of charge impurities allowed (each generating one feature) per charge state. E.g. assuming charge=3 and this parameter is 2, then we could choose to allow &apos;3H+, 2H+Na+&apos; features (given a certain &apos;charge_impurity&apos; constraints), but no &apos;3H+, 2H+Na+, 3Na+&apos;" tags="advanced" />
-              <ITEM name="ionization_probability" value="0.8" type="float" description="Probability for the binomial distribution of the ESI charge states" />
+              <ITEM name="max_impurity_set_size" value="3" type="int" description="Maximal #combinations of charge impurities allowed (each generating one feature) per charge state. E.g. assuming charge=3 and this parameter is 2, then we could choose to allow &apos;3H+, 2H+Na+&apos; features (given a certain &apos;charge_impurity&apos; constraints), but no &apos;3H+, 2H+Na+, 3Na+&apos;" required="false" advanced="true" />
+              <ITEM name="ionization_probability" value="0.8" type="double" description="Probability for the binomial distribution of the ESI charge states" required="false" advanced="false" />
             </NODE>
             <NODE name="maldi" description="">
-              <ITEMLIST name="ionization_probabilities" type="float" description="List of probabilities for the different charge states during MALDI ionization (the list must sum up to 1.0)">
+              <ITEMLIST name="ionization_probabilities" type="double" description="List of probabilities for the different charge states during MALDI ionization (the list must sum up to 1.0)" required="false" advanced="false">
                 <LISTITEM value="0.9"/>
                 <LISTITEM value="0.1"/>
               </ITEMLIST>
             </NODE>
             <NODE name="mz" description="">
-              <ITEM name="lower_measurement_limit" value="200" type="float" description="Lower m/z detector limit." restrictions="0:" />
-              <ITEM name="upper_measurement_limit" value="2500" type="float" description="Upper m/z detector limit." restrictions="0:" />
+              <ITEM name="lower_measurement_limit" value="200" type="double" description="Lower m/z detector limit." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="upper_measurement_limit" value="2500" type="double" description="Upper m/z detector limit." required="false" advanced="false" restrictions="0:" />
             </NODE>
           </NODE>
           <NODE name="RawSignal" description="">
-            <ITEM name="enabled" value="true" type="string" description="Enable RAW signal simulation? (select &apos;false&apos; if you only need feature-maps)" restrictions="true,false" />
-            <ITEM name="peak_shape" value="Gaussian" type="string" description="Peak Shape used around each isotope peak (be aware that the area under the curve is constant for both types, but the maximal height will differ (~ 2:3 = Lorentz:Gaussian) due to the wider base of the Lorentzian." restrictions="Gaussian,Lorentzian" />
+            <ITEM name="enabled" value="true" type="string" description="Enable RAW signal simulation? (select &apos;false&apos; if you only need feature-maps)" required="false" advanced="false" restrictions="true,false" />
+            <ITEM name="peak_shape" value="Gaussian" type="string" description="Peak Shape used around each isotope peak (be aware that the area under the curve is constant for both types, but the maximal height will differ (~ 2:3 = Lorentz:Gaussian) due to the wider base of the Lorentzian." required="false" advanced="false" restrictions="Gaussian,Lorentzian" />
             <NODE name="resolution" description="">
-              <ITEM name="value" value="50000" type="int" description="Instrument resolution at 400 Th." />
-              <ITEM name="type" value="linear" type="string" description="How does resolution change with increasing m/z?! QTOFs usually show &apos;constant&apos; behavior, FTs have linear degradation, and on Orbitraps the resolution decreases with square root of mass." restrictions="constant,linear,sqrt" />
+              <ITEM name="value" value="50000" type="int" description="Instrument resolution at 400 Th." required="false" advanced="false" />
+              <ITEM name="type" value="linear" type="string" description="How does resolution change with increasing m/z?! QTOFs usually show &apos;constant&apos; behavior, FTs have linear degradation, and on Orbitraps the resolution decreases with square root of mass." required="false" advanced="false" restrictions="constant,linear,sqrt" />
             </NODE>
             <NODE name="baseline" description="Baseline modeling for MALDI ionization">
-              <ITEM name="scaling" value="0" type="float" description="Scale of baseline. Set to 0 to disable simulation of baseline." restrictions="0:" />
-              <ITEM name="shape" value="0.5" type="float" description="The baseline is modeled by an exponential probability density function (pdf) with f(x) = shape*e^(- shape*x)" restrictions="0:" />
+              <ITEM name="scaling" value="0" type="double" description="Scale of baseline. Set to 0 to disable simulation of baseline." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="shape" value="0.5" type="double" description="The baseline is modeled by an exponential probability density function (pdf) with f(x) = shape*e^(- shape*x)" required="false" advanced="false" restrictions="0:" />
             </NODE>
             <NODE name="mz" description="">
-              <ITEM name="sampling_points" value="3" type="int" description="Number of raw data points per FWHM of the peak." restrictions="2:" />
+              <ITEM name="sampling_points" value="3" type="int" description="Number of raw data points per FWHM of the peak." required="false" advanced="false" restrictions="2:" />
             </NODE>
             <NODE name="contaminants" description="">
-              <ITEM name="file" value="examples/simulation/contaminants.csv" type="string" description="Contaminants file with sum formula and absolute RT interval. See &apos;OpenMS/examples/simulation/contaminants.txt&apos; for details." />
+              <ITEM name="file" value="examples/simulation/contaminants.csv" type="string" description="Contaminants file with sum formula and absolute RT interval. See &apos;OpenMS/examples/simulation/contaminants.txt&apos; for details." required="false" advanced="false" />
             </NODE>
             <NODE name="variation" description="Random components that simulate biological and technical variations of the simulated data.">
               <NODE name="mz" description="Shifts in mass to charge dimension of the simulated signals.">
-                <ITEM name="error_stddev" value="0" type="float" description="Standard deviation for m/z errors. Set to 0 to disable simulation of m/z errors." />
-                <ITEM name="error_mean" value="0" type="float" description="Average systematic m/z error (Da)" />
+                <ITEM name="error_stddev" value="0" type="double" description="Standard deviation for m/z errors. Set to 0 to disable simulation of m/z errors." required="false" advanced="false" />
+                <ITEM name="error_mean" value="0" type="double" description="Average systematic m/z error (Da)" required="false" advanced="false" />
               </NODE>
               <NODE name="intensity" description="Variations in intensity to model randomness in feature intensity.">
-                <ITEM name="scale" value="100" type="float" description="Constant scale factor of the feature intensity. Set to 1.0 to get the real intensity values provided in the FASTA file." restrictions="0:" />
-                <ITEM name="scale_stddev" value="0" type="float" description="Standard deviation of peak intensity (relative to the scaled peak height). Set to 0 to get simple rescaled intensities." restrictions="0:" />
+                <ITEM name="scale" value="100" type="double" description="Constant scale factor of the feature intensity. Set to 1.0 to get the real intensity values provided in the FASTA file." required="false" advanced="false" restrictions="0:" />
+                <ITEM name="scale_stddev" value="0" type="double" description="Standard deviation of peak intensity (relative to the scaled peak height). Set to 0 to get simple rescaled intensities." required="false" advanced="false" restrictions="0:" />
               </NODE>
             </NODE>
             <NODE name="noise" description="Parameters modeling noise in mass spectrometry measurements.">
               <NODE name="shot" description="Parameters of Poisson and Exponential for shot noise modeling (set :rate OR :mean = 0 to disable).">
-                <ITEM name="rate" value="0" type="float" description="Poisson rate of shot noise per unit m/z. Set this to 0 to disable simulation of shot noise." restrictions="0:" />
-                <ITEM name="intensity-mean" value="1" type="float" description="Shot noise intensity mean (exponentially distributed with given mean)." />
+                <ITEM name="rate" value="0" type="double" description="Poisson rate of shot noise per unit m/z. Set this to 0 to disable simulation of shot noise." required="false" advanced="false" restrictions="0:" />
+                <ITEM name="intensity-mean" value="1" type="double" description="Shot noise intensity mean (exponentially distributed with given mean)." required="false" advanced="false" />
               </NODE>
               <NODE name="white" description="Parameters of Gaussian distribution for white noise modeling (set :mean AND :stddev = 0 to disable).">
-                <ITEM name="mean" value="0" type="float" description="Mean value of white noise being added to each measured signal." />
-                <ITEM name="stddev" value="0" type="float" description="Standard deviation of white noise being added to each measured signal." />
+                <ITEM name="mean" value="0" type="double" description="Mean value of white noise being added to each measured signal." required="false" advanced="false" />
+                <ITEM name="stddev" value="0" type="double" description="Standard deviation of white noise being added to each measured signal." required="false" advanced="false" />
               </NODE>
               <NODE name="detector" description="Parameters of Gaussian distribution for detector noise modeling (set :mean AND :stddev = 0 to disable).">
-                <ITEM name="mean" value="0" type="float" description="Mean value of the detector noise being added to the complete measurement." />
-                <ITEM name="stddev" value="0" type="float" description="Standard deviation of the detector noise being added to the complete measurement." />
+                <ITEM name="mean" value="0" type="double" description="Mean value of the detector noise being added to the complete measurement." required="false" advanced="false" />
+                <ITEM name="stddev" value="0" type="double" description="Standard deviation of the detector noise being added to the complete measurement." required="false" advanced="false" />
               </NODE>
             </NODE>
           </NODE>
           <NODE name="RawTandemSignal" description="">
-            <ITEM name="status" value="disabled" type="string" description="Create Tandem-MS scans?" restrictions="disabled,precursor,MS^E" />
-            <ITEM name="tandem_mode" value="0" type="int" description="Algorithm to generate the tandem-MS spectra. 0 - fixed intensities, 1 - SVC prediction (abundant/missing), 2 - SVR prediction of peak intensity #br#" restrictions="0:2" />
-            <ITEM name="svm_model_set_file" value="examples/simulation/SvmModelSet.model" type="string" description="File containing the filenames of SVM Models for different charge variants" />
+            <ITEM name="status" value="disabled" type="string" description="Create Tandem-MS scans?" required="false" advanced="false" restrictions="disabled,precursor,MS^E" />
+            <ITEM name="tandem_mode" value="0" type="int" description="Algorithm to generate the tandem-MS spectra. 0 - fixed intensities, 1 - SVC prediction (abundant/missing), 2 - SVR prediction of peak intensity #br#" required="false" advanced="false" restrictions="0:2" />
+            <ITEM name="svm_model_set_file" value="examples/simulation/SvmModelSet.model" type="string" description="File containing the filenames of SVM Models for different charge variants" required="false" advanced="false" />
             <NODE name="Precursor" description="">
-              <ITEM name="ms2_spectra_per_rt_bin" value="5" type="int" description="Number of allowed MS/MS spectra in a retention time bin." restrictions="1:" />
-              <ITEM name="min_peak_distance" value="3" type="float" description="The minimal distance (in Da) of two peaks in one spectrum so that they can be selected." restrictions="0:" />
-              <ITEM name="selection_window" value="2" type="float" description="All peaks within a mass window (in Da) of a selected peak are also selected for fragmentation." restrictions="0:" />
-              <ITEM name="exclude_overlapping_peaks" value="false" type="string" description="If true overlapping or nearby peaks (within min_peak_distance) are excluded for selection." restrictions="true,false" />
-              <ITEMLIST name="charge_filter" type="int" description="Charges considered for MS2 fragmentation." restrictions="1:5">
+              <ITEM name="ms2_spectra_per_rt_bin" value="5" type="int" description="Number of allowed MS/MS spectra in a retention time bin." required="false" advanced="false" restrictions="1:" />
+              <ITEM name="min_peak_distance" value="3" type="double" description="The minimal distance (in Da) of two peaks in one spectrum so that they can be selected." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="selection_window" value="2" type="double" description="All peaks within a mass window (in Da) of a selected peak are also selected for fragmentation." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="exclude_overlapping_peaks" value="false" type="string" description="If true overlapping or nearby peaks (within min_peak_distance) are excluded for selection." required="false" advanced="false" restrictions="true,false" />
+              <ITEMLIST name="charge_filter" type="int" description="Charges considered for MS2 fragmentation." required="false" advanced="false" restrictions="1:5">
                 <LISTITEM value="2"/>
                 <LISTITEM value="3"/>
               </ITEMLIST>
               <NODE name="Exclusion" description="">
-                <ITEM name="use_dynamic_exclusion" value="false" type="string" description="If true dynamic exclusion is applied." restrictions="true,false" />
-                <ITEM name="exclusion_time" value="100" type="float" description="The time (in seconds) a feature is excluded." restrictions="0:" />
+                <ITEM name="use_dynamic_exclusion" value="false" type="string" description="If true dynamic exclusion is applied." required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="exclusion_time" value="100" type="double" description="The time (in seconds) a feature is excluded." required="false" advanced="false" restrictions="0:" />
               </NODE>
               <NODE name="ProteinBasedInclusion" description="">
-                <ITEM name="max_list_size" value="1000" type="int" description="The maximal number of precursors in the inclusion list." restrictions="1:" />
+                <ITEM name="max_list_size" value="1000" type="int" description="The maximal number of precursors in the inclusion list." required="false" advanced="false" restrictions="1:" />
                 <NODE name="rt" description="">
-                  <ITEM name="min_rt" value="960" type="float" description="Minimal rt in seconds." restrictions="0:" />
-                  <ITEM name="max_rt" value="3840" type="float" description="Maximal rt in seconds." restrictions="0:" />
-                  <ITEM name="rt_step_size" value="30" type="float" description="rt step size in seconds." restrictions="1:" />
-                  <ITEM name="rt_window_size" value="100" type="int" description="rt window size in seconds." restrictions="1:" />
+                  <ITEM name="min_rt" value="960" type="double" description="Minimal rt in seconds." required="false" advanced="false" restrictions="0:" />
+                  <ITEM name="max_rt" value="3840" type="double" description="Maximal rt in seconds." required="false" advanced="false" restrictions="0:" />
+                  <ITEM name="rt_step_size" value="30" type="double" description="rt step size in seconds." required="false" advanced="false" restrictions="1:" />
+                  <ITEM name="rt_window_size" value="100" type="int" description="rt window size in seconds." required="false" advanced="false" restrictions="1:" />
                 </NODE>
                 <NODE name="thresholds" description="">
-                  <ITEM name="min_protein_id_probability" value="0.95" type="float" description="Minimal protein probability for a protein to be considered identified." restrictions="0:1" />
-                  <ITEM name="min_pt_weight" value="0.5" type="float" description="Minimal pt weight of a precursor" restrictions="0:1" />
-                  <ITEM name="min_mz" value="500" type="float" description="Minimal mz to be considered in protein based LP formulation." restrictions="0:" />
-                  <ITEM name="max_mz" value="5000" type="float" description="Minimal mz to be considered in protein based LP formulation." restrictions="0:" />
-                  <ITEM name="use_peptide_rule" value="false" type="string" description="Use peptide rule instead of minimal protein id probability" restrictions="true,false" />
-                  <ITEM name="min_peptide_ids" value="2" type="int" description="If use_peptide_rule is true, this parameter sets the minimal number of peptide ids for a protein id" restrictions="1:" />
-                  <ITEM name="min_peptide_probability" value="0.95" type="float" description="If use_peptide_rule is true, this parameter sets the minimal probability for a peptide to be safely identified" restrictions="0:1" />
+                  <ITEM name="min_protein_id_probability" value="0.95" type="double" description="Minimal protein probability for a protein to be considered identified." required="false" advanced="false" restrictions="0:1" />
+                  <ITEM name="min_pt_weight" value="0.5" type="double" description="Minimal pt weight of a precursor" required="false" advanced="false" restrictions="0:1" />
+                  <ITEM name="min_mz" value="500" type="double" description="Minimal mz to be considered in protein based LP formulation." required="false" advanced="false" restrictions="0:" />
+                  <ITEM name="max_mz" value="5000" type="double" description="Minimal mz to be considered in protein based LP formulation." required="false" advanced="false" restrictions="0:" />
+                  <ITEM name="use_peptide_rule" value="false" type="string" description="Use peptide rule instead of minimal protein id probability" required="false" advanced="false" restrictions="true,false" />
+                  <ITEM name="min_peptide_ids" value="2" type="int" description="If use_peptide_rule is true, this parameter sets the minimal number of peptide ids for a protein id" required="false" advanced="false" restrictions="1:" />
+                  <ITEM name="min_peptide_probability" value="0.95" type="double" description="If use_peptide_rule is true, this parameter sets the minimal probability for a peptide to be safely identified" required="false" advanced="false" restrictions="0:1" />
                 </NODE>
               </NODE>
             </NODE>
             <NODE name="MS_E" description="">
-              <ITEM name="add_single_spectra" value="false" type="string" description="If true, the MS2 spectra for each peptide signal are included in the output (might be a lot). They will have a meta value &apos;MSE_DebugSpectrum&apos; attached, so they can be filtered out. Native MS_E spectra will have &apos;MSE_Spectrum&apos; instead." restrictions="true,false" />
+              <ITEM name="add_single_spectra" value="false" type="string" description="If true, the MS2 spectra for each peptide signal are included in the output (might be a lot). They will have a meta value &apos;MSE_DebugSpectrum&apos; attached, so they can be filtered out. Native MS_E spectra will have &apos;MSE_Spectrum&apos; instead." required="false" advanced="false" restrictions="true,false" />
             </NODE>
             <NODE name="TandemSim" description="">
               <NODE name="Simple" description="">
-                <ITEM name="add_isotopes" value="false" type="string" description="If set to 1 isotope peaks of the product ion peaks are added" restrictions="true,false" />
-                <ITEM name="max_isotope" value="2" type="int" description="Defines the maximal isotopic peak which is added, add_isotopes must be set to 1" />
-                <ITEM name="add_metainfo" value="false" type="string" description="Adds the type of peaks as metainfo to the peaks, like y8+, [M-H2O+2H]++" restrictions="true,false" />
-                <ITEM name="add_losses" value="false" type="string" description="Adds common losses to those ion expect to have them, only water and ammonia loss is considered" restrictions="true,false" />
-                <ITEM name="add_precursor_peaks" value="false" type="string" description="Adds peaks of the precursor to the spectrum, which happen to occur sometimes" restrictions="true,false" />
-                <ITEM name="add_abundant_immonium_ions" value="false" type="string" description="Add most abundant immonium ions" restrictions="true,false" />
-                <ITEM name="add_first_prefix_ion" value="false" type="string" description="If set to true e.g. b1 ions are added" restrictions="true,false" />
-                <ITEM name="add_y_ions" value="true" type="string" description="Add peaks of y-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="add_b_ions" value="true" type="string" description="Add peaks of b-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="add_a_ions" value="false" type="string" description="Add peaks of a-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="add_c_ions" value="false" type="string" description="Add peaks of c-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="add_x_ions" value="false" type="string" description="Add peaks of  x-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="add_z_ions" value="false" type="string" description="Add peaks of z-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="y_intensity" value="1" type="float" description="Intensity of the y-ions" />
-                <ITEM name="b_intensity" value="1" type="float" description="Intensity of the b-ions" />
-                <ITEM name="a_intensity" value="1" type="float" description="Intensity of the a-ions" />
-                <ITEM name="c_intensity" value="1" type="float" description="Intensity of the c-ions" />
-                <ITEM name="x_intensity" value="1" type="float" description="Intensity of the x-ions" />
-                <ITEM name="z_intensity" value="1" type="float" description="Intensity of the z-ions" />
-                <ITEM name="relative_loss_intensity" value="0.1" type="float" description="Intensity of loss ions, in relation to the intact ion intensity" />
-                <ITEM name="precursor_intensity" value="1" type="float" description="Intensity of the precursor peak" />
-                <ITEM name="precursor_H2O_intensity" value="1" type="float" description="Intensity of the H2O loss peak of the precursor" />
-                <ITEM name="precursor_NH3_intensity" value="1" type="float" description="Intensity of the NH3 loss peak of the precursor" />
+                <ITEM name="add_isotopes" value="false" type="string" description="If set to 1 isotope peaks of the product ion peaks are added" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="max_isotope" value="2" type="int" description="Defines the maximal isotopic peak which is added, add_isotopes must be set to 1" required="false" advanced="false" />
+                <ITEM name="add_metainfo" value="false" type="string" description="Adds the type of peaks as metainfo to the peaks, like y8+, [M-H2O+2H]++" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_losses" value="false" type="string" description="Adds common losses to those ion expect to have them, only water and ammonia loss is considered" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_precursor_peaks" value="false" type="string" description="Adds peaks of the precursor to the spectrum, which happen to occur sometimes" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_abundant_immonium_ions" value="false" type="string" description="Add most abundant immonium ions" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_first_prefix_ion" value="false" type="string" description="If set to true e.g. b1 ions are added" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_y_ions" value="true" type="string" description="Add peaks of y-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_b_ions" value="true" type="string" description="Add peaks of b-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_a_ions" value="false" type="string" description="Add peaks of a-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_c_ions" value="false" type="string" description="Add peaks of c-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_x_ions" value="false" type="string" description="Add peaks of  x-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_z_ions" value="false" type="string" description="Add peaks of z-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="y_intensity" value="1" type="double" description="Intensity of the y-ions" required="false" advanced="false" />
+                <ITEM name="b_intensity" value="1" type="double" description="Intensity of the b-ions" required="false" advanced="false" />
+                <ITEM name="a_intensity" value="1" type="double" description="Intensity of the a-ions" required="false" advanced="false" />
+                <ITEM name="c_intensity" value="1" type="double" description="Intensity of the c-ions" required="false" advanced="false" />
+                <ITEM name="x_intensity" value="1" type="double" description="Intensity of the x-ions" required="false" advanced="false" />
+                <ITEM name="z_intensity" value="1" type="double" description="Intensity of the z-ions" required="false" advanced="false" />
+                <ITEM name="relative_loss_intensity" value="0.1" type="double" description="Intensity of loss ions, in relation to the intact ion intensity" required="false" advanced="false" />
+                <ITEM name="precursor_intensity" value="1" type="double" description="Intensity of the precursor peak" required="false" advanced="false" />
+                <ITEM name="precursor_H2O_intensity" value="1" type="double" description="Intensity of the H2O loss peak of the precursor" required="false" advanced="false" />
+                <ITEM name="precursor_NH3_intensity" value="1" type="double" description="Intensity of the NH3 loss peak of the precursor" required="false" advanced="false" />
               </NODE>
               <NODE name="SVM" description="">
-                <ITEM name="add_isotopes" value="false" type="string" description="If set to 1 isotope peaks of the product ion peaks are added" restrictions="true,false" />
-                <ITEM name="max_isotope" value="2" type="int" description="Defines the maximal isotopic peak which is added, add_isotopes must be set to 1" />
-                <ITEM name="add_metainfo" value="false" type="string" description="Adds the type of peaks as metainfo to the peaks, like y8+, [M-H2O+2H]++" restrictions="true,false" />
-                <ITEM name="add_first_prefix_ion" value="false" type="string" description="If set to true e.g. b1 ions are added" restrictions="true,false" />
-                <ITEM name="hide_y_ions" value="false" type="string" description="Add peaks of y-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_y2_ions" value="false" type="string" description="Add peaks of y-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_b_ions" value="false" type="string" description="Add peaks of b-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_b2_ions" value="false" type="string" description="Add peaks of b-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_a_ions" value="false" type="string" description="Add peaks of a-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_c_ions" value="false" type="string" description="Add peaks of c-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_x_ions" value="false" type="string" description="Add peaks of  x-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_z_ions" value="false" type="string" description="Add peaks of z-ions to the spectrum" restrictions="true,false" />
-                <ITEM name="hide_losses" value="false" type="string" description="Adds common losses to those ion expect to have them, only water and ammonia loss is considered" restrictions="true,false" />
-                <ITEM name="y_intensity" value="1" type="float" description="Intensity of the y-ions" />
-                <ITEM name="b_intensity" value="1" type="float" description="Intensity of the b-ions" />
-                <ITEM name="a_intensity" value="1" type="float" description="Intensity of the a-ions" />
-                <ITEM name="c_intensity" value="1" type="float" description="Intensity of the c-ions" />
-                <ITEM name="x_intensity" value="1" type="float" description="Intensity of the x-ions" />
-                <ITEM name="z_intensity" value="1" type="float" description="Intensity of the z-ions" />
-                <ITEM name="relative_loss_intensity" value="0.1" type="float" description="Intensity of loss ions, in relation to the intact ion intensity" />
+                <ITEM name="add_isotopes" value="false" type="string" description="If set to 1 isotope peaks of the product ion peaks are added" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="max_isotope" value="2" type="int" description="Defines the maximal isotopic peak which is added, add_isotopes must be set to 1" required="false" advanced="false" />
+                <ITEM name="add_metainfo" value="false" type="string" description="Adds the type of peaks as metainfo to the peaks, like y8+, [M-H2O+2H]++" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="add_first_prefix_ion" value="false" type="string" description="If set to true e.g. b1 ions are added" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_y_ions" value="false" type="string" description="Add peaks of y-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_y2_ions" value="false" type="string" description="Add peaks of y-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_b_ions" value="false" type="string" description="Add peaks of b-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_b2_ions" value="false" type="string" description="Add peaks of b-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_a_ions" value="false" type="string" description="Add peaks of a-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_c_ions" value="false" type="string" description="Add peaks of c-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_x_ions" value="false" type="string" description="Add peaks of  x-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_z_ions" value="false" type="string" description="Add peaks of z-ions to the spectrum" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="hide_losses" value="false" type="string" description="Adds common losses to those ion expect to have them, only water and ammonia loss is considered" required="false" advanced="false" restrictions="true,false" />
+                <ITEM name="y_intensity" value="1" type="double" description="Intensity of the y-ions" required="false" advanced="false" />
+                <ITEM name="b_intensity" value="1" type="double" description="Intensity of the b-ions" required="false" advanced="false" />
+                <ITEM name="a_intensity" value="1" type="double" description="Intensity of the a-ions" required="false" advanced="false" />
+                <ITEM name="c_intensity" value="1" type="double" description="Intensity of the c-ions" required="false" advanced="false" />
+                <ITEM name="x_intensity" value="1" type="double" description="Intensity of the x-ions" required="false" advanced="false" />
+                <ITEM name="z_intensity" value="1" type="double" description="Intensity of the z-ions" required="false" advanced="false" />
+                <ITEM name="relative_loss_intensity" value="0.1" type="double" description="Intensity of loss ions, in relation to the intact ion intensity" required="false" advanced="false" />
               </NODE>
             </NODE>
           </NODE>
           <NODE name="Global" description="">
-            <ITEM name="ionization_type" value="ESI" type="string" description="Type of Ionization (MALDI or ESI)" restrictions="MALDI,ESI" />
+            <ITEM name="ionization_type" value="ESI" type="string" description="Type of Ionization (MALDI or ESI)" required="false" advanced="false" restrictions="MALDI,ESI" />
           </NODE>
           <NODE name="Labeling" description="">
-            <ITEM name="type" value="labelfree" type="string" description="Select the labeling type you want for your experiment" restrictions="ICPL,SILAC,itraq,labelfree,o18" />
+            <ITEM name="type" value="labelfree" type="string" description="Select the labeling type you want for your experiment" required="false" advanced="false" restrictions="ICPL,SILAC,itraq,labelfree,o18" />
             <NODE name="ICPL" description="ICPL labeling on MS1 level of lysines and n-term (on protein or peptide level) with either two or three channels.">
-              <ITEM name="ICPL_fixed_rtshift" value="0" type="float" description="Fixed retention time shift between labeled pairs. If set to 0.0 only the retention times, computed by the RT model step are used." />
-              <ITEM name="label_proteins" value="true" type="string" description="Enables protein-labeling. (select &apos;false&apos; if you only need peptide-labeling)" restrictions="true,false" />
-              <ITEM name="ICPL_light_channel_label" value="UniMod:365" type="string" description="UniMod Id of the light channel ICPL label." tags="advanced" />
-              <ITEM name="ICPL_medium_channel_label" value="UniMod:687" type="string" description="UniMod Id of the medium channel ICPL label." tags="advanced" />
-              <ITEM name="ICPL_heavy_channel_label" value="UniMod:364" type="string" description="UniMod Id of the heavy channel ICPL label." tags="advanced" />
+              <ITEM name="ICPL_fixed_rtshift" value="0" type="double" description="Fixed retention time shift between labeled pairs. If set to 0.0 only the retention times, computed by the RT model step are used." required="false" advanced="false" />
+              <ITEM name="label_proteins" value="true" type="string" description="Enables protein-labeling. (select &apos;false&apos; if you only need peptide-labeling)" required="false" advanced="false" restrictions="true,false" />
+              <ITEM name="ICPL_light_channel_label" value="UniMod:365" type="string" description="UniMod Id of the light channel ICPL label." required="false" advanced="true" />
+              <ITEM name="ICPL_medium_channel_label" value="UniMod:687" type="string" description="UniMod Id of the medium channel ICPL label." required="false" advanced="true" />
+              <ITEM name="ICPL_heavy_channel_label" value="UniMod:364" type="string" description="UniMod Id of the heavy channel ICPL label." required="false" advanced="true" />
             </NODE>
             <NODE name="SILAC" description="SILAC labeling on MS1 level with up to 3 channels and custom modifications.">
-              <ITEM name="fixed_rtshift" value="0.0001" type="float" description="Fixed retention time shift between labeled peptides. If set to 0.0 only the retention times computed by the RT model step are used." restrictions="0:" />
+              <ITEM name="fixed_rtshift" value="0.0001" type="double" description="Fixed retention time shift between labeled peptides. If set to 0.0 only the retention times computed by the RT model step are used." required="false" advanced="false" restrictions="0:" />
               <NODE name="medium_channel" description="Modifications for the medium SILAC channel.">
-                <ITEM name="modification_lysine" value="UniMod:481" type="string" description="Modification of Lysine in the medium SILAC channel" />
-                <ITEM name="modification_arginine" value="UniMod:188" type="string" description="Modification of Arginine in the medium SILAC channel" />
+                <ITEM name="modification_lysine" value="UniMod:481" type="string" description="Modification of Lysine in the medium SILAC channel" required="false" advanced="false" />
+                <ITEM name="modification_arginine" value="UniMod:188" type="string" description="Modification of Arginine in the medium SILAC channel" required="false" advanced="false" />
               </NODE>
               <NODE name="heavy_channel" description="Modifications for the heavy SILAC channel. If you want to use only 2 channels, just leave the Labels as they are and provide only 2 input files.">
-                <ITEM name="modification_lysine" value="UniMod:259" type="string" description="Modification of Lysine in the heavy SILAC channel. If left empty, two channelSILAC is assumed." />
-                <ITEM name="modification_arginine" value="UniMod:267" type="string" description="Modification of Arginine in the heavy SILAC channel. If left empty, two-channel SILAC is assumed." />
+                <ITEM name="modification_lysine" value="UniMod:259" type="string" description="Modification of Lysine in the heavy SILAC channel. If left empty, two channelSILAC is assumed." required="false" advanced="false" />
+                <ITEM name="modification_arginine" value="UniMod:267" type="string" description="Modification of Arginine in the heavy SILAC channel. If left empty, two-channel SILAC is assumed." required="false" advanced="false" />
               </NODE>
             </NODE>
             <NODE name="itraq" description="iTRAQ labeling on MS2 level with up to 4 (4plex) or 8 (8plex) channels.">
-              <ITEM name="iTRAQ" value="4plex" type="string" description="4plex or 8plex iTRAQ?" restrictions="4plex,8plex" />
-              <ITEM name="reporter_mass_shift" value="0.1" type="float" description="Allowed shift (uniformly distributed - left to right) in Da from the expected position (of e.g. 114.1, 115.1)" restrictions="0:0.5" />
-              <ITEMLIST name="channel_active_4plex" type="string" description="Four-plex only: Each channel that was used in the experiment and its description (114-117) in format &lt;channel&gt;:&lt;name&gt;, e.g. &quot;114:myref&quot;,&quot;115:liver&quot;.">
+              <ITEM name="iTRAQ" value="4plex" type="string" description="4plex or 8plex iTRAQ?" required="false" advanced="false" restrictions="4plex,8plex" />
+              <ITEM name="reporter_mass_shift" value="0.1" type="double" description="Allowed shift (uniformly distributed - left to right) in Da from the expected position (of e.g. 114.1, 115.1)" required="false" advanced="false" restrictions="0:0.5" />
+              <ITEMLIST name="channel_active_4plex" type="string" description="Four-plex only: Each channel that was used in the experiment and its description (114-117) in format &lt;channel&gt;:&lt;name&gt;, e.g. &quot;114:myref&quot;,&quot;115:liver&quot;." required="false" advanced="false">
                 <LISTITEM value="114:myReference"/>
               </ITEMLIST>
-              <ITEMLIST name="channel_active_8plex" type="string" description="Eight-plex only: Each channel that was used in the experiment and its description (113-121) in format &lt;channel&gt;:&lt;name&gt;, e.g. &quot;113:myref&quot;,&quot;115:liver&quot;,&quot;118:lung&quot;.">
+              <ITEMLIST name="channel_active_8plex" type="string" description="Eight-plex only: Each channel that was used in the experiment and its description (113-121) in format &lt;channel&gt;:&lt;name&gt;, e.g. &quot;113:myref&quot;,&quot;115:liver&quot;,&quot;118:lung&quot;." required="false" advanced="false">
                 <LISTITEM value="113:myReference"/>
               </ITEMLIST>
-              <ITEMLIST name="isotope_correction_values_4plex" type="string" description="override default values (see Documentation); use the following format: &lt;channel&gt;:&lt;-2Da&gt;/&lt;-1Da&gt;/&lt;+1Da&gt;/&lt;+2Da&gt; ; e.g. &apos;114:0/0.3/4/0&apos; , &apos;116:0.1/0.3/3/0.2&apos; " tags="advanced">
+              <ITEMLIST name="isotope_correction_values_4plex" type="string" description="override default values (see Documentation); use the following format: &lt;channel&gt;:&lt;-2Da&gt;/&lt;-1Da&gt;/&lt;+1Da&gt;/&lt;+2Da&gt; ; e.g. &apos;114:0/0.3/4/0&apos; , &apos;116:0.1/0.3/3/0.2&apos; " required="false" advanced="true">
                 <LISTITEM value="114:0/1/5.9/0.2"/>
                 <LISTITEM value="115:0/2/5.6/0.1"/>
                 <LISTITEM value="116:0/3/4.5/0.1"/>
                 <LISTITEM value="117:0.1/4/3.5/0.1"/>
               </ITEMLIST>
-              <ITEMLIST name="isotope_correction_values_8plex" type="string" description="override default values (see Documentation); use the following format: &lt;channel&gt;:&lt;-2Da&gt;/&lt;-1Da&gt;/&lt;+1Da&gt;/&lt;+2Da&gt; ; e.g. &apos;113:0/0.3/4/0&apos; , &apos;116:0.1/0.3/3/0.2&apos; " tags="advanced">
+              <ITEMLIST name="isotope_correction_values_8plex" type="string" description="override default values (see Documentation); use the following format: &lt;channel&gt;:&lt;-2Da&gt;/&lt;-1Da&gt;/&lt;+1Da&gt;/&lt;+2Da&gt; ; e.g. &apos;113:0/0.3/4/0&apos; , &apos;116:0.1/0.3/3/0.2&apos; " required="false" advanced="true">
                 <LISTITEM value="113:0/0/6.89/0.22"/>
                 <LISTITEM value="114:0/0.94/5.9/0.16"/>
                 <LISTITEM value="115:0/1.88/4.9/0.1"/>
@@ -283,16 +279,16 @@
                 <LISTITEM value="119:0.14/5.66/0.87/0"/>
                 <LISTITEM value="121:0.27/7.44/0.18/0"/>
               </ITEMLIST>
-              <ITEM name="Y_contamination" value="0.3" type="float" description="Efficiency of labeling tyrosine (&apos;Y&apos;) residues. 0=off, 1=full labeling" restrictions="0:1" />
+              <ITEM name="Y_contamination" value="0.3" type="double" description="Efficiency of labeling tyrosine (&apos;Y&apos;) residues. 0=off, 1=full labeling" required="false" advanced="false" restrictions="0:1" />
             </NODE>
             <NODE name="o18" description="18O labeling on MS1 level with 2 channels, requiring trypsin digestion.">
-              <ITEM name="labeling_efficiency" value="1" type="float" description="Describes the distribution of the labeled peptide over the different states (unlabeled, mono- and di-labeled)" restrictions="0:1" />
+              <ITEM name="labeling_efficiency" value="1" type="double" description="Describes the distribution of the labeled peptide over the different states (unlabeled, mono- and di-labeled)" required="false" advanced="false" restrictions="0:1" />
             </NODE>
           </NODE>
         </NODE>
         <NODE name="RandomNumberGenerators" description="Parameters for generating the random aspects (e.g. noise) in the simulated data. The generation is separated into two parts, the technical part, like noise in the raw signal, and the biological part, like systematic deviations in the predicted retention times.">
-          <ITEM name="biological" value="random" type="string" description="Controls the &apos;biological&apos; randomness of the generated data (e.g. systematic effects like deviations in RT). If set to &apos;random&apos; each experiment will look different. If set to &apos;reproducible&apos; each experiment will have the same outcome (given that the input data is the same)." restrictions="reproducible,random" />
-          <ITEM name="technical" value="random" type="string" description="Controls the &apos;technical&apos; randomness of the generated data (e.g. noise in the raw signal). If set to &apos;random&apos; each experiment will look different. If set to &apos;reproducible&apos; each experiment will have the same outcome (given that the input data is the same)." restrictions="reproducible,random" />
+          <ITEM name="biological" value="random" type="string" description="Controls the &apos;biological&apos; randomness of the generated data (e.g. systematic effects like deviations in RT). If set to &apos;random&apos; each experiment will look different. If set to &apos;reproducible&apos; each experiment will have the same outcome (given that the input data is the same)." required="false" advanced="false" restrictions="reproducible,random" />
+          <ITEM name="technical" value="random" type="string" description="Controls the &apos;technical&apos; randomness of the generated data (e.g. noise in the raw signal). If set to &apos;random&apos; each experiment will look different. If set to &apos;reproducible&apos; each experiment will have the same outcome (given that the input data is the same)." required="false" advanced="false" restrictions="reproducible,random" />
         </NODE>
       </NODE>
     </NODE>

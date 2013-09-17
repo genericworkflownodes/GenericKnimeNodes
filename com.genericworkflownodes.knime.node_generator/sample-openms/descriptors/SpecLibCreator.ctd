@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool>
-<name>SpecLibCreator</name>
-<version>1.10.0</version>
+<tool version="1.11.0" name="SpecLibCreator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_SpecLibCreator.html" category="Utilities" >
 <description><![CDATA[Creates an MSP formatted spectral library.]]></description>
 <manual><![CDATA[Creates an MSP formatted spectral library.]]></manual>
-<docurl></docurl>
-<category></category>
-<PARAMETERS version="1.4" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_4.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NODE name="SpecLibCreator" description="Creates an MSP formatted spectral library.">
-    <ITEM name="version" value="1.10.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced" />
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;SpecLibCreator&apos;">
-      <ITEM name="info" value="" type="string" description="Holds id, peptide, retention time etc." tags="input file,required" supported_formats="*.csv" />
-      <ITEM name="itemseperator" value="," type="string" description=" Seperator between items. e.g. ," />
-      <ITEM name="itemenclosed" value="false" type="string" description="&apos;true&apos; or &apos;false&apos; if true every item is enclosed e.g. &apos;$peptide$,$run$..." restrictions="true,false" />
-      <ITEM name="spec" value="" type="string" description="spectra" tags="input file,required" supported_formats="*.mzData,*.mzXML" />
-      <ITEM name="out" value="" type="string" description="output MSP formated spectra library" tags="output file,required" supported_formats="*.msp" />
-      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced" />
-      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced" />
-      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" />
-      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false" />
-      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false" />
+      <ITEM name="info" value="" type="input-file" description="Holds id, peptide, retention time etc." required="true" advanced="false" supported_formats="*.csv" />
+      <ITEM name="itemseperator" value="," type="string" description=" Seperator between items. e.g. ," required="false" advanced="false" />
+      <ITEM name="itemenclosed" value="false" type="string" description="&apos;true&apos; or &apos;false&apos; if true every item is enclosed e.g. &apos;$peptide$,$run$..." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="spec" value="" type="input-file" description="spectra" required="true" advanced="false" supported_formats="*.mzData,*.mzXML" />
+      <ITEM name="out" value="" type="output-file" description="output MSP formated spectra library" required="true" advanced="false" supported_formats="*.msp" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
     </NODE>
   </NODE>
 </PARAMETERS>
