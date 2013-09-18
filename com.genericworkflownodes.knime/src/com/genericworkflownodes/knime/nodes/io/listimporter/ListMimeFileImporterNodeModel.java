@@ -33,6 +33,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -51,12 +52,18 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	 * ID for the filename configuration.
 	 */
 	static final String CFG_FILENAME = "FILENAME";
+	/**
+	 * Config name for file extension.
+	 */
+	static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
 
 	/**
-	 * Model containing the file names.
+	 * Model containing the file names and optional extension
 	 */
-	private SettingsModelStringArray m_filenames = ListMimeFileImporterNodeDialog
-			.createFileChooserModel();
+	private SettingsModelStringArray m_filenames = new SettingsModelStringArray(
+			ListMimeFileImporterNodeModel.CFG_FILENAME, new String[] {});
+	private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
+			CFG_FILE_EXTENSION, "", false);
 
 	/**
 	 * Constructor for the node model.
@@ -82,6 +89,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
 		m_filenames.saveSettingsTo(settings);
+		m_file_extension.saveSettingsTo(settings);
 	}
 
 	/**
@@ -91,6 +99,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 		m_filenames.loadSettingsFrom(settings);
+		m_file_extension.loadSettingsFrom(settings);
 	}
 
 	/**
@@ -99,7 +108,47 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_filenames.validateSettings(settings);
+
+		SettingsModelStringArray tmp_filenames = m_filenames
+				.createCloneWithValidatedValue(settings);
+
+		if (tmp_filenames == null
+				|| tmp_filenames.getStringArrayValue().length == 0) {
+			throw new InvalidSettingsException("No Files selected.");
+		}
+
+		SettingsModelOptionalString tmp_file_extension = m_file_extension
+				.createCloneWithValidatedValue(settings);
+
+		if (tmp_file_extension.isActive()) {
+			if (tmp_file_extension.getStringValue().equals("")) {
+				throw new InvalidSettingsException(
+						"No File extension (override) provided.");
+			} else if (MIMETypeHelper.getMIMEtypeByExtension(tmp_file_extension
+					.getStringValue()) == null) {
+				throw new InvalidSettingsException(
+						"No MIMEtype registered for file extension: "
+								+ tmp_file_extension.getStringValue());
+			}
+		} else {
+			List<String> mts = new ArrayList<String>();
+			String mt = null;
+			for (String filename : tmp_filenames.getStringArrayValue()) {
+				mt = MIMETypeHelper.getMIMEtype(filename);
+				if (mt == null) {
+					throw new InvalidSettingsException(
+							"Files of unknown MIMEtype selected: " + filename);
+				}
+				mts.add(mt);
+			}
+
+			for (String mimeType : mts) {
+				if (!mimeType.equals(mt)) {
+					throw new InvalidSettingsException(
+							"Files with mixed MIMEType loaded");
+				}
+			}
+		}
 	}
 
 	/**
@@ -123,33 +172,27 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
+
+		/*
+		 * Upon inserting the node into a workflow, it gets configured, so at
+		 * least something fundamental like the file name should be checked
+		 */
 		String[] filenames = m_filenames.getStringArrayValue();
-
 		if (filenames == null || filenames.length == 0) {
-			return new PortObjectSpec[] { null };
+			throw new InvalidSettingsException("No Files selected.");
 		}
 
-		List<String> mts = new ArrayList<String>();
-		String mt = null;
-		for (String filename : filenames) {
-			mt = MIMETypeHelper.getMIMEtype(filename);
-			if (mt == null) {
-				throw new InvalidSettingsException(
-						"Could not resolve MIMEType of file " + filename);
-			}
-			mts.add(mt);
+		URIPortObjectSpec uri_spec = null;
+
+		if (m_file_extension.isActive()) {
+			uri_spec = new URIPortObjectSpec(m_file_extension.getStringValue());
+		} else {
+			uri_spec = new URIPortObjectSpec(
+					MIMETypeHelper.getMIMEtypeExtension(m_filenames
+							.getStringArrayValue()[0]));
 		}
 
-		for (String mimeType : mts) {
-			if (!mimeType.equals(mt)) {
-				throw new InvalidSettingsException(
-						"Files with mixed MIMEType loaded");
-			}
-		}
-
-		return new PortObjectSpec[] { new URIPortObjectSpec(
-				MIMETypeHelper.getMIMEtypeExtension(m_filenames
-						.getStringArrayValue()[0])) };
+		return new PortObjectSpec[] { uri_spec };
 	}
 
 	@Override
@@ -166,8 +209,10 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 						+ in.getAbsolutePath());
 			}
 
-			uris.add(new URIContent(new File(filename).toURI(), MIMETypeHelper
-					.getMIMEtypeExtension(filename)));
+			uris.add(new URIContent(new File(filename).toURI(),
+					(m_file_extension.isActive() ? m_file_extension
+							.getStringValue() : MIMETypeHelper
+							.getMIMEtypeExtension(filename))));
 		}
 
 		return new PortObject[] { new URIPortObject(uris) };

@@ -20,6 +20,8 @@ package com.genericworkflownodes.knime.nodes.io.importer;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
+import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
+import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
@@ -41,13 +43,14 @@ public class MimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
 	 */
 	protected MimeFileImporterNodeDialog(Object obj) {
 		super();
-		addDialogComponent(new DialogComponentFileChooser(
-				MimeFileImporterNodeDialog.createFileChooserModel(),
-				"MimeFileImporterNodeDialog"));
-	}
 
-	static SettingsModelString createFileChooserModel() {
-		return new SettingsModelString(MimeFileImporterNodeModel.CFG_FILENAME,
-				"");
+		addDialogComponent(new DialogComponentFileChooser(
+				new SettingsModelString(MimeFileImporterNodeModel.CFG_FILENAME,
+						""), "MimeFileImporterNodeDialog"));
+
+		addDialogComponent(new DialogComponentOptionalString(
+				new SettingsModelOptionalString(
+						MimeFileImporterNodeModel.CFG_FILE_EXTENSION, "", false),
+				"File extension (override)"));
 	}
 }

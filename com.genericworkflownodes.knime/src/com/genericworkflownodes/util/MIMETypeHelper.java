@@ -52,6 +52,27 @@ public class MIMETypeHelper {
 		return type;
 	}
 
+	/*
+	 * Extracts the {@link MIMETypeEntry} from the given extension.
+	 * 
+	 * @param extension The file extension for which the mime type should be
+	 * extracted.
+	 * 
+	 * @return The MIME type of the file.
+	 */
+	public static String getMIMEtypeByExtension(String extension) {
+		// check existing mimetypes
+		String type = null;
+		for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
+			for (String ext : entry.getExtensions()) {
+				if (extension.toLowerCase().equals(ext)) {
+					type = entry.getType();
+				}
+			}
+		}
+		return type;
+	}
+
 	/**
 	 * Extracts the file extension that was used to get the
 	 * {@link MIMETypeEntry} from the given filename.
