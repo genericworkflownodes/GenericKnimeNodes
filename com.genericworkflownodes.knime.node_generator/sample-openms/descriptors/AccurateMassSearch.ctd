@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="AccurateMassSearch" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_AccurateMassSearch.html" category="Utilities" >
+<description><![CDATA[Find potential HMDB ids within the given mass error window.]]></description>
+<manual><![CDATA[Find potential HMDB ids within the given mass error window.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="AccurateMassSearch" description="Find potential HMDB ids within the given mass error window.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;AccurateMassSearch&apos;">
+      <ITEM name="in" value="" type="input-file" description="featureXML or consensusXML file" required="true" advanced="false" supported_formats="*.featureXML,*.consensusXML" />
+      <ITEM name="out" value="" type="output-file" description="mzTab file" required="true" advanced="false" supported_formats="*.csv" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Algorithm parameters section">
+        <ITEM name="mass_error_value" value="5" type="double" description="Tolerance allowed for accurate mass search." required="false" advanced="false" />
+        <ITEM name="mass_error_unit" value="ppm" type="string" description="Unit of mass error (ppm or Da)" required="false" advanced="false" restrictions="ppm,Da" />
+        <ITEM name="ionization_mode" value="positive" type="string" description="Positive or negative ionization mode?" required="false" advanced="false" restrictions="positive,negative" />
+        <ITEM name="isotopic_similarity" value="false" type="string" description="Computes a similarity score for each hit (only if the feature exhibits at least two isotopic mass traces)." required="false" advanced="false" restrictions="false,true" />
+        <ITEM name="report_mode" value="all" type="string" description="Results are reported in one of several modes: Either (all) matching hits, the (top3) scoring hits, or the (best) scoring hit." required="false" advanced="false" restrictions="all,top3,best" />
+        <ITEM name="positive_adducts_file" value="" type="string" description="This file contains the list of potential positive adducts that will be looked for in the database. Edit the list if you wish to exclude/include adducts." required="false" advanced="true" />
+        <ITEM name="negative_adducts_file" value="" type="string" description="This file contains the list of potential negative adducts that will be looked for in the database. Edit the list if you wish to exclude/include adducts." required="false" advanced="true" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>
