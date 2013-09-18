@@ -576,7 +576,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 				for (int f = 0; f < basenames.size(); ++f) {
 					// create basename: <base_name>_<port_nr>_<outfile_nr>
 					String file_basename = String.format("%s_%d_%d",
-							basenames.get(i), i, f);
+							basenames.get(f), i, f);
 					File file = m_fileStash.getFile(file_basename, ext);
 					fileNames.add(file.getAbsolutePath());
 					fileURIs.add(file.toURI());
