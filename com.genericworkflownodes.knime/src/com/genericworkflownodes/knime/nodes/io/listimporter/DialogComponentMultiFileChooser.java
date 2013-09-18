@@ -44,8 +44,6 @@ import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.genericworkflownodes.util.MIMETypeHelper;
-
 /**
  * Dialog component to choose multiple files at once, as input for a KNIME
  * workflow.
@@ -355,44 +353,6 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 				getComponentPanel());
 	}
 
-	/**
-	 * Transfers the value from the component into the settings model.
-	 * 
-	 * @throws InvalidSettingsException
-	 *             if the entered filename is null or empty.
-	 */
-	private void updateModel() throws InvalidSettingsException {
-		String[] filenames = new String[listbox.getModel().getSize()];
-		String[] mts = new String[listbox.getModel().getSize()];
-
-		int idx = 0;
-
-		for (File file : ((FileListModel) listbox.getModel()).getFiles()) {
-			String filename = file.getAbsolutePath();
-			filenames[idx] = filename;
-			mts[idx] = MIMETypeHelper.getMIMEtype(filename);
-			if (mts[idx] == null) {
-				throw new InvalidSettingsException(
-						"file of unknown MIMEtype selected " + filename);
-			}
-			idx++;
-		}
-
-		// this works only if we have at least one mimetype and only makes sense
-		// if there are at least 2 mimetypes
-		if (mts.length > 1) {
-			String first = mts[0];
-			for (int i = 1; i < mts.length; i++) {
-				if (!first.equals(mts[i])) {
-					throw new InvalidSettingsException(
-							"mixed set of MIMEtype files selected");
-				}
-			}
-		}
-
-		((SettingsModelStringArray) getModel()).setStringArrayValue(filenames);
-	}
-
 	@Override
 	protected void checkConfigurabilityBeforeLoad(final PortObjectSpec[] arg0)
 			throws NotConfigurableException {
@@ -417,7 +377,16 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
 	@Override
 	protected void validateSettingsBeforeSave() throws InvalidSettingsException {
-		updateModel();
+		String[] filenames = new String[listbox.getModel().getSize()];
+		int idx = 0;
+
+		for (File file : ((FileListModel) listbox.getModel()).getFiles()) {
+			String filename = file.getAbsolutePath();
+			filenames[idx] = filename;
+			idx++;
+		}
+
+		((SettingsModelStringArray) getModel()).setStringArrayValue(filenames);
 	}
 
 }

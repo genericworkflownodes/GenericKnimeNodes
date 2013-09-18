@@ -29,8 +29,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.knime.base.filehandling.mime.MIMEMap;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -67,7 +65,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
 
 	/**
-	 * SettingsModel to the filename.
+	 * SettingsModel to the filename and optional extension
 	 */
 	private SettingsModelString m_filename = new SettingsModelString(
 			MimeFileImporterNodeModel.CFG_FILENAME, "");
@@ -131,6 +129,11 @@ public class MimeFileImporterNodeModel extends NodeModel {
 
 		SettingsModelString tmp_filename = m_filename
 				.createCloneWithValidatedValue(settings);
+
+		if (tmp_filename.getStringValue().isEmpty()) {
+			throw new InvalidSettingsException("No File selected.");
+		}
+
 		File in = new File(tmp_filename.getStringValue());
 		if (!in.canRead()) {
 			throw new InvalidSettingsException("input file cannot be read: "
@@ -141,14 +144,18 @@ public class MimeFileImporterNodeModel extends NodeModel {
 				.createCloneWithValidatedValue(settings);
 
 		if (tmp_file_extension.isActive()) {
-			if (MIMEMap.getMIMEType(tmp_file_extension.getStringValue()) == null) {
+			if (tmp_file_extension.getStringValue().equals("")) {
 				throw new InvalidSettingsException(
-						"No mime type registered for file extension: "
+						"No File extension (override) provided.");
+			} else if (MIMETypeHelper.getMIMEtypeByExtension(tmp_file_extension
+					.getStringValue()) == null) {
+				throw new InvalidSettingsException(
+						"No MIME type registered for file extension: "
 								+ tmp_file_extension.getStringValue());
 			}
 		} else if (MIMETypeHelper.getMIMEtype(tmp_filename.getStringValue()) == null) {
 			throw new InvalidSettingsException(
-					"File of unknown MIMEtype selected: "
+					"File of unknown MIME type selected: "
 							+ tmp_filename.getStringValue());
 		}
 	}
@@ -205,15 +212,13 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
-		String mime_type = null;
-		if (m_file_extension.isActive()) {
-			mime_type = MIMEMap.getMIMEType(m_file_extension.getStringValue());
-		} else {
-			mime_type = MIMETypeHelper.getMIMEtype(m_filename.getStringValue());
-		}
 
-		if (mime_type == null) {
-			return new DataTableSpec[] { null };
+		/*
+		 * Upon inserting the node into a workflow, it gets configured, so at
+		 * least something fundamental like the file name should be checked
+		 */
+		if (m_filename.getStringValue().isEmpty()) {
+			throw new InvalidSettingsException("No File selected.");
 		}
 
 		URIPortObjectSpec uri_spec = null;
@@ -231,7 +236,6 @@ public class MimeFileImporterNodeModel extends NodeModel {
 	@Override
 	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
 			throws Exception {
-		List<URIContent> uris = new ArrayList<URIContent>();
 
 		File file = new File(m_filename.getStringValue());
 
@@ -240,6 +244,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 					+ file.getAbsolutePath());
 		}
 
+		List<URIContent> uris = new ArrayList<URIContent>();
 		uris.add(new URIContent(file.toURI(),
 				(m_file_extension.isActive() ? m_file_extension
 						.getStringValue() : MIMETypeHelper

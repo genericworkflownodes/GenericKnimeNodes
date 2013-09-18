@@ -4,17 +4,28 @@
     <name>Input File</name>
     
     <shortDescription>
-        
+        Locate a file which can serve as input to another GKN
     </shortDescription>
     
     <fullDescription>
-        <intro>Load a input file </intro>
-    </fullDescription>
+        <intro>With this node you can locate a file on your file system that can serve as input
+         for another Generic Knime Node. This is different from "File Reader", in the sense that
+          the file is not read into an internal KNIME Table, but stays on your file system.</intro>
     
+    
+    <option name="Selected File">
+             Specifies the full name (including its directory) of the file.
+         </option>
+       <option name="File extension (override)">
+		By default, Input File will determine the file type by the extension of the file, but 
+		this behavior can be overridden (e.g. in case of a custom file extension but known file type).
+		In that case, you can provide the extension for the file type you want the file to be interpreted as.
+      </option>
+    </fullDescription>
     <ports>
-     <outPort index="0" name="loaded file "> loaded file </outPort>   
+     <outPort index="0" name="loaded file ">selected file file </outPort>   
     </ports>    
     <views>
-        <view index="0" name="View file summary">View file summary</view>
+        <view index="0" name="First lines of file">View the first 50 lines of the selected file</view>
     </views>
 </knimeNode>
