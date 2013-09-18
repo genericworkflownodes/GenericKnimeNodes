@@ -20,6 +20,15 @@ import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile.M
 
 public class NodesSourceDirectory extends Directory {
 
+	public static final String CONTRIBUTING_PLUGINS_DIRECTORY = "contributing-plugins";
+	public static final String LICENSE_FILE = "LICENSE";
+	public static final String COPYRIGHT_FILE = "COPYRIGHT";
+	public static final String DESCRIPTION_FILE = "DESCRIPTION";
+	public static final String PLUGIN_PROPERTIES_FILE = "plugin.properties";
+	public static final String ICONS_DIRECTORY = "icons";
+	public static final String PAYLOAD_DIRECTORY = "payload";
+	public static final String DESCRIPTORS_DIRECTORY = "descriptors";
+	
 	private static final long serialVersionUID = -2772836144406225644L;
 	private DescriptorsDirectory descriptorsDirectory = null;
 	private PayloadDirectory payloadDirectory = null;
@@ -40,61 +49,61 @@ public class NodesSourceDirectory extends Directory {
 
 		try {
 			descriptorsDirectory = new DescriptorsDirectory(new File(
-					nodeSourceDirectory, "descriptors"));
+					nodeSourceDirectory, DESCRIPTORS_DIRECTORY));
 		} catch (FileNotFoundException e) {
 			throw new FileNotFoundException(
 					"Could not find descriptors directory "
-							+ new File(nodeSourceDirectory, "descriptors")
+							+ new File(nodeSourceDirectory, DESCRIPTORS_DIRECTORY)
 									.getPath());
 		}
 
 		try {
 			payloadDirectory = new PayloadDirectory(new File(
-					nodeSourceDirectory, "payload"));
+					nodeSourceDirectory, PAYLOAD_DIRECTORY));
 		} catch (PathnameIsNoDirectoryException e) {
 
 		}
 
 		try {
 			iconsDirectory = new IconsDirectory(new File(nodeSourceDirectory,
-					"icons"));
+					ICONS_DIRECTORY));
 		} catch (FileNotFoundException e) {
 
 		}
 
 		try {
 			contributingPluginsDirectory = new ContributingPluginsDirectory(
-					new File(nodeSourceDirectory, "contributing-plugins"));
+					new File(nodeSourceDirectory, CONTRIBUTING_PLUGINS_DIRECTORY));
 		} catch (PathnameIsNoDirectoryException e) {
 		}
 
-		File propertyFile = new File(nodeSourceDirectory, "plugin.properties");
+		File propertyFile = new File(nodeSourceDirectory, PLUGIN_PROPERTIES_FILE);
 		try {
 			Properties properties = new Properties();
 			properties.load(new FileInputStream(propertyFile));
 			this.properties = properties;
 		} catch (FileNotFoundException e) {
-			throw new FileNotFoundException("Could not find property file "
+			throw new FileNotFoundException("Could not find properties file "
 					+ propertyFile.getPath());
 		} catch (IOException e) {
-			throw new IOException("Could not load property file", e);
+			throw new IOException("Could not load properties file", e);
 		}
 
-		descriptionFile = new File(nodeSourceDirectory, "DESCRIPTION");
+		descriptionFile = new File(nodeSourceDirectory, DESCRIPTION_FILE);
 		if (!descriptionFile.exists()) {
 			throw new FileNotFoundException(
 					"DESCRIPTION file not found in source directory. Expected in: "
 							+ descriptionFile.getAbsolutePath());
 		}
 
-		copyrightFile = new File(nodeSourceDirectory, "COPYRIGHT");
+		copyrightFile = new File(nodeSourceDirectory, COPYRIGHT_FILE);
 		if (!copyrightFile.exists()) {
 			throw new FileNotFoundException(
 					"COPYRIGHT file not found in source directory. Expected in: "
 							+ copyrightFile.getAbsolutePath());
 		}
 
-		licenseFile = new File(nodeSourceDirectory, "LICENSE");
+		licenseFile = new File(nodeSourceDirectory, LICENSE_FILE);
 		if (!licenseFile.exists()) {
 			throw new FileNotFoundException(
 					"LICENSE file not found in source directory. Expected in: "
