@@ -2,6 +2,8 @@ package com.genericworkflownodes.knime.nodegeneration.templates.feature;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -22,7 +24,25 @@ public class FeatureXMLTemplate extends Template {
 				.getResourceAsStream("templates/feature/feature.xml.template"));
 
 		this.replace("@@pluginName@@", pluginMeta.getName());
-		this.replace("@@pluginVersion@@", pluginMeta.getVersion());
+
+		// we will ensure that the version ends with a qualifier to make sure
+		// that the qualifier is properly updated when something changes
+
+		Pattern versionPattern = Pattern
+				.compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
+		Matcher m = versionPattern.matcher(pluginMeta.getVersion());
+
+		// via definition this has to be true
+		boolean found = m.find();
+		assert found : "Version should be compliant to the pattern ^\\d+(\\.\\d+(\\.\\d+(.[a-zA-Z0-9]+)?)?)?$";
+		assert m.groupCount() == 4 : "Something went wrong when matching the version.";
+
+		// assemble a complete version
+		String newVersion = m.group(1)
+				+ (m.group(2) != null ? m.group(2) : ".0")
+				+ (m.group(3) != null ? m.group(3) : ".0") + ".qualifier";
+
+		this.replace("@@pluginVersion@@", newVersion);
 		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
 
 		this.replace("@@description@@",
