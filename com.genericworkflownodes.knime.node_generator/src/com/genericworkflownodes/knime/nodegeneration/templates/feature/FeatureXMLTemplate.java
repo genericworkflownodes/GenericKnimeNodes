@@ -16,6 +16,37 @@ import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
 public class FeatureXMLTemplate extends Template {
 
+	private final static Pattern VERSION_PATTERN = Pattern
+			.compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
+
+	private String findLatestQualifier(String pluginQualifier,
+			List<FragmentMeta> fragmentMetas,
+			List<ContributingPluginMeta> contributingPluginMetas) {
+
+		String highestQualifier = "";
+		if (pluginQualifier != null)
+			highestQualifier = pluginQualifier;
+
+		for (FragmentMeta fMeta : fragmentMetas) {
+			Matcher m = matchVersion(fMeta.getVersion());
+			if (m.group(4) != null
+					&& m.group(4).compareTo(highestQualifier) > 0) {
+				highestQualifier = m.group(4);
+			}
+		}
+
+		for (ContributingPluginMeta cMeta : contributingPluginMetas) {
+			Matcher m = matchVersion(cMeta.getVersion());
+			if (m.group(4) != null
+					&& m.group(4).compareTo(highestQualifier) > 0) {
+				highestQualifier = m.group(4);
+			}
+
+		}
+
+		return highestQualifier;
+	}
+
 	public FeatureXMLTemplate(GeneratedPluginMeta pluginMeta,
 			FeatureMeta featureMeta, List<FragmentMeta> fragmentMetas,
 			List<ContributingPluginMeta> contributingPluginMetas)
@@ -27,20 +58,14 @@ public class FeatureXMLTemplate extends Template {
 
 		// we will ensure that the version ends with a qualifier to make sure
 		// that the qualifier is properly updated when something changes
-
-		Pattern versionPattern = Pattern
-				.compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
-		Matcher m = versionPattern.matcher(pluginMeta.getVersion());
-
-		// via definition this has to be true
-		boolean found = m.find();
-		assert found : "Version should be compliant to the pattern ^\\d+(\\.\\d+(\\.\\d+(.[a-zA-Z0-9]+)?)?)?$";
-		assert m.groupCount() == 4 : "Something went wrong when matching the version.";
+		Matcher m = matchVersion(pluginMeta.getVersion());
 
 		// assemble a complete version
 		String newVersion = m.group(1)
 				+ (m.group(2) != null ? m.group(2) : ".0")
-				+ (m.group(3) != null ? m.group(3) : ".0") + ".qualifier";
+				+ (m.group(3) != null ? m.group(3) : ".0")
+				+ findLatestQualifier(m.group(4), fragmentMetas,
+						contributingPluginMetas);
 
 		this.replace("@@pluginVersion@@", newVersion);
 		this.replace("@@packageName@@", pluginMeta.getPackageRoot());
@@ -55,6 +80,17 @@ public class FeatureXMLTemplate extends Template {
 		this.registerGeneratedPlugin(pluginMeta);
 		this.registerFragments(fragmentMetas);
 		this.registerContributingPlugins(contributingPluginMetas);
+	}
+
+	private Matcher matchVersion(final String version) {
+		Matcher m = VERSION_PATTERN.matcher(version);
+
+		// via definition this has to be true
+		boolean found = m.find();
+		assert found : "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$";
+		assert m.groupCount() == 4 : "Something went wrong when matching the version.";
+
+		return m;
 	}
 
 	private void registerGeneratedPlugin(GeneratedPluginMeta pluginMeta) {
