@@ -24,8 +24,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.genericworkflownodes.util.StringUtils.DoubleRangeExtractor;
-import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
+import com.genericworkflownodes.util.ranges.DoubleRangeExtractor;
+import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
+
 
 ;
 

@@ -53,8 +53,8 @@ import com.genericworkflownodes.knime.parameter.StringChoiceParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.parameter.StringParameter;
 import com.genericworkflownodes.knime.port.Port;
-import com.genericworkflownodes.util.StringUtils.DoubleRangeExtractor;
-import com.genericworkflownodes.util.StringUtils.IntegerRangeExtractor;
+import com.genericworkflownodes.util.ranges.DoubleRangeExtractor;
+import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
 
 /**
  * SAXHandler for the parameters tag in the CTD document.
@@ -206,75 +206,86 @@ public class ParamHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String name,
 			Attributes attributes) throws SAXException {
-		if (TAG_NODE.equals(name)) {
-			String nodeName = attributes.getValue(ATTR_NAME);
-			String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
-			m_currentPath += nodeName;
-			m_config.setSectionDescription(m_currentPath, nodeDescription);
-			m_currentPath += PATH_SEPARATOR;
-		} else if (TAG_ITEM.equals(name)) {
-			String type = attributes.getValue(ATTR_TYPE);
-			String paramName = attributes.getValue(ATTR_NAME);
-			String paramValue = attributes.getValue(ATTR_VALUE);
+		try {
+			if (TAG_NODE.equals(name)) {
+				handleNodeTag(attributes);
+			} else if (TAG_ITEM.equals(name)) {
+				String type = attributes.getValue(ATTR_TYPE);
+				String paramName = attributes.getValue(ATTR_NAME);
+				String paramValue = attributes.getValue(ATTR_VALUE);
 
-			// skip this tag completely if this element is tagged with the
-			// GKN_IGNORE_TAG
-			if (getTags(attributes).contains(GKN_IGNORE_TAG)) {
-				m_ignoredParameters.add(m_currentPath + paramName);
-				return;
-			}
+				// skip this tag completely if this element is tagged with the
+				// GKN_IGNORE_TAG
+				if (getTags(attributes).contains(GKN_IGNORE_TAG)) {
+					m_ignoredParameters.add(m_currentPath + paramName);
+					return;
+				}
 
-			if (TYPE_INT.equals(type)) {
-				handleIntType(paramName, paramValue, attributes);
-			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
-				handleDoubleType(paramName, paramValue, attributes);
-			} else if (TYPE_STRING.equals(type) || TYPE_INPUT_FILE.equals(type)
-					|| TYPE_OUTPUT_FILE.equals(type)
-					|| TYPE_OUTPUT_PREFIX.equals(type)
-					|| TYPE_INPUT_PREFIX.equals(type)) {
-				handleStringType(paramName, paramValue, attributes);
-			}
+				if (TYPE_INT.equals(type)) {
+					handleIntType(paramName, paramValue, attributes);
+				} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
+					handleDoubleType(paramName, paramValue, attributes);
+				} else if (TYPE_STRING.equals(type)
+						|| TYPE_INPUT_FILE.equals(type)
+						|| TYPE_OUTPUT_FILE.equals(type)
+						|| TYPE_OUTPUT_PREFIX.equals(type)
+						|| TYPE_INPUT_PREFIX.equals(type)) {
+					handleStringType(paramName, paramValue, attributes);
+				}
 
-			// did we create a parameter
-			if (m_currentParameter != null) {
+				// did we create a parameter
+				if (m_currentParameter != null) {
+					setCommonParameters(attributes);
+
+					m_extractedParameters.put(m_currentPath
+							+ m_currentParameter.getKey(), m_currentParameter);
+
+					// reset for the next iteration
+					m_currentParameter = null;
+				}
+			} else if (TAG_ITEMLIST.equals(name)) {
+				// start the list parameter
+				String type = attributes.getValue(ATTR_TYPE);
+				String paramName = attributes.getValue(ATTR_NAME);
+
+				// skip this tag completely if this element is tagged with the
+				// GKN_IGNORE_TAG
+				if (getTags(attributes).contains(GKN_IGNORE_TAG)) {
+					m_ignoredParameters.add(m_currentPath + paramName);
+					return;
+				}
+
+				if (TYPE_INT.equals(type)) {
+					handleIntList(paramName, attributes);
+				} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
+					handleDoubleList(paramName, attributes);
+				} else if (TYPE_STRING.equals(type)
+						|| TYPE_INPUT_FILE.equals(type)
+						|| TYPE_OUTPUT_FILE.equals(type)) {
+					handleStringList(paramName, attributes);
+				}
+				// initialize list for storing the list values
+				m_listValues = new ArrayList<String>();
+
+				// set extra values for this parameter
 				setCommonParameters(attributes);
-
-				m_extractedParameters.put(
-						m_currentPath + m_currentParameter.getKey(),
-						m_currentParameter);
-
-				// reset for the next iteration
-				m_currentParameter = null;
+			} else if (TAG_LISTITEM.equals(name)) {
+				String listValue = attributes.getValue(ATTR_VALUE);
+				m_listValues.add(listValue);
 			}
-		} else if (TAG_ITEMLIST.equals(name)) {
-			// start the list parameter
-			String type = attributes.getValue(ATTR_TYPE);
-			String paramName = attributes.getValue(ATTR_NAME);
-
-			// skip this tag completely if this element is tagged with the
-			// GKN_IGNORE_TAG
-			if (getTags(attributes).contains(GKN_IGNORE_TAG)) {
-				m_ignoredParameters.add(m_currentPath + paramName);
-				return;
-			}
-
-			if (TYPE_INT.equals(type)) {
-				handleIntList(paramName, attributes);
-			} else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
-				handleDoubleList(paramName, attributes);
-			} else if (TYPE_STRING.equals(type) || TYPE_INPUT_FILE.equals(type)
-					|| TYPE_OUTPUT_FILE.equals(type)) {
-				handleStringList(paramName, attributes);
-			}
-			// initialize list for storing the list values
-			m_listValues = new ArrayList<String>();
-
-			// set extra values for this parameter
-			setCommonParameters(attributes);
-		} else if (TAG_LISTITEM.equals(name)) {
-			String listValue = attributes.getValue(ATTR_VALUE);
-			m_listValues.add(listValue);
+		} catch (Exception e) {
+			//
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
+	}
+
+	private void handleNodeTag(Attributes attributes) {
+		String nodeName = attributes.getValue(ATTR_NAME);
+		String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
+		m_currentPath += nodeName;
+		m_config.setSectionDescription(m_currentPath, nodeDescription);
+		m_currentPath += PATH_SEPARATOR;
 	}
 
 	/**

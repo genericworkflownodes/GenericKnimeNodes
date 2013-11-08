@@ -34,6 +34,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class ZipUtils {
 
+	private static final int BUFFER_SIZE = 2048;
+
 	/**
 	 * Decompress the content of @p zipStream to the directory @p targetDir.
 	 * 
@@ -52,7 +54,7 @@ public class ZipUtils {
 			ZipInputStream zin = new ZipInputStream(zipStream);
 			ZipEntry ze = null;
 
-			byte[] buffer = new byte[2048];
+			byte[] buffer = new byte[BUFFER_SIZE];
 
 			while ((ze = zin.getNextEntry()) != null) {
 				File targetFile = new File(targetDir, ze.getName());
@@ -69,7 +71,7 @@ public class ZipUtils {
 					fout = new FileOutputStream(targetFile);
 
 					int size;
-					while ((size = zin.read(buffer, 0, 2048)) != -1) {
+					while ((size = zin.read(buffer, 0, BUFFER_SIZE)) != -1) {
 						fout.write(buffer, 0, size);
 					}
 
@@ -97,6 +99,8 @@ public class ZipUtils {
 	 * Do not extract the stream, just count the number of zip entries.
 	 * 
 	 * @param zipStream
+	 *            The input stream containing the zip file.
+	 * @return The number of files/folders in the zip stream.
 	 */
 	public static int countEntries(InputStream zipStream) {
 		int numEntries = 0;

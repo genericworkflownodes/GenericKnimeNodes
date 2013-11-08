@@ -28,75 +28,82 @@ import org.knime.base.filehandling.mime.MIMETypeEntry;
  */
 public class MIMETypeHelper {
 
-	/**
-	 * Extracts the {@link MIMETypeEntry} from the given filename.
-	 * 
-	 * @param filename
-	 *            The file for which the mime type should be extracted.
-	 * @return The MIME type of the file.
-	 */
-	public static String getMIMEtype(String filename) {
-		// check existing mimetypes
-		String type = null;
-		String foundExtension = "";
-		for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
-			for (String ext : entry.getExtensions()) {
-				if (filename.toLowerCase().endsWith(
-						"." + ext.trim().toLowerCase())
-						&& ext.length() > foundExtension.length()) {
-					type = entry.getType();
-					foundExtension = ext.trim();
-				}
-			}
-		}
-		return type;
-	}
+    /**
+     * Utility class should have private c'tor.
+     */
+    private MIMETypeHelper() {
+    }
 
-	/*
-	 * Extracts the {@link MIMETypeEntry} from the given extension.
-	 * 
-	 * @param extension The file extension for which the mime type should be
-	 * extracted.
-	 * 
-	 * @return The MIME type of the file.
-	 */
-	public static String getMIMEtypeByExtension(String extension) {
-		// check existing mimetypes
-		String type = null;
-		for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
-			for (String ext : entry.getExtensions()) {
-				// some mimetypes are stored with spaces around them so .trim()
-				if (extension.toLowerCase().equals(ext.trim())) {
-					type = entry.getType();
-				}
-			}
-		}
-		return type;
-	}
+    /**
+     * Extracts the {@link MIMETypeEntry} from the given filename.
+     * 
+     * @param filename
+     *            The file for which the mime type should be extracted.
+     * @return The MIME type of the file.
+     */
+    public static String getMIMEtype(String filename) {
+        // check existing mimetypes
+        String type = null;
+        String foundExtension = "";
+        for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
+            for (String ext : entry.getExtensions()) {
+                if (filename.toLowerCase().endsWith(
+                        "." + ext.trim().toLowerCase())
+                        && ext.length() > foundExtension.length()) {
+                    type = entry.getType();
+                    foundExtension = ext.trim();
+                }
+            }
+        }
+        return type;
+    }
 
-	/**
-	 * Extracts the file extension that was used to get the
-	 * {@link MIMETypeEntry} from the given filename.
-	 * 
-	 * @param filename
-	 *            The file for which the extension should be extracted.
-	 * @return The MIME type extension of the file, null if no mimetype was
-	 *         extracted.
-	 */
-	public static String getMIMEtypeExtension(String filename) {
-		// check existing mimetypes
-		String type = null;
-		String foundExtension = "";
-		for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
-			for (String ext : entry.getExtensions()) {
-				if (filename.toLowerCase().endsWith(
-						"." + ext.trim().toLowerCase())
-						&& ext.length() > foundExtension.length()) {
-					type = entry.getType();
-					foundExtension = ext.trim();
-				}
-			}
-		}
-		return (type != null ? foundExtension : null);
-	}
+    /**
+     * Extracts the {@link MIMETypeEntry} from the given extension.
+     * 
+     * @param extension
+     *            The file extension for which the mime type should be
+     *            extracted.
+     * 
+     * @return The MIME type of the file.
+     */
+    public static String getMIMEtypeByExtension(String extension) {
+        // check existing mimetypes
+        String type = null;
+        for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
+            for (String ext : entry.getExtensions()) {
+                // some mimetypes are stored with spaces around them so .trim()
+                if (extension.toLowerCase().equals(ext.trim())) {
+                    type = entry.getType();
+                }
+            }
+        }
+        return type;
+    }
+
+    /**
+     * Extracts the file extension that was used to get the
+     * {@link MIMETypeEntry} from the given filename.
+     * 
+     * @param filename
+     *            The file for which the extension should be extracted.
+     * @return The MIME type extension of the file, null if no mimetype was
+     *         extracted.
+     */
+    public static String getMIMEtypeExtension(String filename) {
+        // check existing mimetypes
+        String type = null;
+        String foundExtension = "";
+        for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
+            for (String ext : entry.getExtensions()) {
+                if (filename.toLowerCase().endsWith(
+                        "." + ext.trim().toLowerCase())
+                        && ext.length() > foundExtension.length()) {
+                    type = entry.getType();
+                    foundExtension = ext.trim();
+                }
+            }
+        }
+        return (type != null ? foundExtension : null);
+    }
 }

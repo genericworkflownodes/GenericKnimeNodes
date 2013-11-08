@@ -34,112 +34,111 @@ import com.genericworkflownodes.util.FileStashFactory;
  * @author roettig,aiche
  */
 public class GenericNodesPlugin extends AbstractUIPlugin {
-	/**
-	 * The shared instance.
-	 */
-	private static GenericNodesPlugin GKN_PLUGIN;
+    /**
+     * The shared instance.
+     */
+    private static GenericNodesPlugin GKN_PLUGIN;
 
-	/**
-	 * The central static logger.
-	 */
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(GenericNodesPlugin.class);
+    /**
+     * The central static logger.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(GenericNodesPlugin.class);
 
-	/**
-	 * Debuggin state of the plugin.
-	 */
-	private static boolean DEBUG = false;
+    /**
+     * Debuggin state of the plugin.
+     */
+    private static boolean DEBUG = false;
 
-	/**
-	 * Logging method for debugging purpose.
-	 * 
-	 * @param message
-	 *            The message to log.
-	 */
-	public static void log(final String message) {
-		if (GenericNodesPlugin.DEBUG) {
-			System.out.println(message);
-			LOGGER.info(message);
-		}
-	}
+    /**
+     * Logging method for debugging purpose.
+     * 
+     * @param message
+     *            The message to log.
+     */
+    public static void log(final String message) {
+        if (GenericNodesPlugin.DEBUG) {
+            LOGGER.info(message);
+        }
+    }
 
-	/**
-	 * Check if the plugin is in DEBUG mode.
-	 * 
-	 * @return True if debugging is enabled, false otherwise.
-	 */
-	public static boolean isDebug() {
-		return GenericNodesPlugin.DEBUG;
-	}
+    /**
+     * Check if the plugin is in DEBUG mode.
+     * 
+     * @return True if debugging is enabled, false otherwise.
+     */
+    public static boolean isDebug() {
+        return GenericNodesPlugin.DEBUG;
+    }
 
-	/**
-	 * Change debug setting.
-	 */
-	public static void toggleDebug() {
-		GenericNodesPlugin.DEBUG = !GenericNodesPlugin.DEBUG;
-		System.out.println("toggling Debug Mode");
-	}
+    /**
+     * Change debug setting.
+     */
+    public static void toggleDebug() {
+        GenericNodesPlugin.DEBUG = !GenericNodesPlugin.DEBUG;
+        System.out.println("toggling Debug Mode");
+    }
 
-	/**
-	 * Sets the debug status of the plugin.
-	 * 
-	 * @param debugEnabled
-	 *            The new debug status.
-	 */
-	public static void setDebug(final boolean debugEnabled) {
-		GenericNodesPlugin.DEBUG = debugEnabled;
-		System.out.println("setting Debug Mode :" + debugEnabled);
-	}
+    /**
+     * Sets the debug status of the plugin.
+     * 
+     * @param debugEnabled
+     *            The new debug status.
+     */
+    public static void setDebug(final boolean debugEnabled) {
+        GenericNodesPlugin.DEBUG = debugEnabled;
+        System.out.println("setting Debug Mode :" + debugEnabled);
+    }
 
-	/**
-	 * The constructor.
-	 */
-	public GenericNodesPlugin() {
-		super();
-		GKN_PLUGIN = this;
-	}
+    /**
+     * The constructor.
+     */
+    public GenericNodesPlugin() {
+        super();
+        GKN_PLUGIN = this;
+    }
 
-	/**
-	 * This method is called upon plug-in activation.
-	 * 
-	 * @param context
-	 *            The OSGI bundle context
-	 * @throws Exception
-	 *             If this GKN_PLUGIN could not be started
-	 */
-	@Override
-	public void start(final BundleContext context) throws Exception {
-		super.start(context);
+    /**
+     * This method is called upon plug-in activation.
+     * 
+     * @param context
+     *            The OSGI bundle context
+     * @throws Exception
+     *             If this GKN_PLUGIN could not be started
+     */
+    @Override
+    public void start(final BundleContext context) throws Exception {
+        super.start(context);
 
-		log("starting GKN_PLUGIN: GenericNodesPlugin");
+        log("starting GKN_PLUGIN: GenericNodesPlugin");
 
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		FileStashFactory.setTempParentDirectory(new File(store
-				.getString(PreferenceInitializer.PREF_FILE_STASH_LOCATION)));
-	}
+        IPreferenceStore store = GenericNodesPlugin.getDefault()
+                .getPreferenceStore();
+        FileStashFactory.setTempParentDirectory(new File(store
+                .getString(PreferenceInitializer.PREF_FILE_STASH_LOCATION)));
+    }
 
-	/**
-	 * This method is called when the plug-in is stopped.
-	 * 
-	 * @param context
-	 *            The OSGI bundle context
-	 * @throws Exception
-	 *             If this GKN_PLUGIN could not be stopped
-	 */
-	@Override
-	public void stop(final BundleContext context) throws Exception {
-		super.stop(context);
-		GKN_PLUGIN = null;
-	}
+    /**
+     * This method is called when the plug-in is stopped.
+     * 
+     * @param context
+     *            The OSGI bundle context
+     * @throws Exception
+     *             If this GKN_PLUGIN could not be stopped
+     */
+    @Override
+    public void stop(final BundleContext context) throws Exception {
+        super.stop(context);
+        GKN_PLUGIN = null;
+    }
 
-	/**
-	 * Returns the shared instance.
-	 * 
-	 * @return Singleton instance of the Plugin
-	 */
-	public static GenericNodesPlugin getDefault() {
-		return GKN_PLUGIN;
-	}
+    /**
+     * Returns the shared instance.
+     * 
+     * @return Singleton instance of the Plugin
+     */
+    public static GenericNodesPlugin getDefault() {
+        return GKN_PLUGIN;
+    }
 
 }
