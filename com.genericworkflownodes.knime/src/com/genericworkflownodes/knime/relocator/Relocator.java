@@ -40,87 +40,89 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
  */
 public class Relocator {
 
-	private static String TEMP = "%TEMP%";
-	private static String PWD = "%PWD%";
-	private static String BASENAME = "%BASENAME[.*]%";
+    private static String TEMP = "%TEMP%";
+    private static String PWD = "%PWD%";
+    private static String BASENAME = "%BASENAME[.*]%";
 
-	/**
-	 * The referenced parameter that should be transformed.
-	 */
-	private String reference;
+    /**
+     * The referenced parameter that should be transformed.
+     */
+    private String reference;
 
-	/**
-	 * The regular expression used to find the parameter.
-	 */
-	private String location;
+    /**
+     * The regular expression used to find the parameter.
+     */
+    private String location;
 
-	/**
-	 * C'tor.
-	 * 
-	 * @param parameter
-	 *            The name of the output parameter that should be transformed
-	 * @param location
-	 *            The pattern used to find the output file.
-	 */
-	public Relocator(String parameter, String location) {
-		reference = parameter;
-		this.location = location;
-	}
+    /**
+     * C'tor.
+     * 
+     * @param parameter
+     *            The name of the output parameter that should be transformed
+     * @param location
+     *            The pattern used to find the output file.
+     */
+    public Relocator(String parameter, String location) {
+        reference = parameter;
+        this.location = location;
+    }
 
-	/**
-	 * Find the output file based on the given pattern and moves it to the
-	 * originally described location.
-	 * 
-	 * @param config
-	 *            The node configuration of the tool at execution time.
-	 * @param target
-	 *            The original output target specified when calling the tool and
-	 *            the place where the found output should be stored.
-	 * @param workingDirectory
-	 *            The directory where the tool was called.
-	 * @throws RelocatorException
-	 *             If the file could not be found.
-	 */
-	public void relocate(INodeConfiguration config, URI target,
-			File workingDirectory) throws RelocatorException {
+    /**
+     * Find the output file based on the given pattern and moves it to the
+     * originally described location.
+     * 
+     * @param config
+     *            The node configuration of the tool at execution time.
+     * @param target
+     *            The original output target specified when calling the tool and
+     *            the place where the found output should be stored.
+     * @param workingDirectory
+     *            The directory where the tool was called.
+     * @throws RelocatorException
+     *             If the file could not be found.
+     */
+    public void relocate(INodeConfiguration config, URI target,
+            File workingDirectory) throws RelocatorException {
 
-		String updatedLocation = location;
+        String updatedLocation = location;
 
-		// replace fixed variables in the pattern with
-		updatedLocation.replace(TEMP, System.getProperty("temp.dir"));
-		updatedLocation.replace(PWD, workingDirectory.getAbsolutePath());
+        // replace fixed variables in the pattern with
+        updatedLocation = updatedLocation.replace(TEMP,
+                System.getProperty("temp.dir"));
+        updatedLocation = updatedLocation.replace(PWD,
+                workingDirectory.getAbsolutePath());
 
-		fixBaseNames(updatedLocation);
+        fixBaseNames(updatedLocation);
 
-		File fileToRelocate = new File(updatedLocation);
-		if (!fileToRelocate.exists()) {
-			throw new RelocatorException(
-					"Could not find file specified by this relocator: "
-							+ location);
-		}
+        File fileToRelocate = new File(updatedLocation);
+        if (!fileToRelocate.exists()) {
+            throw new RelocatorException(
+                    "Could not find file specified by this relocator: "
+                            + location);
+        }
 
-		fileToRelocate.renameTo(new File(target.getPath()));
-	}
+        fileToRelocate.renameTo(new File(target.getPath()));
+    }
 
-	private void fixBaseNames(String updatedLocation) {
-		// TODO implement base name updating
-	}
+    private void fixBaseNames(String updatedLocation) {
+        // TODO implement base name updating
+    }
 
-	/**
-	 * Returns the name of the parameter that should be relocated.
-	 * 
-	 * @return The parameter name.
-	 */
-	public String getReferencedParamter() {
-		return reference;
-	}
+    /**
+     * Returns the name of the parameter that should be relocated.
+     * 
+     * @return The parameter name.
+     */
+    public String getReferencedParamter() {
+        return reference;
+    }
 
-	/**
-	 * Returns the location information of the relocator.
-	 * 
-	 * @return The location parameter.
-	 */
-	public String getLocation() {
-		return location;
-	}
+    /**
+     * Returns the location information of the relocator.
+     * 
+     * @return The location parameter.
+     */
+    public String getLocation() {
+        return location;
+    }
 }

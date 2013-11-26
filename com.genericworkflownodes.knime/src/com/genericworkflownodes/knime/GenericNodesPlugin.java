@@ -95,7 +95,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      */
     public GenericNodesPlugin() {
         super();
-        GKN_PLUGIN = this;
     }
 
     /**
@@ -109,6 +108,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
+        GKN_PLUGIN = this;
 
         log("starting GKN_PLUGIN: GenericNodesPlugin");
 
@@ -128,8 +128,8 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      */
     @Override
     public void stop(final BundleContext context) throws Exception {
-        super.stop(context);
         GKN_PLUGIN = null;
+        super.stop(context);
     }
 
     /**

@@ -53,194 +53,192 @@ import com.genericworkflownodes.util.IFileStash;
  */
 public class ManglerNodeModel extends NodeModel {
 
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(ManglerNodeModel.class);
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(ManglerNodeModel.class);
 
-	/**
-	 * Settings field where the currently selected demangler is stored.
-	 */
-	static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
+    /**
+     * Settings field where the currently selected demangler is stored.
+     */
+    static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
 
-	/**
-	 * Settings field where the currently configured {@link MIMEType} is stored.
-	 */
-	static final String AVAILABLE_MIMETYPE_SETTINGNAME = "available_demangler";
+    /**
+     * Settings field where the currently configured {@link MIMEType} is stored.
+     */
+    static final String AVAILABLE_MIMETYPE_SETTINGNAME = "available_demangler";
 
-	/**
-	 * The selected {@link IDemangler}.
-	 */
-	private IDemangler demangler;
+    /**
+     * The selected {@link IDemangler}.
+     */
+    private IDemangler demangler;
 
-	/**
-	 * Available {@link IDemangler}.
-	 */
-	private List<IDemangler> availableMangler;
+    /**
+     * Available {@link IDemangler}.
+     */
+    private List<IDemangler> availableMangler;
 
-	/**
-	 * The currently active inputTalbeSpecification.
-	 */
-	private DataTableSpec inputTalbeSpecification;
+    /**
+     * The currently active inputTalbeSpecification.
+     */
+    private DataTableSpec inputTalbeSpecification;
 
-	private IFileStash fileStash;
+    private IFileStash fileStash;
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected ManglerNodeModel() {
-		super(new PortType[] { new PortType(BufferedDataTable.class) },
-				new PortType[] { new PortType(URIPortObject.class) });
-		this.fileStash = FileStashFactory.createTemporary();
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected ManglerNodeModel() {
+        super(new PortType[] { new PortType(BufferedDataTable.class) },
+                new PortType[] { new PortType(URIPortObject.class) });
+        fileStash = FileStashFactory.createTemporary();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] execute(final PortObject[] inData,
+            final ExecutionContext exec) throws Exception {
 
-		// translate portobject to table
+        // translate portobject to table
 
-		BufferedDataTable table = (BufferedDataTable) inData[0];
+        BufferedDataTable table = (BufferedDataTable) inData[0];
 
-		// create a file where we can write to
-		File file = this.fileStash.getFile(demangler.getMIMEType(), "mime");
+        // create a file where we can write to
+        File file = fileStash.getFile(demangler.getMIMEType(), "mime");
 
-		// translate the filename to a URIContent
-		URIContent outputURI = new URIContent(file.toURI(),
-				demangler.getMIMEType());
+        // translate the filename to a URIContent
+        URIContent outputURI = new URIContent(file.toURI(),
+                demangler.getMIMEType());
 
-		// write file
-		demangler.mangle(table, outputURI.getURI());
+        // write file
+        demangler.mangle(table, outputURI.getURI());
 
-		// create list
-		List<URIContent> uriList = new ArrayList<URIContent>();
-		uriList.add(outputURI);
+        // create list
+        List<URIContent> uriList = new ArrayList<URIContent>();
+        uriList.add(outputURI);
 
-		return new URIPortObject[] { new URIPortObject(uriList) };
-	}
+        return new URIPortObject[] { new URIPortObject(uriList) };
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		demangler = null;
-		availableMangler = null;
-		try {
-			this.fileStash.deleteAllFiles();
-		} catch (IOException e) {
-			LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
-					e);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        demangler = null;
+        availableMangler = null;
+        try {
+            fileStash.deleteAllFiles();
+        } catch (IOException e) {
+            LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
+                    e);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		if (inSpecs[0] instanceof DataTableSpec) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        if (inSpecs[0] instanceof DataTableSpec) {
 
-			inputTalbeSpecification = (DataTableSpec) inSpecs[0];
+            inputTalbeSpecification = (DataTableSpec) inSpecs[0];
 
-			availableMangler = DemanglerRegistry.getDemanglerRegistry()
-					.getMangler(inputTalbeSpecification);
+            availableMangler = DemanglerRegistry.getDemanglerRegistry()
+                    .getMangler(inputTalbeSpecification);
 
-			if (availableMangler == null || availableMangler.size() == 0) {
-				throw new InvalidSettingsException(
-						"no IDemangler found for the given table configuration. "
-								+ "Please register one before transforming the a file with "
-								+ "this MIMEType to a KNIME table.");
-			}
+            if (availableMangler == null || availableMangler.size() == 0) {
+                throw new InvalidSettingsException(
+                        "no IDemangler found for the given table configuration. "
+                                + "Please register one before transforming the a file with "
+                                + "this MIMEType to a KNIME table.");
+            }
 
-			if (demangler == null) {
-				demangler = availableMangler.get(0);
-			}
+            if (demangler == null) {
+                demangler = availableMangler.get(0);
+            }
 
-			return new URIPortObjectSpec[] { new URIPortObjectSpec(
-					demangler.getMIMEType()) };
-		} else {
-			throw new InvalidSettingsException("Cannot handle non-table input");
-		}
-	}
+            return new URIPortObjectSpec[] { new URIPortObjectSpec(
+                    demangler.getMIMEType()) };
+        } else {
+            throw new InvalidSettingsException("Cannot handle non-table input");
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		settings.addString(SELECTED_DEMANGLER_SETTINGNAME, demangler.getClass()
-				.getName());
-		String[] manglers = new String[availableMangler.size()];
-		int i = 0;
-		for (IDemangler mangler : availableMangler) {
-			manglers[i++] = mangler.getClass().getName();
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        settings.addString(SELECTED_DEMANGLER_SETTINGNAME, demangler.getClass()
+                .getName());
+        String[] manglers = new String[availableMangler.size()];
+        int i = 0;
+        for (IDemangler mangler : availableMangler) {
+            manglers[i++] = mangler.getClass().getName();
+        }
 
-		settings.addStringArray(AVAILABLE_MIMETYPE_SETTINGNAME, manglers);
-	}
+        settings.addStringArray(AVAILABLE_MIMETYPE_SETTINGNAME, manglers);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
 
-		String manglerClassName = settings.getString(
-				SELECTED_DEMANGLER_SETTINGNAME, "");
+        String manglerClassName = settings.getString(
+                SELECTED_DEMANGLER_SETTINGNAME, "");
 
-		List<IDemangler> matchingManglers = DemanglerRegistry
-				.getDemanglerRegistry().getMangler(inputTalbeSpecification);
+        List<IDemangler> matchingManglers = DemanglerRegistry
+                .getDemanglerRegistry().getMangler(inputTalbeSpecification);
 
-		demangler = null;
-		for (IDemangler mangler : matchingManglers) {
-			if (manglerClassName.equals(mangler.getClass().getName())) {
-				demangler = mangler;
-				break;
-			}
-		}
+        demangler = null;
+        for (IDemangler mangler : matchingManglers) {
+            if (manglerClassName.equals(mangler.getClass().getName())) {
+                demangler = mangler;
+                break;
+            }
+        }
 
-		if (demangler == null) {
-			throw new InvalidSettingsException(
-					"Could not find an implementation for the previously selected mangler: "
-							+ manglerClassName);
-		}
-	}
+        if (demangler == null) {
+            throw new InvalidSettingsException(
+                    "Could not find an implementation for the previously selected mangler: "
+                            + manglerClassName);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		File file = FileStashProperties.readLocation(internDir);
-		if (file != null) {
-			this.fileStash = FileStashFactory.createPersistent(file);
-		} else {
-			// leave temporary file stash
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        File file = FileStashProperties.readLocation(internDir);
+        if (file != null) {
+            fileStash = FileStashFactory.createPersistent(file);
+        } // else leave temporary file stash
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		FileStashProperties.saveLocation(this.fileStash, internDir);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        FileStashProperties.saveLocation(fileStash, internDir);
+    }
 
 }
