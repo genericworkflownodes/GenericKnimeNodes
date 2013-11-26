@@ -31,26 +31,26 @@ import java.io.File;
  */
 public interface IPayloadDirectory {
 
-	/**
-	 * Returns the file system location of the payload directory.
-	 * 
-	 * @return
-	 */
-	public File getPath();
+    /**
+     * Returns the file system location of the payload directory.
+     * 
+     * @return
+     */
+    File getPath();
 
-	/**
-	 * Returns the directory where the executables are located. In most cases it
-	 * will be getPath()/bin.
-	 * 
-	 * @return
-	 */
-	public File getExecutableDirectory();
+    /**
+     * Returns the directory where the executables are located. In most cases it
+     * will be getPath()/bin.
+     * 
+     * @return
+     */
+    File getExecutableDirectory();
 
-	/**
-	 * Returns true if no payload is contained in the referenced directories.
-	 * 
-	 * @return $true$ if no payload exists, $false$ otherwise.
-	 */
-	public boolean isEmpty();
+    /**
+     * Returns true if no payload is contained in the referenced directories.
+     * 
+     * @return $true$ if no payload exists, $false$ otherwise.
+     */
+    boolean isEmpty();
 
 }

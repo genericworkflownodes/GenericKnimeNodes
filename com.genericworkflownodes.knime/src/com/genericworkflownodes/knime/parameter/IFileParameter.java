@@ -31,19 +31,19 @@ import com.genericworkflownodes.knime.port.Port;
  */
 public interface IFileParameter {
 
-	/**
-	 * Sets the port associated to this parameter.
-	 * 
-	 * @param port
-	 *            The new port.
-	 */
-	public void setPort(final Port port);
+    /**
+     * Sets the port associated to this parameter.
+     * 
+     * @param port
+     *            The new port.
+     */
+    void setPort(final Port port);
 
-	/**
-	 * Returns the port associated to this parameter.
-	 * 
-	 * @return The port.
-	 */
-	public Port getPort();
+    /**
+     * Returns the port associated to this parameter.
+     * 
+     * @return The port.
+     */
+    Port getPort();
 
 }
