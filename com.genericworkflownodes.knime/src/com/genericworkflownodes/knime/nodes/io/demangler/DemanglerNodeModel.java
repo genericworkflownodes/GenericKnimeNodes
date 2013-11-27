@@ -53,175 +53,175 @@ import com.genericworkflownodes.knime.mime.demangler.IDemangler;
  */
 public class DemanglerNodeModel extends NodeModel {
 
-	/**
-	 * Settings field where the currently selected demangler is stored.
-	 */
-	static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
+    /**
+     * Settings field where the currently selected demangler is stored.
+     */
+    static final String SELECTED_DEMANGLER_SETTINGNAME = "selected_demangler";
 
-	/**
-	 * Settings field where the currently configured {@link MIMEType} is stored.
-	 */
-	static final String CONFIGURED_FILE_EXTENSION_SETTINGNAME = "configured_mime_type";
+    /**
+     * Settings field where the currently configured {@link MIMEType} is stored.
+     */
+    static final String CONFIGURED_FILE_EXTENSION_SETTINGNAME = "configured_mime_type";
 
-	/**
-	 * The selected {@link IDemangler}.
-	 */
-	private IDemangler demangler;
+    /**
+     * The selected {@link IDemangler}.
+     */
+    private IDemangler demangler;
 
-	/**
-	 * The currently configured {@link MIMEType}.
-	 */
-	private String fileExtension;
+    /**
+     * The currently configured {@link MIMEType}.
+     */
+    private String fileExtension;
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected DemanglerNodeModel() {
-		super(new PortType[] { new PortType(URIPortObject.class) },
-				new PortType[] { new PortType(BufferedDataTable.class) });
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected DemanglerNodeModel() {
+        super(new PortType[] { new PortType(URIPortObject.class) },
+                new PortType[] { new PortType(BufferedDataTable.class) });
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		demangler = null;
-		fileExtension = null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        demangler = null;
+        fileExtension = null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		settings.addString(CONFIGURED_FILE_EXTENSION_SETTINGNAME, fileExtension);
-		settings.addStringArray(SELECTED_DEMANGLER_SETTINGNAME, demangler
-				.getClass().getName());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        settings.addString(CONFIGURED_FILE_EXTENSION_SETTINGNAME, fileExtension);
+        settings.addStringArray(SELECTED_DEMANGLER_SETTINGNAME, demangler
+                .getClass().getName());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		String demanglerClassName = settings.getString(
-				SELECTED_DEMANGLER_SETTINGNAME, "");
-		String configuredMIMEExtension = settings
-				.getString(CONFIGURED_FILE_EXTENSION_SETTINGNAME);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        String demanglerClassName = settings.getString(
+                SELECTED_DEMANGLER_SETTINGNAME, "");
+        fileExtension = settings
+                .getString(CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
-		List<IDemangler> availableDemangler = DemanglerRegistry
-				.getDemanglerRegistry().getDemangler(fileExtension);
+        List<IDemangler> availableDemangler = DemanglerRegistry
+                .getDemanglerRegistry().getDemangler(fileExtension);
 
-		demangler = null;
-		if (!"".equals(demanglerClassName)) {
-			for (IDemangler de : availableDemangler) {
-				if (demanglerClassName.equals(de.getClass().getName())) {
-					demangler = de;
-					break;
-				}
-			}
-		} else if (availableDemangler.size() > 0) {
-			demangler = availableDemangler.get(0);
-		}
+        demangler = null;
+        if (!"".equals(demanglerClassName)) {
+            for (IDemangler de : availableDemangler) {
+                if (demanglerClassName.equals(de.getClass().getName())) {
+                    demangler = de;
+                    break;
+                }
+            }
+        } else if (availableDemangler.size() > 0) {
+            demangler = availableDemangler.get(0);
+        }
 
-		if (demangler == null) {
-			throw new InvalidSettingsException(
-					"Could not find an implementation for the previously selected demangler: "
-							+ demanglerClassName);
-		}
-	}
+        if (demangler == null) {
+            throw new InvalidSettingsException(
+                    "Could not find an implementation for the previously selected demangler: "
+                            + demanglerClassName);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	@Override
-	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
-			throw new InvalidSettingsException(
-					"No URIPortObjectSpec compatible port object at port 0");
-		}
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
+            throw new InvalidSettingsException(
+                    "No URIPortObjectSpec compatible port object at port 0");
+        }
 
-		URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[0];
-		fileExtension = spec.getFileExtensions().get(0);
+        URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[0];
+        fileExtension = spec.getFileExtensions().get(0);
 
-		// try to find a demangler for the data type ...
+        // try to find a demangler for the data type ...
 
-		List<IDemangler> availableDemanglers = DemanglerRegistry
-				.getDemanglerRegistry().getDemangler(fileExtension);
+        List<IDemangler> availableDemanglers = DemanglerRegistry
+                .getDemanglerRegistry().getDemangler(fileExtension);
 
-		if (availableDemanglers == null || availableDemanglers.size() == 0) {
-			throw new InvalidSettingsException(
-					"No IDemangler found for "
-							+ fileExtension.toString()
-							+ ". Please register before transforming the a file with this MIMEType to a KNIME table.");
-		}
+        if (availableDemanglers == null || availableDemanglers.size() == 0) {
+            throw new InvalidSettingsException(
+                    "No IDemangler found for "
+                            + fileExtension.toString()
+                            + ". Please register before transforming the a file with this MIMEType to a KNIME table.");
+        }
 
-		if (demangler == null) {
-			demangler = availableDemanglers.get(0);
-		}
+        if (demangler == null) {
+            demangler = availableDemanglers.get(0);
+        }
 
-		return new DataTableSpec[] { getDataTableSpec() };
-	}
+        return new DataTableSpec[] { getDataTableSpec() };
+    }
 
-	/**
-	 * Retrieves the {@link DataTableSpec} from the selected {@link IDemangler}.
-	 * 
-	 * @return A configured {@link DataTableSpec}.
-	 * @throws InvalidSettingsException
-	 *             If the requested configuration can not be created.
-	 */
-	private DataTableSpec getDataTableSpec() throws InvalidSettingsException {
-		return demangler.getTableSpec();
-	}
+    /**
+     * Retrieves the {@link DataTableSpec} from the selected {@link IDemangler}.
+     * 
+     * @return A configured {@link DataTableSpec}.
+     * @throws InvalidSettingsException
+     *             If the requested configuration can not be created.
+     */
+    private DataTableSpec getDataTableSpec() throws InvalidSettingsException {
+        return demangler.getTableSpec();
+    }
 
-	@Override
-	protected BufferedDataTable[] execute(final PortObject[] inObjects,
-			final ExecutionContext exec) throws Exception {
-		BufferedDataContainer container = exec.createDataContainer(demangler
-				.getTableSpec());
+    @Override
+    protected BufferedDataTable[] execute(final PortObject[] inObjects,
+            final ExecutionContext exec) throws Exception {
+        BufferedDataContainer container = exec.createDataContainer(demangler
+                .getTableSpec());
 
-		URIPortObject obj = (URIPortObject) inObjects[0];
-		List<URIContent> uris = obj.getURIContents();
-		if (uris.size() == 0) {
-			throw new Exception(
-					"No URI was supplied in MIMEURIPortObject at input port 0");
-		} else if (uris.size() != 1) {
-			throw new Exception(String.format(
-					"We can only demangle a single file but got %d.",
-					uris.size()));
-		}
+        URIPortObject obj = (URIPortObject) inObjects[0];
+        List<URIContent> uris = obj.getURIContents();
+        if (uris.size() == 0) {
+            throw new Exception(
+                    "No URI was supplied in MIMEURIPortObject at input port 0");
+        } else if (uris.size() != 1) {
+            throw new Exception(String.format(
+                    "We can only demangle a single file but got %d.",
+                    uris.size()));
+        }
 
-		URI relURI = uris.get(0).getURI();
+        URI relURI = uris.get(0).getURI();
 
-		Iterator<DataRow> iter = demangler.demangle(relURI);
-		while (iter.hasNext()) {
-			container.addRowToTable(iter.next());
-		}
-		container.close();
-		BufferedDataTable out = container.getTable();
+        Iterator<DataRow> iter = demangler.demangle(relURI);
+        while (iter.hasNext()) {
+            container.addRowToTable(iter.next());
+        }
+        container.close();
+        BufferedDataTable out = container.getTable();
 
-		return new BufferedDataTable[] { out };
-	}
+        return new BufferedDataTable[] { out };
+    }
 
-	@Override
-	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-		// TODO Auto-generated method stub
+    @Override
+    protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
+            throws IOException, CanceledExecutionException {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-		// TODO Auto-generated method stub
+    @Override
+    protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
+            throws IOException, CanceledExecutionException {
+        // TODO Auto-generated method stub
 
-	}
+    }
 }

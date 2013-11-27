@@ -30,234 +30,234 @@ import java.io.Serializable;
  *            The type of the stored parameter.
  */
 public abstract class Parameter<T> implements Serializable {
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = 2145565007955019813L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 2145565007955019813L;
 
-	/**
-	 * The unique key identifying the parameter.
-	 */
-	private String key;
+    /**
+     * The unique key identifying the parameter.
+     */
+    private String m_key;
 
-	/**
-	 * The actual value of the parameter.
-	 */
-	private T value;
+    /**
+     * The actual value of the parameter.
+     */
+    private T m_value;
 
-	/**
-	 * A description of the parameter.
-	 */
-	private String description;
+    /**
+     * A description of the parameter.
+     */
+    private String m_description;
 
-	/**
-	 * The section used to categorize the parameter.
-	 */
-	private String section;
+    /**
+     * The section used to categorize the parameter.
+     */
+    private String m_section;
 
-	/**
-	 * Flag indicating if the parameter is optional or not.
-	 */
-	private boolean isOptional;
+    /**
+     * Flag indicating if the parameter is optional or not.
+     */
+    private boolean m_isOptional;
 
-	/**
-	 * Flag indicating if the parameter should be hidden from the "average"
-	 * user.
-	 */
-	private boolean advanced;
+    /**
+     * Flag indicating if the parameter should be hidden from the "average"
+     * user.
+     */
+    private boolean m_isAdvanced;
 
-	/**
-	 * Constructor with unique key of parameter and generic value to store.
-	 * 
-	 * @param key
-	 *            the key of the parameter
-	 * @param value
-	 *            the generic value of the parameter
-	 */
-	public Parameter(final String key, final T value) {
-		this.key = key;
-		this.value = value;
+    /**
+     * Constructor with unique m_key of parameter and generic m_value to store.
+     * 
+     * @param m_key
+     *            the key of the parameter
+     * @param m_value
+     *            the generic value of the parameter
+     */
+    public Parameter(final String key, final T value) {
+        m_key = key;
+        m_value = value;
 
-		this.setDescription("");
-		this.setSection("default");
-		this.setIsOptional(true);
-		this.setAdvanced(false);
-	}
+        setDescription("");
+        setSection("default");
+        setIsOptional(true);
+        setAdvanced(false);
+    }
 
-	/**
-	 * Returns the associated unique key (name) of the parameter.
-	 * 
-	 * @return key
-	 */
-	public String getKey() {
-		return key;
-	}
+    /**
+     * Returns the associated unique key (name) of the parameter.
+     * 
+     * @return key
+     */
+    public String getKey() {
+        return m_key;
+    }
 
-	/**
-	 * Sets the unique key (name) of the parameter.
-	 * 
-	 * @param key
-	 *            the key of the parameter
-	 */
-	public void setKey(final String key) {
-		this.key = key;
-	}
+    /**
+     * Sets the unique key (name) of the parameter.
+     * 
+     * @param key
+     *            the key of the parameter
+     */
+    public void setKey(final String key) {
+        m_key = key;
+    }
 
-	/**
-	 * Returns the generic value stored by this object.
-	 * 
-	 * @return the value of the parameter.
-	 */
-	public T getValue() {
-		return value;
-	}
+    /**
+     * Returns the generic value stored by this object.
+     * 
+     * @return the value of the parameter.
+     */
+    public T getValue() {
+        return m_value;
+    }
 
-	/**
-	 * Sets the value stored by this object.
-	 * 
-	 * @param value
-	 *            the value to store
-	 */
-	public void setValue(final T value) {
-		this.value = value;
-	}
+    /**
+     * Sets the value stored by this object.
+     * 
+     * @param value
+     *            the m_value to store
+     */
+    public void setValue(final T value) {
+        m_value = value;
+    }
 
-	/**
-	 * Returns the description for this parameter object.
-	 * 
-	 * @return the description text of the parameter.
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /**
+     * Returns the description for this parameter object.
+     * 
+     * @return the description text of the parameter.
+     */
+    public String getDescription() {
+        return m_description;
+    }
 
-	/**
-	 * Sets the description text of this parameter object.
-	 * 
-	 * @param description
-	 *            the description text of the parameter.
-	 */
-	public void setDescription(final String description) {
-		this.description = description;
-	}
+    /**
+     * Sets the description text of this parameter object.
+     * 
+     * @param description
+     *            the description text of the parameter.
+     */
+    public void setDescription(final String description) {
+        m_description = description;
+    }
 
-	/**
-	 * Returns the section (category) for the parameter.
-	 * 
-	 * @return section the section of the parameter
-	 */
-	public String getSection() {
-		return section;
-	}
+    /**
+     * Returns the m_section (category) for the parameter.
+     * 
+     * @return m_section the m_section of the parameter
+     */
+    public String getSection() {
+        return m_section;
+    }
 
-	/**
-	 * Sets the section (category) for the parameter.
-	 * 
-	 * @param section
-	 *            the section of the parameter.
-	 */
-	public void setSection(final String section) {
-		this.section = section;
-	}
+    /**
+     * Sets the section (category) for the parameter.
+     * 
+     * @param section
+     *            the section of the parameter.
+     */
+    public void setSection(final String section) {
+        m_section = section;
+    }
 
-	/**
-	 * Returns if this parameter has <code>null</code> as value.
-	 * 
-	 * @return <code>true</code> if the parameter is <code>null</code>,
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isNull() {
-		if (value == null) {
-			return true;
-		}
-		return false;
-	}
+    /**
+     * Returns if this parameter has <code>null</code> as m_value.
+     * 
+     * @return <code>true</code> if the parameter is <code>null</code>,
+     *         <code>false</code> otherwise.
+     */
+    public boolean isNull() {
+        if (m_value == null) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * Returns whether the parameter is deemed optional.
-	 * 
-	 * @return True if the parameter is optional, false otherwise.
-	 */
-	public boolean isOptional() {
-		return isOptional;
-	}
+    /**
+     * Returns whether the parameter is deemed optional.
+     * 
+     * @return True if the parameter is optional, false otherwise.
+     */
+    public boolean isOptional() {
+        return m_isOptional;
+    }
 
-	/**
-	 * Sets whether the parameter is deemed optional.
-	 * 
-	 * @param isOptional
-	 *            flag whether parameter is optional.
-	 */
-	public void setIsOptional(final boolean isOptional) {
-		this.isOptional = isOptional;
-	}
+    /**
+     * Sets whether the parameter is deemed optional.
+     * 
+     * @param m_isOptional
+     *            flag whether parameter is optional.
+     */
+    public void setIsOptional(final boolean isOptional) {
+        m_isOptional = isOptional;
+    }
 
-	/**
-	 * Returns a textual information about the data type stored in this object.
-	 * 
-	 * @return mnemonic of parameter
-	 */
-	public abstract String getMnemonic();
+    /**
+     * Returns a textual information about the data type stored in this object.
+     * 
+     * @return mnemonic of parameter
+     */
+    public abstract String getMnemonic();
 
-	/**
-	 * Extracts data stored in the supplied string (previously generated by
-	 * {@link Parameter#getStringRep()}) representation and set the value
-	 * accordingly.
-	 * 
-	 * @param s
-	 *            special string representation of parameter.
-	 * @throws InvalidParameterValueException
-	 *             If the given string does not contain a valid value for the
-	 *             parameter.
-	 */
-	public abstract void fillFromString(String s)
-			throws InvalidParameterValueException;
+    /**
+     * Extracts data stored in the supplied string (previously generated by
+     * {@link Parameter#getStringRep()}) representation and set the m_value
+     * accordingly.
+     * 
+     * @param s
+     *            special string representation of parameter.
+     * @throws InvalidParameterValueException
+     *             If the given string does not contain a valid m_value for the
+     *             parameter.
+     */
+    public abstract void fillFromString(String s)
+            throws InvalidParameterValueException;
 
-	/**
-	 * Returns a special string representation which can be transferred through
-	 * string channels and reconstructed later on using
-	 * {@link Parameter#fillFromString()}.
-	 * 
-	 * @return special string representation of parameter
-	 */
-	public String getStringRep() {
-		return this.toString();
-	}
+    /**
+     * Returns a special string representation which can be transferred through
+     * string channels and reconstructed later on using
+     * {@link Parameter#fillFromString()}.
+     * 
+     * @return special string representation of parameter
+     */
+    public String getStringRep() {
+        return toString();
+    }
 
-	/**
-	 * Return whether the parameter is advanced (only for expert users) or not.
-	 * 
-	 * @return True if the parameter should only be shown to expert users, false
-	 *         otherwise.
-	 */
-	public boolean isAdvanced() {
-		return advanced;
-	}
+    /**
+     * Return whether the parameter is advanced (only for expert users) or not.
+     * 
+     * @return True if the parameter should only be shown to expert users, false
+     *         otherwise.
+     */
+    public boolean isAdvanced() {
+        return m_isAdvanced;
+    }
 
-	/**
-	 * Set whether the parameter is advanced (only for expert users) or not.
-	 * 
-	 * @param newAdvanced
-	 *            New advanced flag for the parameter.
-	 */
-	public void setAdvanced(final boolean newAdvanced) {
-		this.advanced = newAdvanced;
-	}
+    /**
+     * Set whether the parameter is advanced (only for expert users) or not.
+     * 
+     * @param newAdvanced
+     *            New isAdvanced flag for the parameter.
+     */
+    public void setAdvanced(final boolean newAdvanced) {
+        m_isAdvanced = newAdvanced;
+    }
 
-	/**
-	 * Checks whether the supplied generic value is compatible with the data
-	 * type of the parameter.
-	 * 
-	 * @param val
-	 *            value to validate.
-	 * 
-	 * @return True if the supplied value is valid, false otherwise.
-	 */
-	public abstract boolean validate(T val);
+    /**
+     * Checks whether the supplied generic value is compatible with the data
+     * type of the parameter.
+     * 
+     * @param val
+     *            value to validate.
+     * 
+     * @return True if the supplied value is valid, false otherwise.
+     */
+    public abstract boolean validate(T val);
 
-	/**
-	 * Separator token.
-	 */
-	public static String SEPARATOR_TOKEN = "@@@__@@@";
+    /**
+     * Separator token.
+     */
+    public static String SEPARATOR_TOKEN = "@@@__@@@";
 
 }

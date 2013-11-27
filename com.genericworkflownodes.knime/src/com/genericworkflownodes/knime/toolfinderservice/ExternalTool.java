@@ -25,55 +25,87 @@ package com.genericworkflownodes.knime.toolfinderservice;
  * @author aiche
  */
 public final class ExternalTool {
-	private String toolName;
-	private String pluginName;
-	private String executableName;
 
-	public ExternalTool(String pluginName, String toolName,
-			String executableName) {
-		this.pluginName = pluginName;
-		this.toolName = toolName;
-		this.executableName = executableName;
-	}
+    /**
+     * The name of the external tool.
+     */
+    private String m_toolName;
 
-	public String getToolName() {
-		return toolName;
-	}
+    /**
+     * The name of the plugin containing this tool.
+     */
+    private String m_pluginName;
 
-	public String getPluginName() {
-		return pluginName;
-	}
+    /**
+     * The expected name of the executable file of the tool.
+     */
+    private String m_executableName;
 
-	public String getExecutableName() {
-		return executableName;
-	}
+    public ExternalTool(String pluginName, String toolName,
+            String executableName) {
+        m_pluginName = pluginName;
+        m_toolName = toolName;
+        m_executableName = executableName;
+    }
 
-	public String getKey() {
-		return String.format("%s_%s", pluginName, toolName);
-	}
+    /**
+     * Get the tool name.
+     * 
+     * @return The name of the tool.
+     */
+    public String getToolName() {
+        return m_toolName;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj == null || !(obj instanceof ExternalTool)) {
-			return false;
-		}
-		ExternalTool eTool = (ExternalTool) obj;
-		return (pluginName.equals(eTool.pluginName)
-				&& toolName.equals(eTool.toolName) && executableName
-					.equals(eTool.executableName));
-	}
+    /**
+     * Get the plugin name.
+     * 
+     * @return The name of the plugin.
+     */
+    public String getPluginName() {
+        return m_pluginName;
+    }
 
-	@Override
-	public int hashCode() {
-		return pluginName.hashCode() ^ toolName.hashCode()
-				^ executableName.hashCode();
-	}
+    /**
+     * Get the executable name.
+     * 
+     * @return The name of the executable.
+     */
+    public String getExecutableName() {
+        return m_executableName;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("%s_%s", pluginName, toolName);
-	}
+    /**
+     * Get the key, which represents the tool (<pluginname>_<toolname>).
+     * 
+     * @return The key.
+     */
+    public String getKey() {
+        return String.format("%s_%s", m_pluginName, m_toolName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || !(obj instanceof ExternalTool)) {
+            return false;
+        }
+        ExternalTool eTool = (ExternalTool) obj;
+        return (m_pluginName.equals(eTool.m_pluginName)
+                && m_toolName.equals(eTool.m_toolName) && m_executableName
+                    .equals(eTool.m_executableName));
+    }
+
+    @Override
+    public int hashCode() {
+        return m_pluginName.hashCode() ^ m_toolName.hashCode()
+                ^ m_executableName.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s_%s", m_pluginName, m_toolName);
+    }
 }

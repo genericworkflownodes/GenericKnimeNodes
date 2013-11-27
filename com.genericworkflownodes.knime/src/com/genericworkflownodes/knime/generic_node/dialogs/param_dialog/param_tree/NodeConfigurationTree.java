@@ -36,150 +36,150 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  */
 public class NodeConfigurationTree {
 
-	/**
-	 * The wrapped configuration.
-	 */
-	private INodeConfiguration config;
+    /**
+     * The wrapped configuration.
+     */
+    private INodeConfiguration config;
 
-	/**
-	 * The root node of the parameter tree.
-	 */
-	private ParameterNode root;
+    /**
+     * The root node of the parameter tree.
+     */
+    private ParameterNode root;
 
-	/**
-	 * Flag to indicate if advanced parameters should be shown or not.
-	 */
-	private boolean showAdvanced;
+    /**
+     * Flag to indicate if advanced parameters should be shown or not.
+     */
+    private boolean showAdvanced;
 
-	/**
-	 * C'tor.
-	 * 
-	 * @param config
-	 *            The {@link INodeConfiguration} to wrap.
-	 */
-	public NodeConfigurationTree(INodeConfiguration config, boolean showAdvanced) {
-		this.config = config;
-		this.showAdvanced = showAdvanced;
-		// initialize the root node
-		root = new ParameterNode(null, null, "root", "");
-		// create param tree below the root node
-		update();
-	}
+    /**
+     * C'tor.
+     * 
+     * @param config
+     *            The {@link INodeConfiguration} to wrap.
+     */
+    public NodeConfigurationTree(INodeConfiguration config, boolean showAdvanced) {
+        this.config = config;
+        this.showAdvanced = showAdvanced;
+        // initialize the root node
+        root = new ParameterNode(null, null, "root", "");
+        // create param tree below the root node
+        update();
+    }
 
-	/**
-	 * Sets whether or not the advanced parameter should be shown or not.
-	 * 
-	 * @param showAdvanced
-	 *            Flag indicating if the advanced parameter should be shown or
-	 *            not.
-	 */
-	public void setShowAdvanced(boolean showAdvanced) {
-		this.showAdvanced = showAdvanced;
-	}
+    /**
+     * Sets whether or not the advanced parameter should be shown or not.
+     * 
+     * @param showAdvanced
+     *            Flag indicating if the advanced parameter should be shown or
+     *            not.
+     */
+    public void setShowAdvanced(boolean showAdvanced) {
+        this.showAdvanced = showAdvanced;
+    }
 
-	/**
-	 * Returns the root of the Parameter tree.
-	 * 
-	 * @return The root.
-	 */
-	public ParameterNode getRoot() {
-		return root;
-	}
+    /**
+     * Returns the root of the Parameter tree.
+     * 
+     * @return The root.
+     */
+    public ParameterNode getRoot() {
+        return root;
+    }
 
-	/**
-	 * Constructs a list of prefixes from a given strin.
-	 * 
-	 * @param key
-	 *            The string to process.
-	 * @return
-	 */
-	private static List<String> getPrefixes(String key) {
-		List<String> ret = new ArrayList<String>();
-		String[] toks = key.split("\\.");
-		StringBuilder pref = new StringBuilder("");
-		int currentToken = 0;
-		for (String tok : toks) {
-			// skip the "1" node in OpenMS/CADDSuite
-			if (currentToken == 1 && "1".equals(tok))
-				continue;
-			pref.append(tok);
-			ret.add(pref.toString());
-			pref.append(".");
-			++currentToken;
-		}
-		return ret;
-	}
+    /**
+     * Constructs a list of prefixes from a given strin.
+     * 
+     * @param key
+     *            The string to process.
+     * @return
+     */
+    private static List<String> getPrefixes(String key) {
+        List<String> ret = new ArrayList<String>();
+        String[] toks = key.split("\\.");
+        StringBuilder pref = new StringBuilder("");
+        int currentToken = 0;
+        for (String tok : toks) {
+            // skip the "1" node in OpenMS/CADDSuite
+            if (currentToken == 1 && "1".equals(tok))
+                continue;
+            pref.append(tok);
+            ret.add(pref.toString());
+            pref.append(".");
+            ++currentToken;
+        }
+        return ret;
+    }
 
-	/**
-	 * Given a "." separated string the method will returns the last part
-	 * separated by ".". E.g., foo.bar => bar.
-	 * 
-	 * @param s
-	 *            The string.
-	 * @return The last part separated by a ".".
-	 */
-	public static String getSuffix(String s) {
-		String[] toks = s.split("\\.");
-		return toks[toks.length - 1];
-	}
+    /**
+     * Given a "." separated string the method will returns the last part
+     * separated by ".". E.g., foo.bar => bar.
+     * 
+     * @param s
+     *            The string.
+     * @return The last part separated by a ".".
+     */
+    public static String getSuffix(String s) {
+        String[] toks = s.split("\\.");
+        return toks[toks.length - 1];
+    }
 
-	/**
-	 * Given a parameter key the method extracts the section of the key.
-	 * 
-	 * @param key
-	 *            The parameter key from which the section should be extracted.
-	 * @return The section.
-	 */
-	private String getSection(String key) {
-		return key.substring(0, key.lastIndexOf('.'));
-	}
+    /**
+     * Given a parameter key the method extracts the section of the key.
+     * 
+     * @param key
+     *            The parameter key from which the section should be extracted.
+     * @return The section.
+     */
+    private String getSection(String key) {
+        return key.substring(0, key.lastIndexOf('.'));
+    }
 
-	/**
-	 * Creates the parameter tree starting from the root.
-	 */
-	public void update() {
-		Map<String, ParameterNode> key2node = new HashMap<String, ParameterNode>();
+    /**
+     * Creates the parameter tree starting from the root.
+     */
+    public void update() {
+        Map<String, ParameterNode> key2node = new HashMap<String, ParameterNode>();
 
-		// reset the root node for update
-		root.clear();
+        // reset the root node for update
+        root.clear();
 
-		for (String key : config.getParameterKeys()) {
-			Parameter<?> p = config.getParameter(key);
+        for (String key : config.getParameterKeys()) {
+            Parameter<?> p = config.getParameter(key);
 
-			if (p.isAdvanced() && !showAdvanced)
-				continue;
+            if (p.isAdvanced() && !showAdvanced)
+                continue;
 
-			// we do not show file parameters in the gui
-			if (p instanceof IFileParameter)
-				continue;
+            // we do not show file parameters in the gui
+            if (p instanceof IFileParameter)
+                continue;
 
-			List<String> prefixes = getPrefixes(key);
+            List<String> prefixes = getPrefixes(key);
 
-			// OpenMS/CADDSuite workaround for leading/second '1' NODE
-			if (prefixes.size() > 0 && prefixes.get(0).equals("1")) {
-				prefixes.remove(0);
-			}
+            // OpenMS/CADDSuite workaround for leading/second '1' NODE
+            if (prefixes.size() > 0 && prefixes.get(0).equals("1")) {
+                prefixes.remove(0);
+            }
 
-			ParameterNode last = root;
+            ParameterNode last = root;
 
-			for (int i = 0; i < prefixes.size() - 1; i++) {
-				String prefix = prefixes.get(i);
+            for (int i = 0; i < prefixes.size() - 1; i++) {
+                String prefix = prefixes.get(i);
 
-				if (!key2node.containsKey(prefix)) {
-					ParameterNode nn = new ParameterNode(last, null,
-							getSuffix(prefix),
-							config.getSectionDescription(getSection(key)));
-					last.addChild(nn);
-					last = nn;
-					key2node.put(prefix, last);
-				} else {
-					last = key2node.get(prefix);
-				}
-			}
+                if (!key2node.containsKey(prefix)) {
+                    ParameterNode nn = new ParameterNode(last, null,
+                            getSuffix(prefix),
+                            config.getSectionDescription(getSection(key)));
+                    last.addChild(nn);
+                    last = nn;
+                    key2node.put(prefix, last);
+                } else {
+                    last = key2node.get(prefix);
+                }
+            }
 
-			ParameterNode n = new ParameterNode(last, p, p.getKey(),
-					p.getDescription());
-			last.addChild(n);
-		}
-	}
+            ParameterNode n = new ParameterNode(last, p, p.getKey(),
+                    p.getDescription());
+            last.addChild(n);
+        }
+    }
 }

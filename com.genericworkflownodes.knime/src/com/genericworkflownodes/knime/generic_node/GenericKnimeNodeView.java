@@ -35,81 +35,71 @@ import org.knime.core.node.NodeView;
  */
 public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
 
-	/**
-	 * Creates a new view.
-	 * 
-	 * @param nodeModel
-	 *            The model (class: {@link GenericKnimeNodeModel})
-	 */
-	protected GenericKnimeNodeView(final GenericKnimeNodeModel nodeModel) {
-		super(nodeModel);
+    /**
+     * Creates a new view.
+     * 
+     * @param nodeModel
+     *            The model (class: {@link GenericKnimeNodeModel})
+     */
+    protected GenericKnimeNodeView(final GenericKnimeNodeModel nodeModel) {
+        super(nodeModel);
 
-		JTabbedPane tabs = new JTabbedPane();
+        JTabbedPane tabs = new JTabbedPane();
 
-		String stdout = "", stderr = "";
+        String stdout = "", stderr = "";
 
-		if (nodeModel.m_executor != null) {
-			stdout = nodeModel.m_executor.getToolOutput() != null ? nodeModel.m_executor
-					.getToolOutput() : "";
-			stderr = nodeModel.m_executor.getToolErrorOutput() != null ? nodeModel.m_executor
-					.getToolErrorOutput() : "";
-		}
+        if (nodeModel.m_executor != null) {
+            stdout = nodeModel.m_executor.getToolOutput() != null ? nodeModel.m_executor
+                    .getToolOutput() : "";
+            stderr = nodeModel.m_executor.getToolErrorOutput() != null ? nodeModel.m_executor
+                    .getToolErrorOutput() : "";
+        }
 
-		tabs.add("stdout", createScrollableOutputArea(stdout));
-		tabs.add("stderr", createScrollableOutputArea(stderr));
+        tabs.add("stdout", createScrollableOutputArea(stdout));
+        tabs.add("stderr", createScrollableOutputArea(stderr));
 
-		// we generally prefer stderr (if available), since it should be more
-		// important
-		if (nodeModel.m_executor.getToolErrorOutput().length() > 0) {
-			tabs.setSelectedIndex(1);
-		}
+        // we generally prefer stderr (if available), since it should be more
+        // important
+        if (nodeModel.m_executor != null
+                && nodeModel.m_executor.getToolErrorOutput().length() > 0) {
+            tabs.setSelectedIndex(1);
+        }
 
-		setComponent(tabs);
-	}
+        setComponent(tabs);
+    }
 
-	private JScrollPane createScrollableOutputArea(final String content) {
-		JTextArea text = new JTextArea(content, 40, 80);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		text.setEditable(false);
-		if (content.length() == 0) {
-			text.setEnabled(false);
-		}
-		JScrollPane scrollpane = new JScrollPane(text);
-		return scrollpane;
-	}
+    private JScrollPane createScrollableOutputArea(final String content) {
+        JTextArea text = new JTextArea(content, 40, 80);
+        text.setFont(new Font("Monospaced", Font.BOLD, 12));
+        text.setEditable(false);
+        if (content.length() == 0) {
+            text.setEnabled(false);
+        }
+        JScrollPane scrollpane = new JScrollPane(text);
+        return scrollpane;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void modelChanged() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void modelChanged() {
+        GenericKnimeNodeModel nodeModel = getNodeModel();
+        assert nodeModel != null;
+    }
 
-		// TODO retrieve the new model from your nodemodel and
-		// update the view.
-		GenericKnimeNodeModel nodeModel = getNodeModel();
-		assert nodeModel != null;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onClose() {
+    }
 
-		// be aware of a possibly not executed nodeModel! The data you retrieve
-		// from your nodemodel could be null, emtpy, or invalid in any kind.
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onClose() {
-
-		// TODO things to do when closing the view
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onOpen() {
-
-		// TODO things to do when opening the view
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onOpen() {
+    }
 
 }

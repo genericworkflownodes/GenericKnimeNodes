@@ -56,174 +56,172 @@ import com.genericworkflownodes.util.IFileStash;
  */
 public class Image2FilePortNodeModel extends NodeModel {
 
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(Image2FilePortNodeModel.class);
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(Image2FilePortNodeModel.class);
 
-	/**
-	 * We assume that we always write png files. We need to check in future if
-	 * we can change this.
-	 */
-	private static final String IMAGE_FILE_EXTENSION = "png";
+    /**
+     * We assume that we always write png files. We need to check in future if
+     * we can change this.
+     */
+    private static final String IMAGE_FILE_EXTENSION = "png";
 
-	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(Image2FilePortNodeModel.class);
+    // the logger instance
+    private static final NodeLogger logger = NodeLogger
+            .getLogger(Image2FilePortNodeModel.class);
 
-	/**
-	 * Static method that provides the incoming {@link PortType}s.
-	 * 
-	 * @return The incoming {@link PortType}s of this node.
-	 */
-	private static PortType[] getIncomingPorts() {
-		return new PortType[] { ImagePortObject.TYPE };
-	}
+    /**
+     * Static method that provides the incoming {@link PortType}s.
+     * 
+     * @return The incoming {@link PortType}s of this node.
+     */
+    private static PortType[] getIncomingPorts() {
+        return new PortType[] { ImagePortObject.TYPE };
+    }
 
-	/**
-	 * Static method that provides the outgoing {@link PortType}s.
-	 * 
-	 * @return The outgoing {@link PortType}s of this node.
-	 */
-	private static PortType[] getOutgoingPorts() {
-		return new PortType[] { URIPortObject.TYPE };
-	}
+    /**
+     * Static method that provides the outgoing {@link PortType}s.
+     * 
+     * @return The outgoing {@link PortType}s of this node.
+     */
+    private static PortType[] getOutgoingPorts() {
+        return new PortType[] { URIPortObject.TYPE };
+    }
 
-	private IFileStash fileStash;
+    private IFileStash fileStash;
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected Image2FilePortNodeModel() {
-		super(getIncomingPorts(), getOutgoingPorts());
-		this.fileStash = FileStashFactory.createTemporary();
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected Image2FilePortNodeModel() {
+        super(getIncomingPorts(), getOutgoingPorts());
+        fileStash = FileStashFactory.createTemporary();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObject[] execute(final PortObject[] inObjects,
-			final ExecutionContext exec) throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] execute(final PortObject[] inObjects,
+            final ExecutionContext exec) throws Exception {
 
-		ImagePortObject imageObj = (ImagePortObject) inObjects[0];
-		DataCell imageCellDC = imageObj.toDataCell();
+        ImagePortObject imageObj = (ImagePortObject) inObjects[0];
+        DataCell imageCellDC = imageObj.toDataCell();
 
-		if (!(imageCellDC instanceof ImageValue)) {
-			throw new InvalidSettingsException("Image object does not produce"
-					+ " valid image object but " + imageCellDC == null ? null
-					: imageCellDC.getClass().getName());
-		}
+        if (!(imageCellDC instanceof ImageValue)) {
+            throw new InvalidSettingsException("Image object does not produce"
+                    + " valid image object but "
+                    + imageCellDC.getClass().getName());
+        }
 
-		ImageValue v = (ImageValue) imageCellDC;
-		ImageContent content = v.getImageContent();
+        ImageValue v = (ImageValue) imageCellDC;
+        ImageContent content = v.getImageContent();
 
-		// check if the extension matches our PNG assumption
-		checkExtension(v);
-		// write the file to stash
-		File outFile = writeImageFile(content);
+        // check if the extension matches our PNG assumption
+        checkExtension(v);
+        // write the file to stash
+        File outFile = writeImageFile(content);
 
-		List<URIContent> outUri = new ArrayList<URIContent>();
-		outUri.add(new URIContent(outFile.toURI(), IMAGE_FILE_EXTENSION));
-		URIPortObject outPort = new URIPortObject(outUri);
-		return new PortObject[] { outPort };
-	}
+        List<URIContent> outUri = new ArrayList<URIContent>();
+        outUri.add(new URIContent(outFile.toURI(), IMAGE_FILE_EXTENSION));
+        URIPortObject outPort = new URIPortObject(outUri);
+        return new PortObject[] { outPort };
+    }
 
-	private File writeImageFile(ImageContent content) throws IOException,
-			FileNotFoundException {
-		File outFile = this.fileStash.getFile(
-				Image2FilePortNodeModel.class.getSimpleName(),
-				IMAGE_FILE_EXTENSION);
-		logger.debug("Created output file " + outFile.getAbsolutePath());
+    private File writeImageFile(ImageContent content) throws IOException,
+            FileNotFoundException {
+        File outFile = fileStash.getFile(
+                Image2FilePortNodeModel.class.getSimpleName(),
+                IMAGE_FILE_EXTENSION);
+        logger.debug("Created output file " + outFile.getAbsolutePath());
 
-		final FileOutputStream out = new FileOutputStream(outFile);
-		try {
-			content.save(out);
-		} finally {
-			out.close();
-		}
-		return outFile;
-	}
+        final FileOutputStream out = new FileOutputStream(outFile);
+        try {
+            content.save(out);
+        } finally {
+            out.close();
+        }
+        return outFile;
+    }
 
-	private void checkExtension(ImageValue v) throws InvalidSettingsException {
-		final String imageExtension = v.getImageExtension();
-		if (!IMAGE_FILE_EXTENSION.equals(imageExtension)) {
-			throw new InvalidSettingsException(
-					"The Image2FilePortNode can only handle PNG images.");
-		}
-	}
+    private void checkExtension(ImageValue v) throws InvalidSettingsException {
+        final String imageExtension = v.getImageExtension();
+        if (!IMAGE_FILE_EXTENSION.equals(imageExtension)) {
+            throw new InvalidSettingsException(
+                    "The Image2FilePortNode can only handle PNG images.");
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		try {
-			this.fileStash.deleteAllFiles();
-		} catch (IOException e) {
-			LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
-					e);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        try {
+            fileStash.deleteAllFiles();
+        } catch (IOException e) {
+            LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
+                    e);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
 
-		// maybe we can check in future if we get a png file
-		// ImagePortObjectSpec imgSpec = (ImagePortObjectSpec) inSpecs[0];
+        // maybe we can check in future if we get a png file
+        // ImagePortObjectSpec imgSpec = (ImagePortObjectSpec) inSpecs[0];
 
-		URIPortObjectSpec outSpec = new URIPortObjectSpec(IMAGE_FILE_EXTENSION);
-		return new PortObjectSpec[] { outSpec };
-	}
+        URIPortObjectSpec outSpec = new URIPortObjectSpec(IMAGE_FILE_EXTENSION);
+        return new PortObjectSpec[] { outSpec };
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		File file = FileStashProperties.readLocation(internDir);
-		if (file != null) {
-			this.fileStash = FileStashFactory.createPersistent(file);
-		} else {
-			// leave temporary file stash
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        File file = FileStashProperties.readLocation(internDir);
+        if (file != null) {
+            fileStash = FileStashFactory.createPersistent(file);
+        } // else leave temporary file stash
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		FileStashProperties.saveLocation(this.fileStash, internDir);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        FileStashProperties.saveLocation(fileStash, internDir);
+    }
 
 }
