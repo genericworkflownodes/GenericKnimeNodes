@@ -89,11 +89,21 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
      */
     private final LinkedHashMap<String, ExternalToolSettings> toolSettings = new LinkedHashMap<String, ExternalToolSettings>();
 
-    private final String pluginName;
-    private Composite baseComposite;
+    /**
+     * Plugin name.
+     */
+    private final String m_pluginName;
+
+    /**
+     * The base composite holding all the content.
+     */
+    private Composite m_baseComposite;
 
     // private Table executableTable;
-    private TableViewer executableViewer;
+    /**
+     * The executable viewer.
+     */
+    private TableViewer m_executableViewer;
 
     private Button btnModify;
     private Button btnFindInPath;
@@ -114,7 +124,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
         // we do not need the apply key and do not support the restore default
         // key
         noDefaultAndApplyButton();
-        this.pluginName = pluginName;
+        m_pluginName = pluginName;
 
         createToolList();
     }
@@ -124,7 +134,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
         Map<String, List<ExternalTool>> plugin2tools = PluginPreferenceToolLocator
                 .getToolLocatorService().getToolsByPlugin();
 
-        List<ExternalTool> tools = plugin2tools.get(pluginName);
+        List<ExternalTool> tools = plugin2tools.get(m_pluginName);
 
         // sort each plugin by name
         Collections.sort(tools, new Comparator<ExternalTool>() {
@@ -150,13 +160,13 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
         ScrolledComposite sc = new ScrolledComposite(parent, SWT.V_SCROLL);
         sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        baseComposite = new Composite(sc, SWT.NONE);
+        m_baseComposite = new Composite(sc, SWT.NONE);
 
-        baseComposite.setLayout(new GridLayout(1, false));
-        baseComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+        m_baseComposite.setLayout(new GridLayout(1, false));
+        m_baseComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
                 false, 1, 1));
 
-        sc.setContent(baseComposite);
+        sc.setContent(m_baseComposite);
         sc.setExpandHorizontal(true);
         sc.setExpandVertical(true);
 
@@ -172,7 +182,8 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
     }
 
     private Composite createExecutablesComposite() {
-        Composite executablesComposite = new Composite(baseComposite, SWT.NONE);
+        Composite executablesComposite = new Composite(m_baseComposite,
+                SWT.NONE);
         executablesComposite.setLayout(new GridLayout(2, false));
         executablesComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP,
                 true, true, 1, 1));
@@ -330,16 +341,16 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
                 false, 1, 1));
 
-        executableViewer = new TableViewer(
+        m_executableViewer = new TableViewer(
                 tableComposite,
                 (SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER));
-        executableViewer
+        m_executableViewer
                 .setContentProvider(new ExternalToolSettingsContentProvider());
-        executableViewer
+        m_executableViewer
                 .setLabelProvider(new ExternalToolSettingsLabelProvider());
-        executableViewer.setInput(toolSettings);
-        Table table = executableViewer.getTable();
-        table.setToolTipText(String.format(TOOLTIP_TABLE, pluginName));
+        m_executableViewer.setInput(toolSettings);
+        Table table = m_executableViewer.getTable();
+        table.setToolTipText(String.format(TOOLTIP_TABLE, m_pluginName));
         new TableColumn(table, SWT.LEFT).setText(TABLE_HEADERS[COL_TOOLNAME]);
         new TableColumn(table, SWT.LEFT)
                 .setText(TABLE_HEADERS[COL_LOCAL_EXECUTABLE]);
@@ -348,14 +359,14 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
         table.setLinesVisible(true);
         refresh();
 
-        executableViewer.addDoubleClickListener(new IDoubleClickListener() {
+        m_executableViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 updateSelected();
             }
         });
 
-        executableViewer
+        m_executableViewer
                 .addSelectionChangedListener(new ISelectionChangedListener() {
 
                     @Override
@@ -388,12 +399,12 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
         gridData.grabExcessVerticalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
         gridData.heightHint = minHeight;
-        executableViewer.getControl().setLayoutData(gridData);
+        m_executableViewer.getControl().setLayoutData(gridData);
     }
 
     private void addTopLabel() {
 
-        Composite groupComposite = new Composite(baseComposite, SWT.NONE);
+        Composite groupComposite = new Composite(m_baseComposite, SWT.NONE);
         groupComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
         Label lblDescription = new Label(groupComposite, SWT.NONE);
@@ -430,7 +441,7 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
      * @return
      */
     private ExternalToolSettings currentSelection() {
-        TableItem[] item = executableViewer.getTable().getSelection();
+        TableItem[] item = m_executableViewer.getTable().getSelection();
 
         if (item != null && item.length > 0)
             return toolSettings.get(item[0].getText());
@@ -481,12 +492,12 @@ public abstract class BasePluginPreferencePage extends PreferencePage implements
      * Refreshs the local table.
      */
     private void refresh() {
-        executableViewer.refresh();
+        m_executableViewer.refresh();
         updateTableLayout();
     }
 
     private void updateTableLayout() {
-        Table tbl = executableViewer.getTable();
+        Table tbl = m_executableViewer.getTable();
         for (int i = 0; i < tbl.getColumnCount(); i++) {
             tbl.getColumn(i).pack();
         }

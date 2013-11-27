@@ -27,132 +27,144 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathTyp
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
- * Abstraction of all settings related to single tool.
+ * Abstraction of all settings related to single m_tool.
  * 
  * @author aiche
  */
 public class ExternalToolSettings {
 
-	private String localToolPath;
-	private boolean hasShippedBinary;
-	private IToolLocator.ToolPathType selectedToolPathType;
+    /**
+     * The path to the executable of the tool.
+     */
+    private String m_localToolPath;
 
-	/**
-	 * The tool.
-	 */
-	private final ExternalTool tool;
+    /**
+     * True if a binary of this tool was shipped with the plugin.
+     */
+    private boolean m_hasShippedBinary;
 
-	/**
-	 * Constructor initializing the settings object.
-	 * 
-	 * @param tool
-	 *            The tool.
-	 */
-	public ExternalToolSettings(ExternalTool tool) {
-		this.tool = tool;
+    /**
+     * The type of path selected (shipped, local).
+     */
+    private IToolLocator.ToolPathType m_selectedToolPathType;
 
-		localToolPath = "";
-		hasShippedBinary = false;
-		selectedToolPathType = ToolPathType.UNKNOWN;
+    /**
+     * The tool that is represented.
+     */
+    private final ExternalTool m_tool;
 
-		load();
-	}
+    /**
+     * Constructor initializing the settings object.
+     * 
+     * @param m_tool
+     *            The m_tool.
+     */
+    public ExternalToolSettings(ExternalTool tool) {
+        m_tool = tool;
 
-	/**
-	 * Loads all related settings for the tool.
-	 */
-	public void load() {
-		// we load the path from the IToolLocator
-		try {
-			selectedToolPathType = PluginPreferenceToolLocator
-					.getToolLocatorService().getConfiguredToolPathType(tool);
+        m_localToolPath = "";
+        m_hasShippedBinary = false;
+        m_selectedToolPathType = ToolPathType.UNKNOWN;
 
-			hasShippedBinary = PluginPreferenceToolLocator
-					.getToolLocatorService().hasValidToolPath(tool,
-							ToolPathType.SHIPPED);
+        load();
+    }
 
-			File lToolPath = PluginPreferenceToolLocator
-					.getToolLocatorService().getToolPath(tool,
-							IToolLocator.ToolPathType.USER_DEFINED);
-			if (lToolPath != null && lToolPath.exists())
-				localToolPath = lToolPath.getAbsolutePath();
-		} catch (Exception e) {
-			GenericNodesPlugin
-					.log("Could not load user-defined tool path for tool: "
-							+ tool);
-			GenericNodesPlugin.log(e.getMessage());
-		}
-	}
+    /**
+     * Loads all related settings for the m_tool.
+     */
+    public void load() {
+        // we load the path from the IToolLocator
+        try {
+            m_selectedToolPathType = PluginPreferenceToolLocator
+                    .getToolLocatorService().getConfiguredToolPathType(m_tool);
 
-	/**
-	 * Saves all related settings for the tool.
-	 */
-	public void save() {
-		try {
-			PluginPreferenceToolLocator.getToolLocatorService().setToolPath(
-					tool, new File(localToolPath), ToolPathType.USER_DEFINED);
-			PluginPreferenceToolLocator.getToolLocatorService()
-					.updateToolPathType(tool, selectedToolPathType);
-		} catch (Exception e) {
-			GenericNodesPlugin
-					.log("Could not load user-defined tool path for tool: "
-							+ tool);
-			GenericNodesPlugin.log(e.getMessage());
-		}
-	}
+            m_hasShippedBinary = PluginPreferenceToolLocator
+                    .getToolLocatorService().hasValidToolPath(m_tool,
+                            ToolPathType.SHIPPED);
 
-	/**
-	 * @return the localToolPath
-	 */
-	public String getLocalToolPath() {
-		return localToolPath;
-	}
+            File lToolPath = PluginPreferenceToolLocator
+                    .getToolLocatorService().getToolPath(m_tool,
+                            IToolLocator.ToolPathType.USER_DEFINED);
+            if (lToolPath != null && lToolPath.exists())
+                m_localToolPath = lToolPath.getAbsolutePath();
+        } catch (Exception e) {
+            GenericNodesPlugin
+                    .log("Could not load user-defined m_tool path for m_tool: "
+                            + m_tool);
+            GenericNodesPlugin.log(e.getMessage());
+        }
+    }
 
-	/**
-	 * @param localToolPath
-	 *            the localToolPath to set
-	 */
-	public void setLocalToolPath(String localToolPath) {
-		this.localToolPath = localToolPath;
-	}
+    /**
+     * Saves all related settings for the m_tool.
+     */
+    public void save() {
+        try {
+            PluginPreferenceToolLocator.getToolLocatorService().setToolPath(
+                    m_tool, new File(m_localToolPath),
+                    ToolPathType.USER_DEFINED);
+            PluginPreferenceToolLocator.getToolLocatorService()
+                    .updateToolPathType(m_tool, m_selectedToolPathType);
+        } catch (Exception e) {
+            GenericNodesPlugin
+                    .log("Could not load user-defined m_tool path for m_tool: "
+                            + m_tool);
+            GenericNodesPlugin.log(e.getMessage());
+        }
+    }
 
-	/**
-	 * @return the hasShippedBinary
-	 */
-	public boolean hasShippedBinary() {
-		return hasShippedBinary;
-	}
+    /**
+     * @return the m_localToolPath
+     */
+    public String getLocalToolPath() {
+        return m_localToolPath;
+    }
 
-	/**
-	 * @param hasShippedBinary
-	 *            the hasShippedBinary to set
-	 */
-	public void setHasShippedBinary(boolean hasShippedBinary) {
-		this.hasShippedBinary = hasShippedBinary;
-	}
+    /**
+     * @param m_localToolPath
+     *            the m_localToolPath to set
+     */
+    public void setLocalToolPath(String localToolPath) {
+        m_localToolPath = localToolPath;
+    }
 
-	/**
-	 * @return the selectedToolPathType
-	 */
-	public IToolLocator.ToolPathType getSelectedToolPathType() {
-		return selectedToolPathType;
-	}
+    /**
+     * @return the m_hasShippedBinary
+     */
+    public boolean hasShippedBinary() {
+        return m_hasShippedBinary;
+    }
 
-	/**
-	 * @param selectedToolPathType
-	 *            the selectedToolPathType to set
-	 */
-	public void setSelectedToolPathType(
-			IToolLocator.ToolPathType selectedToolPathType) {
-		this.selectedToolPathType = selectedToolPathType;
-	}
+    /**
+     * @param m_hasShippedBinary
+     *            the m_hasShippedBinary to set
+     */
+    public void setHasShippedBinary(boolean hasShippedBinary) {
+        m_hasShippedBinary = hasShippedBinary;
+    }
 
-	/**
-	 * Get the tool name.
-	 * 
-	 * @return The tool name.
-	 */
-	public ExternalTool getTool() {
-		return tool;
-	}
+    /**
+     * @return the m_selectedToolPathType
+     */
+    public IToolLocator.ToolPathType getSelectedToolPathType() {
+        return m_selectedToolPathType;
+    }
+
+    /**
+     * @param m_selectedToolPathType
+     *            the m_selectedToolPathType to set
+     */
+    public void setSelectedToolPathType(
+            IToolLocator.ToolPathType selectedToolPathType) {
+        m_selectedToolPathType = selectedToolPathType;
+    }
+
+    /**
+     * Get the m_tool name.
+     * 
+     * @return The m_tool name.
+     */
+    public ExternalTool getTool() {
+        return m_tool;
+    }
 }
