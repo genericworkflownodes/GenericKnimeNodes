@@ -28,17 +28,17 @@ import java.io.File;
  */
 abstract class AbstractPayloadDirectory implements IPayloadDirectory {
 
-	private static String BIN_EXT = "bin";
+    private static String BIN_EXT = "bin";
 
-	@Override
-	public File getExecutableDirectory() {
-		File executablePath = new File(getPath(), BIN_EXT);
-		executablePath.mkdirs();
-		return executablePath;
-	}
+    @Override
+    public File getExecutableDirectory() {
+        File executablePath = new File(getPath(), BIN_EXT);
+        executablePath.mkdirs();
+        return executablePath;
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return (getExecutableDirectory().list().length == 0);
-	}
+    @Override
+    public boolean isEmpty() {
+        return (getExecutableDirectory().list().length == 0);
+    }
 }

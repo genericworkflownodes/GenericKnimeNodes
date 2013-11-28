@@ -30,140 +30,140 @@ import java.util.Map;
  */
 public interface IToolLocator {
 
-	/**
-	 * Defines if the referenced binary is part of the distributed node (i.e.,
-	 * contained in the payload) or was configured by the user.
-	 * 
-	 * @author aiche
-	 */
-	public enum ToolPathType {
-		SHIPPED("shipped"), USER_DEFINED("user-defined"), UNKNOWN("unknown");
+    /**
+     * Defines if the referenced binary is part of the distributed node (i.e.,
+     * contained in the payload) or was configured by the user.
+     * 
+     * @author aiche
+     */
+    public enum ToolPathType {
+        SHIPPED("shipped"), USER_DEFINED("user-defined"), UNKNOWN("unknown");
 
-		private final String asString;
+        private final String asString;
 
-		ToolPathType(final String s) {
-			asString = s;
-		}
+        ToolPathType(final String s) {
+            asString = s;
+        }
 
-		@Override
-		public String toString() {
-			return asString;
-		}
+        @Override
+        public String toString() {
+            return asString;
+        }
 
-		/**
-		 * Create a ToolPathType enum value based on the passed string. If it is
-		 * not "shipped", "user-defined", or "unknown" an exception will be
-		 * thrown.
-		 * 
-		 * @param choice
-		 * @return
-		 * @throws Exception
-		 *             If the given choice is not a valid VALID_CHOICE.
-		 */
-		public static ToolPathType fromString(final String choice)
-				throws Exception {
-			if (SHIPPED.toString().equals(choice)) {
-				return SHIPPED;
-			} else if (USER_DEFINED.toString().equals(choice)) {
-				return USER_DEFINED;
-			} else if (UNKNOWN.toString().equals(choice)) {
-				return UNKNOWN;
-			} else {
-				throw new Exception("The given choice is not a valid one.");
-			}
-		}
-	}
+        /**
+         * Create a ToolPathType enum value based on the passed string. If it is
+         * not "shipped", "user-defined", or "unknown" an exception will be
+         * thrown.
+         * 
+         * @param choice
+         * @return
+         * @throws Exception
+         *             If the given choice is not a valid VALID_CHOICE.
+         */
+        public static ToolPathType fromString(final String choice)
+                throws Exception {
+            if (SHIPPED.toString().equals(choice)) {
+                return SHIPPED;
+            } else if (USER_DEFINED.toString().equals(choice)) {
+                return USER_DEFINED;
+            } else if (UNKNOWN.toString().equals(choice)) {
+                return UNKNOWN;
+            } else {
+                throw new Exception("The given choice is not a valid one.");
+            }
+        }
+    }
 
-	/**
-	 * Returns the tool path of the given ExternalTool. If the tool is not
-	 * registered the method will return null, if the tool is registered but no
-	 * path is specified it will return new File("").
-	 * 
-	 * @param tool
-	 * @return
-	 * @throws Exception
-	 *             Throws an exception if no valid configuration exists.
-	 */
-	public File getToolPath(ExternalTool tool) throws Exception;
+    /**
+     * Returns the tool path of the given ExternalTool. If the tool is not
+     * registered the method will return null, if the tool is registered but no
+     * path is specified it will return new File("").
+     * 
+     * @param tool
+     * @return
+     * @throws Exception
+     *             Throws an exception if no valid configuration exists.
+     */
+    public File getToolPath(ExternalTool tool) throws Exception;
 
-	/**
-	 * 
-	 * @param tool
-	 *            The external tool which we want to get a path for.
-	 * @param toolPathType
-	 *            The tool path type (shipped or user-defined).
-	 * @return A {@link File} pointing to the executable of the tool.
-	 * @throws Exception
-	 *             An exception is thrown if there is no executable for the
-	 *             tool.
-	 */
-	public File getToolPath(ExternalTool tool, ToolPathType toolPathType)
-			throws Exception;
+    /**
+     * 
+     * @param tool
+     *            The external tool which we want to get a path for.
+     * @param toolPathType
+     *            The tool path type (shipped or user-defined).
+     * @return A {@link File} pointing to the executable of the tool.
+     * @throws Exception
+     *             An exception is thrown if there is no executable for the
+     *             tool.
+     */
+    public File getToolPath(ExternalTool tool, ToolPathType toolPathType)
+            throws Exception;
 
-	/**
-	 * Sets the tool path for the tool @p tool to the path specified by @p path.
-	 * 
-	 * @param tool
-	 * @param path
-	 */
-	public void setToolPath(ExternalTool tool, File path, ToolPathType type);
+    /**
+     * Sets the tool path for the tool @p tool to the path specified by @p path.
+     * 
+     * @param tool
+     * @param path
+     */
+    public void setToolPath(ExternalTool tool, File path, ToolPathType type);
 
-	/**
-	 * Adds a new tool to the underlying tool registry.
-	 * 
-	 * @param tool
-	 */
-	public void registerTool(ExternalTool tool);
+    /**
+     * Adds a new tool to the underlying tool registry.
+     * 
+     * @param tool
+     */
+    public void registerTool(ExternalTool tool);
 
-	/**
-	 * Checks if the given tool was already registered.
-	 * 
-	 * @param tool
-	 *            The requested tool.
-	 * @return True if the tool was registered before, false otherwise.
-	 */
-	public boolean isToolRegistered(ExternalTool tool);
+    /**
+     * Checks if the given tool was already registered.
+     * 
+     * @param tool
+     *            The requested tool.
+     * @return True if the tool was registered before, false otherwise.
+     */
+    public boolean isToolRegistered(ExternalTool tool);
 
-	/**
-	 * Returns the currently configured type of the tool path.
-	 * 
-	 * @param tool
-	 *            The requested tool
-	 * @return The ToolPathType configured by either the plugin or the user.
-	 * @throws Exception
-	 *             Throws an exception if no valid configuration exists.
-	 */
-	public ToolPathType getConfiguredToolPathType(ExternalTool tool)
-			throws Exception;
+    /**
+     * Returns the currently configured type of the tool path.
+     * 
+     * @param tool
+     *            The requested tool
+     * @return The ToolPathType configured by either the plugin or the user.
+     * @throws Exception
+     *             Throws an exception if no valid configuration exists.
+     */
+    public ToolPathType getConfiguredToolPathType(ExternalTool tool)
+            throws Exception;
 
-	/**
-	 * Sets the tool path type to the given @p type.
-	 * 
-	 * @param tool
-	 *            The tool to update.
-	 * @param type
-	 *            The new type.
-	 */
-	public void updateToolPathType(ExternalTool tool, ToolPathType type);
+    /**
+     * Sets the tool path type to the given @p type.
+     * 
+     * @param tool
+     *            The tool to update.
+     * @param type
+     *            The new type.
+     */
+    public void updateToolPathType(ExternalTool tool, ToolPathType type);
 
-	/**
-	 * Returns a mapping between all available tools and the corresponding
-	 * plugins.
-	 * 
-	 * @return
-	 */
-	public Map<String, List<ExternalTool>> getToolsByPlugin();
+    /**
+     * Returns a mapping between all available tools and the corresponding
+     * plugins.
+     * 
+     * @return
+     */
+    public Map<String, List<ExternalTool>> getToolsByPlugin();
 
-	/**
-	 * Checks if the given tool has a valid path for the given
-	 * {@link ToolPathType}.
-	 * 
-	 * @param tool
-	 *            The tool to check.
-	 * @param type
-	 *            The {@link ToolPathType} to check.
-	 * @return True if a valid executable is stored for the given tool and
-	 *         {@link ToolPathType}, false otherwise.
-	 */
-	public boolean hasValidToolPath(ExternalTool tool, ToolPathType type);
+    /**
+     * Checks if the given tool has a valid path for the given
+     * {@link ToolPathType}.
+     * 
+     * @param tool
+     *            The tool to check.
+     * @param type
+     *            The {@link ToolPathType} to check.
+     * @return True if a valid executable is stored for the given tool and
+     *         {@link ToolPathType}, false otherwise.
+     */
+    public boolean hasValidToolPath(ExternalTool tool, ToolPathType type);
 }

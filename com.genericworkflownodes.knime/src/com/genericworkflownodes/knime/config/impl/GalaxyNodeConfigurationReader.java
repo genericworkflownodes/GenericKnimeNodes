@@ -43,184 +43,184 @@ import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 
 @Deprecated
 public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
-	protected Document doc;
-	protected NodeConfiguration config = new NodeConfiguration();
+    protected Document doc;
+    protected NodeConfiguration config = new NodeConfiguration();
 
-	@Override
-	public INodeConfiguration read(InputStream in) throws Exception {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
+    @Override
+    public INodeConfiguration read(InputStream in) throws Exception {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
 
-		SAXReader reader = new SAXReader(parser.getXMLReader());
-		reader.setValidation(false);
+        SAXReader reader = new SAXReader(parser.getXMLReader());
+        reader.setValidation(false);
 
-		SimpleErrorHandler errorHandler = new SimpleErrorHandler();
+        SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 
-		reader.setErrorHandler(errorHandler);
+        reader.setErrorHandler(errorHandler);
 
-		doc = reader.read(in);
+        doc = reader.read(in);
 
-		if (!errorHandler.isValid()) {
-			System.err.println(errorHandler.getErrorReport());
-			throw new Exception("Galaxy tool xml file is not valid !");
-		}
+        if (!errorHandler.isValid()) {
+            System.err.println(errorHandler.getErrorReport());
+            throw new Exception("Galaxy tool xml file is not valid !");
+        }
 
-		readPorts();
-		readParameters();
-		readDescription();
+        readPorts();
+        readParameters();
+        readDescription();
 
-		config.setXml(doc.asXML());
+        config.setXml(doc.asXML());
 
-		return config;
-	}
+        return config;
+    }
 
-	private void readDescription() throws Exception {
-		String descr = doc.valueOf("/tool/description/text()");
-		config.setDescription(descr);
+    private void readDescription() throws Exception {
+        String descr = doc.valueOf("/tool/description/text()");
+        config.setDescription(descr);
 
-		String name = doc.valueOf("/tool/@name");
-		config.setName(name);
+        String name = doc.valueOf("/tool/@name");
+        config.setName(name);
 
-		String version = doc.valueOf("/tool/@version");
-		config.setVersion(version);
+        String version = doc.valueOf("/tool/@version");
+        config.setVersion(version);
 
-		String help = doc.valueOf("/tool/help/text()");
-		config.setManual(help);
-	}
+        String help = doc.valueOf("/tool/help/text()");
+        config.setManual(help);
+    }
 
-	private void readParameters() throws Exception {
-		List<Node> nodes = DOMHelper.selectNodes(doc,
-				"/tool/inputs/param[@type='text']");
-		for (Node n : nodes) {
-			processParameter(n);
-		}
-		nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='float']");
-		for (Node n : nodes) {
-			processParameter(n);
-		}
-		nodes = DOMHelper.selectNodes(doc,
-				"/tool/inputs/param[@type='boolean']");
-		for (Node n : nodes) {
-			processParameter(n);
-		}
-		nodes = DOMHelper.selectNodes(doc,
-				"/tool/inputs/param[@type='integer']");
-		for (Node n : nodes) {
-			processParameter(n);
-		}
-		nodes = DOMHelper
-				.selectNodes(doc, "/tool/inputs/param[@type='select']");
-		for (Node n : nodes) {
-			processParameter(n);
-		}
-	}
+    private void readParameters() throws Exception {
+        List<Node> nodes = DOMHelper.selectNodes(doc,
+                "/tool/inputs/param[@type='text']");
+        for (Node n : nodes) {
+            processParameter(n);
+        }
+        nodes = DOMHelper.selectNodes(doc, "/tool/inputs/param[@type='float']");
+        for (Node n : nodes) {
+            processParameter(n);
+        }
+        nodes = DOMHelper.selectNodes(doc,
+                "/tool/inputs/param[@type='boolean']");
+        for (Node n : nodes) {
+            processParameter(n);
+        }
+        nodes = DOMHelper.selectNodes(doc,
+                "/tool/inputs/param[@type='integer']");
+        for (Node n : nodes) {
+            processParameter(n);
+        }
+        nodes = DOMHelper
+                .selectNodes(doc, "/tool/inputs/param[@type='select']");
+        for (Node n : nodes) {
+            processParameter(n);
+        }
+    }
 
-	private void processParameter(Node n) throws Exception {
-		Parameter<?> ret = null;
-		String type = n.valueOf("@type");
-		if (type.equals("")) {
-			throw new Exception("type information for parameter not set");
-		}
+    private void processParameter(Node n) throws Exception {
+        Parameter<?> ret = null;
+        String type = n.valueOf("@type");
+        if (type.equals("")) {
+            throw new Exception("type information for parameter not set");
+        }
 
-		String key = n.valueOf("@name");
-		String val = n.valueOf("@value");
+        String key = n.valueOf("@name");
+        String val = n.valueOf("@value");
 
-		System.out.println("processing param " + key + " type:" + type
-				+ " value: " + val);
+        System.out.println("processing param " + key + " type:" + type
+                + " value: " + val);
 
-		if (type.equals("integer")) {
-			ret = new IntegerParameter(key, val);
-		}
-		if (type.equals("float")) {
-			ret = new DoubleParameter(key, val);
-		}
-		if (type.equals("boolean")) {
-			ret = new BoolParameter(key, val);
-		}
-		if (type.equals("text")) {
-			ret = new StringParameter(key, val);
-		}
-		if (type.equals("select")) {
-			List<Node> options = DOMHelper.selectNodes(n, "option");
-			List<String> opts = new ArrayList<String>();
-			List<String> labs = new ArrayList<String>();
-			for (Node option : options) {
-				String optval = option.valueOf("@value");
-				String label = option.valueOf("text()");
-				opts.add(optval);
-				labs.add(label);
-			}
-			ret = new StringChoiceParameter(key, opts, labs);
-			((StringChoiceParameter) ret).setValue(val);
-			ret.setIsOptional(false);
-		}
-		String descr = n.valueOf("label/text()");
+        if (type.equals("integer")) {
+            ret = new IntegerParameter(key, val);
+        }
+        if (type.equals("float")) {
+            ret = new DoubleParameter(key, val);
+        }
+        if (type.equals("boolean")) {
+            ret = new BoolParameter(key, val);
+        }
+        if (type.equals("text")) {
+            ret = new StringParameter(key, val);
+        }
+        if (type.equals("select")) {
+            List<Node> options = DOMHelper.selectNodes(n, "option");
+            List<String> opts = new ArrayList<String>();
+            List<String> labs = new ArrayList<String>();
+            for (Node option : options) {
+                String optval = option.valueOf("@value");
+                String label = option.valueOf("text()");
+                opts.add(optval);
+                labs.add(label);
+            }
+            ret = new StringChoiceParameter(key, opts, labs);
+            ((StringChoiceParameter) ret).setValue(val);
+            ret.setIsOptional(false);
+        }
+        String descr = n.valueOf("label/text()");
 
-		if (ret != null) {
-			ret.setKey(key);
-			ret.setDescription(descr);
-		}
+        if (ret != null) {
+            ret.setKey(key);
+            ret.setDescription(descr);
+        }
 
-		config.addParameter(key, ret);
-	}
+        config.addParameter(key, ret);
+    }
 
-	private void readPorts() throws Exception {
-		List<Node> nodes = DOMHelper.selectNodes(doc,
-				"/tool/inputs/param[@type='data']");
-		for (Node n : nodes) {
-			Port port = readInPort(n);
-			inports.add(port);
-		}
+    private void readPorts() throws Exception {
+        List<Node> nodes = DOMHelper.selectNodes(doc,
+                "/tool/inputs/param[@type='data']");
+        for (Node n : nodes) {
+            Port port = readInPort(n);
+            inports.add(port);
+        }
 
-		nodes = DOMHelper.selectNodes(doc, "/tool/outputs/data");
-		for (Node n : nodes) {
-			Port port = readOutPort(n);
-			outports.add(port);
-		}
+        nodes = DOMHelper.selectNodes(doc, "/tool/outputs/data");
+        for (Node n : nodes) {
+            Port port = readOutPort(n);
+            outports.add(port);
+        }
 
-		config.setInports(inports.toArray(new Port[inports.size()]));
-		config.setOutports(outports.toArray(new Port[outports.size()]));
+        config.setInports(inports.toArray(new Port[inports.size()]));
+        config.setOutports(outports.toArray(new Port[outports.size()]));
 
-	}
+    }
 
-	protected List<Port> inports = new ArrayList<Port>();
-	protected List<Port> outports = new ArrayList<Port>();
+    protected List<Port> inports = new ArrayList<Port>();
+    protected List<Port> outports = new ArrayList<Port>();
 
-	private Port readInPort(Node portnode) throws Exception {
-		Port port = new Port();
+    private Port readInPort(Node portnode) throws Exception {
+        Port port = new Port();
 
-		port.setOptional(true);
+        port.setOptional(true);
 
-		Node n = DOMHelper.selectSingleNode(portnode, "label");
+        Node n = DOMHelper.selectSingleNode(portnode, "label");
 
-		String portdescr = n.valueOf("text()");
-		port.setDescription(portdescr);
+        String portdescr = n.valueOf("text()");
+        port.setDescription(portdescr);
 
-		String extension = DOMHelper.valueOf(portnode, "@format");
-		port.addMimeType(extension);
+        String extension = DOMHelper.valueOf(portnode, "@format");
+        port.addMimeType(extension);
 
-		String portname = DOMHelper.valueOf(portnode, "@name");
-		port.setName(portname);
+        String portname = DOMHelper.valueOf(portnode, "@name");
+        port.setName(portname);
 
-		String optional = DOMHelper.valueOf(portnode, "@optional");
-		if (optional.equals("false")) {
-			port.setOptional(false);
-		}
+        String optional = DOMHelper.valueOf(portnode, "@optional");
+        if (optional.equals("false")) {
+            port.setOptional(false);
+        }
 
-		return port;
-	}
+        return port;
+    }
 
-	private Port readOutPort(Node portnode) throws Exception {
-		Port port = new Port();
+    private Port readOutPort(Node portnode) throws Exception {
+        Port port = new Port();
 
-		port.setDescription("");
+        port.setDescription("");
 
-		String extension = DOMHelper.valueOf(portnode, "@format");
-		port.addMimeType(extension);
+        String extension = DOMHelper.valueOf(portnode, "@format");
+        port.addMimeType(extension);
 
-		String portname = DOMHelper.valueOf(portnode, "@name");
-		port.setName(portname);
+        String portname = DOMHelper.valueOf(portnode, "@name");
+        port.setName(portname);
 
-		return port;
-	}
+        return port;
+    }
 }

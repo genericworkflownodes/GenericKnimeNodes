@@ -7,12 +7,12 @@ import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
 public class FeatureProjectTemplate extends Template {
 
-	public FeatureProjectTemplate(String packageName) throws IOException {
-		super(
-				NodeGenerator.class
-						.getResourceAsStream("templates/feature/feature.project.template"));
+    public FeatureProjectTemplate(String packageName) throws IOException {
+        super(
+                NodeGenerator.class
+                        .getResourceAsStream("templates/feature/feature.project.template"));
 
-		this.replace("%PACKAGE_NAME%", packageName);
-	}
+        this.replace("%PACKAGE_NAME%", packageName);
+    }
 
 }

@@ -36,58 +36,58 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  */
 public class ParameterVerifier extends InputVerifier {
 
-	/**
-	 * The parameter that needs to be verified.
-	 */
-	private final Parameter<?> parameter;
+    /**
+     * The parameter that needs to be verified.
+     */
+    private final Parameter<?> parameter;
 
-	public ParameterVerifier(Parameter<?> parameter) {
-		this.parameter = parameter;
-	}
+    public ParameterVerifier(Parameter<?> parameter) {
+        this.parameter = parameter;
+    }
 
-	private boolean verifyDouble(String toVerify, Double lb, Double ub) {
-		Double d = new Double(toVerify);
-		return d <= ub && d >= lb;
-	}
+    private boolean verifyDouble(String toVerify, Double lb, Double ub) {
+        Double d = new Double(toVerify);
+        return d <= ub && d >= lb;
+    }
 
-	private boolean verifyInteger(String toVerify, Integer lb, Integer ub) {
-		Integer i = new Integer(toVerify);
-		return i <= ub && i >= lb;
-	}
+    private boolean verifyInteger(String toVerify, Integer lb, Integer ub) {
+        Integer i = new Integer(toVerify);
+        return i <= ub && i >= lb;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.InputVerifier#verify(javax.swing.JComponent)
-	 */
-	@Override
-	public boolean verify(JComponent input) {
-		if (input instanceof JTextField) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.swing.InputVerifier#verify(javax.swing.JComponent)
+     */
+    @Override
+    public boolean verify(JComponent input) {
+        if (input instanceof JTextField) {
 
-			String inputValue = ((JTextField) input).getText();
+            String inputValue = ((JTextField) input).getText();
 
-			if (parameter instanceof DoubleParameter) {
-				DoubleParameter dp = (DoubleParameter) parameter;
-				return verifyDouble(inputValue, dp.getLowerBound(),
-						dp.getUpperBound());
-			} else if (parameter instanceof DoubleListParameter) {
-				DoubleListParameter dlp = (DoubleListParameter) parameter;
-				return verifyDouble(inputValue, dlp.getLowerBound(),
-						dlp.getUpperBound());
-			} else if (parameter instanceof IntegerParameter) {
-				IntegerParameter ip = (IntegerParameter) parameter;
-				return verifyInteger(inputValue, ip.getLowerBound(),
-						ip.getUpperBound());
-			} else if (parameter instanceof IntegerListParameter) {
-				IntegerListParameter ilp = (IntegerListParameter) parameter;
-				return verifyInteger(inputValue, ilp.getLowerBound(),
-						ilp.getUpperBound());
-			} else {
-				return true;
-			}
-		} else {
-			return false;
-		}
-	}
+            if (parameter instanceof DoubleParameter) {
+                DoubleParameter dp = (DoubleParameter) parameter;
+                return verifyDouble(inputValue, dp.getLowerBound(),
+                        dp.getUpperBound());
+            } else if (parameter instanceof DoubleListParameter) {
+                DoubleListParameter dlp = (DoubleListParameter) parameter;
+                return verifyDouble(inputValue, dlp.getLowerBound(),
+                        dlp.getUpperBound());
+            } else if (parameter instanceof IntegerParameter) {
+                IntegerParameter ip = (IntegerParameter) parameter;
+                return verifyInteger(inputValue, ip.getLowerBound(),
+                        ip.getUpperBound());
+            } else if (parameter instanceof IntegerListParameter) {
+                IntegerListParameter ilp = (IntegerListParameter) parameter;
+                return verifyInteger(inputValue, ilp.getLowerBound(),
+                        ilp.getUpperBound());
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
 
 }

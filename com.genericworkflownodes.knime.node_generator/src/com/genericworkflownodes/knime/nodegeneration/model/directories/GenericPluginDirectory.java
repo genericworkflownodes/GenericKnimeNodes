@@ -36,130 +36,130 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.build.Nod
  */
 public abstract class GenericPluginDirectory extends PluginDirectory {
 
-	/**
-	 * The serialVersionUID.
-	 */
-	private static final long serialVersionUID = -1643991173932449191L;
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = -1643991173932449191L;
 
-	private NodesBuildIconsDirectory iconsDirectory = null;
-	private NodesBuildSrcDirectory srcDirectory = null;
-	private NodesBuildPackageRootDirectory packageRootDirectory = null;
-	private NodesBuildKnimeDirectory knimeDirectory = null;
-	private NodesBuildKnimeNodesDirectory knimeNodesDirectory = null;
-	private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
+    private NodesBuildIconsDirectory iconsDirectory = null;
+    private NodesBuildSrcDirectory srcDirectory = null;
+    private NodesBuildPackageRootDirectory packageRootDirectory = null;
+    private NodesBuildKnimeDirectory knimeDirectory = null;
+    private NodesBuildKnimeNodesDirectory knimeNodesDirectory = null;
+    private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
 
-	/**
-	 * Constructor with the path to the location where the plugin should be
-	 * created.
-	 * 
-	 * @param directory
-	 *            The directory where the plugin is created.
-	 * @param packageName
-	 *            The name of the top-level package inside the plugin.
-	 * @throws FileNotFoundException
-	 */
-	public GenericPluginDirectory(File directory, String packageName)
-			throws PathnameIsNoDirectoryException {
-		super(directory);
-		init(packageName);
-	}
+    /**
+     * Constructor with the path to the location where the plugin should be
+     * created.
+     * 
+     * @param directory
+     *            The directory where the plugin is created.
+     * @param packageName
+     *            The name of the top-level package inside the plugin.
+     * @throws FileNotFoundException
+     */
+    public GenericPluginDirectory(File directory, String packageName)
+            throws PathnameIsNoDirectoryException {
+        super(directory);
+        init(packageName);
+    }
 
-	private void init(String packageName) throws PathnameIsNoDirectoryException {
-		String packageRootPath = packageName.replace('.', File.separatorChar);
+    private void init(String packageName) throws PathnameIsNoDirectoryException {
+        String packageRootPath = packageName.replace('.', File.separatorChar);
 
-		new File(this, "icons").mkdirs();
-		new File(this, "src" + File.separator + packageRootPath
-				+ File.separator + "knime" + File.separator + "nodes").mkdirs();
-		new File(this, "src" + File.separator + packageRootPath
-				+ File.separator + "knime" + File.separator + "binres")
-				.mkdirs();
-		new File(this, "META-INF").mkdirs();
+        new File(this, "icons").mkdirs();
+        new File(this, "src" + File.separator + packageRootPath
+                + File.separator + "knime" + File.separator + "nodes").mkdirs();
+        new File(this, "src" + File.separator + packageRootPath
+                + File.separator + "knime" + File.separator + "binres")
+                .mkdirs();
+        new File(this, "META-INF").mkdirs();
 
-		iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
+        iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
 
-		srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
+        srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
 
-		packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
-				srcDirectory, packageRootPath));
+        packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
+                srcDirectory, packageRootPath));
 
-		knimeDirectory = new NodesBuildKnimeDirectory(new File(
-				packageRootDirectory, "knime"));
+        knimeDirectory = new NodesBuildKnimeDirectory(new File(
+                packageRootDirectory, "knime"));
 
-		knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
-				knimeDirectory, "nodes"));
+        knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
+                knimeDirectory, "nodes"));
 
-		binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
-				new File(knimeDirectory, "binres"));
+        binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
+                new File(knimeDirectory, "binres"));
 
-	}
+    }
 
-	/**
-	 * Returns the directory where to put all icons in.
-	 * <p>
-	 * e.g. /tmp/372/icons
-	 * 
-	 * @return
-	 */
-	public NodesBuildIconsDirectory getIconsDirectory() {
-		return iconsDirectory;
-	}
+    /**
+     * Returns the directory where to put all icons in.
+     * <p>
+     * e.g. /tmp/372/icons
+     * 
+     * @return
+     */
+    public NodesBuildIconsDirectory getIconsDirectory() {
+        return iconsDirectory;
+    }
 
-	/**
-	 * Returns the directory where to put all sources in.
-	 * <p>
-	 * e.g. /tmp/372/src
-	 * 
-	 * @return
-	 */
-	public NodesBuildSrcDirectory getSrcDirectory() {
-		return srcDirectory;
-	}
+    /**
+     * Returns the directory where to put all sources in.
+     * <p>
+     * e.g. /tmp/372/src
+     * 
+     * @return
+     */
+    public NodesBuildSrcDirectory getSrcDirectory() {
+        return srcDirectory;
+    }
 
-	/**
-	 * Returns the source directory where the package root resides.
-	 * <p>
-	 * e.g. /tmp/372/src/de/fu_berlin/imp/seqan
-	 * 
-	 * @return
-	 */
-	public NodesBuildPackageRootDirectory getPackageRootDirectory() {
-		return packageRootDirectory;
-	}
+    /**
+     * Returns the source directory where the package root resides.
+     * <p>
+     * e.g. /tmp/372/src/de/fu_berlin/imp/seqan
+     * 
+     * @return
+     */
+    public NodesBuildPackageRootDirectory getPackageRootDirectory() {
+        return packageRootDirectory;
+    }
 
-	/**
-	 * Returns the source directory where to put all KNIME classes.
-	 * <p>
-	 * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime
-	 * 
-	 * @return
-	 */
-	public NodesBuildKnimeDirectory getKnimeDirectory() {
-		return knimeDirectory;
-	}
+    /**
+     * Returns the source directory where to put all KNIME classes.
+     * <p>
+     * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime
+     * 
+     * @return
+     */
+    public NodesBuildKnimeDirectory getKnimeDirectory() {
+        return knimeDirectory;
+    }
 
-	/**
-	 * Returns the source directory where to put all KNIME node classes.
-	 * <p>
-	 * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime/nodes
-	 * 
-	 * @return
-	 */
-	public NodesBuildKnimeNodesDirectory getKnimeNodesDirectory() {
-		return knimeNodesDirectory;
-	}
+    /**
+     * Returns the source directory where to put all KNIME node classes.
+     * <p>
+     * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime/nodes
+     * 
+     * @return
+     */
+    public NodesBuildKnimeNodesDirectory getKnimeNodesDirectory() {
+        return knimeNodesDirectory;
+    }
 
-	/**
-	 * Returns the source directory where the BinaryResources class is located.
-	 * The BinaryResouces class is used to access the platform specific binaries
-	 * stored in separate fragments.
-	 * 
-	 * <p>
-	 * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime/nodes/binres
-	 * 
-	 * @return
-	 */
-	public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
-		return binaryResourcesDirectory;
-	}
+    /**
+     * Returns the source directory where the BinaryResources class is located.
+     * The BinaryResouces class is used to access the platform specific binaries
+     * stored in separate fragments.
+     * 
+     * <p>
+     * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime/nodes/binres
+     * 
+     * @return
+     */
+    public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
+        return binaryResourcesDirectory;
+    }
 
 }

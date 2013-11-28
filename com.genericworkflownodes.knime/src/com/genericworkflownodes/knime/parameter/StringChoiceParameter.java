@@ -33,184 +33,184 @@ import java.util.List;
  */
 public class StringChoiceParameter extends Parameter<String> {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = -2717347970783695908L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = -2717347970783695908L;
 
-	/**
-	 * Set of string that is possible for this Parameter.
-	 */
-	private List<String> allowedValues;
+    /**
+     * Set of string that is possible for this Parameter.
+     */
+    private List<String> allowedValues;
 
-	/**
-	 * List of labels for each of the allowed strings.
-	 */
-	private List<String> labels;
+    /**
+     * List of labels for each of the allowed strings.
+     */
+    private List<String> labels;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public StringChoiceParameter(final String key, final String value) {
-		super(key, value);
-		allowedValues = new ArrayList<String>(0);
-		labels = new ArrayList<String>(0);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public StringChoiceParameter(final String key, final String value) {
+        super(key, value);
+        allowedValues = new ArrayList<String>(0);
+        labels = new ArrayList<String>(0);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param values
-	 *            The value of the parameter.
-	 */
-	public StringChoiceParameter(final String key, final List<String> values) {
-		super(key, values.get(0));
-		allowedValues = values;
-		labels = values;
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param values
+     *            The value of the parameter.
+     */
+    public StringChoiceParameter(final String key, final List<String> values) {
+        super(key, values.get(0));
+        allowedValues = values;
+        labels = values;
 
-		// for optional value we use the empty string as default value
-		if (isOptional()) {
-			setValue("");
-		}
-	}
+        // for optional value we use the empty string as default value
+        if (isOptional()) {
+            setValue("");
+        }
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param values
-	 *            The value of the parameter.
-	 */
-	public StringChoiceParameter(final String key, final String[] values) {
-		this(key, Arrays.asList(values));
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param values
+     *            The value of the parameter.
+     */
+    public StringChoiceParameter(final String key, final String[] values) {
+        this(key, Arrays.asList(values));
+    }
 
-	/**
-	 * Constructor. The first value in the list will be set as current value.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param values
-	 *            The values of the parameter.
-	 * @param labels
-	 *            The labels for the values.
-	 */
-	public StringChoiceParameter(final String key, final List<String> values,
-			final List<String> labels) {
-		super(key, values.get(0));
-		allowedValues = values;
-		this.labels = labels;
+    /**
+     * Constructor. The first value in the list will be set as current value.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param values
+     *            The values of the parameter.
+     * @param labels
+     *            The labels for the values.
+     */
+    public StringChoiceParameter(final String key, final List<String> values,
+            final List<String> labels) {
+        super(key, values.get(0));
+        allowedValues = values;
+        this.labels = labels;
 
-		// for optional value we use null=unselected as default value
-		if (isOptional()) {
-			setValue(null);
-		}
-	}
+        // for optional value we use null=unselected as default value
+        if (isOptional()) {
+            setValue(null);
+        }
+    }
 
-	/**
-	 * Constructor. The first value in the list will be set as current value.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param values
-	 *            The values of the parameter.
-	 * @param labels
-	 *            The labels for the values.
-	 */
-	public StringChoiceParameter(final String key, final String[] values,
-			final String[] labels) {
-		this(key, Arrays.asList(values), Arrays.asList(labels));
-	}
+    /**
+     * Constructor. The first value in the list will be set as current value.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param values
+     *            The values of the parameter.
+     * @param labels
+     *            The labels for the values.
+     */
+    public StringChoiceParameter(final String key, final String[] values,
+            final String[] labels) {
+        this(key, Arrays.asList(values), Arrays.asList(labels));
+    }
 
-	@Override
-	public void setValue(final String value) {
-		if (getAllowedValues().contains(value)
-				|| (isOptional() && value == null)) {
-			super.setValue(value);
-		}
-	}
+    @Override
+    public void setValue(final String value) {
+        if (getAllowedValues().contains(value)
+                || (isOptional() && value == null)) {
+            super.setValue(value);
+        }
+    }
 
-	/**
-	 * Returns the list of allowed string values.
-	 * 
-	 * @return allowed allowedValues
-	 */
-	public List<String> getAllowedValues() {
-		if (isOptional()) {
-			ArrayList<String> tAllowedValues = new ArrayList<String>(
-					allowedValues.size() + 1);
-			tAllowedValues.add("");
-			tAllowedValues.addAll(allowedValues);
-			return tAllowedValues;
-		} else {
-			return allowedValues;
-		}
-	}
+    /**
+     * Returns the list of allowed string values.
+     * 
+     * @return allowed allowedValues
+     */
+    public List<String> getAllowedValues() {
+        if (isOptional()) {
+            ArrayList<String> tAllowedValues = new ArrayList<String>(
+                    allowedValues.size() + 1);
+            tAllowedValues.add("");
+            tAllowedValues.addAll(allowedValues);
+            return tAllowedValues;
+        } else {
+            return allowedValues;
+        }
+    }
 
-	/**
-	 * Returns the list of associated labels for each value.
-	 * 
-	 * This is mainly for display purposes within GUIs.
-	 * 
-	 * @return list of labels
-	 */
-	public List<String> getLabels() {
-		if (isOptional()) {
-			ArrayList<String> tLabels = new ArrayList<String>(labels.size() + 1);
-			tLabels.add("");
-			tLabels.addAll(labels);
-			return tLabels;
-		} else {
-			return labels;
-		}
-	}
+    /**
+     * Returns the list of associated labels for each value.
+     * 
+     * This is mainly for display purposes within GUIs.
+     * 
+     * @return list of labels
+     */
+    public List<String> getLabels() {
+        if (isOptional()) {
+            ArrayList<String> tLabels = new ArrayList<String>(labels.size() + 1);
+            tLabels.add("");
+            tLabels.addAll(labels);
+            return tLabels;
+        } else {
+            return labels;
+        }
+    }
 
-	@Override
-	public String toString() {
-		return getValue();
-	}
+    @Override
+    public String toString() {
+        return getValue();
+    }
 
-	@Override
-	public void fillFromString(final String s)
-			throws InvalidParameterValueException {
-		if (s == null || "".equals(s)) {
-			super.setValue(null);
-			return;
-		}
-		if (!getAllowedValues().contains(s)) {
-			throw new InvalidParameterValueException("parameter " + getKey()
-					+ " value is invalid");
-		}
-		setValue(s);
-	}
+    @Override
+    public void fillFromString(final String s)
+            throws InvalidParameterValueException {
+        if (s == null || "".equals(s)) {
+            super.setValue(null);
+            return;
+        }
+        if (!getAllowedValues().contains(s)) {
+            throw new InvalidParameterValueException("parameter " + getKey()
+                    + " value is invalid");
+        }
+        setValue(s);
+    }
 
-	@Override
-	public boolean validate(final String val) {
-		return true;
-	}
+    @Override
+    public boolean validate(final String val) {
+        return true;
+    }
 
-	@Override
-	public String getMnemonic() {
-		return "string choice";
-	}
+    @Override
+    public String getMnemonic() {
+        return "string choice";
+    }
 
-	@Override
-	public void setIsOptional(boolean isOptional) {
-		super.setIsOptional(isOptional);
+    @Override
+    public void setIsOptional(boolean isOptional) {
+        super.setIsOptional(isOptional);
 
-		// if we set the value initially to "" and now remove the optional flag,
-		// we need to make sure that the StringChoiceParameter still has a valid
-		// value
-		if (!isOptional && "".equals(getValue()) && !allowedValues.contains("")) {
-			setValue(allowedValues.get(0));
-		}
-	}
+        // if we set the value initially to "" and now remove the optional flag,
+        // we need to make sure that the StringChoiceParameter still has a valid
+        // value
+        if (!isOptional && "".equals(getValue()) && !allowedValues.contains("")) {
+            setValue(allowedValues.get(0));
+        }
+    }
 }

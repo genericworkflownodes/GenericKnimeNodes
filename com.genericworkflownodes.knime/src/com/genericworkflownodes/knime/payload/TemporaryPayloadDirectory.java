@@ -27,47 +27,47 @@ import java.io.FileNotFoundException;
  * @author aiche
  */
 public class TemporaryPayloadDirectory extends AbstractPayloadDirectory
-		implements IPayloadDirectory {
+        implements IPayloadDirectory {
 
-	private class TemporaryDirectory extends File {
+    private class TemporaryDirectory extends File {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 7170512156177863153L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 7170512156177863153L;
 
-		/**
-		 * Constructor.
-		 * 
-		 * @param prefix
-		 *            Prefix to add in front of the temp directory.
-		 * @throws FileNotFoundException
-		 */
-		public TemporaryDirectory(String prefix) throws FileNotFoundException {
-			super(new File(System.getProperty("java.io.tmpdir"), prefix + "-"
-					+ Long.toString(System.nanoTime())).getAbsolutePath());
+        /**
+         * Constructor.
+         * 
+         * @param prefix
+         *            Prefix to add in front of the temp directory.
+         * @throws FileNotFoundException
+         */
+        public TemporaryDirectory(String prefix) throws FileNotFoundException {
+            super(new File(System.getProperty("java.io.tmpdir"), prefix + "-"
+                    + Long.toString(System.nanoTime())).getAbsolutePath());
 
-			this.mkdirs();
-			this.deleteOnExit();
-		}
-	}
+            this.mkdirs();
+            this.deleteOnExit();
+        }
+    }
 
-	/**
-	 * A (hopefully) unique identifier to ensure that the temporary directory is
-	 * also unique.
-	 */
-	private TemporaryDirectory tmpDirectory;
+    /**
+     * A (hopefully) unique identifier to ensure that the temporary directory is
+     * also unique.
+     */
+    private TemporaryDirectory tmpDirectory;
 
-	public TemporaryPayloadDirectory(String prefix) {
-		try {
-			tmpDirectory = new TemporaryDirectory(prefix);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+    public TemporaryPayloadDirectory(String prefix) {
+        try {
+            tmpDirectory = new TemporaryDirectory(prefix);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public File getPath() {
-		return tmpDirectory;
-	}
+    @Override
+    public File getPath() {
+        return tmpDirectory;
+    }
 }

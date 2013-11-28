@@ -26,35 +26,35 @@ package com.genericworkflownodes.knime.nodegeneration.model.meta;
  */
 public class PluginMeta {
 
-	private final String id;
-	private final String version;
+    private final String id;
+    private final String version;
 
-	/**
-	 * @param id
-	 * @param version
-	 */
-	public PluginMeta(String id, String version) {
-		super();
-		this.id = id;
-		this.version = version;
-	}
+    /**
+     * @param id
+     * @param version
+     */
+    public PluginMeta(String id, String version) {
+        super();
+        this.id = id;
+        this.version = version;
+    }
 
-	/**
-	 * Returns the plugin id.
-	 * 
-	 * @return
-	 */
-	public String getId() {
-		return id;
-	}
+    /**
+     * Returns the plugin id.
+     * 
+     * @return
+     */
+    public String getId() {
+        return id;
+    }
 
-	/**
-	 * Returns the plugin version.
-	 * 
-	 * @return
-	 */
-	public String getVersion() {
-		return version;
-	}
+    /**
+     * Returns the plugin version.
+     * 
+     * @return
+     */
+    public String getVersion() {
+        return version;
+    }
 
 }

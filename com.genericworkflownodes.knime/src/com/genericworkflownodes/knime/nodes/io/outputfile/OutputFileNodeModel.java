@@ -56,166 +56,166 @@ import com.genericworkflownodes.util.MIMETypeHelper;
  */
 public class OutputFileNodeModel extends NodeModel {
 
-	static final String CFG_FILENAME = "FILENAME";
+    static final String CFG_FILENAME = "FILENAME";
 
-	SettingsModelString m_filename = new SettingsModelString(
-			OutputFileNodeModel.CFG_FILENAME, "");
+    SettingsModelString m_filename = new SettingsModelString(
+            OutputFileNodeModel.CFG_FILENAME, "");
 
-	private String data;
+    private String data;
 
-	public String getContent() {
-		return data;
-	}
+    public String getContent() {
+        return data;
+    }
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected OutputFileNodeModel() {
-		super(new PortType[] { new PortType(URIPortObject.class) },
-				new PortType[] {});
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected OutputFileNodeModel() {
+        super(new PortType[] { new PortType(URIPortObject.class) },
+                new PortType[] {});
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		// check the incoming port
-		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
-			throw new InvalidSettingsException(
-					"No URIPortObjectSpec compatible port object");
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        // check the incoming port
+        if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
+            throw new InvalidSettingsException(
+                    "No URIPortObjectSpec compatible port object");
+        }
 
-		// check the selected file
-		if ("".equals(m_filename.getStringValue())) {
-			throw new InvalidSettingsException(
-					"Please select a target file for the Output File node.");
-		}
+        // check the selected file
+        if ("".equals(m_filename.getStringValue())) {
+            throw new InvalidSettingsException(
+                    "Please select a target file for the Output File node.");
+        }
 
-		boolean selectedExtensionIsValid = compareMIMETypes(inSpecs);
-		if (!selectedExtensionIsValid) {
-			throw new InvalidSettingsException(
-					"The selected output file and the incoming file have different mime types.");
-		}
+        boolean selectedExtensionIsValid = compareMIMETypes(inSpecs);
+        if (!selectedExtensionIsValid) {
+            throw new InvalidSettingsException(
+                    "The selected output file and the incoming file have different mime types.");
+        }
 
-		return new PortObjectSpec[] {};
-	}
+        return new PortObjectSpec[] {};
+    }
 
-	public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
-		String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-				.getStringValue());
-		String incomingMimeType = MIMEMap
-				.getMIMEType(((URIPortObjectSpec) inSpecs[0])
-						.getFileExtensions().get(0));
+    public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
+        String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
+                .getStringValue());
+        String incomingMimeType = MIMEMap
+                .getMIMEType(((URIPortObjectSpec) inSpecs[0])
+                        .getFileExtensions().get(0));
 
-		return incomingMimeType.equals(selectedMimeType);
-	}
+        return incomingMimeType.equals(selectedMimeType);
+    }
 
-	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
-		URIPortObject obj = (URIPortObject) inObjects[0];
-		List<URIContent> uris = obj.getURIContents();
+    @Override
+    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
+            throws Exception {
+        URIPortObject obj = (URIPortObject) inObjects[0];
+        List<URIContent> uris = obj.getURIContents();
 
-		if (uris.size() == 0) {
-			throw new Exception(
-					"There were no URIs in the supplied MIMEURIPortObject at port 0");
-		}
+        if (uris.size() == 0) {
+            throw new Exception(
+                    "There were no URIs in the supplied MIMEURIPortObject at port 0");
+        }
 
-		String filename = m_filename.getStringValue();
+        String filename = m_filename.getStringValue();
 
-		File in = new File(uris.get(0).getURI());
-		File out = new File(filename);
+        File in = new File(uris.get(0).getURI());
+        File out = new File(filename);
 
-		FileUtils.copyFile(in, out);
+        FileUtils.copyFile(in, out);
 
-		data = Helper.readFileSummary(in, 50);
+        data = Helper.readFileSummary(in, 50);
 
-		return new PortObject[] {};
-	}
+        return new PortObject[] {};
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		data = "";
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        data = "";
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		m_filename.saveSettingsTo(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        m_filename.saveSettingsTo(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		m_filename.loadSettingsFrom(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_filename.loadSettingsFrom(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		m_filename.validateSettings(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_filename.validateSettings(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		ZipFile zip = new ZipFile(new File(internDir, "loadeddata"));
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        ZipFile zip = new ZipFile(new File(internDir, "loadeddata"));
 
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
+        @SuppressWarnings("unchecked")
+        Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
 
-		int BUFFSIZE = 2048;
-		byte[] BUFFER = new byte[BUFFSIZE];
+        int BUFFSIZE = 2048;
+        byte[] BUFFER = new byte[BUFFSIZE];
 
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
 
-			if (entry.getName().equals("rawdata.bin")) {
-				int size = (int) entry.getSize();
-				byte[] data = new byte[size];
-				InputStream in = zip.getInputStream(entry);
-				int len;
-				int totlen = 0;
-				while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
-					System.arraycopy(BUFFER, 0, data, totlen, len);
-					totlen += len;
-				}
-				this.data = new String(data);
-			}
-		}
-		zip.close();
-	}
+            if (entry.getName().equals("rawdata.bin")) {
+                int size = (int) entry.getSize();
+                byte[] data = new byte[size];
+                InputStream in = zip.getInputStream(entry);
+                int len;
+                int totlen = 0;
+                while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
+                    System.arraycopy(BUFFER, 0, data, totlen, len);
+                    totlen += len;
+                }
+                this.data = new String(data);
+            }
+        }
+        zip.close();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-				new File(internDir, "loadeddata")));
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-		out.putNextEntry(entry);
-		out.write(data.getBytes());
-		out.close();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
+                new File(internDir, "loadeddata")));
+        ZipEntry entry = new ZipEntry("rawdata.bin");
+        out.putNextEntry(entry);
+        out.write(data.getBytes());
+        out.close();
+    }
 
 }

@@ -55,32 +55,32 @@ import java.util.List;
  */
 public class CLI {
 
-	/**
-	 * The list of CLIElements contained in this tag.
-	 */
-	private List<CLIElement> clielement;
+    /**
+     * The list of CLIElements contained in this tag.
+     */
+    private List<CLIElement> clielement;
 
-	/**
-	 * Gets the value of the clielement property.
-	 * 
-	 * For example, to add a new item, do as follows:
-	 * 
-	 * <pre>
-	 * getClielement().add(newItem);
-	 * </pre>
-	 * 
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list
-	 * {@link CLIElement }
-	 * 
-	 * @return The list of CLIElements contained in this CLI tag.
-	 * 
-	 */
-	public final List<CLIElement> getCLIElement() {
-		if (clielement == null) {
-			clielement = new ArrayList<CLIElement>();
-		}
-		return this.clielement;
-	}
+    /**
+     * Gets the value of the clielement property.
+     * 
+     * For example, to add a new item, do as follows:
+     * 
+     * <pre>
+     * getClielement().add(newItem);
+     * </pre>
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CLIElement }
+     * 
+     * @return The list of CLIElements contained in this CLI tag.
+     * 
+     */
+    public final List<CLIElement> getCLIElement() {
+        if (clielement == null) {
+            clielement = new ArrayList<CLIElement>();
+        }
+        return this.clielement;
+    }
 
 }

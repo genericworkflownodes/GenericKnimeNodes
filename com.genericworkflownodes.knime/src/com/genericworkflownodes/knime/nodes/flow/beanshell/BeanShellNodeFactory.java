@@ -31,45 +31,45 @@ import org.knime.core.node.NodeView;
  */
 public class BeanShellNodeFactory extends NodeFactory<BeanShellNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public BeanShellNodeModel createNodeModel() {
-		return new BeanShellNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BeanShellNodeModel createNodeModel() {
+        return new BeanShellNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<BeanShellNodeModel> createNodeView(final int viewIndex,
-			final BeanShellNodeModel nodeModel) {
-		return new BeanShellNodeView(nodeModel);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<BeanShellNodeModel> createNodeView(final int viewIndex,
+            final BeanShellNodeModel nodeModel) {
+        return new BeanShellNodeView(nodeModel);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new BeanShellNodeDialog(new Object());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return new BeanShellNodeDialog(new Object());
+    }
 
 }

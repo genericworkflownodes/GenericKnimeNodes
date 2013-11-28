@@ -30,106 +30,106 @@ import java.util.List;
  */
 public class IntegerListParameter extends NumberListParameter<Integer> {
 
-	/**
-	 * The serial version uid.
-	 */
-	private static final long serialVersionUID = 3136376166293660419L;
+    /**
+     * The serial version uid.
+     */
+    private static final long serialVersionUID = 3136376166293660419L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public IntegerListParameter(final String key, final List<Integer> value) {
-		super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public IntegerListParameter(final String key, final List<Integer> value) {
+        super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
 
-	@Override
-	public String getMnemonic() {
-		String lb = (getLowerBound() == Integer.MIN_VALUE ? "-inf" : String
-				.format("%d", getLowerBound()));
-		String ub = (getUpperBound() == Integer.MAX_VALUE ? "+inf" : String
-				.format("%d", getUpperBound()));
-		return String.format("integer list [%s:%s]", lb, ub);
-	}
+    @Override
+    public String getMnemonic() {
+        String lb = (getLowerBound() == Integer.MIN_VALUE ? "-inf" : String
+                .format("%d", getLowerBound()));
+        String ub = (getUpperBound() == Integer.MAX_VALUE ? "+inf" : String
+                .format("%d", getUpperBound()));
+        return String.format("integer list [%s:%s]", lb, ub);
+    }
 
-	@Override
-	public void fillFromString(final String s)
-			throws InvalidParameterValueException {
-		try {
-			if (s == null || s.equals("")) {
-				setValue(new ArrayList<Integer>());
-				return;
-			}
-			setValue(new ArrayList<Integer>());
-			String[] toks = s.split(SEPARATOR_TOKEN);
+    @Override
+    public void fillFromString(final String s)
+            throws InvalidParameterValueException {
+        try {
+            if (s == null || s.equals("")) {
+                setValue(new ArrayList<Integer>());
+                return;
+            }
+            setValue(new ArrayList<Integer>());
+            String[] toks = s.split(SEPARATOR_TOKEN);
 
-			for (int i = 0; i < toks.length; i++) {
-				this.getValue().add(Integer.parseInt(toks[i]));
-			}
-		} catch (NumberFormatException e) {
-			throw new InvalidParameterValueException(
-					"The given string cannot be transformed into a integer list.");
-		}
-	}
+            for (int i = 0; i < toks.length; i++) {
+                this.getValue().add(Integer.parseInt(toks[i]));
+            }
+        } catch (NumberFormatException e) {
+            throw new InvalidParameterValueException(
+                    "The given string cannot be transformed into a integer list.");
+        }
+    }
 
-	@Override
-	public boolean validate(final List<Integer> val) {
-		if (isNull()) {
-			return true;
-		}
-		boolean ok = true;
+    @Override
+    public boolean validate(final List<Integer> val) {
+        if (isNull()) {
+            return true;
+        }
+        boolean ok = true;
 
-		for (Integer v : val) {
-			if (v < getLowerBound() || v > getUpperBound()) {
-				ok = false;
-			}
-		}
-		return ok;
-	}
+        for (Integer v : val) {
+            if (v < getLowerBound() || v > getUpperBound()) {
+                ok = false;
+            }
+        }
+        return ok;
+    }
 
-	@Override
-	public String getStringRep() {
-		if (getValue() == null) {
-			return "";
-		}
-		StringBuffer sb = new StringBuffer();
-		for (Integer d : this.getValue()) {
-			sb.append(String.format("%d", d) + SEPARATOR_TOKEN);
-		}
-		return sb.toString();
-	}
+    @Override
+    public String getStringRep() {
+        if (getValue() == null) {
+            return "";
+        }
+        StringBuffer sb = new StringBuffer();
+        for (Integer d : this.getValue()) {
+            sb.append(String.format("%d", d) + SEPARATOR_TOKEN);
+        }
+        return sb.toString();
+    }
 
-	@Override
-	public List<String> getStrings() {
-		List<String> ret = new ArrayList<String>();
-		for (Integer i : this.getValue()) {
-			ret.add(i.toString());
-		}
-		return ret;
-	}
+    @Override
+    public List<String> getStrings() {
+        List<String> ret = new ArrayList<String>();
+        for (Integer i : this.getValue()) {
+            ret.add(i.toString());
+        }
+        return ret;
+    }
 
-	@Override
-	public String toString() {
-		if (getValue() == null) {
-			return "";
-		}
-		String[] ret = new String[this.getValue().size()];
-		int idx = 0;
-		for (Integer i : getValue()) {
-			ret[idx++] = i.toString();
-		}
-		return Arrays.toString(ret);
-	}
+    @Override
+    public String toString() {
+        if (getValue() == null) {
+            return "";
+        }
+        String[] ret = new String[this.getValue().size()];
+        int idx = 0;
+        for (Integer i : getValue()) {
+            ret[idx++] = i.toString();
+        }
+        return Arrays.toString(ret);
+    }
 
-	@Override
-	public void fillFromStrings(final String[] values) {
-		this.setValue(new ArrayList<Integer>());
-		for (int i = 0; i < values.length; i++) {
-			this.getValue().add(Integer.parseInt(values[i]));
-		}
-	}
+    @Override
+    public void fillFromStrings(final String[] values) {
+        this.setValue(new ArrayList<Integer>());
+        for (int i = 0; i < values.length; i++) {
+            this.getValue().add(Integer.parseInt(values[i]));
+        }
+    }
 }

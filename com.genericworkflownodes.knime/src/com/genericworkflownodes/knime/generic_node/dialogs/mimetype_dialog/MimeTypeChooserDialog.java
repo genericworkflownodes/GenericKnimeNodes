@@ -33,63 +33,63 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.port.Port;
 
 public class MimeTypeChooserDialog extends JPanel implements ActionListener {
-	private static final long serialVersionUID = 3102737955888696834L;
+    private static final long serialVersionUID = 3102737955888696834L;
 
-	private INodeConfiguration config;
+    private INodeConfiguration config;
 
-	private JComboBox[] cbs;
-	private int[] sel_ports;
+    private JComboBox[] cbs;
+    private int[] sel_ports;
 
-	public MimeTypeChooserDialog(INodeConfiguration config) {
-		this.config = config;
+    public MimeTypeChooserDialog(INodeConfiguration config) {
+        this.config = config;
 
-		setLayout(new VerticalLayout());
+        setLayout(new VerticalLayout());
 
-		int nCB = this.config.getNumberOfOutputPorts();
+        int nCB = this.config.getNumberOfOutputPorts();
 
-		cbs = new JComboBox[nCB];
-		sel_ports = new int[nCB];
+        cbs = new JComboBox[nCB];
+        sel_ports = new int[nCB];
 
-		for (int i = 0; i < nCB; i++) {
-			Port port = this.config.getOutputPorts().get(i);
+        for (int i = 0; i < nCB; i++) {
+            Port port = this.config.getOutputPorts().get(i);
 
-			this.add(new JLabel(port.getName()));
+            this.add(new JLabel(port.getName()));
 
-			List<String> types = port.getMimeTypes();
-			String[] strs = new String[types.size()];
+            List<String> types = port.getMimeTypes();
+            String[] strs = new String[types.size()];
 
-			int idx = 0;
-			for (String type : types) {
-				strs[idx++] = type;
-			}
+            int idx = 0;
+            for (String type : types) {
+                strs[idx++] = type;
+            }
 
-			JComboBox cb = new JComboBox(strs);
-			cbs[i] = cb;
-			this.add(cb);
-			cb.addActionListener(this);
-		}
-	}
+            JComboBox cb = new JComboBox(strs);
+            cbs[i] = cb;
+            this.add(cb);
+            cb.addActionListener(this);
+        }
+    }
 
-	public int[] getSelectedTypes() {
-		return sel_ports;
-	}
+    public int[] getSelectedTypes() {
+        return sel_ports;
+    }
 
-	public void setSelectedTypes(int[] sel_ports) {
-		this.sel_ports = new int[sel_ports.length];
-		System.arraycopy(sel_ports, 0, this.sel_ports, 0, sel_ports.length);
-		for (int i = 0; i < cbs.length; i++) {
-			cbs[i].setSelectedIndex(sel_ports[i]);
-		}
-	}
+    public void setSelectedTypes(int[] sel_ports) {
+        this.sel_ports = new int[sel_ports.length];
+        System.arraycopy(sel_ports, 0, this.sel_ports, 0, sel_ports.length);
+        for (int i = 0; i < cbs.length; i++) {
+            cbs[i].setSelectedIndex(sel_ports[i]);
+        }
+    }
 
-	@Override
-	public void actionPerformed(ActionEvent ev) {
-		for (int i = 0; i < cbs.length; i++) {
-			if (ev.getSource() == cbs[i]) {
-				sel_ports[i] = cbs[i].getSelectedIndex();
-			}
-		}
+    @Override
+    public void actionPerformed(ActionEvent ev) {
+        for (int i = 0; i < cbs.length; i++) {
+            if (ev.getSource() == cbs[i]) {
+                sel_ports[i] = cbs[i].getSelectedIndex();
+            }
+        }
 
-	}
+    }
 
 }

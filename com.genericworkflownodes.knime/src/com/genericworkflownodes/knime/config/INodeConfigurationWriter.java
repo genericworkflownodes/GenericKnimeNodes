@@ -28,33 +28,33 @@ import java.io.IOException;
  */
 public interface INodeConfigurationWriter {
 
-	/**
-	 * Sets the given parameter to the value in the output file.
-	 * 
-	 * @param name
-	 *            The parameter identifier.
-	 * @param value
-	 *            The new value of the parameter.
-	 */
-	void setParameterValue(String name, String value);
+    /**
+     * Sets the given parameter to the value in the output file.
+     * 
+     * @param name
+     *            The parameter identifier.
+     * @param value
+     *            The new value of the parameter.
+     */
+    void setParameterValue(String name, String value);
 
-	/**
-	 * Adds the given value to the given parameter.
-	 * 
-	 * @param name
-	 *            The parameter identifier.
-	 * @param value
-	 *            The new value of the parameter.
-	 */
-	void setMultiParameterValue(String name, String value);
+    /**
+     * Adds the given value to the given parameter.
+     * 
+     * @param name
+     *            The parameter identifier.
+     * @param value
+     *            The new value of the parameter.
+     */
+    void setMultiParameterValue(String name, String value);
 
-	/**
-	 * Writes the node configuration to the given file.
-	 * 
-	 * @param file
-	 *            File to store the node configuration.
-	 * @throws IOException
-	 *             The {@link IOException} will be thrown in case of io errors.
-	 */
-	void write(File file) throws IOException;
+    /**
+     * Writes the node configuration to the given file.
+     * 
+     * @param file
+     *            File to store the node configuration.
+     * @throws IOException
+     *             The {@link IOException} will be thrown in case of io errors.
+     */
+    void write(File file) throws IOException;
 }

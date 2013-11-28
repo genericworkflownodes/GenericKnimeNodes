@@ -32,22 +32,22 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
  */
 public interface ICommandGenerator {
 
-	/**
-	 * Create a list of command line arguments needed to execute the associated
-	 * node.
-	 * 
-	 * @param nodeConfiguration
-	 * @param pluginConfiguration
-	 * @param workingDirectory
-	 *            The directory where the tool will be executed. Make sure that
-	 *            the JVM has access to this directory. This gets particularly
-	 *            important if the process will be executed on a different host.
-	 * @return The generated series of command line arguments.
-	 * @throws Exception
-	 *             An exception is thrown if the construction fails.
-	 */
-	List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			IPluginConfiguration pluginConfiguration, File workingDirectory)
-			throws Exception;
+    /**
+     * Create a list of command line arguments needed to execute the associated
+     * node.
+     * 
+     * @param nodeConfiguration
+     * @param pluginConfiguration
+     * @param workingDirectory
+     *            The directory where the tool will be executed. Make sure that
+     *            the JVM has access to this directory. This gets particularly
+     *            important if the process will be executed on a different host.
+     * @return The generated series of command line arguments.
+     * @throws Exception
+     *             An exception is thrown if the construction fails.
+     */
+    List<String> generateCommands(INodeConfiguration nodeConfiguration,
+            IPluginConfiguration pluginConfiguration, File workingDirectory)
+            throws Exception;
 
 }

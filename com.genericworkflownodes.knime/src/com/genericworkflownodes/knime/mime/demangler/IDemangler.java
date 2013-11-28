@@ -36,48 +36,48 @@ import org.knime.core.node.port.PortObjectSpec;
  */
 public interface IDemangler extends Serializable {
 
-	/**
-	 * Returns the {@link MIMEType} that this {@link IDemangler} can translate.
-	 * 
-	 * @return The convertible {@link MIMEType}.
-	 */
-	String getMIMEType();
+    /**
+     * Returns the {@link MIMEType} that this {@link IDemangler} can translate.
+     * 
+     * @return The convertible {@link MIMEType}.
+     */
+    String getMIMEType();
 
-	/**
-	 * Returns the {@link DataTableSpec} which will be created by the
-	 * {@link IDemangler}.
-	 * 
-	 * @return The {@link DataTableSpec} of the table that will be generated.
-	 */
-	DataTableSpec getTableSpec();
+    /**
+     * Returns the {@link DataTableSpec} which will be created by the
+     * {@link IDemangler}.
+     * 
+     * @return The {@link DataTableSpec} of the table that will be generated.
+     */
+    DataTableSpec getTableSpec();
 
-	/**
-	 * Returns the {@link PortObjectSpec} for the {@link MIMEType} that will be
-	 * created while mangling.
-	 * 
-	 * @return The {@link PortObjectSpec} that will be created by this
-	 *         {@link IDemangler}.
-	 */
-	PortObjectSpec getPortOjectSpec();
+    /**
+     * Returns the {@link PortObjectSpec} for the {@link MIMEType} that will be
+     * created while mangling.
+     * 
+     * @return The {@link PortObjectSpec} that will be created by this
+     *         {@link IDemangler}.
+     */
+    PortObjectSpec getPortOjectSpec();
 
-	/**
-	 * Demangles the given file by returning an {@link Iterator} to the rows
-	 * that can be added directly to the generated table.
-	 * 
-	 * @param file
-	 *            The file to demangle.
-	 * @return An {@link Iterator} to the file content in {@link DataRow} form.
-	 */
-	Iterator<DataRow> demangle(URI file);
+    /**
+     * Demangles the given file by returning an {@link Iterator} to the rows
+     * that can be added directly to the generated table.
+     * 
+     * @param file
+     *            The file to demangle.
+     * @return An {@link Iterator} to the file content in {@link DataRow} form.
+     */
+    Iterator<DataRow> demangle(URI file);
 
-	/**
-	 * Writes the content of the table to the given file.
-	 * 
-	 * @param table
-	 *            The {@link BufferedDataTable} which should be translated to a
-	 *            file.
-	 * @param file
-	 *            The file where the content of the table should be stored.
-	 */
-	void mangle(BufferedDataTable table, URI file);
+    /**
+     * Writes the content of the table to the given file.
+     * 
+     * @param table
+     *            The {@link BufferedDataTable} which should be translated to a
+     *            file.
+     * @param file
+     *            The file where the content of the table should be stored.
+     */
+    void mangle(BufferedDataTable table, URI file);
 }

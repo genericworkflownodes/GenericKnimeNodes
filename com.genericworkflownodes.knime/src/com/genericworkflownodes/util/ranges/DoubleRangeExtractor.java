@@ -7,19 +7,19 @@ package com.genericworkflownodes.util.ranges;
  */
 public class DoubleRangeExtractor extends RangeExtractor<Double> {
 
-	@Override
-	protected Double getUpperBoundDefault() {
-		return Double.POSITIVE_INFINITY;
-	}
+    @Override
+    protected Double getUpperBoundDefault() {
+        return Double.POSITIVE_INFINITY;
+    }
 
-	@Override
-	protected Double getLowerBoundDefault() {
-		return Double.NEGATIVE_INFINITY;
-	}
+    @Override
+    protected Double getLowerBoundDefault() {
+        return Double.NEGATIVE_INFINITY;
+    }
 
-	@Override
-	protected Double parseString(final String str) {
-		return Double.parseDouble(str);
-	}
+    @Override
+    protected Double parseString(final String str) {
+        return Double.parseDouble(str);
+    }
 
 }

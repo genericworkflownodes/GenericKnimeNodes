@@ -35,50 +35,50 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  */
 public class ListEditorComponent extends JLabel {
 
-	/**
-	 * The serialVersionUID.
-	 */
-	private static final long serialVersionUID = -9039670994475022672L;
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = -9039670994475022672L;
 
-	/**
-	 * The listparameter to represent.
-	 */
-	private final ListParameter parameter;
+    /**
+     * The listparameter to represent.
+     */
+    private final ListParameter parameter;
 
-	/**
-	 * C'tor
-	 * 
-	 * @param parameter
-	 *            The parameter to represent in the ListEditor.
-	 * @param parent
-	 *            The parent cell editor. Used to trigger
-	 *            {@link TableCellEditor#stopCellEditing()} after the editor was
-	 *            closed.
-	 */
-	public ListEditorComponent(ListParameter parameter,
-			final ParamCellEditor parent) {
-		super("Editing...");
-		this.parameter = parameter;
-		ListEditorDialog led = new ListEditorDialog(parameter);
-		led.setVisible(true);
+    /**
+     * C'tor
+     * 
+     * @param parameter
+     *            The parameter to represent in the ListEditor.
+     * @param parent
+     *            The parent cell editor. Used to trigger
+     *            {@link TableCellEditor#stopCellEditing()} after the editor was
+     *            closed.
+     */
+    public ListEditorComponent(ListParameter parameter,
+            final ParamCellEditor parent) {
+        super("Editing...");
+        this.parameter = parameter;
+        ListEditorDialog led = new ListEditorDialog(parameter);
+        led.setVisible(true);
 
-		// Trigger closing of the editor and transfer of values to the
-		// underlying model.
-		UIHelper.invokeDelayed(50, new Runnable() {
-			@Override
-			public void run() {
-				parent.stopCellEditing();
-			}
-		});
-	}
+        // Trigger closing of the editor and transfer of values to the
+        // underlying model.
+        UIHelper.invokeDelayed(50, new Runnable() {
+            @Override
+            public void run() {
+                parent.stopCellEditing();
+            }
+        });
+    }
 
-	/**
-	 * Returns the adjusted value of the parameter.
-	 * 
-	 * @return The new value of the parameter after editing.
-	 */
-	public String getParameterValue() {
-		return StringUtils.join(parameter.getStrings(),
-				Parameter.SEPARATOR_TOKEN);
-	}
+    /**
+     * Returns the adjusted value of the parameter.
+     * 
+     * @return The new value of the parameter after editing.
+     */
+    public String getParameterValue() {
+        return StringUtils.join(parameter.getStrings(),
+                Parameter.SEPARATOR_TOKEN);
+    }
 }

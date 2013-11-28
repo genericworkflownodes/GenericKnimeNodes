@@ -30,47 +30,47 @@ import org.knime.core.node.NodeView;
  * @author roettig
  */
 public class MimeFileViewerNodeFactory extends
-		NodeFactory<MimeFileViewerNodeModel> {
+        NodeFactory<MimeFileViewerNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public MimeFileViewerNodeModel createNodeModel() {
-		return new MimeFileViewerNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MimeFileViewerNodeModel createNodeModel() {
+        return new MimeFileViewerNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 1;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 1;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<MimeFileViewerNodeModel> createNodeView(
-			final int viewIndex, final MimeFileViewerNodeModel nodeModel) {
-		return new MimeFileViewerNodeView(nodeModel);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<MimeFileViewerNodeModel> createNodeView(
+            final int viewIndex, final MimeFileViewerNodeModel nodeModel) {
+        return new MimeFileViewerNodeView(nodeModel);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new MimeFileViewerNodeDialog();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return new MimeFileViewerNodeDialog();
+    }
 
 }

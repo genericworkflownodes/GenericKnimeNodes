@@ -47,217 +47,217 @@ import org.knime.core.node.workflow.LoopStartNodeTerminator;
  * @author roettig, aiche
  */
 public class ListZipLoopStartNodeModel extends NodeModel implements
-		LoopStartNodeTerminator {
+        LoopStartNodeTerminator {
 
-	/**
-	 * The current iteration.
-	 */
-	private int m_iteration;
+    /**
+     * The current iteration.
+     */
+    private int m_iteration;
 
-	/**
-	 * The number of incoming ports that were actually connected by the user.
-	 */
-	private int m_numAssignedIncomingPorts;
+    /**
+     * The number of incoming ports that were actually connected by the user.
+     */
+    private int m_numAssignedIncomingPorts;
 
-	/**
-	 * The actual number of iterations.
-	 */
-	private int m_rowCount = 0;
+    /**
+     * The actual number of iterations.
+     */
+    private int m_rowCount = 0;
 
-	/**
-	 * Number of in-/ output ports of the loop node.
-	 */
-	private static int PORT_COUNT = 4;
+    /**
+     * Number of in-/ output ports of the loop node.
+     */
+    private static int PORT_COUNT = 4;
 
-	static String CFG_REUSE = "recycle_1st_port";
-	static boolean DEFAULT_REUSE = false;
-	private SettingsModelBoolean m_reuse = new SettingsModelBoolean(CFG_REUSE,
-			DEFAULT_REUSE);
+    static String CFG_REUSE = "recycle_1st_port";
+    static boolean DEFAULT_REUSE = false;
+    private SettingsModelBoolean m_reuse = new SettingsModelBoolean(CFG_REUSE,
+            DEFAULT_REUSE);
 
-	/**
-	 * Creates a new model.
-	 */
-	public ListZipLoopStartNodeModel() {
-		super(createIncomingPortObjects(), createOutgoingPortObjects());
-	}
+    /**
+     * Creates a new model.
+     */
+    public ListZipLoopStartNodeModel() {
+        super(createIncomingPortObjects(), createOutgoingPortObjects());
+    }
 
-	private static final PortType OPTIONAL_PORT_TYPE = new PortType(
-			URIPortObject.class, true);
+    private static final PortType OPTIONAL_PORT_TYPE = new PortType(
+            URIPortObject.class, true);
 
-	private static PortType[] createIncomingPortObjects() {
-		PortType[] portTypes = new PortType[PORT_COUNT];
-		Arrays.fill(portTypes, URIPortObject.TYPE);
-		portTypes[1] = OPTIONAL_PORT_TYPE;
-		portTypes[2] = OPTIONAL_PORT_TYPE;
-		portTypes[3] = OPTIONAL_PORT_TYPE;
-		return portTypes;
-	}
+    private static PortType[] createIncomingPortObjects() {
+        PortType[] portTypes = new PortType[PORT_COUNT];
+        Arrays.fill(portTypes, URIPortObject.TYPE);
+        portTypes[1] = OPTIONAL_PORT_TYPE;
+        portTypes[2] = OPTIONAL_PORT_TYPE;
+        portTypes[3] = OPTIONAL_PORT_TYPE;
+        return portTypes;
+    }
 
-	private static PortType[] createOutgoingPortObjects() {
-		PortType[] portTypes = new PortType[PORT_COUNT];
-		Arrays.fill(portTypes, URIPortObject.TYPE);
-		portTypes[1] = OPTIONAL_PORT_TYPE;
-		portTypes[2] = OPTIONAL_PORT_TYPE;
-		portTypes[3] = OPTIONAL_PORT_TYPE;
-		return portTypes;
-	}
+    private static PortType[] createOutgoingPortObjects() {
+        PortType[] portTypes = new PortType[PORT_COUNT];
+        Arrays.fill(portTypes, URIPortObject.TYPE);
+        portTypes[1] = OPTIONAL_PORT_TYPE;
+        portTypes[2] = OPTIONAL_PORT_TYPE;
+        portTypes[3] = OPTIONAL_PORT_TYPE;
+        return portTypes;
+    }
 
-	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		assert m_iteration == 0;
-		pushFlowVariableInt("currentIteration", m_iteration);
-		pushFlowVariableInt("maxIterations", 0);
+    @Override
+    protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        assert m_iteration == 0;
+        pushFlowVariableInt("currentIteration", m_iteration);
+        pushFlowVariableInt("maxIterations", 0);
 
-		List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
+        List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
 
-		for (int i = 0; i < PORT_COUNT; i++) {
-			if (inSpecs[i] == null) {
-				break;
-			}
-			URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
-			specs.add(spec);
-		}
+        for (int i = 0; i < PORT_COUNT; i++) {
+            if (inSpecs[i] == null) {
+                break;
+            }
+            URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
+            specs.add(spec);
+        }
 
-		return getOutputSpec(specs);
-	}
+        return getOutputSpec(specs);
+    }
 
-	private PortObjectSpec[] getOutputSpec(List<URIPortObjectSpec> specs) {
-		m_numAssignedIncomingPorts = specs.size();
+    private PortObjectSpec[] getOutputSpec(List<URIPortObjectSpec> specs) {
+        m_numAssignedIncomingPorts = specs.size();
 
-		PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
+        PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
 
-		for (int i = 0; i < PORT_COUNT; i++) {
-			if (i < m_numAssignedIncomingPorts) {
-				ret[i] = specs.get(i);
-			} else {
-				ret[i] = null;
-			}
-		}
+        for (int i = 0; i < PORT_COUNT; i++) {
+            if (i < m_numAssignedIncomingPorts) {
+                ret[i] = specs.get(i);
+            } else {
+                ret[i] = null;
+            }
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+    @Override
+    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
+            throws Exception {
 
-		// check the loop conditions
-		if (m_iteration == 0) {
-			assert getLoopEndNode() == null : "1st iteration but end node set";
+        // check the loop conditions
+        if (m_iteration == 0) {
+            assert getLoopEndNode() == null : "1st iteration but end node set";
 
-			// check the content of the different Ports
-			if (!m_reuse.getBooleanValue()) {
-				int numberOfURIs = ((URIPortObject) inObjects[0])
-						.getURIContents().size();
-				for (int i = 1; i < m_numAssignedIncomingPorts; ++i) {
-					if (((URIPortObject) inObjects[i]).getURIContents().size() != numberOfURIs) {
-						throw new Exception(
-								"Invalid settings. The number of URIs at the incoming ports differ.");
-					}
-				}
-			}
+            // check the content of the different Ports
+            if (!m_reuse.getBooleanValue()) {
+                int numberOfURIs = ((URIPortObject) inObjects[0])
+                        .getURIContents().size();
+                for (int i = 1; i < m_numAssignedIncomingPorts; ++i) {
+                    if (((URIPortObject) inObjects[i]).getURIContents().size() != numberOfURIs) {
+                        throw new Exception(
+                                "Invalid settings. The number of URIs at the incoming ports differ.");
+                    }
+                }
+            }
 
-		} else {
-			assert getLoopEndNode() != null : "No end node set";
-		}
+        } else {
+            assert getLoopEndNode() != null : "No end node set";
+        }
 
-		URIPortObject[] uriOutputObjects = new URIPortObject[PORT_COUNT];
-		m_rowCount = ((URIPortObject) inObjects[0]).getURIContents().size();
+        URIPortObject[] uriOutputObjects = new URIPortObject[PORT_COUNT];
+        m_rowCount = ((URIPortObject) inObjects[0]).getURIContents().size();
 
-		// 1st port is handled separately
-		URIContent uri = ((URIPortObject) inObjects[0]).getURIContents().get(
-				m_iteration);
-		List<URIContent> uriContents = new ArrayList<URIContent>();
-		uriContents.add(uri);
-		uriOutputObjects[0] = new URIPortObject(uriContents);
+        // 1st port is handled separately
+        URIContent uri = ((URIPortObject) inObjects[0]).getURIContents().get(
+                m_iteration);
+        List<URIContent> uriContents = new ArrayList<URIContent>();
+        uriContents.add(uri);
+        uriOutputObjects[0] = new URIPortObject(uriContents);
 
-		for (int i = 1; i < PORT_COUNT; i++) {
-			URIPortObject in = (URIPortObject) inObjects[i];
-			if (i < m_numAssignedIncomingPorts) {
-				if (m_reuse.getBooleanValue()) {
-					uriOutputObjects[i] = new URIPortObject(in.getURIContents());
-				} else {
-					List<URIContent> localUriContents = new ArrayList<URIContent>();
-					URIContent localUri = in.getURIContents().get(m_iteration);
-					localUriContents.add(localUri);
-					uriOutputObjects[i] = new URIPortObject(localUriContents);
-				}
-			} else {
-				uriOutputObjects[i] = new URIPortObject(new ArrayList<URIContent>());
-			}
-		}
+        for (int i = 1; i < PORT_COUNT; i++) {
+            URIPortObject in = (URIPortObject) inObjects[i];
+            if (i < m_numAssignedIncomingPorts) {
+                if (m_reuse.getBooleanValue()) {
+                    uriOutputObjects[i] = new URIPortObject(in.getURIContents());
+                } else {
+                    List<URIContent> localUriContents = new ArrayList<URIContent>();
+                    URIContent localUri = in.getURIContents().get(m_iteration);
+                    localUriContents.add(localUri);
+                    uriOutputObjects[i] = new URIPortObject(localUriContents);
+                }
+            } else {
+                uriOutputObjects[i] = new URIPortObject(new ArrayList<URIContent>());
+            }
+        }
 
-		// TODO: check if this is necessary
-		pushFlowVariableInt("currentIteration", m_iteration);
-		pushFlowVariableInt("maxIterations", m_rowCount);
+        // TODO: check if this is necessary
+        pushFlowVariableInt("currentIteration", m_iteration);
+        pushFlowVariableInt("maxIterations", m_rowCount);
 
-		// proceed in the number of iterations
-		m_iteration++;
+        // proceed in the number of iterations
+        m_iteration++;
 
-		return uriOutputObjects;
-	}
+        return uriOutputObjects;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		// reset all internal states
-		m_iteration = 0;
-		m_numAssignedIncomingPorts = 0;
-		m_rowCount = 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        // reset all internal states
+        m_iteration = 0;
+        m_numAssignedIncomingPorts = 0;
+        m_rowCount = 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean terminateLoop() {
-		return m_iteration == m_rowCount;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean terminateLoop() {
+        return m_iteration == m_rowCount;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		m_reuse.saveSettingsTo(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        m_reuse.saveSettingsTo(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		m_reuse.validateSettings(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_reuse.validateSettings(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		m_reuse.loadSettingsFrom(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_reuse.loadSettingsFrom(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File nodeInternDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File nodeInternDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File nodeInternDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File nodeInternDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+    }
 }

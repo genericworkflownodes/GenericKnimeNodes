@@ -37,72 +37,72 @@ import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
  */
 public class StringUtilsTest {
 
-	@Test
-	public void testJoin() {
-		assertEquals("a,b,c,d",
-				StringUtils.join(Arrays.asList("a", "b", "c", "d"), ","));
-		assertEquals("a;b;c;d",
-				StringUtils.join(Arrays.asList("a", "b", "c", "d"), ";"));
+    @Test
+    public void testJoin() {
+        assertEquals("a,b,c,d",
+                StringUtils.join(Arrays.asList("a", "b", "c", "d"), ","));
+        assertEquals("a;b;c;d",
+                StringUtils.join(Arrays.asList("a", "b", "c", "d"), ";"));
 
-	}
+    }
 
-	@Test
-	public void testLowerBoundExtractionDouble() {
-		assertEquals(new Double(2.0),
-				new DoubleRangeExtractor().getLowerBound("2.0:100"));
-		assertEquals(new Double(2.0),
-				new DoubleRangeExtractor().getLowerBound("2.0:"));
-		assertEquals(new Double(2.0),
-				new DoubleRangeExtractor().getLowerBound("2.0"));
+    @Test
+    public void testLowerBoundExtractionDouble() {
+        assertEquals(new Double(2.0),
+                new DoubleRangeExtractor().getLowerBound("2.0:100"));
+        assertEquals(new Double(2.0),
+                new DoubleRangeExtractor().getLowerBound("2.0:"));
+        assertEquals(new Double(2.0),
+                new DoubleRangeExtractor().getLowerBound("2.0"));
 
-		assertEquals(new Double(Double.NEGATIVE_INFINITY),
-				new DoubleRangeExtractor().getLowerBound(":100"));
-		assertEquals(new Double(Double.NEGATIVE_INFINITY),
-				new DoubleRangeExtractor().getLowerBound(":"));
-		assertEquals(new Double(Double.NEGATIVE_INFINITY),
-				new DoubleRangeExtractor().getLowerBound(""));
-	}
+        assertEquals(new Double(Double.NEGATIVE_INFINITY),
+                new DoubleRangeExtractor().getLowerBound(":100"));
+        assertEquals(new Double(Double.NEGATIVE_INFINITY),
+                new DoubleRangeExtractor().getLowerBound(":"));
+        assertEquals(new Double(Double.NEGATIVE_INFINITY),
+                new DoubleRangeExtractor().getLowerBound(""));
+    }
 
-	@Test
-	public void testLowerBoundExtractionInteger() {
-		assertEquals(new Integer(2),
-				new IntegerRangeExtractor().getLowerBound("2:100"));
-		assertEquals(new Integer(2),
-				new IntegerRangeExtractor().getLowerBound("2:"));
-		assertEquals(new Integer(2),
-				new IntegerRangeExtractor().getLowerBound("2"));
+    @Test
+    public void testLowerBoundExtractionInteger() {
+        assertEquals(new Integer(2),
+                new IntegerRangeExtractor().getLowerBound("2:100"));
+        assertEquals(new Integer(2),
+                new IntegerRangeExtractor().getLowerBound("2:"));
+        assertEquals(new Integer(2),
+                new IntegerRangeExtractor().getLowerBound("2"));
 
-		assertEquals(new Integer(Integer.MIN_VALUE),
-				new IntegerRangeExtractor().getLowerBound(":100"));
-		assertEquals(new Integer(Integer.MIN_VALUE),
-				new IntegerRangeExtractor().getLowerBound(":"));
-		assertEquals(new Integer(Integer.MIN_VALUE),
-				new IntegerRangeExtractor().getLowerBound(""));
-	}
+        assertEquals(new Integer(Integer.MIN_VALUE),
+                new IntegerRangeExtractor().getLowerBound(":100"));
+        assertEquals(new Integer(Integer.MIN_VALUE),
+                new IntegerRangeExtractor().getLowerBound(":"));
+        assertEquals(new Integer(Integer.MIN_VALUE),
+                new IntegerRangeExtractor().getLowerBound(""));
+    }
 
-	@Test
-	public void testUpperBoundExtractionDouble() {
-		assertEquals(new Double(2.0),
-				new DoubleRangeExtractor().getUpperBound("2.0:2.0"));
-		assertEquals(new Double(2.0),
-				new DoubleRangeExtractor().getUpperBound(":2.0"));
+    @Test
+    public void testUpperBoundExtractionDouble() {
+        assertEquals(new Double(2.0),
+                new DoubleRangeExtractor().getUpperBound("2.0:2.0"));
+        assertEquals(new Double(2.0),
+                new DoubleRangeExtractor().getUpperBound(":2.0"));
 
-		assertEquals(new Double(Double.POSITIVE_INFINITY),
-				new DoubleRangeExtractor().getUpperBound("100:"));
-		assertEquals(new Double(Double.POSITIVE_INFINITY),
-				new DoubleRangeExtractor().getUpperBound(":"));
-	}
+        assertEquals(new Double(Double.POSITIVE_INFINITY),
+                new DoubleRangeExtractor().getUpperBound("100:"));
+        assertEquals(new Double(Double.POSITIVE_INFINITY),
+                new DoubleRangeExtractor().getUpperBound(":"));
+    }
 
-	@Test
-	public void testUpperBoundExtractionInteger() {
-		assertEquals(new Integer(2),
-				new IntegerRangeExtractor().getUpperBound("2:2"));
-		assertEquals(new Integer(2),
-				new IntegerRangeExtractor().getUpperBound(":2"));
+    @Test
+    public void testUpperBoundExtractionInteger() {
+        assertEquals(new Integer(2),
+                new IntegerRangeExtractor().getUpperBound("2:2"));
+        assertEquals(new Integer(2),
+                new IntegerRangeExtractor().getUpperBound(":2"));
 
-		assertEquals(new Integer(Integer.MAX_VALUE),
-				new IntegerRangeExtractor().getUpperBound("100:"));
-		assertEquals(new Integer(Integer.MAX_VALUE),
-				new IntegerRangeExtractor().getUpperBound(":"));
-	}
+        assertEquals(new Integer(Integer.MAX_VALUE),
+                new IntegerRangeExtractor().getUpperBound("100:"));
+        assertEquals(new Integer(Integer.MAX_VALUE),
+                new IntegerRangeExtractor().getUpperBound(":"));
+    }
 }

@@ -37,142 +37,142 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * @author roettig, aiche
  */
 public class ParameterDialogModel extends AbstractTreeTableModel implements
-		TreeTableModel {
+        TreeTableModel {
 
-	/**
-	 * Type information for the individual columns.
-	 */
-	private static Class<?>[] cTypes = { TreeTableModel.class, Parameter.class,
-			String.class };
+    /**
+     * Type information for the individual columns.
+     */
+    private static Class<?>[] cTypes = { TreeTableModel.class, Parameter.class,
+            String.class };
 
-	/**
-	 * Column name/header information.
-	 */
-	private static String[] cNames = { "Parameter", "Value", "Type" };
+    /**
+     * Column name/header information.
+     */
+    private static String[] cNames = { "Parameter", "Value", "Type" };
 
-	/**
-	 * The node configuration represented by this dialog model.
-	 */
-	private NodeConfigurationTree wrapper;
-	private boolean showAdvanced = false;
+    /**
+     * The node configuration represented by this dialog model.
+     */
+    private NodeConfigurationTree wrapper;
+    private boolean showAdvanced = false;
 
-	/**
-	 * The {@link ParamCellEditor} instance for this DialogModel.
-	 */
-	private final ParamCellEditor paramCellEditor;
+    /**
+     * The {@link ParamCellEditor} instance for this DialogModel.
+     */
+    private final ParamCellEditor paramCellEditor;
 
-	public ParameterDialogModel(INodeConfiguration config)
-			throws FileNotFoundException, Exception {
-		NodeConfigurationTree wrapper = new NodeConfigurationTree(config, false);
-		root = wrapper.getRoot();
-		this.wrapper = wrapper;
-		paramCellEditor = new ParamCellEditor();
-	}
+    public ParameterDialogModel(INodeConfiguration config)
+            throws FileNotFoundException, Exception {
+        NodeConfigurationTree wrapper = new NodeConfigurationTree(config, false);
+        root = wrapper.getRoot();
+        this.wrapper = wrapper;
+        paramCellEditor = new ParamCellEditor();
+    }
 
-	public void refresh() {
-		wrapper.setShowAdvanced(showAdvanced);
-		wrapper.update();
-		modelSupport.fireNewRoot();
-	}
+    public void refresh() {
+        wrapper.setShowAdvanced(showAdvanced);
+        wrapper.update();
+        modelSupport.fireNewRoot();
+    }
 
-	public void setShowAdvanced(boolean showAdvanced) {
-		this.showAdvanced = showAdvanced;
-	}
+    public void setShowAdvanced(boolean showAdvanced) {
+        this.showAdvanced = showAdvanced;
+    }
 
-	@Override
-	public Object getChild(Object parent, int idx) {
-		ParameterNode par = (ParameterNode) parent;
-		return par.getChild(idx);
-	}
+    @Override
+    public Object getChild(Object parent, int idx) {
+        ParameterNode par = (ParameterNode) parent;
+        return par.getChild(idx);
+    }
 
-	@Override
-	public int getChildCount(Object parent) {
-		ParameterNode par = (ParameterNode) parent;
-		return par.getNumChildren();
-	}
+    @Override
+    public int getChildCount(Object parent) {
+        ParameterNode par = (ParameterNode) parent;
+        return par.getNumChildren();
+    }
 
-	@Override
-	public int getIndexOfChild(Object parent, Object child_) {
-		ParameterNode par = (ParameterNode) parent;
-		ParameterNode child = (ParameterNode) child_;
-		return par.getChildIndex(child);
-	}
+    @Override
+    public int getIndexOfChild(Object parent, Object child_) {
+        ParameterNode par = (ParameterNode) parent;
+        ParameterNode child = (ParameterNode) child_;
+        return par.getChildIndex(child);
+    }
 
-	@Override
-	public boolean isLeaf(Object parent) {
-		ParameterNode par = (ParameterNode) parent;
-		return par.isLeaf();
-	}
+    @Override
+    public boolean isLeaf(Object parent) {
+        ParameterNode par = (ParameterNode) parent;
+        return par.isLeaf();
+    }
 
-	@Override
-	public Class<?> getColumnClass(int column) {
-		return cTypes[column];
-	}
+    @Override
+    public Class<?> getColumnClass(int column) {
+        return cTypes[column];
+    }
 
-	@Override
-	public int getColumnCount() {
-		return cNames.length;
-	}
+    @Override
+    public int getColumnCount() {
+        return cNames.length;
+    }
 
-	@Override
-	public String getColumnName(int idx) {
-		return cNames[idx];
-	}
+    @Override
+    public String getColumnName(int idx) {
+        return cNames[idx];
+    }
 
-	@Override
-	public int getHierarchicalColumn() {
-		return 0;
-	}
+    @Override
+    public int getHierarchicalColumn() {
+        return 0;
+    }
 
-	@Override
-	public Object getValueAt(Object node, int column) {
-		ParameterNode n = (ParameterNode) node;
+    @Override
+    public Object getValueAt(Object node, int column) {
+        ParameterNode n = (ParameterNode) node;
 
-		if (column == -1) {
-			return n.getName();
-		} else if (column == 0) {
-			if (n.getPayload() == null) {
-				return n.getName();
-			} else {
-				return n.getPayload().getKey();
-			}
-		} else if (column == 1) {
-			if (n.getPayload() == null) {
-				return "";
-			} else {
-				return n.getPayload();
-			}
-		} else if (column == 2) {
-			if (n.getPayload() == null) {
-				return "";
-			} else {
-				return n.getPayload().getMnemonic();
-			}
-		} else if (column == 3) {
-			return n.getDescription();
-		}
-		return null;
-	}
+        if (column == -1) {
+            return n.getName();
+        } else if (column == 0) {
+            if (n.getPayload() == null) {
+                return n.getName();
+            } else {
+                return n.getPayload().getKey();
+            }
+        } else if (column == 1) {
+            if (n.getPayload() == null) {
+                return "";
+            } else {
+                return n.getPayload();
+            }
+        } else if (column == 2) {
+            if (n.getPayload() == null) {
+                return "";
+            } else {
+                return n.getPayload().getMnemonic();
+            }
+        } else if (column == 3) {
+            return n.getDescription();
+        }
+        return null;
+    }
 
-	@Override
-	public boolean isCellEditable(Object value, int column) {
-		ParameterNode n = (ParameterNode) value;
-		if (column == 1) {
-			if (n.isLeaf()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean isCellEditable(Object value, int column) {
+        ParameterNode n = (ParameterNode) value;
+        if (column == 1) {
+            if (n.isLeaf()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void setValueAt(Object value, Object node, int column) {
-		ParameterNode n = (ParameterNode) node;
-		n.setPayload((Parameter<?>) value);
-	}
+    @Override
+    public void setValueAt(Object value, Object node, int column) {
+        ParameterNode n = (ParameterNode) node;
+        n.setPayload((Parameter<?>) value);
+    }
 
-	public TableCellEditor getCellEditor() {
-		return paramCellEditor;
-	}
+    public TableCellEditor getCellEditor() {
+        return paramCellEditor;
+    }
 
 }

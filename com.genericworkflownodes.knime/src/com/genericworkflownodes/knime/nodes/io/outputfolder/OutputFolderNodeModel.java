@@ -29,129 +29,129 @@ import org.knime.core.node.port.PortType;
  */
 public class OutputFolderNodeModel extends NodeModel {
 
-	private static final String DEFAULT_FOLDER_NAME_VALUE = "";
+    private static final String DEFAULT_FOLDER_NAME_VALUE = "";
 
-	static final String CFG_FOLDER_NAME = "FOLDERNAME";
+    static final String CFG_FOLDER_NAME = "FOLDERNAME";
 
-	SettingsModelString m_foldername = new SettingsModelString(
-			OutputFolderNodeModel.CFG_FOLDER_NAME, DEFAULT_FOLDER_NAME_VALUE);
+    SettingsModelString m_foldername = new SettingsModelString(
+            OutputFolderNodeModel.CFG_FOLDER_NAME, DEFAULT_FOLDER_NAME_VALUE);
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected OutputFolderNodeModel() {
-		super(new PortType[] { new PortType(URIPortObject.class) },
-				new PortType[] {});
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected OutputFolderNodeModel() {
+        super(new PortType[] { new PortType(URIPortObject.class) },
+                new PortType[] {});
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObject[] execute(final PortObject[] inObjects,
-			final ExecutionContext exec) throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] execute(final PortObject[] inObjects,
+            final ExecutionContext exec) throws Exception {
 
-		URIPortObject obj = (URIPortObject) inObjects[0];
-		List<URIContent> uris = obj.getURIContents();
+        URIPortObject obj = (URIPortObject) inObjects[0];
+        List<URIContent> uris = obj.getURIContents();
 
-		if (uris.size() == 0) {
-			throw new Exception(
-					"There were no URIs in the supplied URIPortObject");
-		}
+        if (uris.size() == 0) {
+            throw new Exception(
+                    "There were no URIs in the supplied URIPortObject");
+        }
 
-		double idx = 1.0;
-		for (URIContent uri : uris) {
-			File in = new File(uri.getURI());
-			if (!in.canRead()) {
-				throw new Exception("Cannot read file to export: "
-						+ in.getAbsolutePath());
-			}
+        double idx = 1.0;
+        for (URIContent uri : uris) {
+            File in = new File(uri.getURI());
+            if (!in.canRead()) {
+                throw new Exception("Cannot read file to export: "
+                        + in.getAbsolutePath());
+            }
 
-			File target = new File(m_foldername.getStringValue(), in.getName());
+            File target = new File(m_foldername.getStringValue(), in.getName());
 
-			if (target.exists() && !target.canWrite()) {
-				throw new Exception("Cannot write to file: "
-						+ target.getAbsolutePath());
-			} else if (!target.getParentFile().canWrite()) {
-				throw new Exception("Cannot write to containing directoy: "
-						+ target.getParentFile().getAbsolutePath());
-			}
+            if (target.exists() && !target.canWrite()) {
+                throw new Exception("Cannot write to file: "
+                        + target.getAbsolutePath());
+            } else if (!target.getParentFile().canWrite()) {
+                throw new Exception("Cannot write to containing directoy: "
+                        + target.getParentFile().getAbsolutePath());
+            }
 
-			FileUtils.copyFile(in, target);
-			exec.setProgress(idx / uris.size());
-			exec.checkCanceled();
-		}
-		return null;
-	}
+            FileUtils.copyFile(in, target);
+            exec.setProgress(idx / uris.size());
+            exec.checkCanceled();
+        }
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
-			throw new InvalidSettingsException(
-					"No URIPortObjectSpec compatible port object");
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
+            throw new InvalidSettingsException(
+                    "No URIPortObjectSpec compatible port object");
+        }
 
-		// check the selected file
-		if ("".equals(m_foldername.getStringValue())) {
-			throw new InvalidSettingsException(
-					"Please select a target file for the Output Files node.");
-		}
-		return new DataTableSpec[] {};
-	}
+        // check the selected file
+        if ("".equals(m_foldername.getStringValue())) {
+            throw new InvalidSettingsException(
+                    "Please select a target file for the Output Files node.");
+        }
+        return new DataTableSpec[] {};
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		m_foldername.saveSettingsTo(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        m_foldername.saveSettingsTo(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		m_foldername.loadSettingsFrom(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_foldername.loadSettingsFrom(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		m_foldername.validateSettings(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_foldername.validateSettings(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+    }
 
 }

@@ -35,31 +35,31 @@ import com.genericworkflownodes.knime.port.Port;
  */
 public class FileListParameterTest {
 
-	List<String> strings = Arrays.asList("f1", "f2", "f3");
+    List<String> strings = Arrays.asList("f1", "f2", "f3");
 
-	@Test
-	public void testFileListParameter() {
-		FileListParameter flp = new FileListParameter("flp", strings);
-		assertEquals(3, flp.getValue().size());
-		assertEquals("f1", flp.getValue().get(0));
-		assertEquals("f2", flp.getValue().get(1));
-		assertEquals("f3", flp.getValue().get(2));
-	}
+    @Test
+    public void testFileListParameter() {
+        FileListParameter flp = new FileListParameter("flp", strings);
+        assertEquals(3, flp.getValue().size());
+        assertEquals("f1", flp.getValue().get(0));
+        assertEquals("f2", flp.getValue().get(1));
+        assertEquals("f3", flp.getValue().get(2));
+    }
 
-	@Test
-	public void testSetPort() {
-		FileListParameter flp = new FileListParameter("flp", strings);
-		flp.setPort(new Port());
-		assertNotNull(flp.getPort());
-	}
+    @Test
+    public void testSetPort() {
+        FileListParameter flp = new FileListParameter("flp", strings);
+        flp.setPort(new Port());
+        assertNotNull(flp.getPort());
+    }
 
-	@Test
-	public void testGetPort() {
-		FileListParameter flp = new FileListParameter("flp", strings);
-		Port p = new Port();
-		p.setName("p1");
-		flp.setPort(p);
-		assertEquals("p1", flp.getPort().getName());
-	}
+    @Test
+    public void testGetPort() {
+        FileListParameter flp = new FileListParameter("flp", strings);
+        Port p = new Port();
+        p.setName("p1");
+        flp.setPort(p);
+        assertEquals("p1", flp.getPort().getName());
+    }
 
 }

@@ -33,119 +33,119 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
  */
 public class PluginConfiguration implements IPluginConfiguration {
 
-	/**
-	 * The name of the plugin.
-	 */
-	private final String pluginId;
+    /**
+     * The name of the plugin.
+     */
+    private final String pluginId;
 
-	/**
-	 * The path where all binaries are stored (as string).
-	 */
-	private final String binariesPath;
+    /**
+     * The path where all binaries are stored (as string).
+     */
+    private final String binariesPath;
 
-	/**
-	 * The name of the plugin for the GUI.
-	 */
-	private final String pluginName;
+    /**
+     * The name of the plugin for the GUI.
+     */
+    private final String pluginName;
 
-	/**
-	 * Additional properties of the plugin.
-	 */
-	private Properties props;
+    /**
+     * Additional properties of the plugin.
+     */
+    private Properties props;
 
-	/**
-	 * A {@link Map} containing entries for environment variables, needed to
-	 * execute the binaries located in the plugin.
-	 */
-	private Map<String, String> env;
+    /**
+     * A {@link Map} containing entries for environment variables, needed to
+     * execute the binaries located in the plugin.
+     */
+    private Map<String, String> env;
 
-	/**
-	 * C'tor for {@link PluginConfiguration}.
-	 * 
-	 * @param pluginId
-	 *            The name of the plugin.
-	 * @param binariesPath
-	 *            The path where all the binaries are located.
-	 * @param props
-	 *            Additional properties.
-	 * @param env
-	 *            A {@link Map} containing entries for environment variables,
-	 *            needed to execute the binaries located in the plugin.
-	 */
-	public PluginConfiguration(final String pluginId, final String pluginName,
-			final String binariesPath, final Properties props) {
+    /**
+     * C'tor for {@link PluginConfiguration}.
+     * 
+     * @param pluginId
+     *            The name of the plugin.
+     * @param binariesPath
+     *            The path where all the binaries are located.
+     * @param props
+     *            Additional properties.
+     * @param env
+     *            A {@link Map} containing entries for environment variables,
+     *            needed to execute the binaries located in the plugin.
+     */
+    public PluginConfiguration(final String pluginId, final String pluginName,
+            final String binariesPath, final Properties props) {
 
-		this.pluginId = pluginId;
-		this.pluginName = pluginName;
-		this.binariesPath = binariesPath;
-		this.props = props;
-		env = new HashMap<String, String>();
-	}
+        this.pluginId = pluginId;
+        this.pluginName = pluginName;
+        this.binariesPath = binariesPath;
+        this.props = props;
+        env = new HashMap<String, String>();
+    }
 
-	/**
-	 * This methods expands place holders inside the environment variables with
-	 * the correct values.
-	 */
-	private void fixEnvironmentVariables() {
-		for (String envName : env.keySet()) {
-			if (env.get(envName).contains("$ROOT")) {
-				// update the map entry with the correct path
-				env.put(envName,
-						env.get(envName).replace("$ROOT",
-								new File(getBinariesPath()).getAbsolutePath()));
+    /**
+     * This methods expands place holders inside the environment variables with
+     * the correct values.
+     */
+    private void fixEnvironmentVariables() {
+        for (String envName : env.keySet()) {
+            if (env.get(envName).contains("$ROOT")) {
+                // update the map entry with the correct path
+                env.put(envName,
+                        env.get(envName).replace("$ROOT",
+                                new File(getBinariesPath()).getAbsolutePath()));
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String getPluginId() {
-		return pluginId;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String getPluginId() {
+        return pluginId;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String getBinariesPath() {
-		return binariesPath;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String getBinariesPath() {
+        return binariesPath;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final Properties getPluginProperties() {
-		return props;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final Properties getPluginProperties() {
+        return props;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final Map<String, String> getEnvironmentVariables() {
-		return env;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final Map<String, String> getEnvironmentVariables() {
+        return env;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void updateEnvironmentVariables(final Map<String, String> env) {
-		this.env.clear();
-		this.env.putAll(env);
-		fixEnvironmentVariables();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateEnvironmentVariables(final Map<String, String> env) {
+        this.env.clear();
+        this.env.putAll(env);
+        fixEnvironmentVariables();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getPluginName() {
-		return pluginName;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPluginName() {
+        return pluginName;
+    }
 
 }

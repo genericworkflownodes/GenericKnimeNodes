@@ -31,48 +31,48 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSour
  * @author Luis de la Garza
  */
 public class SanityCheck {
-	
-	private final String sourceDirectory;
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param sourceDirectory The folder in which all files to generate the nodes should be found.
-	 */
-	public SanityCheck(final String sourceDirectory) {
-		this.sourceDirectory = sourceDirectory;
-	}
+    
+    private final String sourceDirectory;
+    
+    /**
+     * Constructor.
+     * 
+     * @param sourceDirectory The folder in which all files to generate the nodes should be found.
+     */
+    public SanityCheck(final String sourceDirectory) {
+        this.sourceDirectory = sourceDirectory;
+    }
 
-	/**
-	 * Returns a collection of warnings.
-	 * @return The warnings
-	 */
-	public Collection<String> getWarnings() {
-		final Collection<String> warnings = new LinkedList<String>();
-		insertMessageIfFileIsMissing(NodesSourceDirectory.PAYLOAD_DIRECTORY, "Payload directory", warnings);
-		insertMessageIfFileIsMissing(NodesSourceDirectory.ICONS_DIRECTORY, "Icons directory", warnings);
-		insertMessageIfFileIsMissing(NodesSourceDirectory.CONTRIBUTING_PLUGINS_DIRECTORY, "Third-party plug-ins directory", warnings);
-		return warnings;
-	}
-	
-	
-	/**
-	 * Returns a collection of errors.
-	 * @return The errors.
-	 */
-	public Collection<String> getErrors() {
-		final Collection<String> errors = new LinkedList<String>();
-		insertMessageIfFileIsMissing(NodesSourceDirectory.DESCRIPTORS_DIRECTORY, "Descriptors (CTD) directory", errors);
-		insertMessageIfFileIsMissing(NodesSourceDirectory.PLUGIN_PROPERTIES_FILE, "Plugin properties file", errors);
-		insertMessageIfFileIsMissing(NodesSourceDirectory.DESCRIPTION_FILE, "Description file", errors);
-		insertMessageIfFileIsMissing(NodesSourceDirectory.COPYRIGHT_FILE, "Copyright file", errors);
-		insertMessageIfFileIsMissing(NodesSourceDirectory.LICENSE_FILE, "License file", errors);
-		return errors;
-	}
-	
-	private void insertMessageIfFileIsMissing(final String name, final String userFriendlyName, final Collection<String> collection) {
-		if (!new File(sourceDirectory, name).exists()) {
-			collection.add(userFriendlyName + " was not found in its expected location [" + sourceDirectory + File.separator + name + ']');
-		}
-	}
+    /**
+     * Returns a collection of warnings.
+     * @return The warnings
+     */
+    public Collection<String> getWarnings() {
+        final Collection<String> warnings = new LinkedList<String>();
+        insertMessageIfFileIsMissing(NodesSourceDirectory.PAYLOAD_DIRECTORY, "Payload directory", warnings);
+        insertMessageIfFileIsMissing(NodesSourceDirectory.ICONS_DIRECTORY, "Icons directory", warnings);
+        insertMessageIfFileIsMissing(NodesSourceDirectory.CONTRIBUTING_PLUGINS_DIRECTORY, "Third-party plug-ins directory", warnings);
+        return warnings;
+    }
+    
+    
+    /**
+     * Returns a collection of errors.
+     * @return The errors.
+     */
+    public Collection<String> getErrors() {
+        final Collection<String> errors = new LinkedList<String>();
+        insertMessageIfFileIsMissing(NodesSourceDirectory.DESCRIPTORS_DIRECTORY, "Descriptors (CTD) directory", errors);
+        insertMessageIfFileIsMissing(NodesSourceDirectory.PLUGIN_PROPERTIES_FILE, "Plugin properties file", errors);
+        insertMessageIfFileIsMissing(NodesSourceDirectory.DESCRIPTION_FILE, "Description file", errors);
+        insertMessageIfFileIsMissing(NodesSourceDirectory.COPYRIGHT_FILE, "Copyright file", errors);
+        insertMessageIfFileIsMissing(NodesSourceDirectory.LICENSE_FILE, "License file", errors);
+        return errors;
+    }
+    
+    private void insertMessageIfFileIsMissing(final String name, final String userFriendlyName, final Collection<String> collection) {
+        if (!new File(sourceDirectory, name).exists()) {
+            collection.add(userFriendlyName + " was not found in its expected location [" + sourceDirectory + File.separator + name + ']');
+        }
+    }
 }

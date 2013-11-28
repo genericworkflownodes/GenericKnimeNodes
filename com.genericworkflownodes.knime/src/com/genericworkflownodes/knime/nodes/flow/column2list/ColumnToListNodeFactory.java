@@ -29,30 +29,30 @@ import org.knime.core.node.NodeView;
  */
 public class ColumnToListNodeFactory extends NodeFactory<ColumnToListNodeModel> {
 
-	@Override
-	protected NodeDialogPane createNodeDialogPane() {
-		return null;
-	}
+    @Override
+    protected NodeDialogPane createNodeDialogPane() {
+        return null;
+    }
 
-	@Override
-	public ColumnToListNodeModel createNodeModel() {
-		return new ColumnToListNodeModel();
-	}
+    @Override
+    public ColumnToListNodeModel createNodeModel() {
+        return new ColumnToListNodeModel();
+    }
 
-	@Override
-	public NodeView<ColumnToListNodeModel> createNodeView(int arg0,
-			ColumnToListNodeModel arg1) {
-		return null;
-	}
+    @Override
+    public NodeView<ColumnToListNodeModel> createNodeView(int arg0,
+            ColumnToListNodeModel arg1) {
+        return null;
+    }
 
-	@Override
-	protected int getNrNodeViews() {
-		return 0;
-	}
+    @Override
+    protected int getNrNodeViews() {
+        return 0;
+    }
 
-	@Override
-	protected boolean hasDialog() {
-		return false;
-	}
+    @Override
+    protected boolean hasDialog() {
+        return false;
+    }
 
 }

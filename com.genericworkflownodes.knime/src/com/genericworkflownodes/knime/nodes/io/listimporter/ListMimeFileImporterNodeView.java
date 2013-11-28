@@ -27,49 +27,49 @@ import org.knime.core.node.NodeView;
  * @author roettig
  */
 public class ListMimeFileImporterNodeView extends
-		NodeView<ListMimeFileImporterNodeModel> {
+        NodeView<ListMimeFileImporterNodeModel> {
 
-	/**
-	 * Creates a new view.
-	 * 
-	 * @param nodeModel
-	 *            The model (class: {@link ListMimeFileImporterNodeModel})
-	 */
-	protected ListMimeFileImporterNodeView(
-			final ListMimeFileImporterNodeModel nodeModel) {
-		super(nodeModel);
-	}
+    /**
+     * Creates a new view.
+     * 
+     * @param nodeModel
+     *            The model (class: {@link ListMimeFileImporterNodeModel})
+     */
+    protected ListMimeFileImporterNodeView(
+            final ListMimeFileImporterNodeModel nodeModel) {
+        super(nodeModel);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void modelChanged() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void modelChanged() {
 
-		// TODO retrieve the new model from your nodemodel and
-		// update the view.
-		ListMimeFileImporterNodeModel nodeModel = (ListMimeFileImporterNodeModel) getNodeModel();
-		assert nodeModel != null;
+        // TODO retrieve the new model from your nodemodel and
+        // update the view.
+        ListMimeFileImporterNodeModel nodeModel = (ListMimeFileImporterNodeModel) getNodeModel();
+        assert nodeModel != null;
 
-		// be aware of a possibly not executed nodeModel! The data you retrieve
-		// from your nodemodel could be null, emtpy, or invalid in any kind.
+        // be aware of a possibly not executed nodeModel! The data you retrieve
+        // from your nodemodel could be null, emtpy, or invalid in any kind.
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onClose() {
-		// TODO things to do when closing the view
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onClose() {
+        // TODO things to do when closing the view
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onOpen() {
-		// TODO things to do when opening the view
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onOpen() {
+        // TODO things to do when opening the view
+    }
 
 }

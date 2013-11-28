@@ -31,45 +31,45 @@ import com.genericworkflownodes.knime.nodes.io.OutputFileNodeDialog;
  */
 public class OutputFilesNodeFactory extends NodeFactory<OutputFilesNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public OutputFilesNodeModel createNodeModel() {
-		return new OutputFilesNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OutputFilesNodeModel createNodeModel() {
+        return new OutputFilesNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 1;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 1;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<OutputFilesNodeModel> createNodeView(final int viewIndex,
-			final OutputFilesNodeModel nodeModel) {
-		return new OpenFolderNodeView(nodeModel);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<OutputFilesNodeModel> createNodeView(final int viewIndex,
+            final OutputFilesNodeModel nodeModel) {
+        return new OpenFolderNodeView(nodeModel);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new OutputFileNodeDialog(OutputFilesNodeModel.CFG_FILENAME);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return new OutputFileNodeDialog(OutputFilesNodeModel.CFG_FILENAME);
+    }
 
 }

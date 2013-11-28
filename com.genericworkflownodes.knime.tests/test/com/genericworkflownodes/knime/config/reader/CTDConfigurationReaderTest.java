@@ -39,71 +39,71 @@ import com.genericworkflownodes.knime.test.data.TestDataSource;
  */
 public class CTDConfigurationReaderTest {
 
-	@Test
-	public void testRead() throws Exception {
-		CTDConfigurationReader reader = new CTDConfigurationReader();
-		assertNotNull(reader);
-		INodeConfiguration config = reader.read(TestDataSource.class
-				.getResourceAsStream("FeatureLinkerUnlabeled.ctd"));
+    @Test
+    public void testRead() throws Exception {
+        CTDConfigurationReader reader = new CTDConfigurationReader();
+        assertNotNull(reader);
+        INodeConfiguration config = reader.read(TestDataSource.class
+                .getResourceAsStream("FeatureLinkerUnlabeled.ctd"));
 
-		assertEquals("Map Alignment", config.getCategory());
-		assertNotNull(config.getParameter("FeatureLinkerUnlabeled.1.in"));
-		assertTrue(config.getParameter("FeatureLinkerUnlabeled.1.in") instanceof FileListParameter);
-		assertNotNull(config.getInputPortByName("FeatureLinkerUnlabeled.1.in"));
-		assertEquals("1.11.0", config.getVersion());
+        assertEquals("Map Alignment", config.getCategory());
+        assertNotNull(config.getParameter("FeatureLinkerUnlabeled.1.in"));
+        assertTrue(config.getParameter("FeatureLinkerUnlabeled.1.in") instanceof FileListParameter);
+        assertNotNull(config.getInputPortByName("FeatureLinkerUnlabeled.1.in"));
+        assertEquals("1.11.0", config.getVersion());
 
-		FileListParameter flp = (FileListParameter) config
-				.getParameter("FeatureLinkerUnlabeled.1.in");
-		assertEquals(0, flp.getValue().size());
-	}
+        FileListParameter flp = (FileListParameter) config
+                .getParameter("FeatureLinkerUnlabeled.1.in");
+        assertEquals(0, flp.getValue().size());
+    }
 
-	@Test
-	public void testReadTMTAnalyzer() throws Exception {
-		CTDConfigurationReader reader = new CTDConfigurationReader();
-		assertNotNull(reader);
-		INodeConfiguration config = reader.read(TestDataSource.class
-				.getResourceAsStream("TMTAnalyzer.ctd"));
-		assertEquals("Quantitation", config.getCategory());
-		assertEquals("1.11.0", config.getVersion());
-		assertNotNull(config.getParameter("TMTAnalyzer.1.in"));
-		assertTrue(config.getParameter("TMTAnalyzer.1.in") instanceof FileParameter);
+    @Test
+    public void testReadTMTAnalyzer() throws Exception {
+        CTDConfigurationReader reader = new CTDConfigurationReader();
+        assertNotNull(reader);
+        INodeConfiguration config = reader.read(TestDataSource.class
+                .getResourceAsStream("TMTAnalyzer.ctd"));
+        assertEquals("Quantitation", config.getCategory());
+        assertEquals("1.11.0", config.getVersion());
+        assertNotNull(config.getParameter("TMTAnalyzer.1.in"));
+        assertTrue(config.getParameter("TMTAnalyzer.1.in") instanceof FileParameter);
 
-		assertTrue(config
-				.getParameter("TMTAnalyzer.1.algorithm.Extraction.channel_active") instanceof StringListParameter);
-		StringListParameter slp = (StringListParameter) config
-				.getParameter("TMTAnalyzer.1.algorithm.Extraction.channel_active");
-		assertEquals(2, slp.getValue().size());
-		assertEquals("126:liver", slp.getValue().get(0));
-		assertEquals("131:lung", slp.getValue().get(1));
-		assertTrue(config
-				.getParameter(
-						"TMTAnalyzer.1.algorithm.Quantification.isotope_correction.tmt-6plex")
-				.isAdvanced());
-		assertTrue(config
-				.getParameter(
-						"TMTAnalyzer.1.algorithm.Quantification.isotope_correction.tmt-6plex")
-				.isOptional());
-		assertFalse(config.getParameter("TMTAnalyzer.1.in").isAdvanced());
-		assertFalse(config.getParameter("TMTAnalyzer.1.in").isOptional());
-	}
+        assertTrue(config
+                .getParameter("TMTAnalyzer.1.algorithm.Extraction.channel_active") instanceof StringListParameter);
+        StringListParameter slp = (StringListParameter) config
+                .getParameter("TMTAnalyzer.1.algorithm.Extraction.channel_active");
+        assertEquals(2, slp.getValue().size());
+        assertEquals("126:liver", slp.getValue().get(0));
+        assertEquals("131:lung", slp.getValue().get(1));
+        assertTrue(config
+                .getParameter(
+                        "TMTAnalyzer.1.algorithm.Quantification.isotope_correction.tmt-6plex")
+                .isAdvanced());
+        assertTrue(config
+                .getParameter(
+                        "TMTAnalyzer.1.algorithm.Quantification.isotope_correction.tmt-6plex")
+                .isOptional());
+        assertFalse(config.getParameter("TMTAnalyzer.1.in").isAdvanced());
+        assertFalse(config.getParameter("TMTAnalyzer.1.in").isOptional());
+    }
 
-	@Test
-	public void testGKNIgnoreTag() throws Exception {
-		CTDConfigurationReader reader = new CTDConfigurationReader();
-		assertNotNull(reader);
-		INodeConfiguration config = reader.read(TestDataSource.class
-				.getResourceAsStream("test_app.ctd"));
-		assertEquals("SeqAn/Testing", config.getCategory());
-		assertEquals("http://www.seqan.de", config.getDocUrl());
+    @Test
+    public void testGKNIgnoreTag() throws Exception {
+        CTDConfigurationReader reader = new CTDConfigurationReader();
+        assertNotNull(reader);
+        INodeConfiguration config = reader.read(TestDataSource.class
+                .getResourceAsStream("test_app.ctd"));
+        assertEquals("SeqAn/Testing", config.getCategory());
+        assertEquals("http://www.seqan.de", config.getDocUrl());
 
-		FileParameter fp = (FileParameter) config.getParameter("test_app.out");
-		assertNotNull(fp);
-		assertEquals("set an output file", fp.getDescription());
+        FileParameter fp = (FileParameter) config.getParameter("test_app.out");
+        assertNotNull(fp);
+        assertEquals("set an output file", fp.getDescription());
 
-		// the parameter following parameters were tagged with gkn-ignore and
-		// hence should not be parsed
-		assertNull(config.getParameter("test_app.write-ctd-file-ext"));
-		assertNull(config.getParameter("test_app.in-file-ext"));
-		assertNull(config.getParameter("test_app.out-file-ext"));
-	}
+        // the parameter following parameters were tagged with gkn-ignore and
+        // hence should not be parsed
+        assertNull(config.getParameter("test_app.write-ctd-file-ext"));
+        assertNull(config.getParameter("test_app.in-file-ext"));
+        assertNull(config.getParameter("test_app.out-file-ext"));
+    }
 }

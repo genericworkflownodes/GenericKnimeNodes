@@ -41,122 +41,122 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 
 public class MissingBinariesDialog extends Dialog {
 
-	/**
-	 * The bundle with missing binaries.
-	 */
-	private final String m_bundleName;
+    /**
+     * The bundle with missing binaries.
+     */
+    private final String m_bundleName;
 
-	/**
-	 * The id of the preference page to open if there are missing binaries.
-	 */
-	private final String m_preferencePageId;
+    /**
+     * The id of the preference page to open if there are missing binaries.
+     */
+    private final String m_preferencePageId;
 
-	/**
-	 * The checkbox to disable this warning.
-	 */
-	private Button btnDoNotShow;
+    /**
+     * The checkbox to disable this warning.
+     */
+    private Button btnDoNotShow;
 
-	/**
-	 * The preference of the started plugin.
-	 */
-	private IPreferenceStore m_preferenceStore;
+    /**
+     * The preference of the started plugin.
+     */
+    private IPreferenceStore m_preferenceStore;
 
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parentShell
-	 */
-	public MissingBinariesDialog(Shell parentShell, final String bundleName,
-			final String preferencePageId, IPreferenceStore preferenceStore) {
-		super(parentShell);
-		m_bundleName = bundleName;
-		m_preferencePageId = preferencePageId;
-		m_preferenceStore = preferenceStore;
-	}
+    /**
+     * Create the dialog.
+     * 
+     * @param parentShell
+     */
+    public MissingBinariesDialog(Shell parentShell, final String bundleName,
+            final String preferencePageId, IPreferenceStore preferenceStore) {
+        super(parentShell);
+        m_bundleName = bundleName;
+        m_preferencePageId = preferencePageId;
+        m_preferenceStore = preferenceStore;
+    }
 
-	/**
-	 * Create contents of the dialog.
-	 * 
-	 * @param parent
-	 */
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
-		GridLayout gl_container = new GridLayout(2, false);
-		gl_container.marginWidth = 15;
-		gl_container.marginHeight = 15;
-		container.setLayout(gl_container);
+    /**
+     * Create contents of the dialog.
+     * 
+     * @param parent
+     */
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite container = (Composite) super.createDialogArea(parent);
+        GridLayout gl_container = new GridLayout(2, false);
+        gl_container.marginWidth = 15;
+        gl_container.marginHeight = 15;
+        container.setLayout(gl_container);
 
-		// The warning icon
-		Label lblWarning = new Label(container, SWT.NONE);
-		lblWarning.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
-				1, 1));
-		lblWarning.setImage(Display.getCurrent().getSystemImage(
-				SWT.ICON_WARNING));
+        // The warning icon
+        Label lblWarning = new Label(container, SWT.NONE);
+        lblWarning.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
+                1, 1));
+        lblWarning.setImage(Display.getCurrent().getSystemImage(
+                SWT.ICON_WARNING));
 
-		// The textfield containing the link to the preference dialog
-		Link linkMissingBinariesPlease = new Link(container, SWT.NONE);
-		linkMissingBinariesPlease.setLayoutData(new GridData(SWT.FILL,
-				SWT.FILL, true, true, 1, 1));
-		linkMissingBinariesPlease
-				.setText(String
-						.format("Not all nodes of the plugin %s are associated with a valid binary. Please check the <a>%s</a> preference page.",
-								m_bundleName, m_bundleName));
-		linkMissingBinariesPlease.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				if (m_bundleName.equals(event.text)) {
-					PreferenceDialog prefDialog = PreferencesUtil
-							.createPreferenceDialogOn(getShell(),
-									m_preferencePageId, null, null);
+        // The textfield containing the link to the preference dialog
+        Link linkMissingBinariesPlease = new Link(container, SWT.NONE);
+        linkMissingBinariesPlease.setLayoutData(new GridData(SWT.FILL,
+                SWT.FILL, true, true, 1, 1));
+        linkMissingBinariesPlease
+                .setText(String
+                        .format("Not all nodes of the plugin %s are associated with a valid binary. Please check the <a>%s</a> preference page.",
+                                m_bundleName, m_bundleName));
+        linkMissingBinariesPlease.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                if (m_bundleName.equals(event.text)) {
+                    PreferenceDialog prefDialog = PreferencesUtil
+                            .createPreferenceDialogOn(getShell(),
+                                    m_preferencePageId, null, null);
 
-					prefDialog.setErrorMessage(String
-							.format("Not all nodes of the plugin %s are associated with a valid binary.",
-									m_bundleName));
+                    prefDialog.setErrorMessage(String
+                            .format("Not all nodes of the plugin %s are associated with a valid binary.",
+                                    m_bundleName));
 
-					// Open the Pref dialog
-					prefDialog.open();
+                    // Open the Pref dialog
+                    prefDialog.open();
 
-					// close this window
-					MissingBinariesDialog.this.close();
-				}
-			}
-		});
-		new Label(container, SWT.NONE);
+                    // close this window
+                    MissingBinariesDialog.this.close();
+                }
+            }
+        });
+        new Label(container, SWT.NONE);
 
-		// The check box for do not show again
-		btnDoNotShow = new Button(container, SWT.CHECK);
-		btnDoNotShow.setSelection(true);
-		btnDoNotShow.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				m_preferenceStore.setValue(
-						GenericStartup.PREFERENCE_WARN_IF_BINARIES_ARE_MISSING,
-						btnDoNotShow.getSelection());
-			}
-		});
-		btnDoNotShow.setText("Show this warning again.");
+        // The check box for do not show again
+        btnDoNotShow = new Button(container, SWT.CHECK);
+        btnDoNotShow.setSelection(true);
+        btnDoNotShow.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                m_preferenceStore.setValue(
+                        GenericStartup.PREFERENCE_WARN_IF_BINARIES_ARE_MISSING,
+                        btnDoNotShow.getSelection());
+            }
+        });
+        btnDoNotShow.setText("Show this warning again.");
 
-		return container;
-	}
+        return container;
+    }
 
-	/**
-	 * Create contents of the button bar.
-	 * 
-	 * @param parent
-	 */
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
-	}
+    /**
+     * Create contents of the button bar.
+     * 
+     * @param parent
+     */
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+                true);
+    }
 
-	/**
-	 * Return the initial size of the dialog.
-	 */
-	@Override
-	protected Point getInitialSize() {
-		return new Point(478, 190);
-	}
+    /**
+     * Return the initial size of the dialog.
+     */
+    @Override
+    protected Point getInitialSize() {
+        return new Point(478, 190);
+    }
 
 }

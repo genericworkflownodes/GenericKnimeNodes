@@ -29,57 +29,57 @@ import org.xml.sax.SAXParseException;
  */
 public class SimpleErrorHandler implements ErrorHandler {
 
-	/**
-	 * Indicates if the document is valid.
-	 */
-	private boolean valid;
+    /**
+     * Indicates if the document is valid.
+     */
+    private boolean valid;
 
-	/**
-	 * {@link StringBuffer} to store the reported errors.
-	 */
-	private StringBuffer errors;
+    /**
+     * {@link StringBuffer} to store the reported errors.
+     */
+    private StringBuffer errors;
 
-	/**
-	 * C'tor.
-	 */
-	public SimpleErrorHandler() {
-		valid = true;
-		errors = new StringBuffer();
-	}
+    /**
+     * C'tor.
+     */
+    public SimpleErrorHandler() {
+        valid = true;
+        errors = new StringBuffer();
+    }
 
-	/**
-	 * Returns true if the document is valid, false otherwise.
-	 * 
-	 * @return Returns true if the document is valid, false otherwise.
-	 */
-	public boolean isValid() {
-		return valid;
-	}
+    /**
+     * Returns true if the document is valid, false otherwise.
+     * 
+     * @return Returns true if the document is valid, false otherwise.
+     */
+    public boolean isValid() {
+        return valid;
+    }
 
-	/**
-	 * Returns the complete error report of the validation process.
-	 * 
-	 * @return the error report.
-	 */
-	public String getErrorReport() {
-		return errors.toString();
-	}
+    /**
+     * Returns the complete error report of the validation process.
+     * 
+     * @return the error report.
+     */
+    public String getErrorReport() {
+        return errors.toString();
+    }
 
-	@Override
-	public void error(SAXParseException ex) throws SAXException {
-		errors.append("Line " + ex.getLineNumber() + " " + ex.getMessage()
-				+ System.getProperty("line.separator"));
-		valid = false;
-	}
+    @Override
+    public void error(SAXParseException ex) throws SAXException {
+        errors.append("Line " + ex.getLineNumber() + " " + ex.getMessage()
+                + System.getProperty("line.separator"));
+        valid = false;
+    }
 
-	@Override
-	public void fatalError(SAXParseException ex) throws SAXException {
-		errors.append("Line " + ex.getLineNumber() + " " + ex.getMessage()
-				+ System.getProperty("line.separator"));
-		valid = false;
-	}
+    @Override
+    public void fatalError(SAXParseException ex) throws SAXException {
+        errors.append("Line " + ex.getLineNumber() + " " + ex.getMessage()
+                + System.getProperty("line.separator"));
+        valid = false;
+    }
 
-	@Override
-	public void warning(SAXParseException ex) throws SAXException {
-	}
+    @Override
+    public void warning(SAXParseException ex) throws SAXException {
+    }
 }

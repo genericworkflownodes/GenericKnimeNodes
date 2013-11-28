@@ -51,124 +51,124 @@ import com.genericworkflownodes.util.Helper;
  */
 public class MimeFileViewerNodeModel extends NodeModel {
 
-	public static String NUM_LINES = "MAX_NUMBER_LINES";
+    public static String NUM_LINES = "MAX_NUMBER_LINES";
 
-	private SettingsModelInteger max_num_lines = MimeFileViewerNodeDialog
-			.createIntModel();
+    private SettingsModelInteger max_num_lines = MimeFileViewerNodeDialog
+            .createIntModel();
 
-	private String data;
+    private String data;
 
-	public String getContent() {
-		return data;
-	}
+    public String getContent() {
+        return data;
+    }
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected MimeFileViewerNodeModel() {
-		super(new PortType[] { new PortType(URIPortObject.class) },
-				new PortType[] {});
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected MimeFileViewerNodeModel() {
+        super(new PortType[] { new PortType(URIPortObject.class) },
+                new PortType[] {});
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		data = "";
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+        data = "";
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		max_num_lines.saveSettingsTo(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+        max_num_lines.saveSettingsTo(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		max_num_lines.loadSettingsFrom(settings);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        max_num_lines.loadSettingsFrom(settings);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		ZipFile zip = new ZipFile(new File(internDir, "loadeddata"));
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        ZipFile zip = new ZipFile(new File(internDir, "loadeddata"));
 
-		@SuppressWarnings("unchecked")
-		Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
+        @SuppressWarnings("unchecked")
+        Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
 
-		int BUFFSIZE = 2048;
-		byte[] BUFFER = new byte[BUFFSIZE];
+        int BUFFSIZE = 2048;
+        byte[] BUFFER = new byte[BUFFSIZE];
 
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
 
-			if (entry.getName().equals("rawdata.bin")) {
-				int size = (int) entry.getSize();
-				byte[] data = new byte[size];
-				InputStream in = zip.getInputStream(entry);
-				int len;
-				int totlen = 0;
-				while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
-					System.arraycopy(BUFFER, 0, data, totlen, len);
-					totlen += len;
-				}
-				this.data = new String(data);
-			}
-		}
-		zip.close();
-	}
+            if (entry.getName().equals("rawdata.bin")) {
+                int size = (int) entry.getSize();
+                byte[] data = new byte[size];
+                InputStream in = zip.getInputStream(entry);
+                int len;
+                int totlen = 0;
+                while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
+                    System.arraycopy(BUFFER, 0, data, totlen, len);
+                    totlen += len;
+                }
+                this.data = new String(data);
+            }
+        }
+        zip.close();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-				new File(internDir, "loadeddata")));
-		ZipEntry entry = new ZipEntry("rawdata.bin");
-		out.putNextEntry(entry);
-		out.write(data.getBytes());
-		out.close();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
+                new File(internDir, "loadeddata")));
+        ZipEntry entry = new ZipEntry("rawdata.bin");
+        out.putNextEntry(entry);
+        out.write(data.getBytes());
+        out.close();
+    }
 
-	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		return new PortObjectSpec[] {};
-	}
+    @Override
+    protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        return new PortObjectSpec[] {};
+    }
 
-	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
-		URIPortObject po = (URIPortObject) inObjects[0];
-		File file = new File(po.getURIContents().get(0).getURI());
+    @Override
+    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
+            throws Exception {
+        URIPortObject po = (URIPortObject) inObjects[0];
+        File file = new File(po.getURIContents().get(0).getURI());
 
-		int maxLines = max_num_lines.getIntValue();
-		data = Helper.readFileSummary(file, maxLines);
+        int maxLines = max_num_lines.getIntValue();
+        data = Helper.readFileSummary(file, maxLines);
 
-		return new PortObject[] {};
-	}
+        return new PortObject[] {};
+    }
 
 }

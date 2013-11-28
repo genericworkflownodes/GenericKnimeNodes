@@ -27,30 +27,30 @@ package com.genericworkflownodes.knime.parameter;
  */
 public class InvalidParameterValueException extends Exception {
 
-	/**
-	 * The serial version id.
-	 */
-	private static final long serialVersionUID = 5408531919859345420L;
+    /**
+     * The serial version id.
+     */
+    private static final long serialVersionUID = 5408531919859345420L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param msg
-	 *            the detail message.
-	 */
-	public InvalidParameterValueException(final String msg) {
-		super(msg);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param msg
+     *            the detail message.
+     */
+    public InvalidParameterValueException(final String msg) {
+        super(msg);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param msg
-	 *            the detail message.
-	 * @param t
-	 *            the cause.
-	 */
-	public InvalidParameterValueException(final String msg, final Throwable t) {
-		super(msg, t);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param msg
+     *            the detail message.
+     * @param t
+     *            the cause.
+     */
+    public InvalidParameterValueException(final String msg, final Throwable t) {
+        super(msg, t);
+    }
 }

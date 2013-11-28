@@ -28,80 +28,80 @@ import org.eclipse.swt.graphics.Image;
  */
 public class ExternalToolSettingsLabelProvider implements ITableLabelProvider {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.
-	 * jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.
+     * jface.viewers.ILabelProviderListener)
+     */
+    @Override
+    public void addListener(ILabelProviderListener listener) {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-	 */
-	@Override
-	public void dispose() {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+     */
+    @Override
+    public void dispose() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang
-	 * .Object, java.lang.String)
-	 */
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang
+     * .Object, java.lang.String)
+     */
+    @Override
+    public boolean isLabelProperty(Object element, String property) {
+        return false;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse
-	 * .jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse
+     * .jface.viewers.ILabelProviderListener)
+     */
+    @Override
+    public void removeListener(ILabelProviderListener listener) {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang
-	 * .Object, int)
-	 */
-	@Override
-	public Image getColumnImage(Object element, int columnIndex) {
-		return null;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang
+     * .Object, int)
+     */
+    @Override
+    public Image getColumnImage(Object element, int columnIndex) {
+        return null;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang
-	 * .Object, int)
-	 */
-	@Override
-	public String getColumnText(Object element, int columnIndex) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang
+     * .Object, int)
+     */
+    @Override
+    public String getColumnText(Object element, int columnIndex) {
 
-		ExternalToolSettings settings = (ExternalToolSettings) element;
-		switch (columnIndex) {
-		case 0:
-			return settings.getTool().getToolName();
-		case 1:
-			return settings.getLocalToolPath();
-		case 2:
-			return settings.getSelectedToolPathType().toString();
-		}
-		return "";
-	}
+        ExternalToolSettings settings = (ExternalToolSettings) element;
+        switch (columnIndex) {
+        case 0:
+            return settings.getTool().getToolName();
+        case 1:
+            return settings.getLocalToolPath();
+        case 2:
+            return settings.getSelectedToolPathType().toString();
+        }
+        return "";
+    }
 }

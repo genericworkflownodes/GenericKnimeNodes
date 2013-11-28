@@ -41,93 +41,93 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * @author aiche
  */
 public class GenericKnimeNodeDialog extends NodeDialogPane {
-	/**
-	 * The node configuration.
-	 */
-	private final INodeConfiguration config;
+    /**
+     * The node configuration.
+     */
+    private final INodeConfiguration config;
 
-	/**
-	 * The dialog for the parameters.
-	 */
-	private ParameterDialog dialog;
+    /**
+     * The dialog for the parameters.
+     */
+    private ParameterDialog dialog;
 
-	/**
-	 * The dialog for choosing the MIMEType.
-	 */
-	private MimeTypeChooserDialog mtc;
+    /**
+     * The dialog for choosing the MIMEType.
+     */
+    private MimeTypeChooserDialog mtc;
 
-	public GenericKnimeNodeDialog(INodeConfiguration config) {
-		this.config = config;
-		try {
-			dialog = new ParameterDialog(this.config);
-			addTab("Parameters", dialog);
-			mtc = new MimeTypeChooserDialog(this.config);
-			addTab("OutputTypes", mtc);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public GenericKnimeNodeDialog(INodeConfiguration config) {
+        this.config = config;
+        try {
+            dialog = new ParameterDialog(this.config);
+            addTab("Parameters", dialog);
+            mtc = new MimeTypeChooserDialog(this.config);
+            addTab("OutputTypes", mtc);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings)
-			throws InvalidSettingsException {
-		// ensure all edit operations are finished
-		dialog.stopEditing();
-		// transfer values
-		for (String key : config.getParameterKeys()) {
-			Parameter<?> param = config.getParameter(key);
+    @Override
+    protected void saveSettingsTo(NodeSettingsWO settings)
+            throws InvalidSettingsException {
+        // ensure all edit operations are finished
+        dialog.stopEditing();
+        // transfer values
+        for (String key : config.getParameterKeys()) {
+            Parameter<?> param = config.getParameter(key);
 
-			// skip file parameters
-			if (param instanceof IFileParameter)
-				continue;
+            // skip file parameters
+            if (param instanceof IFileParameter)
+                continue;
 
-			settings.addString(key, param.getStringRep());
-		}
+            settings.addString(key, param.getStringRep());
+        }
 
-		int[] sel_ports = mtc.getSelectedTypes();
+        int[] sel_ports = mtc.getSelectedTypes();
 
-		for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
-			settings.addInt("GENERIC_KNIME_NODES_outtype#" + i, sel_ports[i]);
-		}
-	}
+        for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
+            settings.addInt("GENERIC_KNIME_NODES_outtype#" + i, sel_ports[i]);
+        }
+    }
 
-	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings,
-			PortObjectSpec[] specs) throws NotConfigurableException {
-		for (String key : config.getParameterKeys()) {
-			Parameter<?> param = config.getParameter(key);
-			// skip file parameters
-			if (param instanceof IFileParameter)
-				continue;
+    @Override
+    protected void loadSettingsFrom(NodeSettingsRO settings,
+            PortObjectSpec[] specs) throws NotConfigurableException {
+        for (String key : config.getParameterKeys()) {
+            Parameter<?> param = config.getParameter(key);
+            // skip file parameters
+            if (param instanceof IFileParameter)
+                continue;
 
-			String value = null;
-			try {
-				value = settings.getString(key);
-			} catch (InvalidSettingsException e) {
-				e.printStackTrace();
-			}
-			try {
-				param.fillFromString(value);
-			} catch (InvalidParameterValueException e) {
-				e.printStackTrace();
-				throw new NotConfigurableException(e.getMessage());
-			}
-		}
+            String value = null;
+            try {
+                value = settings.getString(key);
+            } catch (InvalidSettingsException e) {
+                e.printStackTrace();
+            }
+            try {
+                param.fillFromString(value);
+            } catch (InvalidParameterValueException e) {
+                e.printStackTrace();
+                throw new NotConfigurableException(e.getMessage());
+            }
+        }
 
-		int nP = config.getNumberOfOutputPorts();
-		int[] sel_ports = new int[nP];
+        int nP = config.getNumberOfOutputPorts();
+        int[] sel_ports = new int[nP];
 
-		for (int i = 0; i < nP; i++) {
-			try {
-				int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
-				sel_ports[i] = idx;
-			} catch (InvalidSettingsException e) {
-				e.printStackTrace();
-				throw new NotConfigurableException(e.getMessage());
-			}
-		}
-		mtc.setSelectedTypes(sel_ports);
-	}
+        for (int i = 0; i < nP; i++) {
+            try {
+                int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
+                sel_ports[i] = idx;
+            } catch (InvalidSettingsException e) {
+                e.printStackTrace();
+                throw new NotConfigurableException(e.getMessage());
+            }
+        }
+        mtc.setSelectedTypes(sel_ports);
+    }
 }

@@ -31,99 +31,99 @@ import com.genericworkflownodes.knime.parameter.StringListParameter;
 
 public class ListEditorDialogModel extends AbstractTableModel {
 
-	List<String> values = new ArrayList<String>();
+    List<String> values = new ArrayList<String>();
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4088143466814653855L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4088143466814653855L;
 
-	/**
-	 * 
-	 */
-	private ListParameter parameter;
+    /**
+     * 
+     */
+    private ListParameter parameter;
 
-	public ListEditorDialogModel(ListParameter p) {
-		parameter = p;
-		for (String s : parameter.getStrings())
-			values.add(s);
-	}
+    public ListEditorDialogModel(ListParameter p) {
+        parameter = p;
+        for (String s : parameter.getStrings())
+            values.add(s);
+    }
 
-	@Override
-	public int getRowCount() {
-		return values.size();
-	}
+    @Override
+    public int getRowCount() {
+        return values.size();
+    }
 
-	@Override
-	public int getColumnCount() {
-		return 1;
-	}
+    @Override
+    public int getColumnCount() {
+        return 1;
+    }
 
-	@Override
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		return values.get(rowIndex);
-	}
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return values.get(rowIndex);
+    }
 
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return true;
-	}
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return true;
+    }
 
-	public int addValue() {
-		// choose reasonable value to insert
-		String newValue = "";
-		if (parameter instanceof DoubleListParameter) {
-			DoubleListParameter dlp = (DoubleListParameter) parameter;
-			if (dlp.getLowerBound() != Double.NEGATIVE_INFINITY
-					|| dlp.getUpperBound() != Double.POSITIVE_INFINITY) {
-				newValue = (dlp.getLowerBound() != Double.NEGATIVE_INFINITY ? dlp
-						.getLowerBound().toString() : dlp.getUpperBound()
-						.toString());
-			} else {
-				newValue = "0.0";
-			}
-		} else if (parameter instanceof IntegerListParameter) {
-			IntegerListParameter ilp = (IntegerListParameter) parameter;
-			if (ilp.getLowerBound() != Integer.MIN_VALUE
-					|| ilp.getUpperBound() != Integer.MAX_VALUE) {
-				newValue = (ilp.getLowerBound() != Integer.MIN_VALUE ? ilp
-						.getLowerBound().toString() : ilp.getUpperBound()
-						.toString());
-			} else {
-				newValue = "0";
-			}
-		} else if (parameter instanceof StringListParameter
-				&& ((StringListParameter) parameter).getRestrictions() != null) {
-			String[] validValues = ((StringListParameter) parameter)
-					.getRestrictions();
-			int i = 0;
-			while ("".equals(newValue) && i < validValues.length) {
-				newValue = validValues[i];
-				++i;
-			}
-		}
-		values.add(newValue);
-		fireTableRowsInserted(values.size(), values.size());
-		return values.size() - 1;
-	}
+    public int addValue() {
+        // choose reasonable value to insert
+        String newValue = "";
+        if (parameter instanceof DoubleListParameter) {
+            DoubleListParameter dlp = (DoubleListParameter) parameter;
+            if (dlp.getLowerBound() != Double.NEGATIVE_INFINITY
+                    || dlp.getUpperBound() != Double.POSITIVE_INFINITY) {
+                newValue = (dlp.getLowerBound() != Double.NEGATIVE_INFINITY ? dlp
+                        .getLowerBound().toString() : dlp.getUpperBound()
+                        .toString());
+            } else {
+                newValue = "0.0";
+            }
+        } else if (parameter instanceof IntegerListParameter) {
+            IntegerListParameter ilp = (IntegerListParameter) parameter;
+            if (ilp.getLowerBound() != Integer.MIN_VALUE
+                    || ilp.getUpperBound() != Integer.MAX_VALUE) {
+                newValue = (ilp.getLowerBound() != Integer.MIN_VALUE ? ilp
+                        .getLowerBound().toString() : ilp.getUpperBound()
+                        .toString());
+            } else {
+                newValue = "0";
+            }
+        } else if (parameter instanceof StringListParameter
+                && ((StringListParameter) parameter).getRestrictions() != null) {
+            String[] validValues = ((StringListParameter) parameter)
+                    .getRestrictions();
+            int i = 0;
+            while ("".equals(newValue) && i < validValues.length) {
+                newValue = validValues[i];
+                ++i;
+            }
+        }
+        values.add(newValue);
+        fireTableRowsInserted(values.size(), values.size());
+        return values.size() - 1;
+    }
 
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		values.set(rowIndex, aValue.toString());
-	}
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        values.set(rowIndex, aValue.toString());
+    }
 
-	public void transferToParameter() {
-		try {
-			parameter
-					.fillFromStrings(values.toArray(new String[values.size()]));
-		} catch (InvalidParameterValueException e) {
-			// we validated the values before so this should not happen
-			e.printStackTrace();
-		}
-	}
+    public void transferToParameter() {
+        try {
+            parameter
+                    .fillFromStrings(values.toArray(new String[values.size()]));
+        } catch (InvalidParameterValueException e) {
+            // we validated the values before so this should not happen
+            e.printStackTrace();
+        }
+    }
 
-	public void removeRow(int row) {
-		values.remove(row);
-		fireTableDataChanged();
-	}
+    public void removeRow(int row) {
+        values.remove(row);
+        fireTableDataChanged();
+    }
 }

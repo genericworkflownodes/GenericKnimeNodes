@@ -30,26 +30,26 @@ import com.genericworkflownodes.util.FileStashFactory;
  * @author roettig, aiche
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
-	/**
-	 * Preferences key for the file stash location.
-	 */
-	public static final String PREF_FILE_STASH_LOCATION = "knime.gkn.filestashlocation";
+    /**
+     * Preferences key for the file stash location.
+     */
+    public static final String PREF_FILE_STASH_LOCATION = "knime.gkn.filestashlocation";
 
-	/**
-	 * Preferences key for the debug mode flag.
-	 */
-	public static final String PREF_DEBUG_MODE = "knime.gkn.debug";
+    /**
+     * Preferences key for the debug mode flag.
+     */
+    public static final String PREF_DEBUG_MODE = "knime.gkn.debug";
 
-	@Override
-	public void initializeDefaultPreferences() {
-		// get the preference store for the UI plugin
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
+    @Override
+    public void initializeDefaultPreferences() {
+        // get the preference store for the UI plugin
+        IPreferenceStore store = GenericNodesPlugin.getDefault()
+                .getPreferenceStore();
 
-		// set default values
-		store.setDefault(PREF_FILE_STASH_LOCATION, FileStashFactory
-				.getTempParentDirectory().getAbsolutePath());
-		store.setDefault(PREF_DEBUG_MODE, GenericNodesPlugin.isDebug());
-	}
+        // set default values
+        store.setDefault(PREF_FILE_STASH_LOCATION, FileStashFactory
+                .getTempParentDirectory().getAbsolutePath());
+        store.setDefault(PREF_DEBUG_MODE, GenericNodesPlugin.isDebug());
+    }
 
 }

@@ -36,22 +36,22 @@ import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
  */
 public class MimeFileViewerNodeDialog extends DefaultNodeSettingsPane {
 
-	private static final int SPINNER_STEP_SIZE = 10;
-	private static final int DEFAULT_NUM_LINES = 500;
+    private static final int SPINNER_STEP_SIZE = 10;
+    private static final int DEFAULT_NUM_LINES = 500;
 
-	/**
-	 * New pane for configuring MimeViewerExporter node dialog. This is just a
-	 * suggestion to demonstrate possible default dialog components.
-	 */
-	protected MimeFileViewerNodeDialog() {
-		super();
-		addDialogComponent(new DialogComponentNumber(
-				MimeFileViewerNodeDialog.createIntModel(),
-				"max. number of lines", SPINNER_STEP_SIZE));
-	}
+    /**
+     * New pane for configuring MimeViewerExporter node dialog. This is just a
+     * suggestion to demonstrate possible default dialog components.
+     */
+    protected MimeFileViewerNodeDialog() {
+        super();
+        addDialogComponent(new DialogComponentNumber(
+                MimeFileViewerNodeDialog.createIntModel(),
+                "max. number of lines", SPINNER_STEP_SIZE));
+    }
 
-	static SettingsModelInteger createIntModel() {
-		return new SettingsModelInteger(MimeFileViewerNodeModel.NUM_LINES,
-				DEFAULT_NUM_LINES);
-	}
+    static SettingsModelInteger createIntModel() {
+        return new SettingsModelInteger(MimeFileViewerNodeModel.NUM_LINES,
+                DEFAULT_NUM_LINES);
+    }
 }

@@ -6,11 +6,11 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory
 
 public class NodesBuildSrcDirectory extends Directory {
 
-	private static final long serialVersionUID = -400249694994228712L;
+    private static final long serialVersionUID = -400249694994228712L;
 
-	public NodesBuildSrcDirectory(File srcDirectory)
-			throws PathnameIsNoDirectoryException {
-		super(srcDirectory);
-	}
+    public NodesBuildSrcDirectory(File srcDirectory)
+            throws PathnameIsNoDirectoryException {
+        super(srcDirectory);
+    }
 
 }

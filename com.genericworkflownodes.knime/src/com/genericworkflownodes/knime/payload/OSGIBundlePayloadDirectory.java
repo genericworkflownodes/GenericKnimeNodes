@@ -33,94 +33,94 @@ import org.osgi.framework.Version;
  * @author aiche
  */
 public class OSGIBundlePayloadDirectory extends AbstractPayloadDirectory
-		implements IPayloadDirectory {
+        implements IPayloadDirectory {
 
-	private final class VersionDirectoriesFilter implements FileFilter {
-		@Override
-		public boolean accept(File fileToTest) {
-			if (fileToTest.isDirectory()) {
-				return (Version.parseVersion(fileToTest.getName()) != Version.emptyVersion);
-			} else {
-				return false;
-			}
-		}
-	}
+    private final class VersionDirectoriesFilter implements FileFilter {
+        @Override
+        public boolean accept(File fileToTest) {
+            if (fileToTest.isDirectory()) {
+                return (Version.parseVersion(fileToTest.getName()) != Version.emptyVersion);
+            } else {
+                return false;
+            }
+        }
+    }
 
-	private static String PAYLOAD_DIR_NAME = "payload";
+    private static String PAYLOAD_DIR_NAME = "payload";
 
-	private BundleContext pluginBundleContext;
-	private File pluginPayloadDirectory;
-	private File pluginVersionedPayloadDirectory;
+    private BundleContext pluginBundleContext;
+    private File pluginPayloadDirectory;
+    private File pluginVersionedPayloadDirectory;
 
-	/**
-	 * Constructs a payload area inside the private data area of the current
-	 * package.
-	 * 
-	 * @param bundleContext
-	 */
-	public OSGIBundlePayloadDirectory(BundleContext bundleContext) {
-		pluginBundleContext = bundleContext;
+    /**
+     * Constructs a payload area inside the private data area of the current
+     * package.
+     * 
+     * @param bundleContext
+     */
+    public OSGIBundlePayloadDirectory(BundleContext bundleContext) {
+        pluginBundleContext = bundleContext;
 
-		File root = pluginBundleContext.getDataFile("");
-		pluginPayloadDirectory = new File(root, PAYLOAD_DIR_NAME);
-		pluginVersionedPayloadDirectory = new File(pluginPayloadDirectory,
-				getVersion().toString());
+        File root = pluginBundleContext.getDataFile("");
+        pluginPayloadDirectory = new File(root, PAYLOAD_DIR_NAME);
+        pluginVersionedPayloadDirectory = new File(pluginPayloadDirectory,
+                getVersion().toString());
 
-		// ensure that the directory exists
-		pluginVersionedPayloadDirectory.mkdirs();
+        // ensure that the directory exists
+        pluginVersionedPayloadDirectory.mkdirs();
 
-		cleanUpBundleStorageArea();
-	}
+        cleanUpBundleStorageArea();
+    }
 
-	/**
-	 * Check if previous versions of the payload exist and delete it if they
-	 * exist.
-	 */
-	private void cleanUpBundleStorageArea() {
+    /**
+     * Check if previous versions of the payload exist and delete it if they
+     * exist.
+     */
+    private void cleanUpBundleStorageArea() {
 
-		File[] versionedDirectories = pluginPayloadDirectory
-				.listFiles(new VersionDirectoriesFilter());
+        File[] versionedDirectories = pluginPayloadDirectory
+                .listFiles(new VersionDirectoriesFilter());
 
-		if (versionedDirectories != null) {
-			for (File versionedPayloadDirectory : versionedDirectories) {
-				Version v = Version.parseVersion(versionedPayloadDirectory
-						.getName());
-				if (v != getVersion() && v.compareTo(getVersion()) < 0) {
-					deleteDirectory(versionedPayloadDirectory);
-				}
-			}
-		}
-	}
+        if (versionedDirectories != null) {
+            for (File versionedPayloadDirectory : versionedDirectories) {
+                Version v = Version.parseVersion(versionedPayloadDirectory
+                        .getName());
+                if (v != getVersion() && v.compareTo(getVersion()) < 0) {
+                    deleteDirectory(versionedPayloadDirectory);
+                }
+            }
+        }
+    }
 
-	private Version getVersion() {
-		return pluginBundleContext.getBundle().getVersion();
-	}
+    private Version getVersion() {
+        return pluginBundleContext.getBundle().getVersion();
+    }
 
-	@Override
-	public File getPath() {
-		return pluginVersionedPayloadDirectory;
-	}
+    @Override
+    public File getPath() {
+        return pluginVersionedPayloadDirectory;
+    }
 
-	/**
-	 * Helper method to recursively delete a directory including its content
-	 * (taken from <a
-	 * href="http://www.rgagnon.com/javadetails/java-0483.html">here</a>)
-	 * 
-	 * @param path
-	 *            The directory to delete.
-	 * @return $true$ if the directory was deleted, $false$ otherwise.
-	 */
-	private static boolean deleteDirectory(File path) {
-		if (path.exists()) {
-			File[] files = path.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				} else {
-					files[i].delete();
-				}
-			}
-		}
-		return (path.delete());
-	}
+    /**
+     * Helper method to recursively delete a directory including its content
+     * (taken from <a
+     * href="http://www.rgagnon.com/javadetails/java-0483.html">here</a>)
+     * 
+     * @param path
+     *            The directory to delete.
+     * @return $true$ if the directory was deleted, $false$ otherwise.
+     */
+    private static boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    deleteDirectory(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        return (path.delete());
+    }
 }

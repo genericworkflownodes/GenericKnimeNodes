@@ -12,34 +12,34 @@ import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile.M
 
 public class MimeFileCellFactoryTemplate extends Template {
 
-	private static final Logger LOGGER = Logger
-			.getLogger(MimeFileCellFactoryTemplate.class.getCanonicalName());
+    private static final Logger LOGGER = Logger
+            .getLogger(MimeFileCellFactoryTemplate.class.getCanonicalName());
 
-	public MimeFileCellFactoryTemplate(String packageName,
-			List<MIMETypeEntry> mimeTypes) throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/MimeFileCellFactory.template"));
+    public MimeFileCellFactoryTemplate(String packageName,
+            List<MIMETypeEntry> mimeTypes) throws IOException {
+        super(NodeGenerator.class
+                .getResourceAsStream("templates/MimeFileCellFactory.template"));
 
-		String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(\"__EXT__\");\n";
-		String mimeTypeAddCode = "";
+        String mimeTypeAddTemplateCodeLine = "\t\tmimetypes.add(\"__EXT__\");\n";
+        String mimeTypeAddCode = "";
 
-		Set<MIMETypeEntry> processedMimeTypes = new HashSet<MIMETypeEntry>();
+        Set<MIMETypeEntry> processedMimeTypes = new HashSet<MIMETypeEntry>();
 
-		for (MIMETypeEntry mimeType : mimeTypes) {
-			LOGGER.info("MIME Type read: " + mimeType.getType());
+        for (MIMETypeEntry mimeType : mimeTypes) {
+            LOGGER.info("MIME Type read: " + mimeType.getType());
 
-			if (processedMimeTypes.contains(mimeType)) {
-				LOGGER.log(Level.WARNING, "skipping duplicate mime type "
-						+ mimeType.getType());
-			} else {
-				processedMimeTypes.add(mimeType);
-			}
+            if (processedMimeTypes.contains(mimeType)) {
+                LOGGER.log(Level.WARNING, "skipping duplicate mime type "
+                        + mimeType.getType());
+            } else {
+                processedMimeTypes.add(mimeType);
+            }
 
-			mimeTypeAddCode += mimeTypeAddTemplateCodeLine.replace("__EXT__",
-					mimeType.getExtensions().get(0).toLowerCase());
-		}
+            mimeTypeAddCode += mimeTypeAddTemplateCodeLine.replace("__EXT__",
+                    mimeType.getExtensions().get(0).toLowerCase());
+        }
 
-		this.replace("__MIMETYPES__", mimeTypeAddCode);
-		this.replace("__BASE__", packageName);
-	}
+        this.replace("__MIMETYPES__", mimeTypeAddCode);
+        this.replace("__BASE__", packageName);
+    }
 }

@@ -26,10 +26,10 @@ package com.genericworkflownodes.knime.execution;
  */
 public interface IWaitable {
 
-	/**
-	 * Forces the invoking thread to wait until completion of the executed task.
-	 * Note that this method does not throw any exception, forcing
-	 * implementations to handly any possible {@link InterruptedException}.
-	 */
-	void waitUntilFinished();
+    /**
+     * Forces the invoking thread to wait until completion of the executed task.
+     * Note that this method does not throw any exception, forcing
+     * implementations to handly any possible {@link InterruptedException}.
+     */
+    void waitUntilFinished();
 }

@@ -49,94 +49,94 @@ import com.genericworkflownodes.knime.test.data.TestDataSource;
  */
 public class CTDHandlerTest {
 
-	@Test
-	public void testCTDHandler() throws ParserConfigurationException,
-			SAXException, IOException {
-		SAXParserFactory spfac = SAXParserFactory.newInstance();
+    @Test
+    public void testCTDHandler() throws ParserConfigurationException,
+            SAXException, IOException {
+        SAXParserFactory spfac = SAXParserFactory.newInstance();
 
-		// Now use the parser factory to create a SAXParser object
-		SAXParser sp = spfac.newSAXParser();
+        // Now use the parser factory to create a SAXParser object
+        SAXParser sp = spfac.newSAXParser();
 
-		CTDHandler handler = new CTDHandler(sp.getXMLReader());
-		sp.parse(TestDataSource.class.getResourceAsStream("test5.ctd"), handler);
+        CTDHandler handler = new CTDHandler(sp.getXMLReader());
+        sp.parse(TestDataSource.class.getResourceAsStream("test5.ctd"), handler);
 
-		INodeConfiguration config = handler.getNodeConfiguration();
+        INodeConfiguration config = handler.getNodeConfiguration();
 
-		assertEquals(2, config.getCLI().getCLIElement().size());
+        assertEquals(2, config.getCLI().getCLIElement().size());
 
-		CLIElement firstCLIElement = config.getCLI().getCLIElement().get(0);
+        CLIElement firstCLIElement = config.getCLI().getCLIElement().get(0);
 
-		assertEquals("-i", firstCLIElement.getOptionIdentifier());
-		assertEquals(false, firstCLIElement.isList());
-		assertEquals(false, firstCLIElement.isRequired());
+        assertEquals("-i", firstCLIElement.getOptionIdentifier());
+        assertEquals(false, firstCLIElement.isList());
+        assertEquals(false, firstCLIElement.isRequired());
 
-		assertEquals(1, firstCLIElement.getMapping().size());
-		assertEquals("blastall.i", firstCLIElement.getMapping().get(0)
-				.getReferenceName());
+        assertEquals(1, firstCLIElement.getMapping().size());
+        assertEquals("blastall.i", firstCLIElement.getMapping().get(0)
+                .getReferenceName());
 
-		CLIElement secondCLIElement = config.getCLI().getCLIElement().get(1);
-		assertEquals("-d", secondCLIElement.getOptionIdentifier());
-		assertEquals(false, secondCLIElement.isList());
-		assertEquals(false, secondCLIElement.isRequired());
+        CLIElement secondCLIElement = config.getCLI().getCLIElement().get(1);
+        assertEquals("-d", secondCLIElement.getOptionIdentifier());
+        assertEquals(false, secondCLIElement.isList());
+        assertEquals(false, secondCLIElement.isRequired());
 
-		assertEquals(1, secondCLIElement.getMapping().size());
-		assertEquals("blastall.d", secondCLIElement.getMapping().get(0)
-				.getReferenceName());
+        assertEquals(1, secondCLIElement.getMapping().size());
+        assertEquals("blastall.d", secondCLIElement.getMapping().get(0)
+                .getReferenceName());
 
-	}
+    }
 
-	@Test
-	public void testParamHandler() throws ParserConfigurationException,
-			SAXException, IOException {
-		SchemaFactory schemaFactory = SchemaFactory
-				.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		Schema ctdSchema = schemaFactory.newSchema(SchemaProvider.class
-				.getResource("CTD.xsd"));
-		SAXParserFactory spfac = SAXParserFactory.newInstance();
-		spfac.setValidating(false);
-		spfac.setSchema(ctdSchema);
+    @Test
+    public void testParamHandler() throws ParserConfigurationException,
+            SAXException, IOException {
+        SchemaFactory schemaFactory = SchemaFactory
+                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema ctdSchema = schemaFactory.newSchema(SchemaProvider.class
+                .getResource("CTD.xsd"));
+        SAXParserFactory spfac = SAXParserFactory.newInstance();
+        spfac.setValidating(false);
+        spfac.setSchema(ctdSchema);
 
-		// Now use the parser factory to create a SAXParser object
-		SAXParser sp = spfac.newSAXParser();
+        // Now use the parser factory to create a SAXParser object
+        SAXParser sp = spfac.newSAXParser();
 
-		CTDHandler handler = new CTDHandler(sp.getXMLReader());
-		sp.parse(TestDataSource.class.getResourceAsStream("FileFilter.ctd"),
-				handler);
+        CTDHandler handler = new CTDHandler(sp.getXMLReader());
+        sp.parse(TestDataSource.class.getResourceAsStream("FileFilter.ctd"),
+                handler);
 
-		INodeConfiguration config = handler.getNodeConfiguration();
+        INodeConfiguration config = handler.getNodeConfiguration();
 
-		StringParameter mz = (StringParameter) config
-				.getParameter("FileFilter.1.mz");
-		assertEquals("m/z range to extract (applies to ALL ms levels!)",
-				mz.getDescription());
-		assertEquals(":", mz.getValue());
-		assertEquals("mz", mz.getKey());
+        StringParameter mz = (StringParameter) config
+                .getParameter("FileFilter.1.mz");
+        assertEquals("m/z range to extract (applies to ALL ms levels!)",
+                mz.getDescription());
+        assertEquals(":", mz.getValue());
+        assertEquals("mz", mz.getKey());
 
-		IntegerListParameter levels = (IntegerListParameter) config
-				.getParameter("FileFilter.1.peak_options.level");
-		assertEquals("MS levels to extract", levels.getDescription());
-		assertEquals(3, levels.getValue().size());
-		assertEquals(1, levels.getValue().get(0).intValue());
-		assertEquals(2, levels.getValue().get(1).intValue());
-		assertEquals(3, levels.getValue().get(2).intValue());
-		assertEquals(false, levels.isAdvanced());
+        IntegerListParameter levels = (IntegerListParameter) config
+                .getParameter("FileFilter.1.peak_options.level");
+        assertEquals("MS levels to extract", levels.getDescription());
+        assertEquals(3, levels.getValue().size());
+        assertEquals(1, levels.getValue().get(0).intValue());
+        assertEquals(2, levels.getValue().get(1).intValue());
+        assertEquals(3, levels.getValue().get(2).intValue());
+        assertEquals(false, levels.isAdvanced());
 
-		StringChoiceParameter int_precision = (StringChoiceParameter) config
-				.getParameter("FileFilter.1.peak_options.int_precision");
-		assertEquals("32", int_precision.getValue());
-		assertEquals(3, int_precision.getAllowedValues().size());
+        StringChoiceParameter int_precision = (StringChoiceParameter) config
+                .getParameter("FileFilter.1.peak_options.int_precision");
+        assertEquals("32", int_precision.getValue());
+        assertEquals(3, int_precision.getAllowedValues().size());
 
-		BoolParameter no_progress = (BoolParameter) config
-				.getParameter("FileFilter.1.no_progress");
-		assertEquals(false, no_progress.getValue());
-		assertEquals(true, no_progress.isAdvanced());
+        BoolParameter no_progress = (BoolParameter) config
+                .getParameter("FileFilter.1.no_progress");
+        assertEquals(false, no_progress.getValue());
+        assertEquals(true, no_progress.isAdvanced());
 
-		assertEquals(3, config.getInputPorts().size());
-		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
-	}
+        assertEquals(3, config.getInputPorts().size());
+        assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
+    }
 
-	@Test
-	public void testComplicatedCases() {
+    @Test
+    public void testComplicatedCases() {
 
-	}
+    }
 }

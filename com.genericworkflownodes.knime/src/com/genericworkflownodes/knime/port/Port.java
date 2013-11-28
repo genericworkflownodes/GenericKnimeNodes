@@ -38,157 +38,157 @@ import java.util.List;
  */
 public class Port implements Serializable {
 
-	/**
-	 * The serialVersionUID.
-	 */
-	private static final long serialVersionUID = -3038975820102785198L;
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = -3038975820102785198L;
 
-	/**
-	 * Flag to show if the port is optional for the tool.
-	 */
-	private boolean m_isOptional;
+    /**
+     * Flag to show if the port is optional for the tool.
+     */
+    private boolean m_isOptional;
 
-	/**
-	 * The name of the port.
-	 */
-	private String m_name;
+    /**
+     * The name of the port.
+     */
+    private String m_name;
 
-	/**
-	 * The description of the port.
-	 */
-	private String m_description;
+    /**
+     * The description of the port.
+     */
+    private String m_description;
 
-	/**
-	 * Flag to indicate if this port can handle lists of files.
-	 */
-	private boolean m_isMultiFile;
+    /**
+     * Flag to indicate if this port can handle lists of files.
+     */
+    private boolean m_isMultiFile;
 
-	/**
-	 * The list of supported file extensions.
-	 */
-	private List<String> m_types = new ArrayList<String>();
+    /**
+     * The list of supported file extensions.
+     */
+    private List<String> m_types = new ArrayList<String>();
 
-	/**
-	 * Flag to indicate that this port represents an output prefix.
-	 */
-	private boolean m_isPrefix;
+    /**
+     * Flag to indicate that this port represents an output prefix.
+     */
+    private boolean m_isPrefix;
 
-	/**
-	 * Adds a supported {@link MIMEType} to the port.
-	 * 
-	 * @param MIMEtype
-	 *            A new {@link MIMEType} supported by this port.
-	 */
-	public void addMimeType(final String type) {
-		m_types.add(type);
-	}
+    /**
+     * Adds a supported {@link MIMEType} to the port.
+     * 
+     * @param MIMEtype
+     *            A new {@link MIMEType} supported by this port.
+     */
+    public void addMimeType(final String type) {
+        m_types.add(type);
+    }
 
-	/**
-	 * Returns the list of supported MIMEtypes of this port.
-	 * 
-	 * @return List of all {@link MIMEType}s supported by this port.
-	 */
-	public List<String> getMimeTypes() {
-		return m_types;
-	}
+    /**
+     * Returns the list of supported MIMEtypes of this port.
+     * 
+     * @return List of all {@link MIMEType}s supported by this port.
+     */
+    public List<String> getMimeTypes() {
+        return m_types;
+    }
 
-	/**
-	 * Returns whether this port is optional or needs a mandatory incoming
-	 * connection.
-	 * 
-	 * @return True if the port is optional, false otherwise.
-	 */
-	public boolean isOptional() {
-		return m_isOptional;
-	}
+    /**
+     * Returns whether this port is optional or needs a mandatory incoming
+     * connection.
+     * 
+     * @return True if the port is optional, false otherwise.
+     */
+    public boolean isOptional() {
+        return m_isOptional;
+    }
 
-	/**
-	 * Sets whether this port is optional or needs a mandatory incoming
-	 * connection.
-	 * 
-	 * @param m_isOptional
-	 *            New indicator if the given port is optional or not.
-	 * 
-	 */
-	public void setOptional(boolean isOptional) {
-		m_isOptional = isOptional;
-	}
+    /**
+     * Sets whether this port is optional or needs a mandatory incoming
+     * connection.
+     * 
+     * @param m_isOptional
+     *            New indicator if the given port is optional or not.
+     * 
+     */
+    public void setOptional(boolean isOptional) {
+        m_isOptional = isOptional;
+    }
 
-	/**
-	 * Returns the name of the port
-	 * 
-	 * @return port The name of the port.
-	 */
-	public String getName() {
-		return m_name;
-	}
+    /**
+     * Returns the name of the port
+     * 
+     * @return port The name of the port.
+     */
+    public String getName() {
+        return m_name;
+    }
 
-	/**
-	 * Sets the name of the port.
-	 * 
-	 * @param name
-	 *            The new port name.
-	 * 
-	 */
-	public void setName(final String name) {
-		m_name = name;
-	}
+    /**
+     * Sets the name of the port.
+     * 
+     * @param name
+     *            The new port name.
+     * 
+     */
+    public void setName(final String name) {
+        m_name = name;
+    }
 
-	/**
-	 * Returns the description for this port.
-	 * 
-	 * @return The port description.
-	 */
-	public String getDescription() {
-		return m_description;
-	}
+    /**
+     * Returns the description for this port.
+     * 
+     * @return The port description.
+     */
+    public String getDescription() {
+        return m_description;
+    }
 
-	/**
-	 * Sets the description for this port.
-	 * 
-	 * @param description
-	 *            The new description of the port.
-	 */
-	public void setDescription(final String description) {
-		m_description = description;
-	}
+    /**
+     * Sets the description for this port.
+     * 
+     * @param description
+     *            The new description of the port.
+     */
+    public void setDescription(final String description) {
+        m_description = description;
+    }
 
-	/**
-	 * Returns whether this port allows multiple files of a given MIMEtype.
-	 * 
-	 * @return True if the port allows multiple files, false otherwise.
-	 */
-	public boolean isMultiFile() {
-		return m_isMultiFile;
-	}
+    /**
+     * Returns whether this port allows multiple files of a given MIMEtype.
+     * 
+     * @return True if the port allows multiple files, false otherwise.
+     */
+    public boolean isMultiFile() {
+        return m_isMultiFile;
+    }
 
-	/**
-	 * Set whether this port allows multiple files of a given MIMEtype.
-	 * 
-	 * @param isMultiFile
-	 *            New indicator if more then one value for the given port are
-	 *            allowed.
-	 */
-	public void setMultiFile(boolean isMultiFile) {
-		m_isMultiFile = isMultiFile;
-	}
+    /**
+     * Set whether this port allows multiple files of a given MIMEtype.
+     * 
+     * @param isMultiFile
+     *            New indicator if more then one value for the given port are
+     *            allowed.
+     */
+    public void setMultiFile(boolean isMultiFile) {
+        m_isMultiFile = isMultiFile;
+    }
 
-	/**
-	 * Returns whether this port is an output prefix.
-	 * 
-	 * @return True if the port is an output prefix, false otherwise.
-	 */
-	public boolean isPrefix() {
-		return m_isPrefix;
-	}
+    /**
+     * Returns whether this port is an output prefix.
+     * 
+     * @return True if the port is an output prefix, false otherwise.
+     */
+    public boolean isPrefix() {
+        return m_isPrefix;
+    }
 
-	/**
-	 * Sets whether this port is an output prefix.
-	 * 
-	 * @param isPrefix
-	 *            New value for the output prefix flag.
-	 */
-	public void setIsPrefix(boolean isPrefix) {
-		m_isPrefix = isPrefix;
-	}
+    /**
+     * Sets whether this port is an output prefix.
+     * 
+     * @param isPrefix
+     *            New value for the output prefix flag.
+     */
+    public void setIsPrefix(boolean isPrefix) {
+        m_isPrefix = isPrefix;
+    }
 }

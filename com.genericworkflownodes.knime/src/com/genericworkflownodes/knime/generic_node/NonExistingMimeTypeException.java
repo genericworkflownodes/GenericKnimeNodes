@@ -25,19 +25,19 @@ package com.genericworkflownodes.knime.generic_node;
  */
 public class NonExistingMimeTypeException extends Exception {
 
-	/**
-	 * The serialVersionUID.
-	 */
-	private static final long serialVersionUID = 7338966496428115378L;
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 7338966496428115378L;
 
-	/**
-	 * 
-	 * @param someFileName
-	 *            The file with non-existing mime type.
-	 */
-	public NonExistingMimeTypeException(String someFileName) {
-		super("No matching registered MIME type for " + someFileName
-				+ " found.");
-	}
+    /**
+     * 
+     * @param someFileName
+     *            The file with non-existing mime type.
+     */
+    public NonExistingMimeTypeException(String someFileName) {
+        super("No matching registered MIME type for " + someFileName
+                + " found.");
+    }
 
 }

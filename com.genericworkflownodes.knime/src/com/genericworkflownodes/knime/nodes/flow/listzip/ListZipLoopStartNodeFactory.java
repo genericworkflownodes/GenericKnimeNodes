@@ -28,47 +28,47 @@ import org.knime.core.node.NodeView;
  * @author roettig
  */
 public class ListZipLoopStartNodeFactory extends
-		NodeFactory<ListZipLoopStartNodeModel> {
+        NodeFactory<ListZipLoopStartNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ListZipLoopStartNodeModel createNodeModel() {
-		return new ListZipLoopStartNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ListZipLoopStartNodeModel createNodeModel() {
+        return new ListZipLoopStartNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<ListZipLoopStartNodeModel> createNodeView(
-			final int viewIndex, final ListZipLoopStartNodeModel nodeModel) {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<ListZipLoopStartNodeModel> createNodeView(
+            final int viewIndex, final ListZipLoopStartNodeModel nodeModel) {
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new ListZipLoopStartNodeDialog();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return new ListZipLoopStartNodeDialog();
+    }
 
 }

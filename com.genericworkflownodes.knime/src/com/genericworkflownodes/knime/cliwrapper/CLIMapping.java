@@ -47,30 +47,30 @@ package com.genericworkflownodes.knime.cliwrapper;
  */
 public class CLIMapping {
 
-	/**
-	 * Holds the name of the mapped PARAM entry.
-	 */
-	private String referenceName;
+    /**
+     * Holds the name of the mapped PARAM entry.
+     */
+    private String referenceName;
 
-	/**
-	 * Gets the value of the refName property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public final String getReferenceName() {
-		return referenceName;
-	}
+    /**
+     * Gets the value of the refName property.
+     * 
+     * @return possible object is {@link String }
+     * 
+     */
+    public final String getReferenceName() {
+        return referenceName;
+    }
 
-	/**
-	 * Sets the value of the refName property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public final void setReferenceName(final String value) {
-		this.referenceName = value;
-	}
+    /**
+     * Sets the value of the refName property.
+     * 
+     * @param value
+     *            allowed object is {@link String }
+     * 
+     */
+    public final void setReferenceName(final String value) {
+        this.referenceName = value;
+    }
 
 }

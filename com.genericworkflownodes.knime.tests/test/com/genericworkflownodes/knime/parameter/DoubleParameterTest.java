@@ -31,91 +31,91 @@ import org.junit.rules.ExpectedException;
  */
 public class DoubleParameterTest {
 
-	@Test
-	public void testGetMnemonic() {
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
-		assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
-		dp.setLowerBound(-3.0);
-		assertEquals(dp.getMnemonic(), "double [-3.0:+inf]");
-		dp.setUpperBound(3.0);
-		assertEquals(dp.getMnemonic(), "double [-3.0:3.0]");
-	}
+    @Test
+    public void testGetMnemonic() {
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
+        assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
+        dp.setLowerBound(-3.0);
+        assertEquals(dp.getMnemonic(), "double [-3.0:+inf]");
+        dp.setUpperBound(3.0);
+        assertEquals(dp.getMnemonic(), "double [-3.0:3.0]");
+    }
 
-	@Test
-	public void testFillFromString() throws InvalidParameterValueException {
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
-		dp.fillFromString("10.14331");
-		assertEquals(new Double(10.14331), dp.getValue());
-	}
+    @Test
+    public void testFillFromString() throws InvalidParameterValueException {
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
+        dp.fillFromString("10.14331");
+        assertEquals(new Double(10.14331), dp.getValue());
+    }
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void testFromOutOfBoundsString()
-			throws InvalidParameterValueException {
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
-		dp.setUpperBound(4.0);
+    @Test
+    public void testFromOutOfBoundsString()
+            throws InvalidParameterValueException {
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
+        dp.setUpperBound(4.0);
 
-		thrown.expect(InvalidParameterValueException.class);
-		thrown.expectMessage("parameter " + dp.getKey()
-				+ " value is out of bounds");
+        thrown.expect(InvalidParameterValueException.class);
+        thrown.expectMessage("parameter " + dp.getKey()
+                + " value is out of bounds");
 
-		dp.fillFromString("10.14331");
-	}
+        dp.fillFromString("10.14331");
+    }
 
-	@Test
-	public void testFillFromInvalidString()
-			throws InvalidParameterValueException {
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
+    @Test
+    public void testFillFromInvalidString()
+            throws InvalidParameterValueException {
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
 
-		thrown.expect(InvalidParameterValueException.class);
-		thrown.expectMessage("parameter " + dp.getKey()
-				+ " value is not a double");
+        thrown.expect(InvalidParameterValueException.class);
+        thrown.expectMessage("parameter " + dp.getKey()
+                + " value is not a double");
 
-		dp.fillFromString("10.1foobar4331");
-	}
+        dp.fillFromString("10.1foobar4331");
+    }
 
-	@Test
-	public void testDoubleParameterStringDouble() {
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
-		assertEquals(new Double(2.9), dp.getValue());
-		assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
-	}
+    @Test
+    public void testDoubleParameterStringDouble() {
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
+        assertEquals(new Double(2.9), dp.getValue());
+        assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
+    }
 
-	@Test
-	public void testDoubleParameterStringString() {
-		DoubleParameter dp = new DoubleParameter("dp", "2.9");
-		assertEquals(new Double(2.9), dp.getValue());
-		assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
-	}
+    @Test
+    public void testDoubleParameterStringString() {
+        DoubleParameter dp = new DoubleParameter("dp", "2.9");
+        assertEquals(new Double(2.9), dp.getValue());
+        assertEquals(dp.getMnemonic(), "double [-inf:+inf]");
+    }
 
-	@Test
-	public void testToString() {
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
-		assertEquals(new Double(2.9), dp.getValue());
-		assertEquals("2.9", dp.toString());
-	}
+    @Test
+    public void testToString() {
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
+        assertEquals(new Double(2.9), dp.getValue());
+        assertEquals("2.9", dp.toString());
+    }
 
-	@Test
-	public void testValidateDouble() {
-		Double dNull = null;
-		DoubleParameter dpNull = new DoubleParameter("dp", dNull);
-		assertEquals(true, dpNull.validate(null));
+    @Test
+    public void testValidateDouble() {
+        Double dNull = null;
+        DoubleParameter dpNull = new DoubleParameter("dp", dNull);
+        assertEquals(true, dpNull.validate(null));
 
-		DoubleParameter dp = new DoubleParameter("dp", 2.9);
-		Double anotherDouble = new Double(25.0);
-		assertEquals(true, dp.validate(anotherDouble));
+        DoubleParameter dp = new DoubleParameter("dp", 2.9);
+        Double anotherDouble = new Double(25.0);
+        assertEquals(true, dp.validate(anotherDouble));
 
-		dp.setLowerBound(26.0);
-		assertEquals(false, dp.validate(anotherDouble));
-		dp.setLowerBound(Double.NEGATIVE_INFINITY);
-		assertEquals(true, dp.validate(anotherDouble));
+        dp.setLowerBound(26.0);
+        assertEquals(false, dp.validate(anotherDouble));
+        dp.setLowerBound(Double.NEGATIVE_INFINITY);
+        assertEquals(true, dp.validate(anotherDouble));
 
-		dp.setUpperBound(24.5);
-		assertEquals(false, dp.validate(anotherDouble));
-		dp.setUpperBound(Double.POSITIVE_INFINITY);
-		assertEquals(true, dp.validate(anotherDouble));
-	}
+        dp.setUpperBound(24.5);
+        assertEquals(false, dp.validate(anotherDouble));
+        dp.setUpperBound(Double.POSITIVE_INFINITY);
+        assertEquals(true, dp.validate(anotherDouble));
+    }
 
 }

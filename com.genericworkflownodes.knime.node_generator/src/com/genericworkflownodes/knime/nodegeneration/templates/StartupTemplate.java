@@ -29,11 +29,11 @@ import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
  */
 public class StartupTemplate extends Template {
 
-	public StartupTemplate(String packageName) throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/Startup.template"));
+    public StartupTemplate(String packageName) throws IOException {
+        super(NodeGenerator.class
+                .getResourceAsStream("templates/Startup.template"));
 
-		replace("@@BASE@@", packageName);
-	}
+        replace("@@BASE@@", packageName);
+    }
 
 }

@@ -6,9 +6,9 @@ import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 
 public class BuildPropertiesTemplate extends Template {
 
-	public BuildPropertiesTemplate() throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/build.properties.template"));
-	}
+    public BuildPropertiesTemplate() throws IOException {
+        super(NodeGenerator.class
+                .getResourceAsStream("templates/build.properties.template"));
+    }
 
 }

@@ -11,51 +11,51 @@ import org.junit.Test;
 
 public class FileStashPropertiesTest {
 
-	@Test
-	public void testSaveLocationToNonExistingFile() throws IOException {
-		IFileStash fileStash = FileStashFactory.createTemporary();
-		String expected = fileStash.getLocation().getAbsolutePath();
+    @Test
+    public void testSaveLocationToNonExistingFile() throws IOException {
+        IFileStash fileStash = FileStashFactory.createTemporary();
+        String expected = fileStash.getLocation().getAbsolutePath();
 
-		File propertiesFile = File.createTempFile("test", ".properties");
-		propertiesFile.delete();
+        File propertiesFile = File.createTempFile("test", ".properties");
+        propertiesFile.delete();
 
-		FileStashProperties.saveLocation(fileStash, propertiesFile);
+        FileStashProperties.saveLocation(fileStash, propertiesFile);
 
-		assertTrue(FileUtils.readFileToString(propertiesFile)
-				.contains(expected));
-		assertEquals(expected, FileStashProperties.readLocation(propertiesFile)
-				.getAbsolutePath());
-	}
+        assertTrue(FileUtils.readFileToString(propertiesFile)
+                .contains(expected));
+        assertEquals(expected, FileStashProperties.readLocation(propertiesFile)
+                .getAbsolutePath());
+    }
 
-	@Test
-	public void testSaveLocationToFile() throws IOException {
-		IFileStash fileStash = FileStashFactory.createTemporary();
-		String expected = fileStash.getLocation().getAbsolutePath();
+    @Test
+    public void testSaveLocationToFile() throws IOException {
+        IFileStash fileStash = FileStashFactory.createTemporary();
+        String expected = fileStash.getLocation().getAbsolutePath();
 
-		File propertiesFile = File.createTempFile("test", ".properties");
-		FileStashProperties.saveLocation(fileStash, propertiesFile);
-		assertTrue(FileUtils.readFileToString(propertiesFile)
-				.contains(expected));
-		assertEquals(expected, FileStashProperties.readLocation(propertiesFile)
-				.getAbsolutePath());
-	}
+        File propertiesFile = File.createTempFile("test", ".properties");
+        FileStashProperties.saveLocation(fileStash, propertiesFile);
+        assertTrue(FileUtils.readFileToString(propertiesFile)
+                .contains(expected));
+        assertEquals(expected, FileStashProperties.readLocation(propertiesFile)
+                .getAbsolutePath());
+    }
 
-	@Test
-	public void testSaveLocationToDirectory() throws IOException {
-		IFileStash fileStash = FileStashFactory.createTemporary();
-		String expected = fileStash.getLocation().getAbsolutePath();
+    @Test
+    public void testSaveLocationToDirectory() throws IOException {
+        IFileStash fileStash = FileStashFactory.createTemporary();
+        String expected = fileStash.getLocation().getAbsolutePath();
 
-		File propertiesDirectory = File.createTempFile("test", ".properties");
-		propertiesDirectory.delete();
-		propertiesDirectory.mkdir();
-		FileStashProperties.saveLocation(fileStash, propertiesDirectory);
-		assertTrue(FileUtils.readFileToString(
-				new File(propertiesDirectory, "stash.properties")).contains(
-				expected));
-		assertEquals(
-				expected,
-				FileStashProperties.readLocation(
-						new File(propertiesDirectory, "stash.properties"))
-						.getAbsolutePath());
-	}
+        File propertiesDirectory = File.createTempFile("test", ".properties");
+        propertiesDirectory.delete();
+        propertiesDirectory.mkdir();
+        FileStashProperties.saveLocation(fileStash, propertiesDirectory);
+        assertTrue(FileUtils.readFileToString(
+                new File(propertiesDirectory, "stash.properties")).contains(
+                expected));
+        assertEquals(
+                expected,
+                FileStashProperties.readLocation(
+                        new File(propertiesDirectory, "stash.properties"))
+                        .getAbsolutePath());
+    }
 }

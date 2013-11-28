@@ -30,15 +30,15 @@ import java.io.Serializable;
  * 
  */
 public interface MIMEFileDelegate extends Serializable {
-	public byte[] getByteArrayReference();
+    public byte[] getByteArrayReference();
 
-	public boolean isEqual(MIMEFileDelegate del);
+    public boolean isEqual(MIMEFileDelegate del);
 
-	public int getHash();
+    public int getHash();
 
-	public void read(File file) throws IOException;
+    public void read(File file) throws IOException;
 
-	public void write(String filename) throws IOException;
+    public void write(String filename) throws IOException;
 
-	public File writeTemp(String directory) throws IOException;
+    public File writeTemp(String directory) throws IOException;
 }

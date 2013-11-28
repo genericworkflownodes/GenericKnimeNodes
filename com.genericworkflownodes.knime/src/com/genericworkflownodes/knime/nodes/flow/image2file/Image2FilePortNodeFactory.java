@@ -29,47 +29,47 @@ import org.knime.core.node.NodeView;
  * @author GenericKnimeNodes
  */
 public class Image2FilePortNodeFactory extends
-		NodeFactory<Image2FilePortNodeModel> {
+        NodeFactory<Image2FilePortNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Image2FilePortNodeModel createNodeModel() {
-		return new Image2FilePortNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Image2FilePortNodeModel createNodeModel() {
+        return new Image2FilePortNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<Image2FilePortNodeModel> createNodeView(
-			final int viewIndex, final Image2FilePortNodeModel nodeModel) {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<Image2FilePortNodeModel> createNodeView(
+            final int viewIndex, final Image2FilePortNodeModel nodeModel) {
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return false;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return null;
+    }
 
 }

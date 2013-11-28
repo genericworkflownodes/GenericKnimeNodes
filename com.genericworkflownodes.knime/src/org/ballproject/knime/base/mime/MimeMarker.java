@@ -21,7 +21,7 @@ package org.ballproject.knime.base.mime;
 
 
 public interface MimeMarker {
-	MIMEFileDelegate getDelegate();
+    MIMEFileDelegate getDelegate();
 
-	String getExtension();
+    String getExtension();
 }

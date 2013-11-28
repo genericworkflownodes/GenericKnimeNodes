@@ -42,92 +42,92 @@ import com.genericworkflownodes.util.ui.ChoiceDialogListener;
  * @author aiche, roettig
  */
 public class DemanglerNodeDialog extends NodeDialogPane implements
-		ChoiceDialogListener {
+        ChoiceDialogListener {
 
-	/**
-	 * The ChoiceElement to select the correct {@link IDemangler}.
-	 */
-	private ChoiceDialog choice;
+    /**
+     * The ChoiceElement to select the correct {@link IDemangler}.
+     */
+    private ChoiceDialog choice;
 
-	/**
-	 * The DataModel for the ChoiceDialog.
-	 */
-	private DefaultComboBoxModel model;
+    /**
+     * The DataModel for the ChoiceDialog.
+     */
+    private DefaultComboBoxModel model;
 
-	/**
-	 * The actual selected demangler.
-	 */
-	private String demanglerClassName;
+    /**
+     * The actual selected demangler.
+     */
+    private String demanglerClassName;
 
-	/**
-	 * The currently configured {@link MIMEType}.
-	 */
-	private String configuredFileExtension;
+    /**
+     * The currently configured {@link MIMEType}.
+     */
+    private String configuredFileExtension;
 
-	/**
-	 * Default c'tor.
-	 */
-	protected DemanglerNodeDialog() {
-		super();
+    /**
+     * Default c'tor.
+     */
+    protected DemanglerNodeDialog() {
+        super();
 
-		model = new DefaultComboBoxModel();
+        model = new DefaultComboBoxModel();
 
-		choice = new ChoiceDialog(model);
-		choice.registerChoiceListener(this);
+        choice = new ChoiceDialog(model);
+        choice.registerChoiceListener(this);
 
-		addTab("Demanglers", choice);
+        addTab("Demanglers", choice);
 
-		// we assume there is no demangler selected
-		demanglerClassName = "";
-	}
+        // we assume there is no demangler selected
+        demanglerClassName = "";
+    }
 
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings)
-			throws InvalidSettingsException {
-		settings.addString(DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
-				demanglerClassName);
-		settings.addString(
-				DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME,
-				configuredFileExtension);
-	}
+    @Override
+    protected void saveSettingsTo(NodeSettingsWO settings)
+            throws InvalidSettingsException {
+        settings.addString(DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
+                demanglerClassName);
+        settings.addString(
+                DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME,
+                configuredFileExtension);
+    }
 
-	@Override
-	protected void loadSettingsFrom(final NodeSettingsRO settings,
-			final PortObjectSpec[] specs) throws NotConfigurableException {
+    @Override
+    protected void loadSettingsFrom(final NodeSettingsRO settings,
+            final PortObjectSpec[] specs) throws NotConfigurableException {
 
-		List<IDemangler> availableDemangler = new ArrayList<IDemangler>();
-		String demanglerClassName = "";
-		try {
-			demanglerClassName = settings.getString(
-					DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
-			configuredFileExtension = settings
-					.getString(DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME);
+        List<IDemangler> availableDemangler = new ArrayList<IDemangler>();
+        String demanglerClassName = "";
+        try {
+            demanglerClassName = settings.getString(
+                    DemanglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
+            configuredFileExtension = settings
+                    .getString(DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
-			availableDemangler = DemanglerRegistry.getDemanglerRegistry()
-					.getDemangler(configuredFileExtension);
-		} catch (InvalidSettingsException e) {
-			e.printStackTrace();
-		}
+            availableDemangler = DemanglerRegistry.getDemanglerRegistry()
+                    .getDemangler(configuredFileExtension);
+        } catch (InvalidSettingsException e) {
+            e.printStackTrace();
+        }
 
-		model.removeAllElements();
-		for (IDemangler d : availableDemangler) {
-			model.addElement(d.getClass().getName());
-		}
+        model.removeAllElements();
+        for (IDemangler d : availableDemangler) {
+            model.addElement(d.getClass().getName());
+        }
 
-		// select already configured demangler -> find by class name
-		if (!"".equals(demanglerClassName)) {
-			int indexToSelect = model.getIndexOf(demanglerClassName);
-			if (indexToSelect != -1) {
-				model.setSelectedItem(demanglerClassName);
-			}
-		} else {
-			// there is no pre-selected demangler
-			model.setSelectedItem(model.getElementAt(0));
-		}
-	}
+        // select already configured demangler -> find by class name
+        if (!"".equals(demanglerClassName)) {
+            int indexToSelect = model.getIndexOf(demanglerClassName);
+            if (indexToSelect != -1) {
+                model.setSelectedItem(demanglerClassName);
+            }
+        } else {
+            // there is no pre-selected demangler
+            model.setSelectedItem(model.getElementAt(0));
+        }
+    }
 
-	@Override
-	public void onChoice(final int selectedIndex) {
-		demanglerClassName = (String) model.getElementAt(selectedIndex);
-	}
+    @Override
+    public void onChoice(final int selectedIndex) {
+        demanglerClassName = (String) model.getElementAt(selectedIndex);
+    }
 }

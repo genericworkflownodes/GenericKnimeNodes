@@ -14,61 +14,61 @@ import org.knime.core.node.NodeView;
  */
 public class OutputFolderNodeView extends NodeView<OutputFolderNodeModel> {
 
-	/**
-	 * Creates a new view.
-	 * 
-	 * @param nodeModel
-	 *            The model (class: {@link OutputFolderNodeModel})
-	 */
-	protected OutputFolderNodeView(final OutputFolderNodeModel nodeModel) {
-		super(nodeModel);
-		// TODO: generated method stub
-	}
+    /**
+     * Creates a new view.
+     * 
+     * @param nodeModel
+     *            The model (class: {@link OutputFolderNodeModel})
+     */
+    protected OutputFolderNodeView(final OutputFolderNodeModel nodeModel) {
+        super(nodeModel);
+        // TODO: generated method stub
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onClose() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onClose() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onOpen() {
-		try {
-			setShowNODATALabel(true);
-			openFolder();
-		} catch (IOException e) {
-			getLogger().error(
-					"Could not open the folder for the selected output files.");
-			getLogger().error(e.getMessage());
-			e.printStackTrace();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onOpen() {
+        try {
+            setShowNODATALabel(true);
+            openFolder();
+        } catch (IOException e) {
+            getLogger().error(
+                    "Could not open the folder for the selected output files.");
+            getLogger().error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-	public void openFolder() throws IOException {
-		String folder_name = getNodeModel().m_foldername.getStringValue();
-		if (!"".equals(folder_name)) {
-			Desktop.getDesktop().open(new File(folder_name));
-		}
-	}
+    public void openFolder() throws IOException {
+        String folder_name = getNodeModel().m_foldername.getStringValue();
+        if (!"".equals(folder_name)) {
+            Desktop.getDesktop().open(new File(folder_name));
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void modelChanged() {
-		try {
-			setShowNODATALabel(true);
-			openFolder();
-		} catch (IOException e) {
-			getLogger().error(
-					"Could not open the folder for the selected output files.");
-			getLogger().error(e.getMessage());
-			e.printStackTrace();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void modelChanged() {
+        try {
+            setShowNODATALabel(true);
+            openFolder();
+        } catch (IOException e) {
+            getLogger().error(
+                    "Could not open the folder for the selected output files.");
+            getLogger().error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -56,112 +56,112 @@ import java.util.List;
  */
 public class CLIElement {
 
-	/**
-	 * The mappings for this element.
-	 */
-	private List<CLIMapping> mapping;
+    /**
+     * The mappings for this element.
+     */
+    private List<CLIMapping> mapping;
 
-	/**
-	 * The identifier of this option. Can be an empty string if the
-	 * {@link CLIElement} is an argument.
-	 */
-	private String optionIdentifier;
+    /**
+     * The identifier of this option. Can be an empty string if the
+     * {@link CLIElement} is an argument.
+     */
+    private String optionIdentifier;
 
-	/**
-	 * Indicates if the CLIElement is mapped to a list.
-	 */
-	private Boolean isList;
+    /**
+     * Indicates if the CLIElement is mapped to a list.
+     */
+    private Boolean isList;
 
-	/**
-	 * Indicates whether the {@link CLIElement} is required for the cmd or not.
-	 */
-	private Boolean required;
+    /**
+     * Indicates whether the {@link CLIElement} is required for the cmd or not.
+     */
+    private Boolean required;
 
-	/**
-	 * Gets the value of the mapping property.
-	 * 
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 * 
-	 * <pre>
-	 * getMapping().add(newItem);
-	 * </pre>
-	 * 
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list
-	 * {@link CLIMapping }
-	 * 
-	 * @return The list of available mappings for the current element.
-	 * 
-	 */
-	public final List<CLIMapping> getMapping() {
-		if (mapping == null) {
-			mapping = new ArrayList<CLIMapping>();
-		}
-		return this.mapping;
-	}
+    /**
+     * Gets the value of the mapping property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * 
+     * <pre>
+     * getMapping().add(newItem);
+     * </pre>
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CLIMapping }
+     * 
+     * @return The list of available mappings for the current element.
+     * 
+     */
+    public final List<CLIMapping> getMapping() {
+        if (mapping == null) {
+            mapping = new ArrayList<CLIMapping>();
+        }
+        return this.mapping;
+    }
 
-	/**
-	 * Gets the value of the optionIdentifier property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public final String getOptionIdentifier() {
-		return optionIdentifier;
-	}
+    /**
+     * Gets the value of the optionIdentifier property.
+     * 
+     * @return possible object is {@link String }
+     * 
+     */
+    public final String getOptionIdentifier() {
+        return optionIdentifier;
+    }
 
-	/**
-	 * Sets the value of the optionIdentifier property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public final void setOptionIdentifier(final String value) {
-		this.optionIdentifier = value;
-	}
+    /**
+     * Sets the value of the optionIdentifier property.
+     * 
+     * @param value
+     *            allowed object is {@link String }
+     * 
+     */
+    public final void setOptionIdentifier(final String value) {
+        this.optionIdentifier = value;
+    }
 
-	/**
-	 * Gets the value of the isList property.
-	 * 
-	 * @return possible object is {@link Boolean }
-	 * 
-	 */
-	public final Boolean isList() {
-		return isList;
-	}
+    /**
+     * Gets the value of the isList property.
+     * 
+     * @return possible object is {@link Boolean }
+     * 
+     */
+    public final Boolean isList() {
+        return isList;
+    }
 
-	/**
-	 * Sets the value of the isList property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 * 
-	 */
-	public final void setIsList(final Boolean value) {
-		this.isList = value;
-	}
+    /**
+     * Sets the value of the isList property.
+     * 
+     * @param value
+     *            allowed object is {@link Boolean }
+     * 
+     */
+    public final void setIsList(final Boolean value) {
+        this.isList = value;
+    }
 
-	/**
-	 * Gets the value of the required property.
-	 * 
-	 * @return possible object is {@link Boolean }
-	 * 
-	 */
-	public final Boolean isRequired() {
-		return required;
-	}
+    /**
+     * Gets the value of the required property.
+     * 
+     * @return possible object is {@link Boolean }
+     * 
+     */
+    public final Boolean isRequired() {
+        return required;
+    }
 
-	/**
-	 * Sets the value of the required property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 * 
-	 */
-	public final void setRequired(final Boolean value) {
-		this.required = value;
-	}
+    /**
+     * Sets the value of the required property.
+     * 
+     * @param value
+     *            allowed object is {@link Boolean }
+     * 
+     */
+    public final void setRequired(final Boolean value) {
+        this.required = value;
+    }
 
 }

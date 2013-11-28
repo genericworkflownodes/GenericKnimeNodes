@@ -36,119 +36,119 @@ import org.knime.core.node.NodeLogger;
  */
 public class DemanglerRegistry implements IDemanglerRegistry {
 
-	/**
-	 * The managed registry.
-	 */
-	private static IDemanglerRegistry registry;
+    /**
+     * The managed registry.
+     */
+    private static IDemanglerRegistry registry;
 
-	/**
-	 * The id of the used extension point.
-	 */
-	private static final String EXTENSION_POINT_ID = "com.genericworkflownodes.knime.mime.demangler.Demangler";
+    /**
+     * The id of the used extension point.
+     */
+    private static final String EXTENSION_POINT_ID = "com.genericworkflownodes.knime.mime.demangler.Demangler";
 
-	/**
-	 * The central static logger.
-	 */
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(DemanglerRegistry.class);
+    /**
+     * The central static logger.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(DemanglerRegistry.class);
 
-	public static IDemanglerRegistry getDemanglerRegistry() {
-		if (registry == null) {
-			registry = new DemanglerRegistry();
-		}
-		return registry;
-	}
+    public static IDemanglerRegistry getDemanglerRegistry() {
+        if (registry == null) {
+            registry = new DemanglerRegistry();
+        }
+        return registry;
+    }
 
-	@Override
-	public List<IDemangler> getDemangler(final String mType) {
-		List<IDemangler> availableDemangler = getAvailableDemangler();
-		List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
+    @Override
+    public List<IDemangler> getDemangler(final String mType) {
+        List<IDemangler> availableDemangler = getAvailableDemangler();
+        List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
 
-		for (IDemangler demangler : availableDemangler) {
-			if (demangler.getMIMEType().equals(mType)) {
-				candidateDemanger.add(demangler);
-			}
-		}
+        for (IDemangler demangler : availableDemangler) {
+            if (demangler.getMIMEType().equals(mType)) {
+                candidateDemanger.add(demangler);
+            }
+        }
 
-		return candidateDemanger;
-	}
+        return candidateDemanger;
+    }
 
-	/*
-	 * Searchs through the eclipse extension point registry for registered
-	 * {@link IDemangler}s.
-	 */
-	@Override
-	public List<IDemangler> getAvailableDemangler() {
-		List<IDemangler> availableDemangler = new ArrayList<IDemangler>();
+    /*
+     * Searchs through the eclipse extension point registry for registered
+     * {@link IDemangler}s.
+     */
+    @Override
+    public List<IDemangler> getAvailableDemangler() {
+        List<IDemangler> availableDemangler = new ArrayList<IDemangler>();
 
-		IExtensionRegistry reg = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = reg
-				.getConfigurationElementsFor(EXTENSION_POINT_ID);
-		try {
-			for (IConfigurationElement elem : elements) {
-				final Object o = elem.createExecutableExtension("class");
-				// cast is guaranteed to work based on the extension point
-				// definition
-				availableDemangler.add((IDemangler) o);
-			}
-		} catch (CoreException e) {
-			LOGGER.warn(e.getMessage());
-		}
-		return availableDemangler;
-	}
+        IExtensionRegistry reg = Platform.getExtensionRegistry();
+        IConfigurationElement[] elements = reg
+                .getConfigurationElementsFor(EXTENSION_POINT_ID);
+        try {
+            for (IConfigurationElement elem : elements) {
+                final Object o = elem.createExecutableExtension("class");
+                // cast is guaranteed to work based on the extension point
+                // definition
+                availableDemangler.add((IDemangler) o);
+            }
+        } catch (CoreException e) {
+            LOGGER.warn(e.getMessage());
+        }
+        return availableDemangler;
+    }
 
-	@Override
-	public List<IDemangler> getMangler(final DataTableSpec spec) {
-		List<IDemangler> availableDemangler = getAvailableDemangler();
-		List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
+    @Override
+    public List<IDemangler> getMangler(final DataTableSpec spec) {
+        List<IDemangler> availableDemangler = getAvailableDemangler();
+        List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
 
-		for (IDemangler demangler : availableDemangler) {
-			if (isContainedIn(demangler.getTableSpec(), spec)) {
-				candidateDemanger.add(demangler);
-			}
-		}
+        for (IDemangler demangler : availableDemangler) {
+            if (isContainedIn(demangler.getTableSpec(), spec)) {
+                candidateDemanger.add(demangler);
+            }
+        }
 
-		return candidateDemanger;
-	}
+        return candidateDemanger;
+    }
 
-	/**
-	 * Checks if the first {@link DataTableSpec} is contained in to the second
-	 * one. Is contained in means, that for every row in the first
-	 * {@link DataTableSpec} exists a row with equal name {@link DataTableSpec}
-	 * and type in the second {@link DataTableSpec}. Note that this operation is
-	 * not symmetric, i.e., a is contained in b does not mean that b is in a.
-	 * 
-	 * @param specToCheck
-	 *            The {@link DataTableSpec} that should be contained.
-	 * @param containingSpec
-	 *            The {@link DataTableSpec} should contain the other
-	 *            {@link DataTableSpec}
-	 * @return True if {@code specToCheck} is contained in
-	 *         {@code containingSpec}.
-	 */
-	private boolean isContainedIn(final DataTableSpec specToCheck,
-			final DataTableSpec containingSpec) {
+    /**
+     * Checks if the first {@link DataTableSpec} is contained in to the second
+     * one. Is contained in means, that for every row in the first
+     * {@link DataTableSpec} exists a row with equal name {@link DataTableSpec}
+     * and type in the second {@link DataTableSpec}. Note that this operation is
+     * not symmetric, i.e., a is contained in b does not mean that b is in a.
+     * 
+     * @param specToCheck
+     *            The {@link DataTableSpec} that should be contained.
+     * @param containingSpec
+     *            The {@link DataTableSpec} should contain the other
+     *            {@link DataTableSpec}
+     * @return True if {@code specToCheck} is contained in
+     *         {@code containingSpec}.
+     */
+    private boolean isContainedIn(final DataTableSpec specToCheck,
+            final DataTableSpec containingSpec) {
 
-		if (specToCheck.equalStructure(containingSpec)) {
-			return true;
-		} else {
-			boolean isEqual = true;
-			for (DataColumnSpec col : specToCheck) {
-				// find spec with equal name
-				DataColumnSpec potentialMatch = containingSpec
-						.getColumnSpec(col.getName());
-				if (potentialMatch == null) {
-					isEqual = false;
-					break;
-				} else {
-					if (!potentialMatch.getType().equals(col.getType())) {
-						isEqual = false;
-						break;
-					}
-				}
-			}
-			return isEqual;
-		}
-	}
+        if (specToCheck.equalStructure(containingSpec)) {
+            return true;
+        } else {
+            boolean isEqual = true;
+            for (DataColumnSpec col : specToCheck) {
+                // find spec with equal name
+                DataColumnSpec potentialMatch = containingSpec
+                        .getColumnSpec(col.getName());
+                if (potentialMatch == null) {
+                    isEqual = false;
+                    break;
+                } else {
+                    if (!potentialMatch.getType().equals(col.getType())) {
+                        isEqual = false;
+                        break;
+                    }
+                }
+            }
+            return isEqual;
+        }
+    }
 
 }

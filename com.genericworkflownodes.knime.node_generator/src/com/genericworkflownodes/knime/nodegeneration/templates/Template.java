@@ -39,66 +39,66 @@ import org.apache.commons.io.IOUtils;
  */
 public class Template {
 
-	private String data;
+    private String data;
 
-	/**
-	 * reads in the template from file.
-	 * 
-	 * @param file
-	 *            file
-	 * @throws IOException
-	 */
-	public Template(File file) throws IOException {
-		data = FileUtils.readFileToString(file);
-	}
+    /**
+     * reads in the template from file.
+     * 
+     * @param file
+     *            file
+     * @throws IOException
+     */
+    public Template(File file) throws IOException {
+        data = FileUtils.readFileToString(file);
+    }
 
-	/**
-	 * reads in the template from input stream.
-	 * 
-	 * @param in
-	 *            input stream
-	 * @throws IOException
-	 */
-	public Template(InputStream inputStream) throws IOException {
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(inputStream, writer, "UTF-8");
-		data = writer.toString();
-	}
+    /**
+     * reads in the template from input stream.
+     * 
+     * @param in
+     *            input stream
+     * @throws IOException
+     */
+    public Template(InputStream inputStream) throws IOException {
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(inputStream, writer, "UTF-8");
+        data = writer.toString();
+    }
 
-	/**
-	 * replaces the specified token within the template with the supplied text.
-	 * 
-	 * @param token
-	 *            target token
-	 * @param value
-	 *            text to fill in
-	 */
-	public void replace(String token, String value) {
-		data = data.replace(token, value);
-	}
+    /**
+     * replaces the specified token within the template with the supplied text.
+     * 
+     * @param token
+     *            target token
+     * @param value
+     *            text to fill in
+     */
+    public void replace(String token, String value) {
+        data = data.replace(token, value);
+    }
 
-	/**
-	 * writes the filled template out to supplied stream.
-	 * 
-	 * @param out
-	 *            output stream
-	 * @throws IOException
-	 */
-	public void write(OutputStream out) throws IOException {
-		out.write(data.getBytes());
-	}
+    /**
+     * writes the filled template out to supplied stream.
+     * 
+     * @param out
+     *            output stream
+     * @throws IOException
+     */
+    public void write(OutputStream out) throws IOException {
+        out.write(data.getBytes());
+    }
 
-	/**
-	 * writes the filled template out to supplied file.
-	 * 
-	 * @param file
-	 *            output file
-	 * @throws IOException
-	 */
-	public void write(File file) throws IOException {
-		file.getParentFile().mkdirs();
-		FileOutputStream out = new FileOutputStream(file);
-		write(out);
-		out.close();
-	}
+    /**
+     * writes the filled template out to supplied file.
+     * 
+     * @param file
+     *            output file
+     * @throws IOException
+     */
+    public void write(File file) throws IOException {
+        file.getParentFile().mkdirs();
+        FileOutputStream out = new FileOutputStream(file);
+        write(out);
+        out.close();
+    }
 }

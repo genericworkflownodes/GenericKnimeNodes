@@ -34,39 +34,39 @@ import com.genericworkflownodes.knime.test.data.TestDataSource;
 
 public class GalaxyNodeConfigurationReaderTest {
 
-	@Test
-	public void testReader() throws Exception {
-		INodeConfiguration config = null;
-		GalaxyNodeConfigurationReader reader = new GalaxyNodeConfigurationReader();
-		config = reader.read(TestDataSource.class
-				.getResourceAsStream("emboss_water.xml"));
+    @Test
+    public void testReader() throws Exception {
+        INodeConfiguration config = null;
+        GalaxyNodeConfigurationReader reader = new GalaxyNodeConfigurationReader();
+        config = reader.read(TestDataSource.class
+                .getResourceAsStream("emboss_water.xml"));
 
-		assertEquals("Smith-Waterman local alignment", config.getDescription());
-		assertEquals("water", config.getName());
-		assertEquals("5.0.0", config.getVersion());
-		assertEquals("help text", config.getManual());
+        assertEquals("Smith-Waterman local alignment", config.getDescription());
+        assertEquals("water", config.getName());
+        assertEquals("5.0.0", config.getVersion());
+        assertEquals("help text", config.getManual());
 
-		assertEquals(2, config.getNumberOfInputPorts());
-		assertEquals(1, config.getNumberOfOutputPorts());
+        assertEquals(2, config.getNumberOfInputPorts());
+        assertEquals(1, config.getNumberOfOutputPorts());
 
-		assertNotNull(config.getParameter("gapopen"));
-		assertNotNull(config.getParameter("gapextend"));
+        assertNotNull(config.getParameter("gapopen"));
+        assertNotNull(config.getParameter("gapextend"));
 
-		Parameter<?> p1 = config.getParameter("gapopen");
-		Parameter<?> p2 = config.getParameter("gapextend");
-		StringChoiceParameter p3 = (StringChoiceParameter) config
-				.getParameter("menu");
+        Parameter<?> p1 = config.getParameter("gapopen");
+        Parameter<?> p2 = config.getParameter("gapextend");
+        StringChoiceParameter p3 = (StringChoiceParameter) config
+                .getParameter("menu");
 
-		assertTrue(p1 instanceof StringParameter);
-		assertTrue(p2 instanceof DoubleParameter);
-		assertTrue(p3 instanceof StringChoiceParameter);
+        assertTrue(p1 instanceof StringParameter);
+        assertTrue(p2 instanceof DoubleParameter);
+        assertTrue(p3 instanceof StringChoiceParameter);
 
-		assertEquals(p1.getValue(), "10.0");
-		assertEquals(p2.getValue(), 0.5);
-		assertEquals("1", p3.getValue());
+        assertEquals(p1.getValue(), "10.0");
+        assertEquals(p2.getValue(), 0.5);
+        assertEquals("1", p3.getValue());
 
-		assertEquals("A", p3.getLabels().get(0));
-		assertEquals("B", p3.getLabels().get(1));
-		assertEquals("C", p3.getLabels().get(2));
-	}
+        assertEquals("A", p3.getLabels().get(0));
+        assertEquals("B", p3.getLabels().get(1));
+        assertEquals("C", p3.getLabels().get(2));
+    }
 }

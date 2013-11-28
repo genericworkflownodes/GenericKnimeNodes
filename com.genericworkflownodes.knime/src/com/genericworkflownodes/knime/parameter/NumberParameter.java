@@ -29,75 +29,75 @@ package com.genericworkflownodes.knime.parameter;
  */
 public abstract class NumberParameter<T extends Number> extends Parameter<T> {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = 3529659248042850739L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 3529659248042850739L;
 
-	/**
-	 * The lower bound of the given numerical parameter.
-	 */
-	private T lowerBound;
+    /**
+     * The lower bound of the given numerical parameter.
+     */
+    private T lowerBound;
 
-	/**
-	 * The upper bound of the given numerical parameter.
-	 */
-	private T upperBound;
+    /**
+     * The upper bound of the given numerical parameter.
+     */
+    private T upperBound;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 * @param lowerBound
-	 *            The lower bound of the contained values.
-	 * @param upperBound
-	 *            The upper bound of the contained values.
-	 */
-	public NumberParameter(final String key, final T value, final T lowerBound,
-			final T upperBound) {
-		super(key, value);
-		this.lowerBound = lowerBound;
-		this.upperBound = upperBound;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     * @param lowerBound
+     *            The lower bound of the contained values.
+     * @param upperBound
+     *            The upper bound of the contained values.
+     */
+    public NumberParameter(final String key, final T value, final T lowerBound,
+            final T upperBound) {
+        super(key, value);
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
 
-	/**
-	 * returns the lower bound for constrained numeric parameters.
-	 * 
-	 * @return lower bound
-	 */
-	public T getLowerBound() {
-		return lowerBound;
-	}
+    /**
+     * returns the lower bound for constrained numeric parameters.
+     * 
+     * @return lower bound
+     */
+    public T getLowerBound() {
+        return lowerBound;
+    }
 
-	/**
-	 * sets the lower bound for constrained numeric parameters.
-	 * 
-	 * @param lowerBound
-	 *            The new lower bound for the given numerical parameter.
-	 */
-	public void setLowerBound(final T lowerBound) {
-		this.lowerBound = lowerBound;
-	}
+    /**
+     * sets the lower bound for constrained numeric parameters.
+     * 
+     * @param lowerBound
+     *            The new lower bound for the given numerical parameter.
+     */
+    public void setLowerBound(final T lowerBound) {
+        this.lowerBound = lowerBound;
+    }
 
-	/**
-	 * returns the upper bound for constrained numeric parameters.
-	 * 
-	 * @return upper bound
-	 */
-	public T getUpperBound() {
-		return upperBound;
-	}
+    /**
+     * returns the upper bound for constrained numeric parameters.
+     * 
+     * @return upper bound
+     */
+    public T getUpperBound() {
+        return upperBound;
+    }
 
-	/**
-	 * sets the upper bound for constrained numeric parameters.
-	 * 
-	 * @param upperBound
-	 *            The new upper bound for the given numerical parameter.
-	 */
-	public void setUpperBound(final T upperBound) {
-		this.upperBound = upperBound;
-	}
+    /**
+     * sets the upper bound for constrained numeric parameters.
+     * 
+     * @param upperBound
+     *            The new upper bound for the given numerical parameter.
+     */
+    public void setUpperBound(final T upperBound) {
+        this.upperBound = upperBound;
+    }
 }

@@ -26,79 +26,79 @@ package com.genericworkflownodes.knime.parameter;
  */
 public class DoubleParameter extends NumberParameter<Double> {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = -8428868568959196082L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = -8428868568959196082L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public DoubleParameter(final String key, final Double value) {
-		super(key, value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public DoubleParameter(final String key, final Double value) {
+        super(key, value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public DoubleParameter(final String key, final String value) {
-		this(key, (value.equals("") ? null : Double.parseDouble(value)));
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public DoubleParameter(final String key, final String value) {
+        this(key, (value.equals("") ? null : Double.parseDouble(value)));
+    }
 
-	@Override
-	public String toString() {
-		if (getValue() == null) {
-			return null;
-		}
-		return String.format("%s", getValue());
-	}
+    @Override
+    public String toString() {
+        if (getValue() == null) {
+            return null;
+        }
+        return String.format("%s", getValue());
+    }
 
-	@Override
-	public void fillFromString(final String s)
-			throws InvalidParameterValueException {
-		if (s == null || s.equals("")) {
-			setValue(null);
-			return;
-		}
-		try {
-			setValue(Double.parseDouble(s));
-		} catch (NumberFormatException e) {
-			throw new InvalidParameterValueException("parameter " + getKey()
-					+ " value is not a double", e);
-		}
-		if (getValue() < getLowerBound() || getValue() > getUpperBound()) {
-			throw new InvalidParameterValueException("parameter " + getKey()
-					+ " value is out of bounds");
-		}
-	}
+    @Override
+    public void fillFromString(final String s)
+            throws InvalidParameterValueException {
+        if (s == null || s.equals("")) {
+            setValue(null);
+            return;
+        }
+        try {
+            setValue(Double.parseDouble(s));
+        } catch (NumberFormatException e) {
+            throw new InvalidParameterValueException("parameter " + getKey()
+                    + " value is not a double", e);
+        }
+        if (getValue() < getLowerBound() || getValue() > getUpperBound()) {
+            throw new InvalidParameterValueException("parameter " + getKey()
+                    + " value is out of bounds");
+        }
+    }
 
-	@Override
-	public boolean validate(final Double val) {
-		if (isNull()) {
-			return true;
-		}
-		if (val >= getLowerBound() && val <= getUpperBound()) {
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean validate(final Double val) {
+        if (isNull()) {
+            return true;
+        }
+        if (val >= getLowerBound() && val <= getUpperBound()) {
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public String getMnemonic() {
-		String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
-				: String.format("%s", getLowerBound()));
-		String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
-				: String.format("%s", getUpperBound()));
-		return String.format("double [%s:%s]", lb, ub);
-	}
+    @Override
+    public String getMnemonic() {
+        String lb = (getLowerBound() == Double.NEGATIVE_INFINITY ? "-inf"
+                : String.format("%s", getLowerBound()));
+        String ub = (getUpperBound() == Double.POSITIVE_INFINITY ? "+inf"
+                : String.format("%s", getUpperBound()));
+        return String.format("double [%s:%s]", lb, ub);
+    }
 }

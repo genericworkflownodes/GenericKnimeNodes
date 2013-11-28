@@ -36,54 +36,54 @@ import com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporter
  */
 public class MimeFileViewerNodeView extends NodeView<MimeFileViewerNodeModel> {
 
-	/**
-	 * Creates a new view.
-	 * 
-	 * @param nodeModel
-	 *            The model (class: {@link ListMimeFileImporterNodeModel})
-	 */
-	protected MimeFileViewerNodeView(final MimeFileViewerNodeModel nodeModel) {
-		super(nodeModel);
+    /**
+     * Creates a new view.
+     * 
+     * @param nodeModel
+     *            The model (class: {@link ListMimeFileImporterNodeModel})
+     */
+    protected MimeFileViewerNodeView(final MimeFileViewerNodeModel nodeModel) {
+        super(nodeModel);
 
-		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		setComponent(scrollpane);
+        JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
+        JScrollPane scrollpane = new JScrollPane(text);
+        text.setFont(new Font("Monospaced", Font.BOLD, 12));
+        setComponent(scrollpane);
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void modelChanged() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void modelChanged() {
 
-		// TODO retrieve the new model from your nodemodel and
-		// update the view.
-		MimeFileViewerNodeModel nodeModel = (MimeFileViewerNodeModel) getNodeModel();
-		assert nodeModel != null;
+        // TODO retrieve the new model from your nodemodel and
+        // update the view.
+        MimeFileViewerNodeModel nodeModel = (MimeFileViewerNodeModel) getNodeModel();
+        assert nodeModel != null;
 
-		// be aware of a possibly not executed nodeModel! The data you retrieve
-		// from your nodemodel could be null, emtpy, or invalid in any kind.
+        // be aware of a possibly not executed nodeModel! The data you retrieve
+        // from your nodemodel could be null, emtpy, or invalid in any kind.
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onClose() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onClose() {
 
-		// TODO things to do when closing the view
-	}
+        // TODO things to do when closing the view
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onOpen() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onOpen() {
 
-		// TODO things to do when opening the view
-	}
+        // TODO things to do when opening the view
+    }
 
 }

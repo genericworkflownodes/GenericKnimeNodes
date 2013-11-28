@@ -34,43 +34,43 @@ import com.genericworkflownodes.util.StringUtils;
  */
 public class PluginActivatorTemplate extends Template {
 
-	private static String EXTERNAL_TOOL_CTOR_TEMPLATE = "new ExternalTool(\"%s\", \"%s\", \"%s\")";
+    private static String EXTERNAL_TOOL_CTOR_TEMPLATE = "new ExternalTool(\"%s\", \"%s\", \"%s\")";
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param generatedPluginMeta
-	 *            The name of the package, where the PluginActivator will be
-	 *            located.
-	 * @param configurations
-	 *            A list of {@link INodeConfiguration}s contained in this
-	 *            plugin.
-	 * @throws IOException
-	 *             Will be thrown if the access to the template file fails.
-	 */
-	public PluginActivatorTemplate(
-			final GeneratedPluginMeta generatedPluginMeta,
-			final List<INodeConfiguration> configurations) throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/PluginActivator.template"));
+    /**
+     * Constructor.
+     * 
+     * @param generatedPluginMeta
+     *            The name of the package, where the PluginActivator will be
+     *            located.
+     * @param configurations
+     *            A list of {@link INodeConfiguration}s contained in this
+     *            plugin.
+     * @throws IOException
+     *             Will be thrown if the access to the template file fails.
+     */
+    public PluginActivatorTemplate(
+            final GeneratedPluginMeta generatedPluginMeta,
+            final List<INodeConfiguration> configurations) throws IOException {
+        super(NodeGenerator.class
+                .getResourceAsStream("templates/PluginActivator.template"));
 
-		replace("__BASE__", generatedPluginMeta.getPackageRoot());
-		replace("__PLUGIN_ID__", generatedPluginMeta.getId());
-		replace("__PLUGIN_NAME__", generatedPluginMeta.getName());
+        replace("__BASE__", generatedPluginMeta.getPackageRoot());
+        replace("__PLUGIN_ID__", generatedPluginMeta.getId());
+        replace("__PLUGIN_NAME__", generatedPluginMeta.getName());
 
-		List<String> externalTools = new ArrayList<String>();
-		for (INodeConfiguration config : configurations) {
-			String nodeName = config.getName();
-			String executableName = config.getName();
-			if (config.getExecutableName() != null
-					&& config.getExecutableName() != "") {
-				executableName = config.getExecutableName();
-			}
+        List<String> externalTools = new ArrayList<String>();
+        for (INodeConfiguration config : configurations) {
+            String nodeName = config.getName();
+            String executableName = config.getName();
+            if (config.getExecutableName() != null
+                    && config.getExecutableName() != "") {
+                executableName = config.getExecutableName();
+            }
 
-			externalTools.add(String.format(EXTERNAL_TOOL_CTOR_TEMPLATE,
-					generatedPluginMeta.getId(), nodeName, executableName));
-		}
+            externalTools.add(String.format(EXTERNAL_TOOL_CTOR_TEMPLATE,
+                    generatedPluginMeta.getId(), nodeName, executableName));
+        }
 
-		replace("__EXTERNAL_TOOLS__", StringUtils.join(externalTools, ", "));
-	}
+        replace("__EXTERNAL_TOOLS__", StringUtils.join(externalTools, ", "));
+    }
 }

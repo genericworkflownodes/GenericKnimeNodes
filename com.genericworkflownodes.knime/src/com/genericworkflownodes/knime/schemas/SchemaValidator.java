@@ -44,127 +44,127 @@ import org.xml.sax.SAXException;
  */
 public class SchemaValidator {
 
-	/**
-	 * List of schemas to validate.
-	 */
-	private List<InputStream> schemas;
+    /**
+     * List of schemas to validate.
+     */
+    private List<InputStream> schemas;
 
-	/**
-	 * Member to store the error report.
-	 */
-	private String errorReport;
+    /**
+     * Member to store the error report.
+     */
+    private String errorReport;
 
-	/**
-	 * C'tor.
-	 */
-	public SchemaValidator() {
-		schemas = new ArrayList<InputStream>();
-		errorReport = "";
-	}
+    /**
+     * C'tor.
+     */
+    public SchemaValidator() {
+        schemas = new ArrayList<InputStream>();
+        errorReport = "";
+    }
 
-	/**
-	 * Add a schema to validate.
-	 * 
-	 * @param in
-	 *            Input stream pointing to the schema.
-	 */
-	public void addSchema(InputStream in) {
-		schemas.add(in);
-	}
+    /**
+     * Add a schema to validate.
+     * 
+     * @param in
+     *            Input stream pointing to the schema.
+     */
+    public void addSchema(InputStream in) {
+        schemas.add(in);
+    }
 
-	/**
-	 * Access all schema sources.
-	 * 
-	 * @return The schema sources.
-	 */
-	private Source[] getSchemaSources() {
-		Source[] ret = new Source[schemas.size()];
-		int idx = 0;
-		for (InputStream in : schemas) {
-			ret[idx++] = new StreamSource(in);
-		}
-		return ret;
-	}
+    /**
+     * Access all schema sources.
+     * 
+     * @return The schema sources.
+     */
+    private Source[] getSchemaSources() {
+        Source[] ret = new Source[schemas.size()];
+        int idx = 0;
+        for (InputStream in : schemas) {
+            ret[idx++] = new StreamSource(in);
+        }
+        return ret;
+    }
 
-	/**
-	 * Validate the given file against the stored schemata.
-	 * 
-	 * @param filename
-	 *            The file to validate.
-	 * @return True if the file is valid, false otherwise.
-	 */
-	public boolean validates(String filename) {
-		boolean ret = true;
-		FileInputStream fin = null;
+    /**
+     * Validate the given file against the stored schemata.
+     * 
+     * @param filename
+     *            The file to validate.
+     * @return True if the file is valid, false otherwise.
+     */
+    public boolean validates(String filename) {
+        boolean ret = true;
+        FileInputStream fin = null;
 
-		try {
-			fin = new FileInputStream(filename);
-			ret = validates(fin);
-			fin.close();
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				if (fin != null) {
-					fin.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+        try {
+            fin = new FileInputStream(filename);
+            ret = validates(fin);
+            fin.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (fin != null) {
+                    fin.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	/**
-	 * Validate the given xml stream against the stored schemata.
-	 * 
-	 * @param xmlstream
-	 *            The stream to validate.
-	 * @return True if the file is valid, false otherwise.
-	 */
-	public boolean validates(InputStream xmlstream) {
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SchemaFactory schemaFactory = SchemaFactory
-				.newInstance("http://www.w3.org/2001/XMLSchema");
+    /**
+     * Validate the given xml stream against the stored schemata.
+     * 
+     * @param xmlstream
+     *            The stream to validate.
+     * @return True if the file is valid, false otherwise.
+     */
+    public boolean validates(InputStream xmlstream) {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SchemaFactory schemaFactory = SchemaFactory
+                .newInstance("http://www.w3.org/2001/XMLSchema");
 
-		SimpleErrorHandler errorHandler = new SimpleErrorHandler();
+        SimpleErrorHandler errorHandler = new SimpleErrorHandler();
 
-		try {
-			factory.setSchema(schemaFactory.newSchema(getSchemaSources()));
+        try {
+            factory.setSchema(schemaFactory.newSchema(getSchemaSources()));
 
-			SAXParser parser = factory.newSAXParser();
+            SAXParser parser = factory.newSAXParser();
 
-			SAXReader reader = new SAXReader(parser.getXMLReader());
-			reader.setValidation(false);
+            SAXReader reader = new SAXReader(parser.getXMLReader());
+            reader.setValidation(false);
 
-			reader.setErrorHandler(errorHandler);
+            reader.setErrorHandler(errorHandler);
 
-			reader.read(xmlstream);
-		} catch (SAXException e) {
-			throw new RuntimeException(e);
-		} catch (DocumentException e) {
-			throw new RuntimeException(e);
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		}
+            reader.read(xmlstream);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
 
-		if (!errorHandler.isValid()) {
-			errorReport = errorHandler.getErrorReport();
-			return false;
-		}
+        if (!errorHandler.isValid()) {
+            errorReport = errorHandler.getErrorReport();
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Accessor for the error report.
-	 * 
-	 * @return The error report.
-	 */
-	public String getErrorReport() {
-		return errorReport;
-	}
+    /**
+     * Accessor for the error report.
+     * 
+     * @return The error report.
+     */
+    public String getErrorReport() {
+        return errorReport;
+    }
 }

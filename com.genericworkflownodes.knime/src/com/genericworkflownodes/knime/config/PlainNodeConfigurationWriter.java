@@ -32,30 +32,30 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * @author aiche
  */
 public class PlainNodeConfigurationWriter {
-	private INodeConfiguration nodeConfig;
+    private INodeConfiguration nodeConfig;
 
-	private static String LINESEP = System.getProperty("line.separator");
+    private static String LINESEP = System.getProperty("line.separator");
 
-	public void init(INodeConfiguration nodeConfig) {
-		this.nodeConfig = nodeConfig;
-	}
+    public void init(INodeConfiguration nodeConfig) {
+        this.nodeConfig = nodeConfig;
+    }
 
-	public void write(String filename) throws IOException {
-		FileWriter out = new FileWriter(new File(filename));
+    public void write(String filename) throws IOException {
+        FileWriter out = new FileWriter(new File(filename));
 
-		for (String key : nodeConfig.getParameterKeys()) {
-			Parameter<?> p = nodeConfig.getParameter(key);
-			StringBuffer sb = new StringBuffer();
-			if (p instanceof ListParameter) {
-				ListParameter lp = (ListParameter) p;
-				for (String value : lp.getStrings()) {
-					sb.append(String.format("\"%s\"\t", value));
-				}
-			} else {
-				sb.append(String.format("\"%s\"\t", p.getStringRep()));
-			}
-			out.write(key + ":" + sb.toString() + LINESEP);
-		}
-		out.close();
-	}
+        for (String key : nodeConfig.getParameterKeys()) {
+            Parameter<?> p = nodeConfig.getParameter(key);
+            StringBuffer sb = new StringBuffer();
+            if (p instanceof ListParameter) {
+                ListParameter lp = (ListParameter) p;
+                for (String value : lp.getStrings()) {
+                    sb.append(String.format("\"%s\"\t", value));
+                }
+            } else {
+                sb.append(String.format("\"%s\"\t", p.getStringRep()));
+            }
+            out.write(key + ":" + sb.toString() + LINESEP);
+        }
+        out.close();
+    }
 }

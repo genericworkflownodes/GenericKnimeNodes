@@ -48,145 +48,145 @@ import org.knime.core.node.workflow.LoopStartNodeTerminator;
  * @author roettig, aiche
  */
 public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
-	// the logger instance
-	@SuppressWarnings("unused")
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(ListZipLoopEndNodeModel.class);
-	private static int PORT_COUNT = 4;
+    // the logger instance
+    @SuppressWarnings("unused")
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(ListZipLoopEndNodeModel.class);
+    private static int PORT_COUNT = 4;
 
-	private int m_numOfAssignedPorts;
-	private List<List<URIContent>> m_uris;
+    private int m_numOfAssignedPorts;
+    private List<List<URIContent>> m_uris;
 
-	protected ListZipLoopEndNodeModel() {
-		super(createInputPortObjectSpecs(), createOutputPortObjectSpecs());
-	}
+    protected ListZipLoopEndNodeModel() {
+        super(createInputPortObjectSpecs(), createOutputPortObjectSpecs());
+    }
 
-	public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-			URIPortObject.class, true);
+    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
+            URIPortObject.class, true);
 
-	private static PortType[] createInputPortObjectSpecs() {
-		PortType[] portTypes = new PortType[PORT_COUNT];
-		Arrays.fill(portTypes, URIPortObject.TYPE);
-		portTypes[1] = OPTIONAL_PORT_TYPE;
-		portTypes[2] = OPTIONAL_PORT_TYPE;
-		portTypes[3] = OPTIONAL_PORT_TYPE;
-		return portTypes;
-	}
+    private static PortType[] createInputPortObjectSpecs() {
+        PortType[] portTypes = new PortType[PORT_COUNT];
+        Arrays.fill(portTypes, URIPortObject.TYPE);
+        portTypes[1] = OPTIONAL_PORT_TYPE;
+        portTypes[2] = OPTIONAL_PORT_TYPE;
+        portTypes[3] = OPTIONAL_PORT_TYPE;
+        return portTypes;
+    }
 
-	private static PortType[] createOutputPortObjectSpecs() {
-		PortType[] portTypes = new PortType[PORT_COUNT];
-		Arrays.fill(portTypes, URIPortObject.TYPE);
-		portTypes[1] = OPTIONAL_PORT_TYPE;
-		portTypes[2] = OPTIONAL_PORT_TYPE;
-		portTypes[3] = OPTIONAL_PORT_TYPE;
-		return portTypes;
-	}
+    private static PortType[] createOutputPortObjectSpecs() {
+        PortType[] portTypes = new PortType[PORT_COUNT];
+        Arrays.fill(portTypes, URIPortObject.TYPE);
+        portTypes[1] = OPTIONAL_PORT_TYPE;
+        portTypes[2] = OPTIONAL_PORT_TYPE;
+        portTypes[3] = OPTIONAL_PORT_TYPE;
+        return portTypes;
+    }
 
-	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
+    @Override
+    protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
 
-		for (int i = 0; i < PORT_COUNT; i++) {
-			if (inSpecs[i] == null) {
-				break;
-			}
-			URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
-			specs.add(spec);
-		}
+        for (int i = 0; i < PORT_COUNT; i++) {
+            if (inSpecs[i] == null) {
+                break;
+            }
+            URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
+            specs.add(spec);
+        }
 
-		return getOutSpec(specs);
-	}
+        return getOutSpec(specs);
+    }
 
-	private PortObjectSpec[] getOutSpec(List<URIPortObjectSpec> specs) {
-		m_numOfAssignedPorts = specs.size();
+    private PortObjectSpec[] getOutSpec(List<URIPortObjectSpec> specs) {
+        m_numOfAssignedPorts = specs.size();
 
-		PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
+        PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
 
-		for (int i = 0; i < PORT_COUNT; i++) {
-			if (i < m_numOfAssignedPorts) {
-				ret[i] = specs.get(i);
-			} else {
-				ret[i] = null;
-			}
-		}
+        for (int i = 0; i < PORT_COUNT; i++) {
+            if (i < m_numOfAssignedPorts) {
+                ret[i] = specs.get(i);
+            } else {
+                ret[i] = null;
+            }
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+    @Override
+    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
+            throws Exception {
 
-		if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
-			throw new IllegalStateException("Loop End is not connected"
-					+ " to matching/corresponding Loop Start node. You"
-					+ " are trying to create an infinite loop!");
-		}
+        if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
+            throw new IllegalStateException("Loop End is not connected"
+                    + " to matching/corresponding Loop Start node. You"
+                    + " are trying to create an infinite loop!");
+        }
 
-		if (m_uris == null) {
-			// first time we are getting to this: open container
-			m_uris = new ArrayList<List<URIContent>>();
-			for (int i = 0; i < m_numOfAssignedPorts; i++) {
-				m_uris.add(new ArrayList<URIContent>());
-			}
-		}
+        if (m_uris == null) {
+            // first time we are getting to this: open container
+            m_uris = new ArrayList<List<URIContent>>();
+            for (int i = 0; i < m_numOfAssignedPorts; i++) {
+                m_uris.add(new ArrayList<URIContent>());
+            }
+        }
 
-		for (int i = 0; i < m_numOfAssignedPorts; i++) {
-			URIPortObject po = (URIPortObject) inObjects[i];
-			m_uris.get(i).add(po.getURIContents().get(0));
-		}
+        for (int i = 0; i < m_numOfAssignedPorts; i++) {
+            URIPortObject po = (URIPortObject) inObjects[i];
+            m_uris.get(i).add(po.getURIContents().get(0));
+        }
 
-		boolean terminateLoop = ((LoopStartNodeTerminator) this
-				.getLoopStartNode()).terminateLoop();
+        boolean terminateLoop = ((LoopStartNodeTerminator) this
+                .getLoopStartNode()).terminateLoop();
 
-		if (terminateLoop) {
-			URIPortObject[] ret = new URIPortObject[PORT_COUNT];
+        if (terminateLoop) {
+            URIPortObject[] ret = new URIPortObject[PORT_COUNT];
 
-			for (int i = 0; i < PORT_COUNT; i++) {
-				if (i < m_numOfAssignedPorts) {
-					ret[i] = new URIPortObject(m_uris.get(i));
-				} else {
-					List<URIContent> uriC = new ArrayList<URIContent>();
-					ret[i] = new URIPortObject(uriC);
-				}
-			}
+            for (int i = 0; i < PORT_COUNT; i++) {
+                if (i < m_numOfAssignedPorts) {
+                    ret[i] = new URIPortObject(m_uris.get(i));
+                } else {
+                    List<URIContent> uriC = new ArrayList<URIContent>();
+                    ret[i] = new URIPortObject(uriC);
+                }
+            }
 
-			m_uris = null;
-			return ret;
-		} else {
-			continueLoop();
-			return new PortObject[PORT_COUNT];
-		}
-	}
+            m_uris = null;
+            return ret;
+        } else {
+            continueLoop();
+            return new PortObject[PORT_COUNT];
+        }
+    }
 
-	@Override
-	protected void loadInternals(File arg0, ExecutionMonitor arg1)
-			throws IOException, CanceledExecutionException {
-	}
+    @Override
+    protected void loadInternals(File arg0, ExecutionMonitor arg1)
+            throws IOException, CanceledExecutionException {
+    }
 
-	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO arg0)
-			throws InvalidSettingsException {
-	}
+    @Override
+    protected void loadValidatedSettingsFrom(NodeSettingsRO arg0)
+            throws InvalidSettingsException {
+    }
 
-	@Override
-	protected void reset() {
-		m_uris = null;
-	}
+    @Override
+    protected void reset() {
+        m_uris = null;
+    }
 
-	@Override
-	protected void saveInternals(File arg0, ExecutionMonitor arg1)
-			throws IOException, CanceledExecutionException {
-	}
+    @Override
+    protected void saveInternals(File arg0, ExecutionMonitor arg1)
+            throws IOException, CanceledExecutionException {
+    }
 
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO arg0) {
-	}
+    @Override
+    protected void saveSettingsTo(NodeSettingsWO arg0) {
+    }
 
-	@Override
-	protected void validateSettings(NodeSettingsRO arg0)
-			throws InvalidSettingsException {
-	}
+    @Override
+    protected void validateSettings(NodeSettingsRO arg0)
+            throws InvalidSettingsException {
+    }
 
 }

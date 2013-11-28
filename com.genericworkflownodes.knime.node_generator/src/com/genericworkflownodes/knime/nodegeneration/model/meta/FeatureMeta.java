@@ -33,71 +33,71 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSour
  */
 public class FeatureMeta extends PluginMeta {
 
-	private final String name;
+    private final String name;
 
-	private final String description;
-	private final String copyright;
-	private final String license;
+    private final String description;
+    private final String copyright;
+    private final String license;
 
-	/**
-	 * Constructs the feature meta information given the node source directory.
-	 * 
-	 * @param sourceDirectory
-	 */
-	public FeatureMeta(NodesSourceDirectory sourceDirectory,
-			GeneratedPluginMeta pluginMeta) {
-		super(pluginMeta.getId(), pluginMeta.getVersion());
-		try {
-			name = pluginMeta.getName();
+    /**
+     * Constructs the feature meta information given the node source directory.
+     * 
+     * @param sourceDirectory
+     */
+    public FeatureMeta(NodesSourceDirectory sourceDirectory,
+            GeneratedPluginMeta pluginMeta) {
+        super(pluginMeta.getId(), pluginMeta.getVersion());
+        try {
+            name = pluginMeta.getName();
 
-			description = FileUtils.readFileToString(sourceDirectory
-					.getDescriptionFile());
-			copyright = FileUtils.readFileToString(sourceDirectory
-					.getCopyrightFile());
-			license = FileUtils.readFileToString(sourceDirectory
-					.getLicenseFile());
-		} catch (IOException e) {
-			throw new InvalidParameterException(
-					"Could not read meta information.\n" + e.getMessage());
-		}
-	}
+            description = FileUtils.readFileToString(sourceDirectory
+                    .getDescriptionFile());
+            copyright = FileUtils.readFileToString(sourceDirectory
+                    .getCopyrightFile());
+            license = FileUtils.readFileToString(sourceDirectory
+                    .getLicenseFile());
+        } catch (IOException e) {
+            throw new InvalidParameterException(
+                    "Could not read meta information.\n" + e.getMessage());
+        }
+    }
 
-	/**
-	 * Gets the KNIME plugin's name.
-	 * <p>
-	 * e.g. KNIME Test
-	 * 
-	 * @return The plugin's name.
-	 */
-	public final String getName() {
-		return name;
-	}
+    /**
+     * Gets the KNIME plugin's name.
+     * <p>
+     * e.g. KNIME Test
+     * 
+     * @return The plugin's name.
+     */
+    public final String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns the description of this plugin.
-	 * 
-	 * @return
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /**
+     * Returns the description of this plugin.
+     * 
+     * @return
+     */
+    public String getDescription() {
+        return description;
+    }
 
-	/**
-	 * Returns the copyright information for this plugin.
-	 * 
-	 * @return
-	 */
-	public String getCopyright() {
-		return copyright;
-	}
+    /**
+     * Returns the copyright information for this plugin.
+     * 
+     * @return
+     */
+    public String getCopyright() {
+        return copyright;
+    }
 
-	/**
-	 * Returns the license information for this plugin.
-	 * 
-	 * @return
-	 */
-	public String getLicense() {
-		return license;
-	}
+    /**
+     * Returns the license information for this plugin.
+     * 
+     * @return
+     */
+    public String getLicense() {
+        return license;
+    }
 
 }

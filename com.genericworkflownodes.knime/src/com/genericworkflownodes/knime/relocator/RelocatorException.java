@@ -25,18 +25,18 @@ package com.genericworkflownodes.knime.relocator;
  */
 public class RelocatorException extends Exception {
 
-	/**
-	 * serialVersionUID.
-	 */
-	private static final long serialVersionUID = -5597320422947745165L;
+    /**
+     * serialVersionUID.
+     */
+    private static final long serialVersionUID = -5597320422947745165L;
 
-	/**
-	 * C'tor.
-	 * 
-	 * @param message
-	 *            Description of the error that occured.
-	 */
-	public RelocatorException(String message) {
-		super(message);
-	}
+    /**
+     * C'tor.
+     * 
+     * @param message
+     *            Description of the error that occured.
+     */
+    public RelocatorException(String message) {
+        super(message);
+    }
 }

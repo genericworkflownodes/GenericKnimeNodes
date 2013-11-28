@@ -30,48 +30,48 @@ import com.genericworkflownodes.knime.config.impl.PluginConfiguration;
  */
 public interface IPluginConfiguration {
 
-	/**
-	 * The id of the plugin.
-	 * 
-	 * @return The name of the configured plugin.
-	 */
-	String getPluginId();
+    /**
+     * The id of the plugin.
+     * 
+     * @return The name of the configured plugin.
+     */
+    String getPluginId();
 
-	/**
-	 * The path where all binaries are located.
-	 * 
-	 * @return The path where all binaries are located.
-	 */
-	String getBinariesPath();
+    /**
+     * The path where all binaries are located.
+     * 
+     * @return The path where all binaries are located.
+     */
+    String getBinariesPath();
 
-	/**
-	 * General properties of the plugin.
-	 * 
-	 * @return A {@link Properties} object containing additional properties of
-	 *         the plugin.
-	 */
-	Properties getPluginProperties();
+    /**
+     * General properties of the plugin.
+     * 
+     * @return A {@link Properties} object containing additional properties of
+     *         the plugin.
+     */
+    Properties getPluginProperties();
 
-	/**
-	 * Environment variables which need to be set, to execute the tools.
-	 * 
-	 * @return A {@link Map} of environment variables that need to be set, to
-	 *         execute the tools contained in the plugin.
-	 */
-	Map<String, String> getEnvironmentVariables();
+    /**
+     * Environment variables which need to be set, to execute the tools.
+     * 
+     * @return A {@link Map} of environment variables that need to be set, to
+     *         execute the tools contained in the plugin.
+     */
+    Map<String, String> getEnvironmentVariables();
 
-	/**
-	 * The name of the plugin as it would be shown in the GUI.
-	 * 
-	 * @return
-	 */
-	String getPluginName();
+    /**
+     * The name of the plugin as it would be shown in the GUI.
+     * 
+     * @return
+     */
+    String getPluginName();
 
-	/**
-	 * Updates the environment variables of the {@link PluginConfiguration} with
-	 * the given values.
-	 * 
-	 * @param env
-	 */
-	void updateEnvironmentVariables(final Map<String, String> env);
+    /**
+     * Updates the environment variables of the {@link PluginConfiguration} with
+     * the given values.
+     * 
+     * @param env
+     */
+    void updateEnvironmentVariables(final Map<String, String> env);
 }

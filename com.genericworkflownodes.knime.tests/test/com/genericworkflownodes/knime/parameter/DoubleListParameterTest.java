@@ -32,96 +32,96 @@ import org.junit.Test;
  */
 public class DoubleListParameterTest {
 
-	List<Double> doubles = Arrays.asList(2.0, 3.0, 4.0);
+    List<Double> doubles = Arrays.asList(2.0, 3.0, 4.0);
 
-	@Test
-	public void testGetMnemonic() {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		assertEquals(dlp.getMnemonic(), "double list [-inf:+inf]");
-		dlp.setLowerBound(-3.0);
-		assertEquals(dlp.getMnemonic(), "double list [-3.0:+inf]");
-		dlp.setUpperBound(3.0);
-		assertEquals(dlp.getMnemonic(), "double list [-3.0:3.0]");
-	}
+    @Test
+    public void testGetMnemonic() {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        assertEquals(dlp.getMnemonic(), "double list [-inf:+inf]");
+        dlp.setLowerBound(-3.0);
+        assertEquals(dlp.getMnemonic(), "double list [-3.0:+inf]");
+        dlp.setUpperBound(3.0);
+        assertEquals(dlp.getMnemonic(), "double list [-3.0:3.0]");
+    }
 
-	@Test
-	public void testFillFromString() throws InvalidParameterValueException {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		dlp.fillFromString("-19.2@@@__@@@16@@@__@@@44@@@__@@@");
-		assertEquals(3, dlp.getValue().size());
-		assertEquals(new Double(-19.2), dlp.getValue().get(0));
-		assertEquals(new Double(16), dlp.getValue().get(1));
-		assertEquals(new Double(44), dlp.getValue().get(2));
-	}
+    @Test
+    public void testFillFromString() throws InvalidParameterValueException {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        dlp.fillFromString("-19.2@@@__@@@16@@@__@@@44@@@__@@@");
+        assertEquals(3, dlp.getValue().size());
+        assertEquals(new Double(-19.2), dlp.getValue().get(0));
+        assertEquals(new Double(16), dlp.getValue().get(1));
+        assertEquals(new Double(44), dlp.getValue().get(2));
+    }
 
-	@Test(expected = InvalidParameterValueException.class)
-	public void testFillFromInvalidString()
-			throws InvalidParameterValueException {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		dlp.fillFromString("-19aa.2@@@__@@@16@@@__@@@44@@@__@@@");
-	}
+    @Test(expected = InvalidParameterValueException.class)
+    public void testFillFromInvalidString()
+            throws InvalidParameterValueException {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        dlp.fillFromString("-19aa.2@@@__@@@16@@@__@@@44@@@__@@@");
+    }
 
-	@Test
-	public void testGetStringRep() {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		assertEquals("2.000000@@@__@@@3.000000@@@__@@@4.000000@@@__@@@",
-				dlp.getStringRep());
-	}
+    @Test
+    public void testGetStringRep() {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        assertEquals("2.000000@@@__@@@3.000000@@@__@@@4.000000@@@__@@@",
+                dlp.getStringRep());
+    }
 
-	@Test
-	public void testDoubleListParameter() {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		assertEquals(3, dlp.getValue().size());
-		assertEquals(new Double(2.0), dlp.getValue().get(0));
-		assertEquals(new Double(3.0), dlp.getValue().get(1));
-		assertEquals(new Double(4.0), dlp.getValue().get(2));
-	}
+    @Test
+    public void testDoubleListParameter() {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        assertEquals(3, dlp.getValue().size());
+        assertEquals(new Double(2.0), dlp.getValue().get(0));
+        assertEquals(new Double(3.0), dlp.getValue().get(1));
+        assertEquals(new Double(4.0), dlp.getValue().get(2));
+    }
 
-	@Test
-	public void testValidateListOfDouble() {
-		DoubleListParameter dlpNull = new DoubleListParameter("dlp", null);
-		assertEquals(true, dlpNull.validate(null));
+    @Test
+    public void testValidateListOfDouble() {
+        DoubleListParameter dlpNull = new DoubleListParameter("dlp", null);
+        assertEquals(true, dlpNull.validate(null));
 
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		List<Double> moreDoubles = Arrays.asList(-1.0, 2.0, 5.0);
-		assertEquals(true, dlp.validate(moreDoubles));
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        List<Double> moreDoubles = Arrays.asList(-1.0, 2.0, 5.0);
+        assertEquals(true, dlp.validate(moreDoubles));
 
-		dlp.setLowerBound(0.0);
-		assertEquals(false, dlp.validate(moreDoubles));
-		dlp.setLowerBound(Double.NEGATIVE_INFINITY);
-		assertEquals(true, dlp.validate(moreDoubles));
+        dlp.setLowerBound(0.0);
+        assertEquals(false, dlp.validate(moreDoubles));
+        dlp.setLowerBound(Double.NEGATIVE_INFINITY);
+        assertEquals(true, dlp.validate(moreDoubles));
 
-		dlp.setUpperBound(4.5);
-		assertEquals(false, dlp.validate(moreDoubles));
-		dlp.setUpperBound(Double.POSITIVE_INFINITY);
-		assertEquals(true, dlp.validate(moreDoubles));
-	}
+        dlp.setUpperBound(4.5);
+        assertEquals(false, dlp.validate(moreDoubles));
+        dlp.setUpperBound(Double.POSITIVE_INFINITY);
+        assertEquals(true, dlp.validate(moreDoubles));
+    }
 
-	@Test
-	public void testGetStrings() {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		List<String> strings = dlp.getStrings();
-		assertEquals(3, strings.size());
-		assertEquals("2.000000", strings.get(0));
-		assertEquals("3.000000", strings.get(1));
-		assertEquals("4.000000", strings.get(2));
-	}
+    @Test
+    public void testGetStrings() {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        List<String> strings = dlp.getStrings();
+        assertEquals(3, strings.size());
+        assertEquals("2.000000", strings.get(0));
+        assertEquals("3.000000", strings.get(1));
+        assertEquals("4.000000", strings.get(2));
+    }
 
-	@Test
-	public void testFillFromStrings() {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", null);
-		String[] strings = { "2.0", "3.0", "5.0" };
-		dlp.fillFromStrings(strings);
-		assertEquals(3, dlp.getValue().size());
-		assertEquals(new Double(2.0), dlp.getValue().get(0));
-		assertEquals(new Double(3.0), dlp.getValue().get(1));
-		assertEquals(new Double(5.0), dlp.getValue().get(2));
-	}
+    @Test
+    public void testFillFromStrings() {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", null);
+        String[] strings = { "2.0", "3.0", "5.0" };
+        dlp.fillFromStrings(strings);
+        assertEquals(3, dlp.getValue().size());
+        assertEquals(new Double(2.0), dlp.getValue().get(0));
+        assertEquals(new Double(3.0), dlp.getValue().get(1));
+        assertEquals(new Double(5.0), dlp.getValue().get(2));
+    }
 
-	@Test
-	public void testToString() {
-		DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
-		assertEquals("[2.0, 3.0, 4.0]", dlp.toString());
-	}
+    @Test
+    public void testToString() {
+        DoubleListParameter dlp = new DoubleListParameter("dlp", doubles);
+        assertEquals("[2.0, 3.0, 4.0]", dlp.toString());
+    }
 
 }

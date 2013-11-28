@@ -42,90 +42,90 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
  * 
  */
 public class ListCellEditor extends AbstractCellEditor implements
-		TableCellEditor {
+        TableCellEditor {
 
-	/**
-	 * The abstracted parameter.
-	 */
-	private ListParameter parameter;
+    /**
+     * The abstracted parameter.
+     */
+    private ListParameter parameter;
 
-	/**
-	 * C'tor.
-	 * 
-	 * @param parameter
-	 *            The parameter to represent.
-	 */
-	public ListCellEditor(ListParameter parameter) {
-		this.parameter = parameter;
-	}
+    /**
+     * C'tor.
+     * 
+     * @param parameter
+     *            The parameter to represent.
+     */
+    public ListCellEditor(ListParameter parameter) {
+        this.parameter = parameter;
+    }
 
-	/**
-	 * The {@link JComboBox} used for {@link StringChoiceParameter} and
-	 * {@link BoolParameter}.
-	 */
-	private JComboBox choiceComboBox;
+    /**
+     * The {@link JComboBox} used for {@link StringChoiceParameter} and
+     * {@link BoolParameter}.
+     */
+    private JComboBox choiceComboBox;
 
-	/**
-	 * The {@link JTextField} used for {@link StringParameter},
-	 * {@link DoubleParameter}, and {@link IntegerParameter}.
-	 */
-	private JTextField field;
+    /**
+     * The {@link JTextField} used for {@link StringParameter},
+     * {@link DoubleParameter}, and {@link IntegerParameter}.
+     */
+    private JTextField field;
 
-	/**
-	 * Remember the pre-edit value to allow safe restore if restrictions are
-	 * violated.
-	 */
-	private String oldValue;
+    /**
+     * Remember the pre-edit value to allow safe restore if restrictions are
+     * violated.
+     */
+    private String oldValue;
 
-	/**
-	 * The serialVersionUID.
-	 */
-	private static final long serialVersionUID = -3482419372241324327L;
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = -3482419372241324327L;
 
-	@Override
-	public Object getCellEditorValue() {
-		if (parameter instanceof StringListParameter) {
-			StringListParameter slp = (StringListParameter) parameter;
-			if (slp.getRestrictions() != null
-					&& slp.getRestrictions().length > 0) {
-				return choiceComboBox.getSelectedItem();
-			} else {
-				return field.getText();
-			}
-		} else {
-			if (new ParameterVerifier((Parameter<?>) parameter).verify(field)) {
-				return field.getText();
-			} else {
-				JOptionPane.showMessageDialog(null, String.format(
-						"Value restrictions not met: %s",
-						((Parameter<?>) parameter).getMnemonic()));
-				return oldValue;
-			}
-		}
-	}
+    @Override
+    public Object getCellEditorValue() {
+        if (parameter instanceof StringListParameter) {
+            StringListParameter slp = (StringListParameter) parameter;
+            if (slp.getRestrictions() != null
+                    && slp.getRestrictions().length > 0) {
+                return choiceComboBox.getSelectedItem();
+            } else {
+                return field.getText();
+            }
+        } else {
+            if (new ParameterVerifier((Parameter<?>) parameter).verify(field)) {
+                return field.getText();
+            } else {
+                JOptionPane.showMessageDialog(null, String.format(
+                        "Value restrictions not met: %s",
+                        ((Parameter<?>) parameter).getMnemonic()));
+                return oldValue;
+            }
+        }
+    }
 
-	@Override
-	public Component getTableCellEditorComponent(JTable table, Object value,
-			boolean isSelected, int row, int column) {
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column) {
 
-		// store old value
-		oldValue = value.toString();
+        // store old value
+        oldValue = value.toString();
 
-		if (parameter instanceof StringListParameter) {
-			StringListParameter slp = (StringListParameter) parameter;
-			if (slp.getRestrictions() != null
-					&& slp.getRestrictions().length > 0) {
-				choiceComboBox = new JComboBox(slp.getRestrictions());
-				choiceComboBox.setSelectedItem(value);
+        if (parameter instanceof StringListParameter) {
+            StringListParameter slp = (StringListParameter) parameter;
+            if (slp.getRestrictions() != null
+                    && slp.getRestrictions().length > 0) {
+                choiceComboBox = new JComboBox(slp.getRestrictions());
+                choiceComboBox.setSelectedItem(value);
 
-				return choiceComboBox;
-			} else {
-				field = new JTextField(value.toString());
-				return field;
-			}
-		} else {
-			field = new JTextField(value.toString());
-			return field;
-		}
-	}
+                return choiceComboBox;
+            } else {
+                field = new JTextField(value.toString());
+                return field;
+            }
+        } else {
+            field = new JTextField(value.toString());
+            return field;
+        }
+    }
 }

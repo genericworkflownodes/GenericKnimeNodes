@@ -33,63 +33,63 @@ import com.genericworkflownodes.knime.relocator.Relocator;
  */
 public class RelocatorHandler extends DefaultHandler {
 
-	private static String ATTR_REFERENCE = "reference";
-	private static String ATTR_PATTERN = "pattern";
+    private static String ATTR_REFERENCE = "reference";
+    private static String ATTR_PATTERN = "pattern";
 
-	private static String ELEM_RELOCATORS = "relocators";
+    private static String ELEM_RELOCATORS = "relocators";
 
-	/**
-	 * The parent handler that invoked this handler for a sub tree of the XML
-	 * document.
-	 */
-	private CTDHandler parentHandler;
+    /**
+     * The parent handler that invoked this handler for a sub tree of the XML
+     * document.
+     */
+    private CTDHandler parentHandler;
 
-	/**
-	 * The {@link XMLReader} that processes the entire document.
-	 */
-	private XMLReader xmlReader;
+    /**
+     * The {@link XMLReader} that processes the entire document.
+     */
+    private XMLReader xmlReader;
 
-	/**
-	 * The {@link NodeConfiguration} that will be filled while parsing the
-	 * document.
-	 */
-	private NodeConfiguration config;
+    /**
+     * The {@link NodeConfiguration} that will be filled while parsing the
+     * document.
+     */
+    private NodeConfiguration config;
 
-	/**
-	 * C'tor.
-	 * 
-	 * @param xmlReader
-	 *            The xml reader of the global document.
-	 * @param parentHandler
-	 *            The parent handler for the global document.
-	 * @param config
-	 *            The {@link NodeConfiguration} that will be filled while
-	 *            parsing the document.
-	 */
-	public RelocatorHandler(XMLReader xmlReader, CTDHandler parentHandler,
-			NodeConfiguration config) {
-		this.xmlReader = xmlReader;
-		this.parentHandler = parentHandler;
-		this.config = config;
-	}
+    /**
+     * C'tor.
+     * 
+     * @param xmlReader
+     *            The xml reader of the global document.
+     * @param parentHandler
+     *            The parent handler for the global document.
+     * @param config
+     *            The {@link NodeConfiguration} that will be filled while
+     *            parsing the document.
+     */
+    public RelocatorHandler(XMLReader xmlReader, CTDHandler parentHandler,
+            NodeConfiguration config) {
+        this.xmlReader = xmlReader;
+        this.parentHandler = parentHandler;
+        this.config = config;
+    }
 
-	@Override
-	public void startElement(String uri, String localName, String name,
-			Attributes attributes) throws SAXException {
-		// only relocator can occur
-		String reference = attributes.getValue(ATTR_REFERENCE);
-		String pattern = attributes.getValue(ATTR_PATTERN);
+    @Override
+    public void startElement(String uri, String localName, String name,
+            Attributes attributes) throws SAXException {
+        // only relocator can occur
+        String reference = attributes.getValue(ATTR_REFERENCE);
+        String pattern = attributes.getValue(ATTR_PATTERN);
 
-		config.getRelocators().add(new Relocator(reference, pattern));
-	}
+        config.getRelocators().add(new Relocator(reference, pattern));
+    }
 
-	@Override
-	public void endElement(String uri, String localName, String name)
-			throws SAXException {
+    @Override
+    public void endElement(String uri, String localName, String name)
+            throws SAXException {
 
-		// get back to the parent handler
-		if (ELEM_RELOCATORS.equals(name)) {
-			xmlReader.setContentHandler(parentHandler);
-		}
-	}
+        // get back to the parent handler
+        if (ELEM_RELOCATORS.equals(name)) {
+            xmlReader.setContentHandler(parentHandler);
+        }
+    }
 }

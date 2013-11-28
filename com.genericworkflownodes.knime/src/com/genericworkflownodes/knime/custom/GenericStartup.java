@@ -38,122 +38,122 @@ import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLoca
  */
 public class GenericStartup implements IStartup {
 
-	public static final String PREFERENCE_WARN_IF_BINARIES_ARE_MISSING = "WARN_IF_BINARIES_ARE_MISSING";
+    public static final String PREFERENCE_WARN_IF_BINARIES_ARE_MISSING = "WARN_IF_BINARIES_ARE_MISSING";
 
-	/**
-	 * The central static logger.
-	 */
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(GenericStartup.class);
+    /**
+     * The central static logger.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(GenericStartup.class);
 
-	/**
-	 * The id of the preference page to open if there are missing binaries.
-	 */
-	private final String m_preferencePageId;
+    /**
+     * The id of the preference page to open if there are missing binaries.
+     */
+    private final String m_preferencePageId;
 
-	/**
-	 * The binaries manager of the plugin.
-	 */
-	private GenericActivator m_pluginActivator;
+    /**
+     * The binaries manager of the plugin.
+     */
+    private GenericActivator m_pluginActivator;
 
-	/**
-	 * Create the GenericStartup with the name of the plugin. The name is used
-	 * to build the dialogs and find the correct pref-page.
-	 * 
-	 * @param preferencePageId
-	 *            The id of the preference page to open if there are missing
-	 *            binaries.
-	 * @param preferenceStore
-	 *            The preference store of the plugin.
-	 */
-	public GenericStartup(GenericActivator genericActivator,
-			final String preferencePageId) {
-		m_preferencePageId = preferencePageId;
-		m_pluginActivator = genericActivator;
-		m_pluginActivator.getPreferenceStore().setDefault(
-				PREFERENCE_WARN_IF_BINARIES_ARE_MISSING, true);
+    /**
+     * Create the GenericStartup with the name of the plugin. The name is used
+     * to build the dialogs and find the correct pref-page.
+     * 
+     * @param preferencePageId
+     *            The id of the preference page to open if there are missing
+     *            binaries.
+     * @param preferenceStore
+     *            The preference store of the plugin.
+     */
+    public GenericStartup(GenericActivator genericActivator,
+            final String preferencePageId) {
+        m_preferencePageId = preferencePageId;
+        m_pluginActivator = genericActivator;
+        m_pluginActivator.getPreferenceStore().setDefault(
+                PREFERENCE_WARN_IF_BINARIES_ARE_MISSING, true);
 
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IStartup#earlyStartup()
-	 */
-	@Override
-	public void earlyStartup() {
-		try {
-			// in case we have a payload, check if it is already extracted and
-			// valid
-			if (m_pluginActivator.getBinariesManager().hasPayload()) {
-				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							if (!m_pluginActivator.getBinariesManager()
-									.hasValidPayload()) {
-								new ProgressMonitorDialog(PlatformUI
-										.getWorkbench().getDisplay()
-										.getActiveShell()).run(true, false,
-										m_pluginActivator.getBinariesManager());
-							}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IStartup#earlyStartup()
+     */
+    @Override
+    public void earlyStartup() {
+        try {
+            // in case we have a payload, check if it is already extracted and
+            // valid
+            if (m_pluginActivator.getBinariesManager().hasPayload()) {
+                PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (!m_pluginActivator.getBinariesManager()
+                                    .hasValidPayload()) {
+                                new ProgressMonitorDialog(PlatformUI
+                                        .getWorkbench().getDisplay()
+                                        .getActiveShell()).run(true, false,
+                                        m_pluginActivator.getBinariesManager());
+                            }
 
-							// we should (in any case) have a valid payload now
-							m_pluginActivator.getBinariesManager().register();
-						} catch (InvocationTargetException e) {
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				});
-			}
+                            // we should (in any case) have a valid payload now
+                            m_pluginActivator.getBinariesManager().register();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
 
-			// in any case; check if we have a binary for all nodes
-			if (!findUnitializedBinaries().isEmpty()
-					&& m_pluginActivator.getPreferenceStore().getBoolean(
-							PREFERENCE_WARN_IF_BINARIES_ARE_MISSING)) {
-				PlatformUI.getWorkbench().getDisplay()
-						.asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								MissingBinariesDialog mbDialog = new MissingBinariesDialog(
-										PlatformUI.getWorkbench().getDisplay()
-												.getActiveShell(),
-										m_pluginActivator
-												.getPluginConfiguration()
-												.getPluginName(),
-										m_preferencePageId, m_pluginActivator
-												.getPreferenceStore());
-								mbDialog.create();
-								mbDialog.open();
-							}
-						});
-			}
-		} catch (Exception e) {
-			LOGGER.warn(e.getMessage());
-		}
-	}
+            // in any case; check if we have a binary for all nodes
+            if (!findUnitializedBinaries().isEmpty()
+                    && m_pluginActivator.getPreferenceStore().getBoolean(
+                            PREFERENCE_WARN_IF_BINARIES_ARE_MISSING)) {
+                PlatformUI.getWorkbench().getDisplay()
+                        .asyncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                MissingBinariesDialog mbDialog = new MissingBinariesDialog(
+                                        PlatformUI.getWorkbench().getDisplay()
+                                                .getActiveShell(),
+                                        m_pluginActivator
+                                                .getPluginConfiguration()
+                                                .getPluginName(),
+                                        m_preferencePageId, m_pluginActivator
+                                                .getPreferenceStore());
+                                mbDialog.create();
+                                mbDialog.open();
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage());
+        }
+    }
 
-	/**
-	 * Returns a list containing all nodes that do not have a configured binary.
-	 * If all binaries are correctly initialized the list is empty.
-	 * 
-	 * @return A list containing all binaries that were not correctly
-	 *         initialized.
-	 * @throws Exception
-	 *             If the {@link IToolLocator} could not be initialized
-	 *             correctly.
-	 */
-	public List<String> findUnitializedBinaries() throws Exception {
-		List<String> uninitializedBinaries = new ArrayList<String>();
-		for (ExternalTool tool : m_pluginActivator.getTools()) {
-			if (PluginPreferenceToolLocator.getToolLocatorService()
-					.getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
-				uninitializedBinaries.add(tool.getToolName());
-			}
-		}
+    /**
+     * Returns a list containing all nodes that do not have a configured binary.
+     * If all binaries are correctly initialized the list is empty.
+     * 
+     * @return A list containing all binaries that were not correctly
+     *         initialized.
+     * @throws Exception
+     *             If the {@link IToolLocator} could not be initialized
+     *             correctly.
+     */
+    public List<String> findUnitializedBinaries() throws Exception {
+        List<String> uninitializedBinaries = new ArrayList<String>();
+        for (ExternalTool tool : m_pluginActivator.getTools()) {
+            if (PluginPreferenceToolLocator.getToolLocatorService()
+                    .getConfiguredToolPathType(tool) == ToolPathType.UNKNOWN) {
+                uninitializedBinaries.add(tool.getToolName());
+            }
+        }
 
-		return uninitializedBinaries;
-	}
+        return uninitializedBinaries;
+    }
 }

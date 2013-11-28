@@ -32,62 +32,62 @@ import com.genericworkflownodes.knime.custom.OperatingSystem;
  */
 public class FragmentMeta extends PluginMeta {
 
-	private final GeneratedPluginMeta hostMeta;
-	private final Architecture arch;
-	private final OperatingSystem os;
-	private final File payloadFile;
+    private final GeneratedPluginMeta hostMeta;
+    private final Architecture arch;
+    private final OperatingSystem os;
+    private final File payloadFile;
 
-	/**
-	 * Constructs the fragment meta information given a base id, the
-	 * architecture and operating system this fragment can be executed on.
-	 * 
-	 * @param parentId
-	 * @param arch
-	 * @param os
-	 */
-	public FragmentMeta(GeneratedPluginMeta hostMeta, Architecture arch,
-			OperatingSystem os, File payloadFile) {
-		super(String.format("%s.%s.%s", hostMeta.getId(), os.toOsgiOs(),
-				arch.toOsgiArch()), hostMeta.getVersion());
-		this.hostMeta = hostMeta;
-		this.arch = arch;
-		this.os = os;
-		this.payloadFile = payloadFile;
-	}
+    /**
+     * Constructs the fragment meta information given a base id, the
+     * architecture and operating system this fragment can be executed on.
+     * 
+     * @param parentId
+     * @param arch
+     * @param os
+     */
+    public FragmentMeta(GeneratedPluginMeta hostMeta, Architecture arch,
+            OperatingSystem os, File payloadFile) {
+        super(String.format("%s.%s.%s", hostMeta.getId(), os.toOsgiOs(),
+                arch.toOsgiArch()), hostMeta.getVersion());
+        this.hostMeta = hostMeta;
+        this.arch = arch;
+        this.os = os;
+        this.payloadFile = payloadFile;
+    }
 
-	/**
-	 * Returns the meta object of the host plugin.
-	 * 
-	 * @return
-	 */
-	public GeneratedPluginMeta getHostMeta() {
-		return hostMeta;
-	}
+    /**
+     * Returns the meta object of the host plugin.
+     * 
+     * @return
+     */
+    public GeneratedPluginMeta getHostMeta() {
+        return hostMeta;
+    }
 
-	/**
-	 * Returns the architecture of this fragment.
-	 * 
-	 * @return
-	 */
-	public Architecture getArch() {
-		return arch;
-	}
+    /**
+     * Returns the architecture of this fragment.
+     * 
+     * @return
+     */
+    public Architecture getArch() {
+        return arch;
+    }
 
-	/**
-	 * Returns the operating system of this fragment.
-	 * 
-	 * @return
-	 */
-	public OperatingSystem getOs() {
-		return os;
-	}
+    /**
+     * Returns the operating system of this fragment.
+     * 
+     * @return
+     */
+    public OperatingSystem getOs() {
+        return os;
+    }
 
-	/**
-	 * Returns the actual zip file containing the payload.
-	 * 
-	 * @return
-	 */
-	public File getPayloadFile() {
-		return payloadFile;
-	}
+    /**
+     * Returns the actual zip file containing the payload.
+     * 
+     * @return
+     */
+    public File getPayloadFile() {
+        return payloadFile;
+    }
 }

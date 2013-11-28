@@ -34,85 +34,85 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class ZipUtils {
 
-	private static final int BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 2048;
 
-	/**
-	 * Decompress the content of @p zipStream to the directory @p targetDir.
-	 * 
-	 * @param targetDir
-	 *            The directory where the zip should be extracted.
-	 * @param zipStream
-	 *            The zip file stream.
-	 * @param monitor
-	 *            A already started progress monitor.
-	 */
-	public static void decompressTo(File targetDir, InputStream zipStream,
-			IProgressMonitor monitor) {
-		targetDir.mkdirs();
-		FileOutputStream fout = null;
-		try {
-			ZipInputStream zin = new ZipInputStream(zipStream);
-			ZipEntry ze = null;
+    /**
+     * Decompress the content of @p zipStream to the directory @p targetDir.
+     * 
+     * @param targetDir
+     *            The directory where the zip should be extracted.
+     * @param zipStream
+     *            The zip file stream.
+     * @param monitor
+     *            A already started progress monitor.
+     */
+    public static void decompressTo(File targetDir, InputStream zipStream,
+            IProgressMonitor monitor) {
+        targetDir.mkdirs();
+        FileOutputStream fout = null;
+        try {
+            ZipInputStream zin = new ZipInputStream(zipStream);
+            ZipEntry ze = null;
 
-			byte[] buffer = new byte[BUFFER_SIZE];
+            byte[] buffer = new byte[BUFFER_SIZE];
 
-			while ((ze = zin.getNextEntry()) != null) {
-				File targetFile = new File(targetDir, ze.getName());
+            while ((ze = zin.getNextEntry()) != null) {
+                File targetFile = new File(targetDir, ze.getName());
 
-				if (ze.isDirectory()) {
-					targetFile.mkdirs();
-					monitor.subTask("Extracting " + ze.getName());
-				} else {
-					if (!targetFile.getParentFile().exists()) {
-						monitor.subTask("Extracting " + ze.getName());
-						targetFile.getParentFile().mkdirs();
-					}
+                if (ze.isDirectory()) {
+                    targetFile.mkdirs();
+                    monitor.subTask("Extracting " + ze.getName());
+                } else {
+                    if (!targetFile.getParentFile().exists()) {
+                        monitor.subTask("Extracting " + ze.getName());
+                        targetFile.getParentFile().mkdirs();
+                    }
 
-					fout = new FileOutputStream(targetFile);
+                    fout = new FileOutputStream(targetFile);
 
-					int size;
-					while ((size = zin.read(buffer, 0, BUFFER_SIZE)) != -1) {
-						fout.write(buffer, 0, size);
-					}
+                    int size;
+                    while ((size = zin.read(buffer, 0, BUFFER_SIZE)) != -1) {
+                        fout.write(buffer, 0, size);
+                    }
 
-					zin.closeEntry();
-					fout.flush();
-					fout.close();
-				}
-				monitor.worked(1);
-			}
-			zin.close();
-		} catch (Exception e) {
-			// try to close the streams
-			if (fout != null) {
-				try {
-					fout.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-			e.printStackTrace();
-		}
-	}
+                    zin.closeEntry();
+                    fout.flush();
+                    fout.close();
+                }
+                monitor.worked(1);
+            }
+            zin.close();
+        } catch (Exception e) {
+            // try to close the streams
+            if (fout != null) {
+                try {
+                    fout.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * Do not extract the stream, just count the number of zip entries.
-	 * 
-	 * @param zipStream
-	 *            The input stream containing the zip file.
-	 * @return The number of files/folders in the zip stream.
-	 */
-	public static int countEntries(InputStream zipStream) {
-		int numEntries = 0;
-		try {
-			ZipInputStream zin = new ZipInputStream(zipStream);
-			while ((zin.getNextEntry()) != null) {
-				++numEntries;
-			}
-			zin.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return numEntries;
-	}
+    /**
+     * Do not extract the stream, just count the number of zip entries.
+     * 
+     * @param zipStream
+     *            The input stream containing the zip file.
+     * @return The number of files/folders in the zip stream.
+     */
+    public static int countEntries(InputStream zipStream) {
+        int numEntries = 0;
+        try {
+            ZipInputStream zin = new ZipInputStream(zipStream);
+            while ((zin.getNextEntry()) != null) {
+                ++numEntries;
+            }
+            zin.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return numEntries;
+    }
 }

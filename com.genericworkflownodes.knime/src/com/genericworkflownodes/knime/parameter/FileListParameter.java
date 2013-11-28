@@ -30,37 +30,37 @@ import com.genericworkflownodes.knime.port.Port;
  * @author roettig
  */
 public class FileListParameter extends StringListParameter implements
-		IFileParameter {
+        IFileParameter {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = 3010211738983269403L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 3010211738983269403L;
 
-	/**
-	 * The m_port associated to the file list.
-	 */
-	private Port m_port;
+    /**
+     * The m_port associated to the file list.
+     */
+    private Port m_port;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public FileListParameter(final String key, final List<String> value) {
-		super(key, value);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public FileListParameter(final String key, final List<String> value) {
+        super(key, value);
+    }
 
-	@Override
-	public void setPort(final Port port) {
-		m_port = port;
-	}
+    @Override
+    public void setPort(final Port port) {
+        m_port = port;
+    }
 
-	@Override
-	public Port getPort() {
-		return m_port;
-	}
+    @Override
+    public Port getPort() {
+        return m_port;
+    }
 }

@@ -29,11 +29,11 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
  */
 public class ListZipLoopStartNodeDialog extends DefaultNodeSettingsPane {
 
-	protected ListZipLoopStartNodeDialog() {
-		super();
+    protected ListZipLoopStartNodeDialog() {
+        super();
 
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				ListZipLoopStartNodeModel.CFG_REUSE,
-				ListZipLoopStartNodeModel.DEFAULT_REUSE), "Reuse ports"));
-	}
+        addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+                ListZipLoopStartNodeModel.CFG_REUSE,
+                ListZipLoopStartNodeModel.DEFAULT_REUSE), "Reuse ports"));
+    }
 }

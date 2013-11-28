@@ -34,36 +34,36 @@ import com.genericworkflownodes.knime.execution.ICommandGenerator;
  */
 public class BALLCommandGenerator implements ICommandGenerator {
 
-	private static final String PAR_SWITCH = "-par";
-	private static final String PAR_FILE_NAME = "params.xml";
+    private static final String PAR_SWITCH = "-par";
+    private static final String PAR_FILE_NAME = "params.xml";
 
-	@Override
-	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			IPluginConfiguration pluginConfiguration, File workingDirectory)
-			throws Exception {
+    @Override
+    public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+            IPluginConfiguration pluginConfiguration, File workingDirectory)
+            throws Exception {
 
-		File paramFile = writePARFile(nodeConfiguration, workingDirectory);
+        File paramFile = writePARFile(nodeConfiguration, workingDirectory);
 
-		List<String> commands = new ArrayList<String>();
-		commands.add(PAR_SWITCH);
-		commands.add(paramFile.getCanonicalPath());
+        List<String> commands = new ArrayList<String>();
+        commands.add(PAR_SWITCH);
+        commands.add(paramFile.getCanonicalPath());
 
-		return commands;
-	}
+        return commands;
+    }
 
-	/**
-	 * @param nodeConfiguration
-	 * @param configStore
-	 * @param workingDirectory
-	 * @return
-	 * @throws Exception
-	 */
-	private File writePARFile(INodeConfiguration nodeConfiguration,
-			File workingDirectory) throws Exception {
-		File paramFile = new File(workingDirectory, PAR_FILE_NAME);
-		CTDConfigurationWriter writer = new CTDConfigurationWriter(paramFile);
-		writer.write(nodeConfiguration);
-		return paramFile;
-	}
+    /**
+     * @param nodeConfiguration
+     * @param configStore
+     * @param workingDirectory
+     * @return
+     * @throws Exception
+     */
+    private File writePARFile(INodeConfiguration nodeConfiguration,
+            File workingDirectory) throws Exception {
+        File paramFile = new File(workingDirectory, PAR_FILE_NAME);
+        CTDConfigurationWriter writer = new CTDConfigurationWriter(paramFile);
+        writer.write(nodeConfiguration);
+        return paramFile;
+    }
 
 }

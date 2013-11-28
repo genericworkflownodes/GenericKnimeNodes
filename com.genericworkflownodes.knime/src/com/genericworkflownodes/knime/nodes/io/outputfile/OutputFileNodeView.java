@@ -35,46 +35,46 @@ import com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporter
  */
 public class OutputFileNodeView extends NodeView<OutputFileNodeModel> {
 
-	/**
-	 * The {@link JTextArea} where the file content preview is stored.
-	 */
-	private final JTextArea m_text;
+    /**
+     * The {@link JTextArea} where the file content preview is stored.
+     */
+    private final JTextArea m_text;
 
-	/**
-	 * Creates a new view.
-	 * 
-	 * @param nodeModel
-	 *            The model (class: {@link ListMimeFileImporterNodeModel})
-	 */
-	protected OutputFileNodeView(final OutputFileNodeModel nodeModel) {
-		super(nodeModel);
-		m_text = new JTextArea("", 40, 80);
-		JScrollPane scrollpane = new JScrollPane(m_text);
-		m_text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		m_text.setText(getNodeModel().getContent());
-		setComponent(scrollpane);
-	}
+    /**
+     * Creates a new view.
+     * 
+     * @param nodeModel
+     *            The model (class: {@link ListMimeFileImporterNodeModel})
+     */
+    protected OutputFileNodeView(final OutputFileNodeModel nodeModel) {
+        super(nodeModel);
+        m_text = new JTextArea("", 40, 80);
+        JScrollPane scrollpane = new JScrollPane(m_text);
+        m_text.setFont(new Font("Monospaced", Font.BOLD, 12));
+        m_text.setText(getNodeModel().getContent());
+        setComponent(scrollpane);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void modelChanged() {
-		assert getNodeModel() != null;
-		m_text.setText(getNodeModel().getContent());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void modelChanged() {
+        assert getNodeModel() != null;
+        m_text.setText(getNodeModel().getContent());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onClose() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onClose() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onOpen() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onOpen() {
+    }
 }

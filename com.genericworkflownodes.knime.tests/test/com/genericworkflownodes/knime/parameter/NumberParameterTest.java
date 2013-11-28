@@ -30,70 +30,70 @@ import org.junit.Test;
  */
 public class NumberParameterTest {
 
-	private class NumberParameterImpl extends NumberParameter<Integer> {
+    private class NumberParameterImpl extends NumberParameter<Integer> {
 
-		public NumberParameterImpl(String key, Integer value) {
-			super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		}
+        public NumberParameterImpl(String key, Integer value) {
+            super(key, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
 
-		// the following methods will not be tested
-		@Override
-		public String getMnemonic() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        // the following methods will not be tested
+        @Override
+        public String getMnemonic() {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
-		@Override
-		public void fillFromString(String s)
-				throws InvalidParameterValueException {
-			// TODO Auto-generated method stub
+        @Override
+        public void fillFromString(String s)
+                throws InvalidParameterValueException {
+            // TODO Auto-generated method stub
 
-		}
+        }
 
-		@Override
-		public boolean validate(Integer val) {
-			// TODO Auto-generated method stub
-			return false;
-		}
+        @Override
+        public boolean validate(Integer val) {
+            // TODO Auto-generated method stub
+            return false;
+        }
 
-	}
+    }
 
-	Integer ints = new Integer(2);
+    Integer ints = new Integer(2);
 
-	@Test
-	public void testNumberListParameter() {
-		NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
-		assertNotNull(nlp);
-	}
+    @Test
+    public void testNumberListParameter() {
+        NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
+        assertNotNull(nlp);
+    }
 
-	@Test
-	public void testGetLowerBound() {
-		NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
-		assertEquals(new Integer(Integer.MIN_VALUE), nlp.getLowerBound());
-		nlp.setLowerBound(2);
-		assertEquals(new Integer(2), nlp.getLowerBound());
-	}
+    @Test
+    public void testGetLowerBound() {
+        NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
+        assertEquals(new Integer(Integer.MIN_VALUE), nlp.getLowerBound());
+        nlp.setLowerBound(2);
+        assertEquals(new Integer(2), nlp.getLowerBound());
+    }
 
-	@Test
-	public void testSetLowerBound() {
-		NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
-		nlp.setLowerBound(2);
-		assertEquals(new Integer(2), nlp.getLowerBound());
-	}
+    @Test
+    public void testSetLowerBound() {
+        NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
+        nlp.setLowerBound(2);
+        assertEquals(new Integer(2), nlp.getLowerBound());
+    }
 
-	@Test
-	public void testGetUpperBound() {
-		NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
-		assertEquals(new Integer(Integer.MAX_VALUE), nlp.getUpperBound());
-		nlp.setUpperBound(2);
-		assertEquals(new Integer(2), nlp.getUpperBound());
-	}
+    @Test
+    public void testGetUpperBound() {
+        NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
+        assertEquals(new Integer(Integer.MAX_VALUE), nlp.getUpperBound());
+        nlp.setUpperBound(2);
+        assertEquals(new Integer(2), nlp.getUpperBound());
+    }
 
-	@Test
-	public void testSetUpperBound() {
-		NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
-		nlp.setUpperBound(2);
-		assertEquals(new Integer(2), nlp.getUpperBound());
-	}
+    @Test
+    public void testSetUpperBound() {
+        NumberParameterImpl nlp = new NumberParameterImpl("nlp", ints);
+        nlp.setUpperBound(2);
+        assertEquals(new Integer(2), nlp.getUpperBound());
+    }
 
 }

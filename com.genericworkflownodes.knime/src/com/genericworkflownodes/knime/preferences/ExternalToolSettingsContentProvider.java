@@ -32,28 +32,28 @@ import org.eclipse.jface.viewers.Viewer;
  * @author aiche
  */
 public class ExternalToolSettingsContentProvider implements
-		IStructuredContentProvider {
+        IStructuredContentProvider {
 
-	@Override
-	public void dispose() {
-	}
+    @Override
+    public void dispose() {
+    }
 
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-	}
+    @Override
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object[] getElements(Object inputElement) {
-		LinkedHashMap<String, ExternalToolSettings> input = (LinkedHashMap<String, ExternalToolSettings>) inputElement;
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object[] getElements(Object inputElement) {
+        LinkedHashMap<String, ExternalToolSettings> input = (LinkedHashMap<String, ExternalToolSettings>) inputElement;
 
-		// convert to array of ExternalToolSettings
-		List<ExternalToolSettings> settingsAsList = new ArrayList<ExternalToolSettings>();
-		for (Map.Entry<String, ExternalToolSettings> settingsEntry : input
-				.entrySet()) {
-			settingsAsList.add(settingsEntry.getValue());
-		}
-		return settingsAsList.toArray();
-	}
+        // convert to array of ExternalToolSettings
+        List<ExternalToolSettings> settingsAsList = new ArrayList<ExternalToolSettings>();
+        for (Map.Entry<String, ExternalToolSettings> settingsEntry : input
+                .entrySet()) {
+            settingsAsList.add(settingsEntry.getValue());
+        }
+        return settingsAsList.toArray();
+    }
 
 }

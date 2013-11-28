@@ -30,45 +30,45 @@ import org.knime.core.node.NodeView;
  */
 public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public FileMergerNodeModel createNodeModel() {
-		return new FileMergerNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FileMergerNodeModel createNodeModel() {
+        return new FileMergerNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<FileMergerNodeModel> createNodeView(final int viewIndex,
-			final FileMergerNodeModel nodeModel) {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<FileMergerNodeModel> createNodeView(final int viewIndex,
+            final FileMergerNodeModel nodeModel) {
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return null;
+    }
 
 }

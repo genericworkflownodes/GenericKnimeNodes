@@ -30,45 +30,45 @@ import org.knime.core.node.NodeView;
  */
 public class DemanglerNodeFactory extends NodeFactory<DemanglerNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DemanglerNodeModel createNodeModel() {
-		return new DemanglerNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DemanglerNodeModel createNodeModel() {
+        return new DemanglerNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<DemanglerNodeModel> createNodeView(final int viewIndex,
-			final DemanglerNodeModel nodeModel) {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<DemanglerNodeModel> createNodeView(final int viewIndex,
+            final DemanglerNodeModel nodeModel) {
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new DemanglerNodeDialog();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return new DemanglerNodeDialog();
+    }
 
 }

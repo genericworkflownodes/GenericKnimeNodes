@@ -27,71 +27,71 @@ package com.genericworkflownodes.knime.custom;
  * 
  */
 public enum Architecture {
-	/**
-	 * The enum values.
-	 */
-	X86, X86_64, UNKNOWN;
+    /**
+     * The enum values.
+     */
+    X86, X86_64, UNKNOWN;
 
-	/**
-	 * Construct an {@link Architecture} value based on the
-	 * System.getProperty("sun.arch.data.model") property.
-	 * 
-	 * @return A new {@link Architecture} for the platform where the code is
-	 *         executed.
-	 */
-	public static Architecture getArchitecture() {
-		String dataModel = System.getProperty("sun.arch.data.model");
-		Architecture thisArch = UNKNOWN;
-		if ("64".equals(dataModel)) {
-			thisArch = X86_64;
-		} else if ("32".equals(dataModel)) {
-			thisArch = X86;
-		}
+    /**
+     * Construct an {@link Architecture} value based on the
+     * System.getProperty("sun.arch.data.model") property.
+     * 
+     * @return A new {@link Architecture} for the platform where the code is
+     *         executed.
+     */
+    public static Architecture getArchitecture() {
+        String dataModel = System.getProperty("sun.arch.data.model");
+        Architecture thisArch = UNKNOWN;
+        if ("64".equals(dataModel)) {
+            thisArch = X86_64;
+        } else if ("32".equals(dataModel)) {
+            thisArch = X86;
+        }
 
-		return thisArch;
-	}
+        return thisArch;
+    }
 
-	public static Architecture fromString(final String arch) {
-		if ("64".equals(arch)) {
-			return X86_64;
-		} else if ("32".equals(arch)) {
-			return X86;
-		} else {
-			return UNKNOWN;
-		}
-	}
+    public static Architecture fromString(final String arch) {
+        if ("64".equals(arch)) {
+            return X86_64;
+        } else if ("32".equals(arch)) {
+            return X86;
+        } else {
+            return UNKNOWN;
+        }
+    }
 
-	@Override
-	public String toString() {
-		String archAsString = "";
+    @Override
+    public String toString() {
+        String archAsString = "";
 
-		switch (this) {
-		case X86:
-			archAsString = "32";
-			break;
-		case X86_64:
-			archAsString = "64";
-			break;
-		default:
-			break;
-		}
+        switch (this) {
+        case X86:
+            archAsString = "32";
+            break;
+        case X86_64:
+            archAsString = "64";
+            break;
+        default:
+            break;
+        }
 
-		return archAsString;
-	}
+        return archAsString;
+    }
 
-	public String toOsgiArch() {
-		String osgiArch = "";
+    public String toOsgiArch() {
+        String osgiArch = "";
 
-		switch (this) {
-		case X86:
-			osgiArch = "x86";
-			break;
-		case X86_64:
-			osgiArch = "x86_64";
-		default:
-			break;
-		}
+        switch (this) {
+        case X86:
+            osgiArch = "x86";
+            break;
+        case X86_64:
+            osgiArch = "x86_64";
+        default:
+            break;
+        }
 
-		return osgiArch;
-	}
+        return osgiArch;
+    }
 }

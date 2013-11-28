@@ -26,68 +26,68 @@ package com.genericworkflownodes.knime.parameter;
  */
 public class BoolParameter extends Parameter<Boolean> {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = 7880934193463457962L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 7880934193463457962L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public BoolParameter(final String key, final Boolean value) {
-		super(key, value);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public BoolParameter(final String key, final Boolean value) {
+        super(key, value);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter as {@link String}.
-	 */
-	public BoolParameter(final String key, final String value) {
-		super(key, Boolean.valueOf(value.toLowerCase()));
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter as {@link String}.
+     */
+    public BoolParameter(final String key, final String value) {
+        super(key, Boolean.valueOf(value.toLowerCase()));
+    }
 
-	@Override
-	public String toString() {
-		if (getValue() == null) {
-			return null;
-		}
-		return (getValue() ? "true" : "false");
-	}
+    @Override
+    public String toString() {
+        if (getValue() == null) {
+            return null;
+        }
+        return (getValue() ? "true" : "false");
+    }
 
-	@Override
-	public void fillFromString(final String s)
-			throws InvalidParameterValueException {
-		if (s == null || s.equals("")) {
-			setValue(null);
-			return;
-		}
-		if (!(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false"))) {
-			throw new InvalidParameterValueException("");
-		}
-		setValue(Boolean.parseBoolean(s));
-	}
+    @Override
+    public void fillFromString(final String s)
+            throws InvalidParameterValueException {
+        if (s == null || s.equals("")) {
+            setValue(null);
+            return;
+        }
+        if (!(s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false"))) {
+            throw new InvalidParameterValueException("");
+        }
+        setValue(Boolean.parseBoolean(s));
+    }
 
-	@Override
-	public boolean validate(final Boolean val) {
-		return true;
-	}
+    @Override
+    public boolean validate(final Boolean val) {
+        return true;
+    }
 
-	@Override
-	public String getMnemonic() {
-		return "bool";
-	}
+    @Override
+    public String getMnemonic() {
+        return "bool";
+    }
 
-	@Override
-	public String getStringRep() {
-		return toString();
-	}
+    @Override
+    public String getStringRep() {
+        return toString();
+    }
 }

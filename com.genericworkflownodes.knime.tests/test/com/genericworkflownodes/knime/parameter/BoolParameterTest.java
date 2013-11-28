@@ -29,74 +29,74 @@ import org.junit.Test;
  */
 public class BoolParameterTest {
 
-	@Test
-	public void testGetMnemonic() {
-		BoolParameter bp = new BoolParameter("new-bp", "true");
-		assertEquals("bool", bp.getMnemonic());
-	}
+    @Test
+    public void testGetMnemonic() {
+        BoolParameter bp = new BoolParameter("new-bp", "true");
+        assertEquals("bool", bp.getMnemonic());
+    }
 
-	@Test
-	public void testFillFromString() throws InvalidParameterValueException {
-		BoolParameter bp = new BoolParameter("new-bp", "true");
-		assertEquals(true, bp.getValue());
+    @Test
+    public void testFillFromString() throws InvalidParameterValueException {
+        BoolParameter bp = new BoolParameter("new-bp", "true");
+        assertEquals(true, bp.getValue());
 
-		bp.fillFromString("false");
-		assertEquals(false, bp.getValue());
+        bp.fillFromString("false");
+        assertEquals(false, bp.getValue());
 
-		bp.fillFromString("true");
-		assertEquals(true, bp.getValue());
-	}
+        bp.fillFromString("true");
+        assertEquals(true, bp.getValue());
+    }
 
-	@Test(expected = InvalidParameterValueException.class)
-	public void testFillFromInvalidString()
-			throws InvalidParameterValueException {
-		BoolParameter bp = new BoolParameter("new-bp", "true");
-		assertEquals(true, bp.getValue());
+    @Test(expected = InvalidParameterValueException.class)
+    public void testFillFromInvalidString()
+            throws InvalidParameterValueException {
+        BoolParameter bp = new BoolParameter("new-bp", "true");
+        assertEquals(true, bp.getValue());
 
-		bp.fillFromString("not-a-boolean-value");
-	}
+        bp.fillFromString("not-a-boolean-value");
+    }
 
-	@Test
-	public void testGetStringRep() {
-		BoolParameter bpTrue = new BoolParameter("new-bp", "true");
-		BoolParameter bpFalse = new BoolParameter("new-bp", "false");
+    @Test
+    public void testGetStringRep() {
+        BoolParameter bpTrue = new BoolParameter("new-bp", "true");
+        BoolParameter bpFalse = new BoolParameter("new-bp", "false");
 
-		assertEquals("true", bpTrue.getStringRep());
-		assertEquals("false", bpFalse.getStringRep());
-	}
+        assertEquals("true", bpTrue.getStringRep());
+        assertEquals("false", bpFalse.getStringRep());
+    }
 
-	@Test
-	public void testBoolParameterStringBoolean() {
-		BoolParameter bpTrue = new BoolParameter("new-bp", true);
-		BoolParameter bpFalse = new BoolParameter("new-bp", false);
+    @Test
+    public void testBoolParameterStringBoolean() {
+        BoolParameter bpTrue = new BoolParameter("new-bp", true);
+        BoolParameter bpFalse = new BoolParameter("new-bp", false);
 
-		assertEquals(true, bpTrue.getValue());
-		assertEquals(false, bpFalse.getValue());
-	}
+        assertEquals(true, bpTrue.getValue());
+        assertEquals(false, bpFalse.getValue());
+    }
 
-	@Test
-	public void testBoolParameterStringString() {
-		BoolParameter bpTrue = new BoolParameter("new-bp", "true");
-		BoolParameter bpFalse = new BoolParameter("new-bp", "false");
+    @Test
+    public void testBoolParameterStringString() {
+        BoolParameter bpTrue = new BoolParameter("new-bp", "true");
+        BoolParameter bpFalse = new BoolParameter("new-bp", "false");
 
-		assertEquals(true, bpTrue.getValue());
-		assertEquals(false, bpFalse.getValue());
-	}
+        assertEquals(true, bpTrue.getValue());
+        assertEquals(false, bpFalse.getValue());
+    }
 
-	@Test
-	public void testToString() {
-		BoolParameter bpTrue = new BoolParameter("new-bp", "true");
-		BoolParameter bpFalse = new BoolParameter("new-bp", "false");
+    @Test
+    public void testToString() {
+        BoolParameter bpTrue = new BoolParameter("new-bp", "true");
+        BoolParameter bpFalse = new BoolParameter("new-bp", "false");
 
-		assertEquals("true", bpTrue.toString());
-		assertEquals("false", bpFalse.toString());
-	}
+        assertEquals("true", bpTrue.toString());
+        assertEquals("false", bpFalse.toString());
+    }
 
-	@Test
-	public void testValidateBoolean() {
-		BoolParameter bp = new BoolParameter("new-bp", "true");
-		assertEquals(true, bp.validate(true));
-		assertEquals(true, bp.validate(false));
-	}
+    @Test
+    public void testValidateBoolean() {
+        BoolParameter bp = new BoolParameter("new-bp", "true");
+        assertEquals(true, bp.validate(true));
+        assertEquals(true, bp.validate(false));
+    }
 
 }

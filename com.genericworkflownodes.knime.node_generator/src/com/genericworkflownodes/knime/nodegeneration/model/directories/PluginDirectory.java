@@ -26,67 +26,67 @@ import java.io.File;
  */
 public class PluginDirectory extends Directory {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8934613520286247501L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8934613520286247501L;
 
-	private File buildProperties;
-	private File pluginXml;
-	private File manifestMf;
-	private File projectFile;
+    private File buildProperties;
+    private File pluginXml;
+    private File manifestMf;
+    private File projectFile;
 
-	public PluginDirectory(File directory)
-			throws PathnameIsNoDirectoryException {
-		super(directory);
+    public PluginDirectory(File directory)
+            throws PathnameIsNoDirectoryException {
+        super(directory);
 
-		buildProperties = new File(this, "build.properties");
-		pluginXml = new File(this, "plugin.xml");
-		manifestMf = new File(this, "META-INF" + File.separator + "MANIFEST.MF");
-		projectFile = new File(this, ".project");
-	}
+        buildProperties = new File(this, "build.properties");
+        pluginXml = new File(this, "plugin.xml");
+        manifestMf = new File(this, "META-INF" + File.separator + "MANIFEST.MF");
+        projectFile = new File(this, ".project");
+    }
 
-	/**
-	 * Returns the build.properties file.
-	 * 
-	 * @return
-	 */
-	public File getBuildProperties() {
-		return buildProperties;
-	}
+    /**
+     * Returns the build.properties file.
+     * 
+     * @return
+     */
+    public File getBuildProperties() {
+        return buildProperties;
+    }
 
-	/**
-	 * Returns plugin.xml file.
-	 * 
-	 * @return
-	 */
-	public File getPluginXml() {
-		return pluginXml;
-	}
+    /**
+     * Returns plugin.xml file.
+     * 
+     * @return
+     */
+    public File getPluginXml() {
+        return pluginXml;
+    }
 
-	/**
-	 * Returns the META-INF/MANIFEST.MF file.
-	 * 
-	 * @return
-	 */
-	public File getManifestMf() {
-		return manifestMf;
-	}
+    /**
+     * Returns the META-INF/MANIFEST.MF file.
+     * 
+     * @return
+     */
+    public File getManifestMf() {
+        return manifestMf;
+    }
 
-	/**
-	 * Returns the .project file.
-	 * 
-	 * @return
-	 */
-	public File getProjectFile() {
-		return projectFile;
-	}
+    /**
+     * Returns the .project file.
+     * 
+     * @return
+     */
+    public File getProjectFile() {
+        return projectFile;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isValidBundle() {
-		return manifestMf.exists();
-	}
+    /**
+     * 
+     * @return
+     */
+    public boolean isValidBundle() {
+        return manifestMf.exists();
+    }
 }

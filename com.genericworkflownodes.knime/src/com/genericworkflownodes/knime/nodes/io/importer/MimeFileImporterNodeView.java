@@ -33,44 +33,44 @@ import com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporter
  * @author roettig
  */
 public class MimeFileImporterNodeView extends
-		NodeView<MimeFileImporterNodeModel> {
+        NodeView<MimeFileImporterNodeModel> {
 
-	/**
-	 * Creates a new view.
-	 * 
-	 * @param nodeModel
-	 *            The model (class: {@link ListMimeFileImporterNodeModel})
-	 */
-	protected MimeFileImporterNodeView(final MimeFileImporterNodeModel nodeModel) {
-		super(nodeModel);
+    /**
+     * Creates a new view.
+     * 
+     * @param nodeModel
+     *            The model (class: {@link ListMimeFileImporterNodeModel})
+     */
+    protected MimeFileImporterNodeView(final MimeFileImporterNodeModel nodeModel) {
+        super(nodeModel);
 
-		JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
-		JScrollPane scrollpane = new JScrollPane(text);
-		text.setFont(new Font("Monospaced", Font.BOLD, 12));
-		setComponent(scrollpane);
+        JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
+        JScrollPane scrollpane = new JScrollPane(text);
+        text.setFont(new Font("Monospaced", Font.BOLD, 12));
+        setComponent(scrollpane);
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void modelChanged() {
-		MimeFileImporterNodeModel nodeModel = getNodeModel();
-		assert nodeModel != null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void modelChanged() {
+        MimeFileImporterNodeModel nodeModel = getNodeModel();
+        assert nodeModel != null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onClose() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onClose() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onOpen() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onOpen() {
+    }
 }

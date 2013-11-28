@@ -31,76 +31,76 @@ import java.util.List;
  * 
  */
 public abstract class NumberListParameter<T extends Number> extends
-		Parameter<List<T>> implements ListParameter {
+        Parameter<List<T>> implements ListParameter {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = -4722657913698964700L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = -4722657913698964700L;
 
-	/**
-	 * The lower bound of the given numerical parameter.
-	 */
-	private T lowerBound;
+    /**
+     * The lower bound of the given numerical parameter.
+     */
+    private T lowerBound;
 
-	/**
-	 * The upper bound of the given numerical parameter.
-	 */
-	private T upperBound;
+    /**
+     * The upper bound of the given numerical parameter.
+     */
+    private T upperBound;
 
-	/**
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 * @param lowerBound
-	 *            The lower bound of the contained values.
-	 * @param upperBound
-	 *            The upper bound of the contained values.
-	 */
-	public NumberListParameter(final String key, final List<T> value,
-			final T lowerBound, final T upperBound) {
-		super(key, value);
-		this.lowerBound = lowerBound;
-		this.upperBound = upperBound;
-	}
+    /**
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     * @param lowerBound
+     *            The lower bound of the contained values.
+     * @param upperBound
+     *            The upper bound of the contained values.
+     */
+    public NumberListParameter(final String key, final List<T> value,
+            final T lowerBound, final T upperBound) {
+        super(key, value);
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
 
-	/**
-	 * Returns the lower bound for constrained numeric parameters.
-	 * 
-	 * @return lower bound
-	 */
-	public T getLowerBound() {
-		return lowerBound;
-	}
+    /**
+     * Returns the lower bound for constrained numeric parameters.
+     * 
+     * @return lower bound
+     */
+    public T getLowerBound() {
+        return lowerBound;
+    }
 
-	/**
-	 * Sets the lower bound for constrained numeric parameters.
-	 * 
-	 * @param lowerBound
-	 *            The new lower bound for the given numerical parameter.
-	 */
-	public void setLowerBound(final T lowerBound) {
-		this.lowerBound = lowerBound;
-	}
+    /**
+     * Sets the lower bound for constrained numeric parameters.
+     * 
+     * @param lowerBound
+     *            The new lower bound for the given numerical parameter.
+     */
+    public void setLowerBound(final T lowerBound) {
+        this.lowerBound = lowerBound;
+    }
 
-	/**
-	 * Returns the upper bound for constrained numeric parameters.
-	 * 
-	 * @return upper bound
-	 */
-	public T getUpperBound() {
-		return upperBound;
-	}
+    /**
+     * Returns the upper bound for constrained numeric parameters.
+     * 
+     * @return upper bound
+     */
+    public T getUpperBound() {
+        return upperBound;
+    }
 
-	/**
-	 * Sets the upper bound for constrained numeric parameters.
-	 * 
-	 * @param upperBound
-	 *            The new upper bound for the given numerical parameter.
-	 */
-	public void setUpperBound(final T upperBound) {
-		this.upperBound = upperBound;
-	}
+    /**
+     * Sets the upper bound for constrained numeric parameters.
+     * 
+     * @param upperBound
+     *            The new upper bound for the given numerical parameter.
+     */
+    public void setUpperBound(final T upperBound) {
+        this.upperBound = upperBound;
+    }
 }

@@ -31,117 +31,117 @@ import org.apache.commons.lang.ArrayUtils;
  * 
  */
 public class StringListParameter extends Parameter<List<String>> implements
-		ListParameter {
+        ListParameter {
 
-	/**
-	 * Set of allowed entries for this StringListParameter
-	 */
-	private List<String> validValues;
+    /**
+     * Set of allowed entries for this StringListParameter
+     */
+    private List<String> validValues;
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = -3843594608327851669L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = -3843594608327851669L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public StringListParameter(final String key, final List<String> value) {
-		super(key, value);
-		validValues = new ArrayList<String>();
-		validValues.clear();
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public StringListParameter(final String key, final List<String> value) {
+        super(key, value);
+        validValues = new ArrayList<String>();
+        validValues.clear();
+    }
 
-	public void setRestrictions(List<String> newRestrictions) {
-		validValues = newRestrictions;
-	}
+    public void setRestrictions(List<String> newRestrictions) {
+        validValues = newRestrictions;
+    }
 
-	public void addRestrictions(String allowedValue) {
-		if (!validValues.contains(allowedValue))
-			validValues.add(allowedValue);
-	}
+    public void addRestrictions(String allowedValue) {
+        if (!validValues.contains(allowedValue))
+            validValues.add(allowedValue);
+    }
 
-	public String[] getRestrictions() {
-		if (!validValues.isEmpty())
-			return validValues.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-		else
-			return null;
-	}
+    public String[] getRestrictions() {
+        if (!validValues.isEmpty())
+            return validValues.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+        else
+            return null;
+    }
 
-	@Override
-	public String getMnemonic() {
-		return "string list";
-	}
+    @Override
+    public String getMnemonic() {
+        return "string list";
+    }
 
-	@Override
-	public void fillFromString(final String s)
-			throws InvalidParameterValueException {
-		if (s == null || s.equals("")) {
-			setValue(new ArrayList<String>());
-			return;
-		}
-		setValue(new ArrayList<String>());
-		String[] toks = s.split(SEPARATOR_TOKEN);
-		for (int i = 0; i < toks.length; i++) {
-			getValue().add(toks[i]);
-		}
-	}
+    @Override
+    public void fillFromString(final String s)
+            throws InvalidParameterValueException {
+        if (s == null || s.equals("")) {
+            setValue(new ArrayList<String>());
+            return;
+        }
+        setValue(new ArrayList<String>());
+        String[] toks = s.split(SEPARATOR_TOKEN);
+        for (int i = 0; i < toks.length; i++) {
+            getValue().add(toks[i]);
+        }
+    }
 
-	@Override
-	public String getStringRep() {
-		if (getValue() == null) {
-			return "";
-		}
-		StringBuffer sb = new StringBuffer();
-		for (String s : getValue()) {
-			sb.append(s + SEPARATOR_TOKEN);
-		}
-		return sb.toString();
-	}
+    @Override
+    public String getStringRep() {
+        if (getValue() == null) {
+            return "";
+        }
+        StringBuffer sb = new StringBuffer();
+        for (String s : getValue()) {
+            sb.append(s + SEPARATOR_TOKEN);
+        }
+        return sb.toString();
+    }
 
-	@Override
-	public boolean validate(final List<String> values) {
-		if (validValues.isEmpty())
-			return true;
-		else {
-			return validValues.containsAll(values);
-		}
-	}
+    @Override
+    public boolean validate(final List<String> values) {
+        if (validValues.isEmpty())
+            return true;
+        else {
+            return validValues.containsAll(values);
+        }
+    }
 
-	@Override
-	public String toString() {
-		if (getValue() == null) {
-			return "[]";
-		}
-		String[] values = getValue().toArray(new String[0]);
-		return Arrays.toString(values);
-	}
+    @Override
+    public String toString() {
+        if (getValue() == null) {
+            return "[]";
+        }
+        String[] values = getValue().toArray(new String[0]);
+        return Arrays.toString(values);
+    }
 
-	@Override
-	public List<String> getStrings() {
-		List<String> ret = new ArrayList<String>();
-		for (String s : getValue()) {
-			ret.add(s);
-		}
-		return ret;
-	}
+    @Override
+    public List<String> getStrings() {
+        List<String> ret = new ArrayList<String>();
+        for (String s : getValue()) {
+            ret.add(s);
+        }
+        return ret;
+    }
 
-	@Override
-	public void fillFromStrings(final String[] values)
-			throws InvalidParameterValueException {
-		setValue(new ArrayList<String>());
-		if (validate(Arrays.asList(values))) {
-			for (int i = 0; i < values.length; i++) {
-				getValue().add(values[i]);
-			}
-		} else {
-			throw new InvalidParameterValueException(
-					"Some or all of the given values are not contained in the set of valid values.");
-		}
-	}
+    @Override
+    public void fillFromStrings(final String[] values)
+            throws InvalidParameterValueException {
+        setValue(new ArrayList<String>());
+        if (validate(Arrays.asList(values))) {
+            for (int i = 0; i < values.length; i++) {
+                getValue().add(values[i]);
+            }
+        } else {
+            throw new InvalidParameterValueException(
+                    "Some or all of the given values are not contained in the set of valid values.");
+        }
+    }
 }

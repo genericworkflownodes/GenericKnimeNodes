@@ -22,195 +22,195 @@ import com.genericworkflownodes.util.Helper;
 
 public class PluginXMLTemplate {
 
-	private static final Logger LOGGER = Logger
-			.getLogger(PluginXMLTemplate.class.getCanonicalName());
+    private static final Logger LOGGER = Logger
+            .getLogger(PluginXMLTemplate.class.getCanonicalName());
 
-	private final Document doc;
-	private final Set<String> registeredPrefixed = new HashSet<String>();
+    private final Document doc;
+    private final Set<String> registeredPrefixed = new HashSet<String>();
 
-	/**
-	 * Constructs a new copy of a template plugin.xml and returns its
-	 * {@link Document} representation.
-	 * 
-	 * @return
-	 * @throws DocumentException
-	 * @throws IOException
-	 */
-	public PluginXMLTemplate() throws DocumentException, IOException {
-		File temp = File.createTempFile("plugin", "xml");
-		temp.deleteOnExit();
-		Helper.copyStream(TemplateResources.class
-				.getResourceAsStream("plugin.xml.template"), temp);
+    /**
+     * Constructs a new copy of a template plugin.xml and returns its
+     * {@link Document} representation.
+     * 
+     * @return
+     * @throws DocumentException
+     * @throws IOException
+     */
+    public PluginXMLTemplate() throws DocumentException, IOException {
+        File temp = File.createTempFile("plugin", "xml");
+        temp.deleteOnExit();
+        Helper.copyStream(TemplateResources.class
+                .getResourceAsStream("plugin.xml.template"), temp);
 
-		SAXReader reader = new SAXReader();
-		reader.setDocumentFactory(new DOMDocumentFactory());
+        SAXReader reader = new SAXReader();
+        reader.setDocumentFactory(new DOMDocumentFactory());
 
-		doc = reader.read(new FileInputStream(temp));
-	}
+        doc = reader.read(new FileInputStream(temp));
+    }
 
-	/**
-	 * Write a given plugin.xml representation to a file.
-	 * 
-	 * @param pluginXml
-	 * @param dest
-	 * @throws IOException
-	 */
-	public void saveTo(File dest) throws IOException {
-		Utils.writeDocumentTo(doc, dest);
-	}
+    /**
+     * Write a given plugin.xml representation to a file.
+     * 
+     * @param pluginXml
+     * @param dest
+     * @throws IOException
+     */
+    public void saveTo(File dest) throws IOException {
+        Utils.writeDocumentTo(doc, dest);
+    }
 
-	/**
-	 * Registers an icon that is displayed on the KNIME splash screen when KNIME
-	 * starts.
-	 * 
-	 * @param meta
-	 * 
-	 * @param splashIcon
-	 *            project relative path to icon file, e.g. icons/logo.png
-	 * @throws IOException
-	 */
-	public void registerSplashIcon(GeneratedPluginMeta meta, File splashIcon)
-			throws IOException {
-		if (splashIcon == null) {
-			return;
-		}
-		Node node = doc
-				.selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
-		Element elem = (Element) node;
-		elem.addElement("splashExtension")
-				.addAttribute("icon", splashIcon.getPath())
-				.addAttribute("id", meta.getPackageRoot() + ".icons.splashIcon");
-	}
+    /**
+     * Registers an icon that is displayed on the KNIME splash screen when KNIME
+     * starts.
+     * 
+     * @param meta
+     * 
+     * @param splashIcon
+     *            project relative path to icon file, e.g. icons/logo.png
+     * @throws IOException
+     */
+    public void registerSplashIcon(GeneratedPluginMeta meta, File splashIcon)
+            throws IOException {
+        if (splashIcon == null) {
+            return;
+        }
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='org.knime.product.splashExtension']");
+        Element elem = (Element) node;
+        elem.addElement("splashExtension")
+                .addAttribute("icon", splashIcon.getPath())
+                .addAttribute("id", meta.getPackageRoot() + ".icons.splashIcon");
+    }
 
-	/**
-	 * Registers recursively the category path of the current node.
-	 * 
-	 * @param path
-	 */
-	public void registerPath(String path) {
-		List<String> prefixes = Utils.getPathPrefixes(path);
-		for (String prefix : prefixes) {
-			this.registerPathPrefix(prefix);
-		}
-	}
+    /**
+     * Registers recursively the category path of the current node.
+     * 
+     * @param path
+     */
+    public void registerPath(String path) {
+        List<String> prefixes = Utils.getPathPrefixes(path);
+        for (String prefix : prefixes) {
+            this.registerPathPrefix(prefix);
+        }
+    }
 
-	/**
-	 * Registers the current prefix of the path.
-	 * 
-	 * @param path
-	 */
-	private void registerPathPrefix(String path) {
-		// do not register any top level or root path
-		if ("/".equals(path) || new File(path).getParent().equals("/")
-				|| "".equals(path)) {
-			return;
-		}
+    /**
+     * Registers the current prefix of the path.
+     * 
+     * @param path
+     */
+    private void registerPathPrefix(String path) {
+        // do not register any top level or root path
+        if ("/".equals(path) || new File(path).getParent().equals("/")
+                || "".equals(path)) {
+            return;
+        }
 
-		if (registeredPrefixed.contains(path)) {
-			return;
-		}
+        if (registeredPrefixed.contains(path)) {
+            return;
+        }
 
-		LOGGER.info("Registering path prefix: " + path);
+        LOGGER.info("Registering path prefix: " + path);
 
-		registeredPrefixed.add(path);
+        registeredPrefixed.add(path);
 
-		String categoryName = Utils.getPathSuffix(path);
-		String categoryPath = Utils.getPathPrefix(path);
+        String categoryName = Utils.getPathSuffix(path);
+        String categoryPath = Utils.getPathPrefix(path);
 
-		Node node = doc
-				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.categories']");
 
-		Element elem = (Element) node;
-		LOGGER.info("name=" + categoryName);
+        Element elem = (Element) node;
+        LOGGER.info("name=" + categoryName);
 
-		elem.addElement("category").addAttribute("description", path)
-				.addAttribute("icon", "icons/category.png")
-				.addAttribute("path", categoryPath)
-				.addAttribute("name", categoryName)
-				.addAttribute("level-id", categoryName);
-	}
+        elem.addElement("category").addAttribute("description", path)
+                .addAttribute("icon", "icons/category.png")
+                .addAttribute("path", categoryPath)
+                .addAttribute("name", categoryName)
+                .addAttribute("level-id", categoryName);
+    }
 
-	/**
-	 * Registers the given node (clazz, path) in the plugin.xml file.
-	 * 
-	 * @param clazz
-	 * @param path
-	 */
-	public void registerNode(String clazz, String path) {
-		LOGGER.info("registering Node " + clazz);
-		this.registerPath(path);
+    /**
+     * Registers the given node (clazz, path) in the plugin.xml file.
+     * 
+     * @param clazz
+     * @param path
+     */
+    public void registerNode(String clazz, String path) {
+        LOGGER.info("registering Node " + clazz);
+        this.registerPath(path);
 
-		Node node = doc
-				.selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
-		Element elem = (Element) node;
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
+        Element elem = (Element) node;
 
-		elem.addElement("node").addAttribute("factory-class", clazz)
-				.addAttribute("id", clazz).addAttribute("category-path", path);
-	}
+        elem.addElement("node").addAttribute("factory-class", clazz)
+                .addAttribute("id", clazz).addAttribute("category-path", path);
+    }
 
-	/**
-	 * Adds the preference page to the plugin.xml file.
-	 * 
-	 * @param meta
-	 */
-	public void registerPreferencePage(GeneratedPluginMeta meta) {
-		Node node = doc
-				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
+    /**
+     * Adds the preference page to the plugin.xml file.
+     * 
+     * @param meta
+     */
+    public void registerPreferencePage(GeneratedPluginMeta meta) {
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
 
-		String category = "com.genericworkflownodes.knime.preferences.PreferencePage";
-		String clazz = meta.getPackageRoot()
-				+ ".knime.preferences.PluginPreferencePage";
-		String id = clazz;
-		String name = meta.getName();
+        String category = "com.genericworkflownodes.knime.preferences.PreferencePage";
+        String clazz = meta.getPackageRoot()
+                + ".knime.preferences.PluginPreferencePage";
+        String id = clazz;
+        String name = meta.getName();
 
-		Element preferencePageExtensionPoint = (Element) node;
-		preferencePageExtensionPoint.addElement("page")
-				.addAttribute("category", category)
-				.addAttribute("class", clazz).addAttribute("id", id)
-				.addAttribute("name", name);
+        Element preferencePageExtensionPoint = (Element) node;
+        preferencePageExtensionPoint.addElement("page")
+                .addAttribute("category", category)
+                .addAttribute("class", clazz).addAttribute("id", id)
+                .addAttribute("name", name);
 
-	}
+    }
 
-	/**
-	 * Adds the startup class to the plugin.xml file.
-	 * 
-	 * @param meta
-	 */
-	public void registerStartupClass(GeneratedPluginMeta meta) {
-		Node node = doc
-				.selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
+    /**
+     * Adds the startup class to the plugin.xml file.
+     * 
+     * @param meta
+     */
+    public void registerStartupClass(GeneratedPluginMeta meta) {
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
 
-		String clazzName = meta.getPackageRoot() + ".knime.Startup";
+        String clazzName = meta.getPackageRoot() + ".knime.Startup";
 
-		// <startup class="de.openms.knime.Startup" />
-		Element startupExtensionPoint = (Element) node;
-		startupExtensionPoint.addElement("startup").addAttribute("class",
-				clazzName);
+        // <startup class="de.openms.knime.Startup" />
+        Element startupExtensionPoint = (Element) node;
+        startupExtensionPoint.addElement("startup").addAttribute("class",
+                clazzName);
 
-	}
+    }
 
-	public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {
-		// <mimetype name="mzML">
-		// <fileextension name="mzML"></fileextension>
-		// </mimetype>
-		// <mimetype name="mzXML">
-		// <fileextension name="mzXML"></fileextension>
-		// </mimetype>
+    public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {
+        // <mimetype name="mzML">
+        // <fileextension name="mzML"></fileextension>
+        // </mimetype>
+        // <mimetype name="mzXML">
+        // <fileextension name="mzXML"></fileextension>
+        // </mimetype>
 
-		Node node = doc
-				.selectSingleNode("/plugin/extension[@point='org.knime.base.filehandling.mimetypes']");
-		Element mimeTypesExtensionPoint = (Element) node;
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='org.knime.base.filehandling.mimetypes']");
+        Element mimeTypesExtensionPoint = (Element) node;
 
-		for (MIMETypeEntry mimeTypeEntry : mimeTypes) {
-			Element mimeTypeElement = mimeTypesExtensionPoint.addElement(
-					"mimetype").addAttribute("name", mimeTypeEntry.getType());
+        for (MIMETypeEntry mimeTypeEntry : mimeTypes) {
+            Element mimeTypeElement = mimeTypesExtensionPoint.addElement(
+                    "mimetype").addAttribute("name", mimeTypeEntry.getType());
 
-			// register fileExtensions
-			for (String fileExtension : mimeTypeEntry.getExtensions()) {
-				mimeTypeElement.addElement("fileextension").addAttribute(
-						"name", fileExtension);
-			}
-		}
+            // register fileExtensions
+            for (String fileExtension : mimeTypeEntry.getExtensions()) {
+                mimeTypeElement.addElement("fileextension").addAttribute(
+                        "name", fileExtension);
+            }
+        }
 
-	}
+    }
 }

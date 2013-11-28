@@ -37,86 +37,86 @@ import com.genericworkflownodes.util.ui.ChoiceDialogListener;
  * @author aiche, roettig
  */
 public class ManglerNodeDialog extends NodeDialogPane implements
-		ChoiceDialogListener {
+        ChoiceDialogListener {
 
-	/**
-	 * The ChoiceElement to select the correct {@link IDemangler}.
-	 */
-	private ChoiceDialog choice;
+    /**
+     * The ChoiceElement to select the correct {@link IDemangler}.
+     */
+    private ChoiceDialog choice;
 
-	/**
-	 * The DataModel for the ChoiceDialog.
-	 */
-	private DefaultComboBoxModel model;
+    /**
+     * The DataModel for the ChoiceDialog.
+     */
+    private DefaultComboBoxModel model;
 
-	/**
-	 * The actual selected demangler.
-	 */
-	private String demanglerClassName;
+    /**
+     * The actual selected demangler.
+     */
+    private String demanglerClassName;
 
-	/**
-	 * Available manglers.
-	 */
-	private String[] availableManglers;
+    /**
+     * Available manglers.
+     */
+    private String[] availableManglers;
 
-	/**
-	 * New pane for configuring Mangler node dialog. This is just a suggestion
-	 * to demonstrate possible default dialog components.
-	 */
-	protected ManglerNodeDialog(Object obj) {
-		super();
+    /**
+     * New pane for configuring Mangler node dialog. This is just a suggestion
+     * to demonstrate possible default dialog components.
+     */
+    protected ManglerNodeDialog(Object obj) {
+        super();
 
-		model = new DefaultComboBoxModel();
+        model = new DefaultComboBoxModel();
 
-		choice = new ChoiceDialog(model);
-		choice.registerChoiceListener(this);
+        choice = new ChoiceDialog(model);
+        choice.registerChoiceListener(this);
 
-		addTab("Demanglers", choice);
+        addTab("Demanglers", choice);
 
-		// we assume there is no demangler selected
-		demanglerClassName = "";
-		availableManglers = null;
-	}
+        // we assume there is no demangler selected
+        demanglerClassName = "";
+        availableManglers = null;
+    }
 
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings)
-			throws InvalidSettingsException {
-		settings.addString(ManglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
-				demanglerClassName);
-		settings.addStringArray(
-				ManglerNodeModel.AVAILABLE_MIMETYPE_SETTINGNAME,
-				availableManglers);
-	}
+    @Override
+    protected void saveSettingsTo(NodeSettingsWO settings)
+            throws InvalidSettingsException {
+        settings.addString(ManglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME,
+                demanglerClassName);
+        settings.addStringArray(
+                ManglerNodeModel.AVAILABLE_MIMETYPE_SETTINGNAME,
+                availableManglers);
+    }
 
-	@Override
-	protected void loadSettingsFrom(NodeSettingsRO settings,
-			DataTableSpec[] specs) throws NotConfigurableException {
-		String demanglerClassName = settings.getString(
-				ManglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
+    @Override
+    protected void loadSettingsFrom(NodeSettingsRO settings,
+            DataTableSpec[] specs) throws NotConfigurableException {
+        String demanglerClassName = settings.getString(
+                ManglerNodeModel.SELECTED_DEMANGLER_SETTINGNAME, "");
 
-		availableManglers = settings.getStringArray(
-				ManglerNodeModel.AVAILABLE_MIMETYPE_SETTINGNAME,
-				new String[] {});
+        availableManglers = settings.getStringArray(
+                ManglerNodeModel.AVAILABLE_MIMETYPE_SETTINGNAME,
+                new String[] {});
 
-		model.removeAllElements();
-		for (String d : availableManglers) {
-			model.addElement(d);
-		}
+        model.removeAllElements();
+        for (String d : availableManglers) {
+            model.addElement(d);
+        }
 
-		// select already configured demangler -> find by class name
-		if (!"".equals(demanglerClassName)) {
-			int indexToSelect = model.getIndexOf(demanglerClassName);
-			if (indexToSelect != -1) {
-				model.setSelectedItem(demanglerClassName);
-			}
-		} else {
-			// there is no pre-selected demangler
-			model.setSelectedItem(model.getElementAt(0));
-		}
-	}
+        // select already configured demangler -> find by class name
+        if (!"".equals(demanglerClassName)) {
+            int indexToSelect = model.getIndexOf(demanglerClassName);
+            if (indexToSelect != -1) {
+                model.setSelectedItem(demanglerClassName);
+            }
+        } else {
+            // there is no pre-selected demangler
+            model.setSelectedItem(model.getElementAt(0));
+        }
+    }
 
-	@Override
-	public void onChoice(final int selectedIdx) {
-		demanglerClassName = (String) model.getElementAt(selectedIdx);
-	}
+    @Override
+    public void onChoice(final int selectedIdx) {
+        demanglerClassName = (String) model.getElementAt(selectedIdx);
+    }
 }

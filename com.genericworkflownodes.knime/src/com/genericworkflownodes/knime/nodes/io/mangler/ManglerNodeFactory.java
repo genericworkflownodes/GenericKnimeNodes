@@ -30,45 +30,45 @@ import org.knime.core.node.NodeView;
  */
 public class ManglerNodeFactory extends NodeFactory<ManglerNodeModel> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ManglerNodeModel createNodeModel() {
-		return new ManglerNodeModel();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ManglerNodeModel createNodeModel() {
+        return new ManglerNodeModel();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 0;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 0;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<ManglerNodeModel> createNodeView(final int viewIndex,
-			final ManglerNodeModel nodeModel) {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<ManglerNodeModel> createNodeView(final int viewIndex,
+            final ManglerNodeModel nodeModel) {
+        return null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeDialogPane createNodeDialogPane() {
-		return new ManglerNodeDialog(new Object());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeDialogPane createNodeDialogPane() {
+        return new ManglerNodeDialog(new Object());
+    }
 
 }

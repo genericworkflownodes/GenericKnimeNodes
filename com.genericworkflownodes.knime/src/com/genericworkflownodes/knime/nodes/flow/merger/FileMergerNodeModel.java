@@ -45,165 +45,165 @@ import org.knime.core.node.port.PortType;
  */
 public class FileMergerNodeModel extends NodeModel {
 
-	/*
-	 * The logger instance. (currently unused)
-	 */
-	// private static final NodeLogger logger = NodeLogger
-	// .getLogger(FileMergerNodeModel.class);
+    /*
+     * The logger instance. (currently unused)
+     */
+    // private static final NodeLogger logger = NodeLogger
+    // .getLogger(FileMergerNodeModel.class);
 
-	/**
-	 * Static method that provides the incoming {@link PortType}s.
-	 * 
-	 * @return The incoming {@link PortType}s of this node.
-	 */
-	private static PortType[] getIncomingPorts() {
-		return new PortType[] { URIPortObject.TYPE, URIPortObject.TYPE };
-	}
+    /**
+     * Static method that provides the incoming {@link PortType}s.
+     * 
+     * @return The incoming {@link PortType}s of this node.
+     */
+    private static PortType[] getIncomingPorts() {
+        return new PortType[] { URIPortObject.TYPE, URIPortObject.TYPE };
+    }
 
-	/**
-	 * Static method that provides the outgoing {@link PortType}s.
-	 * 
-	 * @return The outgoing {@link PortType}s of this node.
-	 */
-	private static PortType[] getOutgoing() {
-		return new PortType[] { URIPortObject.TYPE };
-	}
+    /**
+     * Static method that provides the outgoing {@link PortType}s.
+     * 
+     * @return The outgoing {@link PortType}s of this node.
+     */
+    private static PortType[] getOutgoing() {
+        return new PortType[] { URIPortObject.TYPE };
+    }
 
-	/**
-	 * Constructor for the node model.
-	 */
-	protected FileMergerNodeModel() {
-		super(getIncomingPorts(), getOutgoing());
-	}
+    /**
+     * Constructor for the node model.
+     */
+    protected FileMergerNodeModel() {
+        super(getIncomingPorts(), getOutgoing());
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObject[] execute(final PortObject[] inData,
+            final ExecutionContext exec) throws Exception {
 
-		List<URIContent> outPutURIs = new ArrayList<URIContent>();
+        List<URIContent> outPutURIs = new ArrayList<URIContent>();
 
-		// collect all files from the input ports
-		for (PortObject inPort : inData) {
-			outPutURIs.addAll(((URIPortObject) inPort).getURIContents());
-		}
+        // collect all files from the input ports
+        for (PortObject inPort : inData) {
+            outPutURIs.addAll(((URIPortObject) inPort).getURIContents());
+        }
 
-		URIPortObject outPort = new URIPortObject(outPutURIs);
-		return new PortObject[] { outPort };
-	}
+        URIPortObject outPort = new URIPortObject(outPutURIs);
+        return new PortObject[] { outPort };
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void reset() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
 
-		// check not null
-		checkNotNullSpecs(inSpecs);
+        // check not null
+        checkNotNullSpecs(inSpecs);
 
-		// check equal MIMEType
-		checkEqualMIMETypes(inSpecs);
+        // check equal MIMEType
+        checkEqualMIMETypes(inSpecs);
 
-		// create output spec
-		URIPortObjectSpec outSpec = new URIPortObjectSpec(
-				((URIPortObjectSpec) inSpecs[0]).getFileExtensions());
+        // create output spec
+        URIPortObjectSpec outSpec = new URIPortObjectSpec(
+                ((URIPortObjectSpec) inSpecs[0]).getFileExtensions());
 
-		return new PortObjectSpec[] { outSpec };
-	}
+        return new PortObjectSpec[] { outSpec };
+    }
 
-	/**
-	 * Checks if all input {@link PortObjectSpec}s are not null.
-	 * 
-	 * @param inSpecs
-	 *            The {@link PortObjectSpec}s to check.
-	 * @throws InvalidSettingsException
-	 *             Is thrown if one of the {@link PortObjectSpec}s is null.
-	 */
-	private void checkNotNullSpecs(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		for (PortObjectSpec inSpec : inSpecs) {
-			if (inSpec == null) {
-				throw new InvalidSettingsException(
-						"All ports need to be connected.");
-			}
-		}
-	}
+    /**
+     * Checks if all input {@link PortObjectSpec}s are not null.
+     * 
+     * @param inSpecs
+     *            The {@link PortObjectSpec}s to check.
+     * @throws InvalidSettingsException
+     *             Is thrown if one of the {@link PortObjectSpec}s is null.
+     */
+    private void checkNotNullSpecs(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
+        for (PortObjectSpec inSpec : inSpecs) {
+            if (inSpec == null) {
+                throw new InvalidSettingsException(
+                        "All ports need to be connected.");
+            }
+        }
+    }
 
-	/**
-	 * Checks if all input specs have the same {@link MIMEType}.
-	 * 
-	 * @param inSpecs
-	 *            The {@link PortObjectSpec}s to check.
-	 * @throws InvalidSettingsException
-	 *             Is thrown if the {@link PortObjectSpec}s have different
-	 *             {@link MIMEType}s.
-	 */
-	private void checkEqualMIMETypes(final PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
+    /**
+     * Checks if all input specs have the same {@link MIMEType}.
+     * 
+     * @param inSpecs
+     *            The {@link PortObjectSpec}s to check.
+     * @throws InvalidSettingsException
+     *             Is thrown if the {@link PortObjectSpec}s have different
+     *             {@link MIMEType}s.
+     */
+    private void checkEqualMIMETypes(final PortObjectSpec[] inSpecs)
+            throws InvalidSettingsException {
 
-		if (inSpecs.length != 0) {
+        if (inSpecs.length != 0) {
 
-			String targetExtensions = ((URIPortObjectSpec) inSpecs[0])
-					.getFileExtensions().get(0);
-			for (int i = 0; i < inSpecs.length; ++i) {
-				if (!targetExtensions.equals(((URIPortObjectSpec) inSpecs[0])
-						.getFileExtensions().get(0))) {
-					throw new InvalidSettingsException(
-							"All incoming ports need to have the same MIMEType");
-				}
-			}
-		}
-	}
+            String targetExtensions = ((URIPortObjectSpec) inSpecs[0])
+                    .getFileExtensions().get(0);
+            for (int i = 0; i < inSpecs.length; ++i) {
+                if (!targetExtensions.equals(((URIPortObjectSpec) inSpecs[0])
+                        .getFileExtensions().get(0))) {
+                    throw new InvalidSettingsException(
+                            "All incoming ports need to have the same MIMEType");
+                }
+            }
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveSettingsTo(final NodeSettingsWO settings) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void validateSettings(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void saveInternals(final File internDir,
+            final ExecutionMonitor exec) throws IOException,
+            CanceledExecutionException {
+    }
 
 }

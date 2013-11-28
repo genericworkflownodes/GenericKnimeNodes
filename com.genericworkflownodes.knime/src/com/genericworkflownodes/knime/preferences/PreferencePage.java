@@ -38,64 +38,64 @@ import com.genericworkflownodes.util.FileStashFactory;
  * @author aiche
  */
 public class PreferencePage extends FieldEditorPreferencePage implements
-		IWorkbenchPreferencePage {
+        IWorkbenchPreferencePage {
 
-	/**
-	 * Debug mode UI element.
-	 */
-	private BooleanFieldEditor debugModeFieldEditor;
+    /**
+     * Debug mode UI element.
+     */
+    private BooleanFieldEditor debugModeFieldEditor;
 
-	/**
-	 * File stash location UI element.
-	 */
-	private DirectoryFieldEditor fileStashLocationFieldEditor;
+    /**
+     * File stash location UI element.
+     */
+    private DirectoryFieldEditor fileStashLocationFieldEditor;
 
-	/**
-	 * Default c'tor.
-	 */
-	public PreferencePage() {
-		super(GRID);
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		setPreferenceStore(store);
-	}
+    /**
+     * Default c'tor.
+     */
+    public PreferencePage() {
+        super(GRID);
+        IPreferenceStore store = GenericNodesPlugin.getDefault()
+                .getPreferenceStore();
+        setPreferenceStore(store);
+    }
 
-	@Override
-	public void init(IWorkbench wb) {
-	}
+    @Override
+    public void init(IWorkbench wb) {
+    }
 
-	@Override
-	protected void createFieldEditors() {
-		Composite parent = getFieldEditorParent();
+    @Override
+    protected void createFieldEditors() {
+        Composite parent = getFieldEditorParent();
 
-		fileStashLocationFieldEditor = new DirectoryFieldEditor(
-				PreferenceInitializer.PREF_FILE_STASH_LOCATION,
-				"File stash directory:", parent);
-		debugModeFieldEditor = new BooleanFieldEditor(
-				PreferenceInitializer.PREF_DEBUG_MODE, "Debug mode", parent);
+        fileStashLocationFieldEditor = new DirectoryFieldEditor(
+                PreferenceInitializer.PREF_FILE_STASH_LOCATION,
+                "File stash directory:", parent);
+        debugModeFieldEditor = new BooleanFieldEditor(
+                PreferenceInitializer.PREF_DEBUG_MODE, "Debug mode", parent);
 
-		addField(fileStashLocationFieldEditor);
-		addField(debugModeFieldEditor);
-	}
+        addField(fileStashLocationFieldEditor);
+        addField(debugModeFieldEditor);
+    }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-	}
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+    }
 
-	@Override
-	public boolean performOk() {
-		IPreferenceStore store = GenericNodesPlugin.getDefault()
-				.getPreferenceStore();
-		//
-		String dir = fileStashLocationFieldEditor.getStringValue();
-		FileStashFactory.setTempParentDirectory(new File(dir));
-		store.setValue(PreferenceInitializer.PREF_FILE_STASH_LOCATION, dir);
+    @Override
+    public boolean performOk() {
+        IPreferenceStore store = GenericNodesPlugin.getDefault()
+                .getPreferenceStore();
+        //
+        String dir = fileStashLocationFieldEditor.getStringValue();
+        FileStashFactory.setTempParentDirectory(new File(dir));
+        store.setValue(PreferenceInitializer.PREF_FILE_STASH_LOCATION, dir);
 
-		//
-		boolean flag = debugModeFieldEditor.getBooleanValue();
-		GenericNodesPlugin.setDebug(flag);
+        //
+        boolean flag = debugModeFieldEditor.getBooleanValue();
+        GenericNodesPlugin.setDebug(flag);
 
-		return true;
-	}
+        return true;
+    }
 
 }

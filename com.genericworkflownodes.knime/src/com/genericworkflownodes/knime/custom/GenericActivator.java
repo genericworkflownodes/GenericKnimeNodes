@@ -43,144 +43,144 @@ import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLoca
  */
 public abstract class GenericActivator extends AbstractUIPlugin {
 
-	/**
-	 * The logger.
-	 */
-	private static final Logger LOGGER = Logger
-			.getLogger(GenericActivator.class.getCanonicalName());
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = Logger
+            .getLogger(GenericActivator.class.getCanonicalName());
 
-	/**
-	 * Plugin properties.
-	 */
-	private Properties props = new Properties();
+    /**
+     * Plugin properties.
+     */
+    private Properties props = new Properties();
 
-	/**
-	 * An abstraction of the payload directory.
-	 */
-	private IPayloadDirectory payloadDirectory;
+    /**
+     * An abstraction of the payload directory.
+     */
+    private IPayloadDirectory payloadDirectory;
 
-	/**
-	 * The bundle context for access inside the activator.
-	 */
-	private BundleContext bundleContext;
+    /**
+     * The bundle context for access inside the activator.
+     */
+    private BundleContext bundleContext;
 
-	/**
-	 * Handles the extraction of the payload.
-	 */
-	private BinariesManager binariesManager;
+    /**
+     * Handles the extraction of the payload.
+     */
+    private BinariesManager binariesManager;
 
-	/**
-	 * Default c'tor.
-	 */
-	public GenericActivator() {
-		super();
-	}
+    /**
+     * Default c'tor.
+     */
+    public GenericActivator() {
+        super();
+    }
 
-	@Override
-	public void start(final BundleContext context) throws Exception {
-		super.start(context);
-		bundleContext = context;
-	}
+    @Override
+    public void start(final BundleContext context) throws Exception {
+        super.start(context);
+        bundleContext = context;
+    }
 
-	@Override
-	public void stop(final BundleContext context) throws Exception {
-		super.stop(context);
-		bundleContext = null;
-	}
+    @Override
+    public void stop(final BundleContext context) throws Exception {
+        super.stop(context);
+        bundleContext = null;
+    }
 
-	/**
-	 * This method carries out all tasks needed to initialize a plugin.
-	 * 
-	 * <ul>
-	 * <li>registerNodes contained in the plugin</li>
-	 * <li>extract contained binaries</li>
-	 * <li>register extracted binaries in the run time</li>
-	 * </ul>
-	 * 
-	 * @throws IOException
-	 *             In case of io errors.
-	 */
-	public final void initializePlugin() throws IOException {
-		registerNodes();
+    /**
+     * This method carries out all tasks needed to initialize a plugin.
+     * 
+     * <ul>
+     * <li>registerNodes contained in the plugin</li>
+     * <li>extract contained binaries</li>
+     * <li>register extracted binaries in the run time</li>
+     * </ul>
+     * 
+     * @throws IOException
+     *             In case of io errors.
+     */
+    public final void initializePlugin() throws IOException {
+        registerNodes();
 
-		// initialize the payload directory
-		payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
-		binariesManager = new BinariesManager(payloadDirectory, this);
-		final IPreferenceStore pStore = getPreferenceStore();
-		pStore.setValue("binaries_path", payloadDirectory.getPath()
-				.getCanonicalPath());
+        // initialize the payload directory
+        payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
+        binariesManager = new BinariesManager(payloadDirectory, this);
+        final IPreferenceStore pStore = getPreferenceStore();
+        pStore.setValue("binaries_path", payloadDirectory.getPath()
+                .getCanonicalPath());
 
-		loadPluginProperties();
-	}
+        loadPluginProperties();
+    }
 
-	/**
-	 * Loads the plugin.properties file from the plugin.jar.
-	 * 
-	 * @throws IOException
-	 *             In case of IO errors.
-	 */
-	private void loadPluginProperties() throws IOException {
-		props.load(this.getClass().getResourceAsStream("plugin.properties"));
-		if (GenericNodesPlugin.isDebug()) {
-			GenericNodesPlugin.log(getPluginConfiguration().getPluginId()
-					+ " plugin properties are ... ");
-			for (Object key : props.keySet()) {
-				GenericNodesPlugin.log(key + " -> " + props.get(key));
-			}
-		}
-	}
+    /**
+     * Loads the plugin.properties file from the plugin.jar.
+     * 
+     * @throws IOException
+     *             In case of IO errors.
+     */
+    private void loadPluginProperties() throws IOException {
+        props.load(this.getClass().getResourceAsStream("plugin.properties"));
+        if (GenericNodesPlugin.isDebug()) {
+            GenericNodesPlugin.log(getPluginConfiguration().getPluginId()
+                    + " plugin properties are ... ");
+            for (Object key : props.keySet()) {
+                GenericNodesPlugin.log(key + " -> " + props.get(key));
+            }
+        }
+    }
 
-	/**
-	 * Registers all nodes included in the plugin as external tools in the
-	 * PluginPreferenceToolLocator.
-	 * 
-	 * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator
-	 */
-	private void registerNodes() {
-		for (ExternalTool tool : getTools()) {
-			PluginPreferenceToolLocator.getToolLocatorService().registerTool(
-					tool);
-		}
-	}
+    /**
+     * Registers all nodes included in the plugin as external tools in the
+     * PluginPreferenceToolLocator.
+     * 
+     * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator
+     */
+    private void registerNodes() {
+        for (ExternalTool tool : getTools()) {
+            PluginPreferenceToolLocator.getToolLocatorService().registerTool(
+                    tool);
+        }
+    }
 
-	/**
-	 * Get the plugin specific proberties stored in the plugin.properties file.
-	 * 
-	 * @return The properties loaded for this plugin.
-	 */
-	public final Properties getProperties() {
-		return props;
-	}
+    /**
+     * Get the plugin specific proberties stored in the plugin.properties file.
+     * 
+     * @return The properties loaded for this plugin.
+     */
+    public final Properties getProperties() {
+        return props;
+    }
 
-	/**
-	 * Gives access to the {@link BinariesManager} responsible for
-	 * extracting/registering/handling the binaries contained in the payload.
-	 * 
-	 * @return the binariesManager
-	 */
-	public final BinariesManager getBinariesManager() {
-		return binariesManager;
-	}
+    /**
+     * Gives access to the {@link BinariesManager} responsible for
+     * extracting/registering/handling the binaries contained in the payload.
+     * 
+     * @return the binariesManager
+     */
+    public final BinariesManager getBinariesManager() {
+        return binariesManager;
+    }
 
-	/**
-	 * Returns a {@link List} of {@link ExternalTool}s contained in the plugin.
-	 * 
-	 * @return
-	 */
-	public abstract List<ExternalTool> getTools();
+    /**
+     * Returns a {@link List} of {@link ExternalTool}s contained in the plugin.
+     * 
+     * @return
+     */
+    public abstract List<ExternalTool> getTools();
 
-	/**
-	 * Returns the list of {@link MIMEType}s provided by the plugin.
-	 * 
-	 * @return Returns the list of {@link MIMEType}s provided by the plugin.
-	 */
-	public abstract List<String> getMIMETypes();
+    /**
+     * Returns the list of {@link MIMEType}s provided by the plugin.
+     * 
+     * @return Returns the list of {@link MIMEType}s provided by the plugin.
+     */
+    public abstract List<String> getMIMETypes();
 
-	/**
-	 * Gives access to the plugin config of the derived plugin.
-	 * 
-	 * @return The plugin config.
-	 */
-	public abstract IPluginConfiguration getPluginConfiguration();
+    /**
+     * Gives access to the plugin config of the derived plugin.
+     * 
+     * @return The plugin config.
+     */
+    public abstract IPluginConfiguration getPluginConfiguration();
 
 }

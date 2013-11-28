@@ -31,45 +31,45 @@ import com.genericworkflownodes.knime.execution.IWaitable;
  * @author Luis de la Garza
  */
 public class CancelMonitorThread extends Thread implements IWaitable {
-	private final AsynchronousToolExecutor asyncExecutor;
-	private final ExecutionContext exec;
+    private final AsynchronousToolExecutor asyncExecutor;
+    private final ExecutionContext exec;
 
-	public CancelMonitorThread(final AsynchronousToolExecutor asyncExecutor,
-			final ExecutionContext exec) {
-		this.asyncExecutor = asyncExecutor;
-		this.exec = exec;
-	}
+    public CancelMonitorThread(final AsynchronousToolExecutor asyncExecutor,
+            final ExecutionContext exec) {
+        this.asyncExecutor = asyncExecutor;
+        this.exec = exec;
+    }
 
-	@Override
-	public void run() {
-		boolean cancelRequested = false;
-		// loop while the executor is not done and no cancel has been requested
-		while (!asyncExecutor.isDone() && !cancelRequested) {
-			try {
-				// if cancel was requested, an exception will be thrown
-				exec.checkCanceled();
-			} catch (CanceledExecutionException e) {
-				cancelRequested = true;
-				asyncExecutor.kill();
-			}
-			// wait a bit before checking one again
-			if (!cancelRequested) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// ignore
-				}
-			}
-		}
-	}
+    @Override
+    public void run() {
+        boolean cancelRequested = false;
+        // loop while the executor is not done and no cancel has been requested
+        while (!asyncExecutor.isDone() && !cancelRequested) {
+            try {
+                // if cancel was requested, an exception will be thrown
+                exec.checkCanceled();
+            } catch (CanceledExecutionException e) {
+                cancelRequested = true;
+                asyncExecutor.kill();
+            }
+            // wait a bit before checking one again
+            if (!cancelRequested) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // ignore
+                }
+            }
+        }
+    }
 
-	@Override
-	public void waitUntilFinished() {
-		try {
-			// simply invoke this thread's join method
-			join();
-		} catch (InterruptedException e) {
-			// ignore
-		}
-	}
+    @Override
+    public void waitUntilFinished() {
+        try {
+            // simply invoke this thread's join method
+            join();
+        } catch (InterruptedException e) {
+            // ignore
+        }
+    }
 }

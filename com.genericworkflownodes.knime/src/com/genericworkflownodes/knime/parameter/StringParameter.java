@@ -26,46 +26,46 @@ package com.genericworkflownodes.knime.parameter;
  */
 public class StringParameter extends Parameter<String> {
 
-	/**
-	 * The serial version UID.
-	 */
-	private static final long serialVersionUID = 2757963248340525354L;
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 2757963248340525354L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param key
-	 *            The unique key of the parameter.
-	 * @param value
-	 *            The value of the parameter.
-	 */
-	public StringParameter(final String key, final String value) {
-		// we treat empty strings as if the parameter wasn't set
-		// so we set it to null
-		super(key, ("".equals(value) ? null : value));
-	}
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter.
+     */
+    public StringParameter(final String key, final String value) {
+        // we treat empty strings as if the parameter wasn't set
+        // so we set it to null
+        super(key, ("".equals(value) ? null : value));
+    }
 
-	@Override
-	public String toString() {
-		return getValue();
-	}
+    @Override
+    public String toString() {
+        return getValue();
+    }
 
-	@Override
-	public void fillFromString(final String s) {
-		if (s == null || "".equals(s)) {
-			setValue(null);
-			return;
-		}
-		setValue(s);
-	}
+    @Override
+    public void fillFromString(final String s) {
+        if (s == null || "".equals(s)) {
+            setValue(null);
+            return;
+        }
+        setValue(s);
+    }
 
-	@Override
-	public boolean validate(final String val) {
-		return true;
-	}
+    @Override
+    public boolean validate(final String val) {
+        return true;
+    }
 
-	@Override
-	public String getMnemonic() {
-		return "string";
-	}
+    @Override
+    public String getMnemonic() {
+        return "string";
+    }
 }

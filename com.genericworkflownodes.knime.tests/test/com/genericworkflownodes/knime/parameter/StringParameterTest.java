@@ -31,42 +31,42 @@ import org.junit.Test;
  */
 public class StringParameterTest {
 
-	String key = "sp-key";
-	String value = "sp-value";
+    String key = "sp-key";
+    String value = "sp-value";
 
-	@Test
-	public void testGetMnemonic() {
-		StringParameter sp = new StringParameter(key, value);
-		assertEquals("string", sp.getMnemonic());
-	}
+    @Test
+    public void testGetMnemonic() {
+        StringParameter sp = new StringParameter(key, value);
+        assertEquals("string", sp.getMnemonic());
+    }
 
-	@Test
-	public void testFillFromString() {
-		StringParameter sp = new StringParameter(key, null);
-		assertNull(sp.getValue());
-		sp.fillFromString(value);
-		assertEquals(value, sp.getValue());
-	}
+    @Test
+    public void testFillFromString() {
+        StringParameter sp = new StringParameter(key, null);
+        assertNull(sp.getValue());
+        sp.fillFromString(value);
+        assertEquals(value, sp.getValue());
+    }
 
-	@Test
-	public void testStringParameter() {
-		StringParameter sp = new StringParameter(key, value);
-		assertEquals(key, sp.getKey());
-		assertEquals(value, sp.getValue());
-	}
+    @Test
+    public void testStringParameter() {
+        StringParameter sp = new StringParameter(key, value);
+        assertEquals(key, sp.getKey());
+        assertEquals(value, sp.getValue());
+    }
 
-	@Test
-	public void testToString() {
-		StringParameter sp = new StringParameter(key, value);
-		assertEquals(value, sp.getValue());
-	}
+    @Test
+    public void testToString() {
+        StringParameter sp = new StringParameter(key, value);
+        assertEquals(value, sp.getValue());
+    }
 
-	@Test
-	public void testValidateString() {
-		StringParameter sp = new StringParameter(key, value);
-		assertTrue(sp.validate(value));
-		assertTrue(sp.validate(null));
-		assertTrue(sp.validate(""));
-	}
+    @Test
+    public void testValidateString() {
+        StringParameter sp = new StringParameter(key, value);
+        assertTrue(sp.validate(value));
+        assertTrue(sp.validate(null));
+        assertTrue(sp.validate(""));
+    }
 
 }

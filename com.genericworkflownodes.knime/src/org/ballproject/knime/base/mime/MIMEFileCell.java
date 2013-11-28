@@ -35,73 +35,73 @@ import com.genericworkflownodes.util.Helper;
  * 
  */
 public abstract class MIMEFileCell extends BlobDataCell implements
-		MIMEFileValue, MimeMarker {
-	private static final long serialVersionUID = 1533146970730706846L;
-	public transient DataType TYPE;
-	protected MIMEFileDelegate data_delegate;
+        MIMEFileValue, MimeMarker {
+    private static final long serialVersionUID = 1533146970730706846L;
+    public transient DataType TYPE;
+    protected MIMEFileDelegate data_delegate;
 
-	/**
-	 * Size limit for read operation.
-	 */
-	private static final long SIZELIMIT = 20000000;
+    /**
+     * Size limit for read operation.
+     */
+    private static final long SIZELIMIT = 20000000;
 
-	public DataType getDataType() {
-		return TYPE;
-	}
+    public DataType getDataType() {
+        return TYPE;
+    }
 
-	public MIMEFileCell() {
-		data_delegate = new DefaultMIMEFileDelegate();
-	}
+    public MIMEFileCell() {
+        data_delegate = new DefaultMIMEFileDelegate();
+    }
 
-	/**
-	 * read in the byte data contained in the supplied file.
-	 * 
-	 * @param file
-	 *            filename to read
-	 * 
-	 * @throws IOException
-	 */
-	public void read(File file) throws IOException {
-		if (file.length() > SIZELIMIT) {
-			data_delegate = new ReferenceMIMEFileDelegate();
-		} else {
-			data_delegate = new DefaultMIMEFileDelegate();
-		}
+    /**
+     * read in the byte data contained in the supplied file.
+     * 
+     * @param file
+     *            filename to read
+     * 
+     * @throws IOException
+     */
+    public void read(File file) throws IOException {
+        if (file.length() > SIZELIMIT) {
+            data_delegate = new ReferenceMIMEFileDelegate();
+        } else {
+            data_delegate = new DefaultMIMEFileDelegate();
+        }
 
-		data_delegate.read(file);
-	}
+        data_delegate.read(file);
+    }
 
-	/**
-	 * write the byte data stored out into the supplied file.
-	 * 
-	 * @param file
-	 *            filename to write
-	 * 
-	 * @throws IOException
-	 */
-	public void write(String filename) throws IOException {
-		data_delegate.write(filename);
-	}
+    /**
+     * write the byte data stored out into the supplied file.
+     * 
+     * @param file
+     *            filename to write
+     * 
+     * @throws IOException
+     */
+    public void write(String filename) throws IOException {
+        data_delegate.write(filename);
+    }
 
-	public File writeTemp(String directory) throws IOException {
-		File file = Helper.getTempFile(directory, getExtension(), false);
-		return data_delegate.writeTemp(file.getAbsolutePath());
-	}
+    public File writeTemp(String directory) throws IOException {
+        File file = Helper.getTempFile(directory, getExtension(), false);
+        return data_delegate.writeTemp(file.getAbsolutePath());
+    }
 
-	@Override
-	public int hashCode() {
-		// hashCode is considered to give hash code of
-		// wrapped content
-		return data_delegate.getHash();
-	}
+    @Override
+    public int hashCode() {
+        // hashCode is considered to give hash code of
+        // wrapped content
+        return data_delegate.getHash();
+    }
 
-	@Override
-	public byte[] getData() {
-		return data_delegate.getByteArrayReference();
-	}
+    @Override
+    public byte[] getData() {
+        return data_delegate.getByteArrayReference();
+    }
 
-	@Override
-	public MIMEFileDelegate getDelegate() {
-		return data_delegate;
-	}
+    @Override
+    public MIMEFileDelegate getDelegate() {
+        return data_delegate;
+    }
 }

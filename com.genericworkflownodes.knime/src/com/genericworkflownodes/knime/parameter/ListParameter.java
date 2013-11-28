@@ -28,21 +28,21 @@ import java.util.List;
  * 
  */
 public interface ListParameter {
-	/**
-	 * returns a list of string representations of the stored values.
-	 * 
-	 * This is mainly for display purposes within GUIs and console.
-	 * 
-	 * @return list of strings
-	 */
-	List<String> getStrings();
+    /**
+     * returns a list of string representations of the stored values.
+     * 
+     * This is mainly for display purposes within GUIs and console.
+     * 
+     * @return list of strings
+     */
+    List<String> getStrings();
 
-	/**
-	 * fill the {@link Parameter} object from a list of strings.
-	 * 
-	 * @param values
-	 *            list of strings
-	 * @throws InvalidParameterValueException
-	 */
-	void fillFromStrings(String[] values) throws InvalidParameterValueException;
+    /**
+     * fill the {@link Parameter} object from a list of strings.
+     * 
+     * @param values
+     *            list of strings
+     * @throws InvalidParameterValueException
+     */
+    void fillFromStrings(String[] values) throws InvalidParameterValueException;
 }

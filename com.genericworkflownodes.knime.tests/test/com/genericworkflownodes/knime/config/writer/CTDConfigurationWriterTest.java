@@ -44,60 +44,60 @@ import com.genericworkflownodes.knime.test.data.TestDataSource;
  */
 public class CTDConfigurationWriterTest {
 
-	@Test
-	public void testCTDConfigurationWriter() throws IOException {
-		File tmp = File.createTempFile("testing_", ".ini");
-		tmp.deleteOnExit();
-		CTDConfigurationWriter writer = new CTDConfigurationWriter(tmp);
-		assertNotNull(writer);
-	}
+    @Test
+    public void testCTDConfigurationWriter() throws IOException {
+        File tmp = File.createTempFile("testing_", ".ini");
+        tmp.deleteOnExit();
+        CTDConfigurationWriter writer = new CTDConfigurationWriter(tmp);
+        assertNotNull(writer);
+    }
 
-	@Test
-	public void testWrite() throws Exception {
-		CTDConfigurationReader reader = new CTDConfigurationReader();
-		INodeConfiguration config = reader.read(TestDataSource.class
-				.getResourceAsStream("FileFilter.ctd"));
+    @Test
+    public void testWrite() throws Exception {
+        CTDConfigurationReader reader = new CTDConfigurationReader();
+        INodeConfiguration config = reader.read(TestDataSource.class
+                .getResourceAsStream("FileFilter.ctd"));
 
-		// write to test file
-		File tmp = File.createTempFile("testing_", ".ini");
-		tmp.deleteOnExit();
+        // write to test file
+        File tmp = File.createTempFile("testing_", ".ini");
+        tmp.deleteOnExit();
 
-		BufferedWriter buffered_file_writer = new BufferedWriter(
-				new FileWriter(tmp));
-		CTDConfigurationWriter file_writer = new CTDConfigurationWriter(
-				buffered_file_writer);
-		file_writer.write(config);
+        BufferedWriter buffered_file_writer = new BufferedWriter(
+                new FileWriter(tmp));
+        CTDConfigurationWriter file_writer = new CTDConfigurationWriter(
+                buffered_file_writer);
+        file_writer.write(config);
 
-		config = reader.read(new FileInputStream(tmp));
+        config = reader.read(new FileInputStream(tmp));
 
-		StringParameter mz = (StringParameter) config
-				.getParameter("FileFilter.1.mz");
-		assertEquals("m/z range to extract (applies to ALL ms levels!)",
-				mz.getDescription());
-		assertEquals(":", mz.getValue());
-		assertEquals("mz", mz.getKey());
+        StringParameter mz = (StringParameter) config
+                .getParameter("FileFilter.1.mz");
+        assertEquals("m/z range to extract (applies to ALL ms levels!)",
+                mz.getDescription());
+        assertEquals(":", mz.getValue());
+        assertEquals("mz", mz.getKey());
 
-		IntegerListParameter levels = (IntegerListParameter) config
-				.getParameter("FileFilter.1.peak_options.level");
-		assertNotNull(levels);
-		assertEquals("MS levels to extract", levels.getDescription());
-		assertEquals(3, levels.getValue().size());
-		assertEquals(1, levels.getValue().get(0).intValue());
-		assertEquals(2, levels.getValue().get(1).intValue());
-		assertEquals(3, levels.getValue().get(2).intValue());
-		assertEquals(false, levels.isAdvanced());
+        IntegerListParameter levels = (IntegerListParameter) config
+                .getParameter("FileFilter.1.peak_options.level");
+        assertNotNull(levels);
+        assertEquals("MS levels to extract", levels.getDescription());
+        assertEquals(3, levels.getValue().size());
+        assertEquals(1, levels.getValue().get(0).intValue());
+        assertEquals(2, levels.getValue().get(1).intValue());
+        assertEquals(3, levels.getValue().get(2).intValue());
+        assertEquals(false, levels.isAdvanced());
 
-		StringChoiceParameter int_precision = (StringChoiceParameter) config
-				.getParameter("FileFilter.1.peak_options.int_precision");
-		assertEquals("32", int_precision.getValue());
-		assertEquals(3, int_precision.getAllowedValues().size());
+        StringChoiceParameter int_precision = (StringChoiceParameter) config
+                .getParameter("FileFilter.1.peak_options.int_precision");
+        assertEquals("32", int_precision.getValue());
+        assertEquals(3, int_precision.getAllowedValues().size());
 
-		BoolParameter no_progress = (BoolParameter) config
-				.getParameter("FileFilter.1.no_progress");
-		assertEquals(false, no_progress.getValue());
-		assertEquals(true, no_progress.isAdvanced());
+        BoolParameter no_progress = (BoolParameter) config
+                .getParameter("FileFilter.1.no_progress");
+        assertEquals(false, no_progress.getValue());
+        assertEquals(true, no_progress.isAdvanced());
 
-		assertEquals(3, config.getInputPorts().size());
-		assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
-	}
+        assertEquals(3, config.getInputPorts().size());
+        assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
+    }
 }

@@ -30,32 +30,32 @@ import org.knime.core.data.DataTableSpec;
  */
 public interface IDemanglerRegistry {
 
-	/**
-	 * Returns a {@link List} of {@link IDemangler} for the selected
-	 * {@link MIMEType}.
-	 * 
-	 * @param mType
-	 *            The requested {@link MIMEType}.
-	 * @return A {@link List} of available {@link IDemangler}.
-	 */
-	List<IDemangler> getDemangler(String mType);
+    /**
+     * Returns a {@link List} of {@link IDemangler} for the selected
+     * {@link MIMEType}.
+     * 
+     * @param mType
+     *            The requested {@link MIMEType}.
+     * @return A {@link List} of available {@link IDemangler}.
+     */
+    List<IDemangler> getDemangler(String mType);
 
-	/**
-	 * Given a {@link DataTableSpec} returns a {@link List} of
-	 * {@link IDemangler} that can translate this {@link DataTableSpec} into a
-	 * file.
-	 * 
-	 * @param spec
-	 *            The {@link DataTableSpec} to translate.
-	 * @return The {@link IDemangler} that can transform this
-	 *         {@link DataTableSpec}.
-	 */
-	List<IDemangler> getMangler(DataTableSpec spec);
+    /**
+     * Given a {@link DataTableSpec} returns a {@link List} of
+     * {@link IDemangler} that can translate this {@link DataTableSpec} into a
+     * file.
+     * 
+     * @param spec
+     *            The {@link DataTableSpec} to translate.
+     * @return The {@link IDemangler} that can transform this
+     *         {@link DataTableSpec}.
+     */
+    List<IDemangler> getMangler(DataTableSpec spec);
 
-	/**
-	 * Returns a list of a registered {@link IDemangler}s.
-	 * 
-	 * @return A list of available {@link IDemangler}s.
-	 */
-	List<IDemangler> getAvailableDemangler();
+    /**
+     * Returns a list of a registered {@link IDemangler}s.
+     * 
+     * @return A list of available {@link IDemangler}s.
+     */
+    List<IDemangler> getAvailableDemangler();
 }

@@ -33,66 +33,66 @@ import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
  * @author roettig, aiche
  */
 public abstract class GenericKnimeNodeFactory extends
-		NodeFactory<GenericKnimeNodeModel> {
+        NodeFactory<GenericKnimeNodeModel> {
 
-	/**
-	 * Reads the node configuration from configured input stream.
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	protected INodeConfiguration getNodeConfiguration() throws Exception {
-		return new CTDConfigurationReader().read(getConfigAsStream());
-	}
+    /**
+     * Reads the node configuration from configured input stream.
+     * 
+     * @return
+     * @throws Exception
+     */
+    protected INodeConfiguration getNodeConfiguration() throws Exception {
+        return new CTDConfigurationReader().read(getConfigAsStream());
+    }
 
-	/**
-	 * @param configStream
-	 */
-	public GenericKnimeNodeFactory() {
-	}
+    /**
+     * @param configStream
+     */
+    public GenericKnimeNodeFactory() {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public abstract GenericKnimeNodeModel createNodeModel();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public abstract GenericKnimeNodeModel createNodeModel();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getNrNodeViews() {
-		return 1;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNrNodeViews() {
+        return 1;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public NodeView<GenericKnimeNodeModel> createNodeView(final int viewIndex,
-			final GenericKnimeNodeModel nodeModel) {
-		return new GenericKnimeNodeView(nodeModel);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeView<GenericKnimeNodeModel> createNodeView(final int viewIndex,
+            final GenericKnimeNodeModel nodeModel) {
+        return new GenericKnimeNodeView(nodeModel);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean hasDialog() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasDialog() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public abstract NodeDialogPane createNodeDialogPane();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public abstract NodeDialogPane createNodeDialogPane();
 
-	/**
-	 * Returns a new stream pointing to the node configuration file.
-	 * 
-	 * @return
-	 */
-	protected abstract InputStream getConfigAsStream();
+    /**
+     * Returns a new stream pointing to the node configuration file.
+     * 
+     * @return
+     */
+    protected abstract InputStream getConfigAsStream();
 
 }

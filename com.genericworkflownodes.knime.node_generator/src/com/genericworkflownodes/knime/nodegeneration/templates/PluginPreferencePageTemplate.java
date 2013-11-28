@@ -29,20 +29,20 @@ import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
  */
 public class PluginPreferencePageTemplate extends Template {
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param packageName
-	 *            The name of the package, where the PluginActivator will be
-	 *            located.
-	 * @throws IOException
-	 *             Will be thrown if the access to the template file fails.
-	 */
-	public PluginPreferencePageTemplate(final String packageName)
-			throws IOException {
-		super(NodeGenerator.class
-				.getResourceAsStream("templates/PluginPreferencePage.template"));
+    /**
+     * Constructor.
+     * 
+     * @param packageName
+     *            The name of the package, where the PluginActivator will be
+     *            located.
+     * @throws IOException
+     *             Will be thrown if the access to the template file fails.
+     */
+    public PluginPreferencePageTemplate(final String packageName)
+            throws IOException {
+        super(NodeGenerator.class
+                .getResourceAsStream("templates/PluginPreferencePage.template"));
 
-		this.replace("__BASE__", packageName);
-	}
+        this.replace("__BASE__", packageName);
+    }
 }

@@ -38,46 +38,46 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginM
  * @author bkahlert, aiche
  */
 public class PayloadDirectory {
-	private static final Logger LOGGER = Logger
-			.getLogger(PayloadDirectory.class.getCanonicalName());
+    private static final Logger LOGGER = Logger
+            .getLogger(PayloadDirectory.class.getCanonicalName());
 
-	private static final Pattern payloadFormat = Pattern
-			.compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
+    private static final Pattern payloadFormat = Pattern
+            .compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
 
-	private final List<FragmentMeta> containedFragments;
-	private Directory payloadDirectory = null;
+    private final List<FragmentMeta> containedFragments;
+    private Directory payloadDirectory = null;
 
-	public PayloadDirectory(File payloadDirectory)
-			throws PathnameIsNoDirectoryException {
-		containedFragments = new ArrayList<FragmentMeta>();
-		try {
-			this.payloadDirectory = new Directory(payloadDirectory);
-		} catch (Exception e) {
-			LOGGER.warning("No payload directory available.");
-		}
-	}
+    public PayloadDirectory(File payloadDirectory)
+            throws PathnameIsNoDirectoryException {
+        containedFragments = new ArrayList<FragmentMeta>();
+        try {
+            this.payloadDirectory = new Directory(payloadDirectory);
+        } catch (Exception e) {
+            LOGGER.warning("No payload directory available.");
+        }
+    }
 
-	public List<FragmentMeta> getFragmentMetas(
-			GeneratedPluginMeta generatedPluginMeta) {
+    public List<FragmentMeta> getFragmentMetas(
+            GeneratedPluginMeta generatedPluginMeta) {
 
-		if (payloadDirectory != null && payloadDirectory.exists()) {
-			containedFragments.clear();
-			for (String payload : payloadDirectory.list()) {
-				Matcher m = payloadFormat.matcher(payload);
-				if (!m.find()) {
-					LOGGER.warning("Ignoring incompatible file in payload directory: "
-							+ payload);
-					continue;
-				}
-				LOGGER.info("Create payload fragment for " + payload);
+        if (payloadDirectory != null && payloadDirectory.exists()) {
+            containedFragments.clear();
+            for (String payload : payloadDirectory.list()) {
+                Matcher m = payloadFormat.matcher(payload);
+                if (!m.find()) {
+                    LOGGER.warning("Ignoring incompatible file in payload directory: "
+                            + payload);
+                    continue;
+                }
+                LOGGER.info("Create payload fragment for " + payload);
 
-				OperatingSystem os = OperatingSystem.fromString(m.group(1));
-				Architecture arch = Architecture.fromString(m.group(2));
+                OperatingSystem os = OperatingSystem.fromString(m.group(1));
+                Architecture arch = Architecture.fromString(m.group(2));
 
-				containedFragments.add(new FragmentMeta(generatedPluginMeta,
-						arch, os, new File(payloadDirectory, payload)));
-			}
-		}
-		return containedFragments;
-	}
+                containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                        arch, os, new File(payloadDirectory, payload)));
+            }
+        }
+        return containedFragments;
+    }
 }

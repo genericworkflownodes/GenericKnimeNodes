@@ -23,5 +23,5 @@ import java.io.InputStream;
 
 
 public interface INodeConfigurationReader {
-	INodeConfiguration read(InputStream in) throws Exception;
+    INodeConfiguration read(InputStream in) throws Exception;
 }

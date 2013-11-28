@@ -25,74 +25,74 @@ package com.genericworkflownodes.knime.custom;
  * @author aiche
  */
 public enum OperatingSystem {
-	/**
-	 * The enum values.
-	 */
-	WIN, UNIX, MAC;
+    /**
+     * The enum values.
+     */
+    WIN, UNIX, MAC;
 
-	/**
-	 * Get the Operating system based on System.getProperty("os.name").
-	 * 
-	 * @return The operating system the JVM is running on.
-	 */
-	public static OperatingSystem getOS() {
-		String os = System.getProperty("os.name");
-		OperatingSystem thisOS = WIN;
+    /**
+     * Get the Operating system based on System.getProperty("os.name").
+     * 
+     * @return The operating system the JVM is running on.
+     */
+    public static OperatingSystem getOS() {
+        String os = System.getProperty("os.name");
+        OperatingSystem thisOS = WIN;
 
-		if (os.toLowerCase().contains("nux")
-				|| os.toLowerCase().contains("nix")) {
-			thisOS = UNIX;
-		}
-		if (os.toLowerCase().contains("mac")) {
-			thisOS = MAC;
-		}
-		return thisOS;
-	}
+        if (os.toLowerCase().contains("nux")
+                || os.toLowerCase().contains("nix")) {
+            thisOS = UNIX;
+        }
+        if (os.toLowerCase().contains("mac")) {
+            thisOS = MAC;
+        }
+        return thisOS;
+    }
 
-	public static OperatingSystem fromString(final String os) {
-		if ("win".equals(os)) {
-			return WIN;
-		} else if ("mac".equals(os)) {
-			return MAC;
-		} else {
-			return UNIX;
-		}
-	}
+    public static OperatingSystem fromString(final String os) {
+        if ("win".equals(os)) {
+            return WIN;
+        } else if ("mac".equals(os)) {
+            return MAC;
+        } else {
+            return UNIX;
+        }
+    }
 
-	@Override
-	public String toString() {
-		String osAsString = "unknown";
-		switch (this) {
-		case WIN:
-			osAsString = "win";
-			break;
-		case UNIX:
-			osAsString = "lnx";
-			break;
-		case MAC:
-			osAsString = "mac";
-			break;
-		default:
-			break;
-		}
-		return osAsString;
-	}
+    @Override
+    public String toString() {
+        String osAsString = "unknown";
+        switch (this) {
+        case WIN:
+            osAsString = "win";
+            break;
+        case UNIX:
+            osAsString = "lnx";
+            break;
+        case MAC:
+            osAsString = "mac";
+            break;
+        default:
+            break;
+        }
+        return osAsString;
+    }
 
-	public String toOsgiOs() {
-		String osgiOSString = "unknown";
-		switch (this) {
-		case WIN:
-			osgiOSString = "win32";
-			break;
-		case UNIX:
-			osgiOSString = "linux";
-			break;
-		case MAC:
-			osgiOSString = "macosx";
-			break;
-		default:
-			break;
-		}
-		return osgiOSString;
-	}
+    public String toOsgiOs() {
+        String osgiOSString = "unknown";
+        switch (this) {
+        case WIN:
+            osgiOSString = "win32";
+            break;
+        case UNIX:
+            osgiOSString = "linux";
+            break;
+        case MAC:
+            osgiOSString = "macosx";
+            break;
+        default:
+            break;
+        }
+        return osgiOSString;
+    }
 }

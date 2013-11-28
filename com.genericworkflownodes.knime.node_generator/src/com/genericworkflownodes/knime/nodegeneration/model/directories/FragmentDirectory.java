@@ -31,44 +31,44 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
  */
 public class FragmentDirectory extends PluginDirectory {
 
-	/**
-	 * The serialVersionUID.
-	 */
-	private static final long serialVersionUID = 4561247274907458731L;
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 4561247274907458731L;
 
-	private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
+    private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
 
-	/**
-	 * Create the directory.
-	 * 
-	 * @param directory
-	 * @param payload
-	 * @param
-	 * @throws FileNotFoundException
-	 */
-	public FragmentDirectory(Directory directory, FragmentMeta fragmentMeta)
-			throws PathnameIsNoDirectoryException {
-		super(new File(directory, fragmentMeta.getId()));
+    /**
+     * Create the directory.
+     * 
+     * @param directory
+     * @param payload
+     * @param
+     * @throws FileNotFoundException
+     */
+    public FragmentDirectory(Directory directory, FragmentMeta fragmentMeta)
+            throws PathnameIsNoDirectoryException {
+        super(new File(directory, fragmentMeta.getId()));
 
-		String packageRootPath = fragmentMeta.getHostMeta().getPackageRoot()
-				.replace('.', File.separatorChar);
+        String packageRootPath = fragmentMeta.getHostMeta().getPackageRoot()
+                .replace('.', File.separatorChar);
 
-		File srcDirectory = new File(this, "src");
-		File packageRootDirectory = new File(srcDirectory, packageRootPath);
-		File knimeDirectory = new File(packageRootDirectory, "knime");
+        File srcDirectory = new File(this, "src");
+        File packageRootDirectory = new File(srcDirectory, packageRootPath);
+        File knimeDirectory = new File(packageRootDirectory, "knime");
 
-		binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
-				new File(knimeDirectory, "binres"));
+        binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
+                new File(knimeDirectory, "binres"));
 
-	}
+    }
 
-	/**
-	 * Returns the source directory where this fragments's binary resources
-	 * (i.e., the shipped executables) are stored.
-	 * 
-	 * @return
-	 */
-	public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
-		return binaryResourcesDirectory;
-	}
+    /**
+     * Returns the source directory where this fragments's binary resources
+     * (i.e., the shipped executables) are stored.
+     * 
+     * @return
+     */
+    public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
+        return binaryResourcesDirectory;
+    }
 }

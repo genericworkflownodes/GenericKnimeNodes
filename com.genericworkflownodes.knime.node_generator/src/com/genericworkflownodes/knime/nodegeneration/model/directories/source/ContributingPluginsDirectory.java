@@ -37,52 +37,52 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.ContributingPlug
  */
 public class ContributingPluginsDirectory extends Directory {
 
-	private static final Logger LOGGER = Logger
-			.getLogger(ContributingPluginsDirectory.class.getName());
+    private static final Logger LOGGER = Logger
+            .getLogger(ContributingPluginsDirectory.class.getName());
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6496032916192735091L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6496032916192735091L;
 
-	public ContributingPluginsDirectory(File contributingPluginsDirectory)
-			throws PathnameIsNoDirectoryException {
-		super(contributingPluginsDirectory);
-	}
+    public ContributingPluginsDirectory(File contributingPluginsDirectory)
+            throws PathnameIsNoDirectoryException {
+        super(contributingPluginsDirectory);
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public List<ContributingPluginMeta> getContributingPluginMetas() {
+    /**
+     * 
+     * @return
+     */
+    public List<ContributingPluginMeta> getContributingPluginMetas() {
 
-		List<ContributingPluginMeta> contributingPluginMetas = new ArrayList<ContributingPluginMeta>();
+        List<ContributingPluginMeta> contributingPluginMetas = new ArrayList<ContributingPluginMeta>();
 
-		if (!this.exists())
-			return contributingPluginMetas;
+        if (!this.exists())
+            return contributingPluginMetas;
 
-		String[] directories = this.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File arg0, String arg1) {
-				return new File(arg0, arg1).isDirectory();
-			}
-		});
+        String[] directories = this.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File arg0, String arg1) {
+                return new File(arg0, arg1).isDirectory();
+            }
+        });
 
-		for (String directory : directories) {
-			try {
-				contributingPluginMetas.add(ContributingPluginMeta
-						.create(new Directory(new File(this, directory))));
+        for (String directory : directories) {
+            try {
+                contributingPluginMetas.add(ContributingPluginMeta
+                        .create(new Directory(new File(this, directory))));
 
-			} catch (PathnameIsNoDirectoryException e) {
-				LOGGER.log(
-						Level.SEVERE,
-						"Should never occur. Using the filter we guarantee that the given directory is a directory");
-				LOGGER.log(Level.SEVERE, e.getMessage());
-			} catch (InvalidPluginException e) {
-				LOGGER.warning(e.getMessage());
-			}
-		}
+            } catch (PathnameIsNoDirectoryException e) {
+                LOGGER.log(
+                        Level.SEVERE,
+                        "Should never occur. Using the filter we guarantee that the given directory is a directory");
+                LOGGER.log(Level.SEVERE, e.getMessage());
+            } catch (InvalidPluginException e) {
+                LOGGER.warning(e.getMessage());
+            }
+        }
 
-		return contributingPluginMetas;
-	}
+        return contributingPluginMetas;
+    }
 }

@@ -27,36 +27,36 @@ import com.genericworkflownodes.knime.port.Port;
  */
 public class FileParameter extends StringParameter implements IFileParameter {
 
-	/**
-	 * serialVersionUID.
-	 */
-	private static final long serialVersionUID = 3067243738185781393L;
+    /**
+     * serialVersionUID.
+     */
+    private static final long serialVersionUID = 3067243738185781393L;
 
-	/**
-	 * C'tor.
-	 * 
-	 * @param key
-	 *            Parameter key.
-	 * @param value
-	 *            Parameter value.
-	 */
-	public FileParameter(String key, String value) {
-		super(key, value);
-	}
+    /**
+     * C'tor.
+     * 
+     * @param key
+     *            Parameter key.
+     * @param value
+     *            Parameter value.
+     */
+    public FileParameter(String key, String value) {
+        super(key, value);
+    }
 
-	/**
-	 * The port associated to the file parameter.
-	 */
-	private Port port;
+    /**
+     * The port associated to the file parameter.
+     */
+    private Port port;
 
-	@Override
-	public void setPort(final Port port) {
-		this.port = port;
-	}
+    @Override
+    public void setPort(final Port port) {
+        this.port = port;
+    }
 
-	@Override
-	public Port getPort() {
-		return port;
-	}
+    @Override
+    public Port getPort() {
+        return port;
+    }
 
 }

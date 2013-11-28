@@ -35,48 +35,48 @@ import com.genericworkflownodes.knime.execution.ICommandGenerator;
  */
 public class OpenMSCommandGenerator implements ICommandGenerator {
 
-	/**
-	 * The command line switch needed to provide a ini file.
-	 */
-	private static final String INI_SWITCH = "-ini";
-	/**
-	 * The name of the generated ini file.
-	 */
-	private static final String INI_FILE_NAME = "params.ini";
+    /**
+     * The command line switch needed to provide a ini file.
+     */
+    private static final String INI_SWITCH = "-ini";
+    /**
+     * The name of the generated ini file.
+     */
+    private static final String INI_FILE_NAME = "params.ini";
 
-	@Override
-	public List<String> generateCommands(INodeConfiguration nodeConfiguration,
-			IPluginConfiguration pluginConfiguration, File workingDirectory)
-			throws Exception {
+    @Override
+    public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+            IPluginConfiguration pluginConfiguration, File workingDirectory)
+            throws Exception {
 
-		File iniFile = createINIFile(nodeConfiguration, workingDirectory);
+        File iniFile = createINIFile(nodeConfiguration, workingDirectory);
 
-		List<String> commands = new ArrayList<String>();
-		commands.add(INI_SWITCH);
-		commands.add(iniFile.getCanonicalPath());
+        List<String> commands = new ArrayList<String>();
+        commands.add(INI_SWITCH);
+        commands.add(iniFile.getCanonicalPath());
 
-		return commands;
-	}
+        return commands;
+    }
 
-	/**
-	 * Writes an OpenMS-ini-File for the given {@link NodeConfiguration} to the
-	 * <code>workingDirectory</code>.
-	 * 
-	 * @param nodeConfiguration
-	 *            Holds parts of the current node status.
-	 * @param configStore
-	 *            Holds parts of the current node status.
-	 * @param workingDirectory
-	 *            The directory where the tool will be executed. Make sure that
-	 *            the JVM has access to this directory.
-	 * @return The {@link File} where the ini file was stored.
-	 * @throws Exception
-	 */
-	private File createINIFile(INodeConfiguration nodeConfiguration,
-			File workingDirectory) throws Exception {
-		File iniFile = new File(workingDirectory, INI_FILE_NAME);
-		CTDConfigurationWriter writer = new CTDConfigurationWriter(iniFile);
-		writer.write(nodeConfiguration);
-		return iniFile;
-	}
+    /**
+     * Writes an OpenMS-ini-File for the given {@link NodeConfiguration} to the
+     * <code>workingDirectory</code>.
+     * 
+     * @param nodeConfiguration
+     *            Holds parts of the current node status.
+     * @param configStore
+     *            Holds parts of the current node status.
+     * @param workingDirectory
+     *            The directory where the tool will be executed. Make sure that
+     *            the JVM has access to this directory.
+     * @return The {@link File} where the ini file was stored.
+     * @throws Exception
+     */
+    private File createINIFile(INodeConfiguration nodeConfiguration,
+            File workingDirectory) throws Exception {
+        File iniFile = new File(workingDirectory, INI_FILE_NAME);
+        CTDConfigurationWriter writer = new CTDConfigurationWriter(iniFile);
+        writer.write(nodeConfiguration);
+        return iniFile;
+    }
 }
