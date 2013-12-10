@@ -27,7 +27,7 @@ import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathTyp
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
- * Abstraction of all settings related to single m_tool.
+ * Abstraction of all settings related to single tool.
  * 
  * @author aiche
  */
@@ -56,8 +56,8 @@ public class ExternalToolSettings {
     /**
      * Constructor initializing the settings object.
      * 
-     * @param m_tool
-     *            The m_tool.
+     * @param tool
+     *            The tool.
      */
     public ExternalToolSettings(ExternalTool tool) {
         m_tool = tool;
@@ -70,9 +70,9 @@ public class ExternalToolSettings {
     }
 
     /**
-     * Loads all related settings for the m_tool.
+     * Loads all related settings for the tool.
      */
-    public void load() {
+    private final void load() {
         // we load the path from the IToolLocator
         try {
             m_selectedToolPathType = PluginPreferenceToolLocator
@@ -85,18 +85,19 @@ public class ExternalToolSettings {
             File lToolPath = PluginPreferenceToolLocator
                     .getToolLocatorService().getToolPath(m_tool,
                             IToolLocator.ToolPathType.USER_DEFINED);
-            if (lToolPath != null && lToolPath.exists())
+            if (lToolPath != null && lToolPath.exists()) {
                 m_localToolPath = lToolPath.getAbsolutePath();
+            }
         } catch (Exception e) {
             GenericNodesPlugin
-                    .log("Could not load user-defined m_tool path for m_tool: "
+                    .log("Could not load user-defined tool path for tool: "
                             + m_tool);
             GenericNodesPlugin.log(e.getMessage());
         }
     }
 
     /**
-     * Saves all related settings for the m_tool.
+     * Saves all related settings for the tool.
      */
     public void save() {
         try {
@@ -107,36 +108,40 @@ public class ExternalToolSettings {
                     .updateToolPathType(m_tool, m_selectedToolPathType);
         } catch (Exception e) {
             GenericNodesPlugin
-                    .log("Could not load user-defined m_tool path for m_tool: "
+                    .log("Could not load user-defined tool path for tool: "
                             + m_tool);
             GenericNodesPlugin.log(e.getMessage());
         }
     }
 
     /**
-     * @return the m_localToolPath
+     * Returns the local tool path.
+     * 
+     * @return the localToolPath
      */
     public String getLocalToolPath() {
         return m_localToolPath;
     }
 
     /**
-     * @param m_localToolPath
-     *            the m_localToolPath to set
+     * Sets the local tool path to a new value.
+     * 
+     * @param localToolPath
+     *            the localToolPath to set
      */
     public void setLocalToolPath(String localToolPath) {
         m_localToolPath = localToolPath;
     }
 
     /**
-     * @return the m_hasShippedBinary
+     * @return True if the tool has a shipped binary, false otherwise.
      */
     public boolean hasShippedBinary() {
         return m_hasShippedBinary;
     }
 
     /**
-     * @param m_hasShippedBinary
+     * @param hasShippedBinary
      *            the m_hasShippedBinary to set
      */
     public void setHasShippedBinary(boolean hasShippedBinary) {
@@ -144,15 +149,19 @@ public class ExternalToolSettings {
     }
 
     /**
-     * @return the m_selectedToolPathType
+     * Returns which kind of tool path is selected for this tool
+     * 
+     * @return the selectedToolPathType
      */
     public IToolLocator.ToolPathType getSelectedToolPathType() {
         return m_selectedToolPathType;
     }
 
     /**
-     * @param m_selectedToolPathType
-     *            the m_selectedToolPathType to set
+     * Sets the tool path type.
+     * 
+     * @param selectedToolPathType
+     *            The new selected tool path type.
      */
     public void setSelectedToolPathType(
             IToolLocator.ToolPathType selectedToolPathType) {
@@ -160,9 +169,9 @@ public class ExternalToolSettings {
     }
 
     /**
-     * Get the m_tool name.
+     * Get the tool name.
      * 
-     * @return The m_tool name.
+     * @return The tool name.
      */
     public ExternalTool getTool() {
         return m_tool;
