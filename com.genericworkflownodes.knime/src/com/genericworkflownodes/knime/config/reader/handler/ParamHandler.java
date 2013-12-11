@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
@@ -63,40 +64,46 @@ import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
  */
 public class ParamHandler extends DefaultHandler {
 
+    private static final String TRUE = "true";
+
+    private static final String FALSE = "false";
+
     /**
      * The logger used to indicate problems.
      */
-    private static Logger LOG = Logger.getLogger(ParamHandler.class
+    private static final Logger LOG = Logger.getLogger(ParamHandler.class
             .getCanonicalName());
 
-    private static String TAG_NODE = "NODE"; // name, description
-    private static String TAG_ITEM = "ITEM"; // name, type, value, description,
-                                                // tags, restritions,
-                                                // supported_formats,
-                                                // output_format_source
-    private static String TAG_ITEMLIST = "ITEMLIST"; // name, type, description,
-                                                        // tags, restrictions
-    private static String TAG_LISTITEM = "LISTITEM"; // value
-    private static String TAG_PARAMETERS = "PARAMETERS";
+    private static final String TAG_NODE = "NODE"; // name, description
+    private static final String TAG_ITEM = "ITEM"; // name, type, value,
+                                                   // description,
+                                                   // tags, restritions,
+                                                   // supported_formats,
+                                                   // output_format_source
+    private static final String TAG_ITEMLIST = "ITEMLIST"; // name, type,
+                                                           // description,
+    // tags, restrictions
+    private static final String TAG_LISTITEM = "LISTITEM"; // value
+    private static final String TAG_PARAMETERS = "PARAMETERS";
 
-    private static String TYPE_INT = "int";
-    private static String TYPE_FLOAT = "float";
-    private static String TYPE_DOUBLE = "double";
-    private static String TYPE_STRING = "string";
-    private static String TYPE_INPUT_FILE = "input-file";
-    private static String TYPE_OUTPUT_FILE = "output-file";
-    private static String TYPE_OUTPUT_PREFIX = "output-prefix";
-    private static String TYPE_INPUT_PREFIX = "input-prefix";
+    private static final String TYPE_INT = "int";
+    private static final String TYPE_FLOAT = "float";
+    private static final String TYPE_DOUBLE = "double";
+    private static final String TYPE_STRING = "string";
+    private static final String TYPE_INPUT_FILE = "input-file";
+    private static final String TYPE_OUTPUT_FILE = "output-file";
+    private static final String TYPE_OUTPUT_PREFIX = "output-prefix";
+    private static final String TYPE_INPUT_PREFIX = "input-prefix";
 
-    private static String ATTR_NAME = "name";
-    private static String ATTR_VALUE = "value";
-    private static String ATTR_TYPE = "type";
-    private static String ATTR_DESCRIPTION = "description";
-    private static String ATTR_TAGS = "tags";
-    private static String ATTR_SUPPORTED_FORMATS = "supported_formats";
-    private static String ATTR_RESTRICTIONS = "restrictions";
-    private static String ATTR_ADVANCED = "advanced";
-    private static String ATTR_REQUIRED = "required";
+    private static final String ATTR_NAME = "name";
+    private static final String ATTR_VALUE = "value";
+    private static final String ATTR_TYPE = "type";
+    private static final String ATTR_DESCRIPTION = "description";
+    private static final String ATTR_TAGS = "tags";
+    private static final String ATTR_SUPPORTED_FORMATS = "supported_formats";
+    private static final String ATTR_RESTRICTIONS = "restrictions";
+    private static final String ATTR_ADVANCED = "advanced";
+    private static final String ATTR_REQUIRED = "required";
 
     /**
      * List of all parameters that were ignores while parsing.
@@ -121,7 +128,7 @@ public class ParamHandler extends DefaultHandler {
     /**
      * Separates two nodes.
      */
-    public static char PATH_SEPARATOR = '.';
+    public static final char PATH_SEPARATOR = '.';
 
     /**
      * List of port/parameter names that will not be created.
@@ -132,7 +139,7 @@ public class ParamHandler extends DefaultHandler {
     /**
      * The list of extracted parameters.
      */
-    private LinkedHashMap<String, Parameter<?>> m_extractedParameters;
+    private Map<String, Parameter<?>> m_extractedParameters;
 
     /**
      * The currently generated parameter.
@@ -152,7 +159,7 @@ public class ParamHandler extends DefaultHandler {
     private CTDHandler m_parentHandler;
 
     /**
-     * The {@link XMLReader} that processes the entire document.
+     * The XMLReader that processes the entire document.
      */
     private XMLReader m_xmlReader;
 
@@ -164,27 +171,26 @@ public class ParamHandler extends DefaultHandler {
     /**
      * The output ports recorded for this parameter block.
      */
-    private ArrayList<Port> m_inputPorts;
+    private List<Port> m_inputPorts;
 
     /**
      * The input ports recorded for this parameter block.
      */
-    private ArrayList<Port> m_outputPorts;
+    private List<Port> m_outputPorts;
 
     /**
-     * The {@link NodeConfiguration} that will be filled while parsing the
-     * document.
+     * The NodeConfiguration that will be filled while parsing the document.
      */
     private NodeConfiguration m_config;
 
     /**
      * C'tor accepting the parent handler and the xml reader.
      * 
-     * @param m_xmlReader
+     * @param xmlReader
      *            The xml reader of the global document.
-     * @param m_parentHandler
+     * @param parentHandler
      *            The parent handler for the global document.
-     * @param m_config
+     * @param config
      *            The {@link NodeConfiguration} that will be filled while
      *            parsing the document.
      */
@@ -403,7 +409,7 @@ public class ParamHandler extends DefaultHandler {
         // always prefer supported_formats
         if (attributes.getValue(ATTR_SUPPORTED_FORMATS) != null
                 && attributes.getValue(ATTR_SUPPORTED_FORMATS).length() > 0
-                && !"false".equals(attributes.getValue(ATTR_SUPPORTED_FORMATS))) {
+                && !FALSE.equals(attributes.getValue(ATTR_SUPPORTED_FORMATS))) {
             String attrValue = attributes.getValue(ATTR_SUPPORTED_FORMATS);
             String[] fileExtension = attrValue.split(",");
             for (String ext : fileExtension) {
@@ -411,7 +417,7 @@ public class ParamHandler extends DefaultHandler {
             }
         } else if (attributes.getValue(ATTR_RESTRICTIONS) != null
                 && attributes.getValue(ATTR_RESTRICTIONS).length() > 0
-                && !"false".equals(attributes.getValue(ATTR_RESTRICTIONS))) {
+                && !FALSE.equals(attributes.getValue(ATTR_RESTRICTIONS))) {
             String attrValue = attributes.getValue(ATTR_RESTRICTIONS);
             String[] fileExtension = attrValue.split(",");
             for (String ext : fileExtension) {
@@ -512,16 +518,17 @@ public class ParamHandler extends DefaultHandler {
      *         otherwise.
      */
     private boolean isBooleanParameter(final String restrictions) {
-        if (restrictions == null || restrictions.trim().length() == 0)
+        if (restrictions == null || restrictions.trim().length() == 0) {
             return false;
-        else {
+        } else {
             // tokenize restrictions
             String[] tokens = restrictions.split(",");
             if (tokens.length != 2) {
                 return false;
-            } else
-                return (("true".equals(tokens[0]) && "false".equals(tokens[1])) || ("false"
-                        .equals(tokens[0]) && "true".equals(tokens[1])));
+            } else {
+                return ((TRUE.equals(tokens[0]) && FALSE.equals(tokens[1])) || (FALSE
+                        .equals(tokens[0]) && TRUE.equals(tokens[1])));
+            }
         }
     }
 
@@ -538,11 +545,11 @@ public class ParamHandler extends DefaultHandler {
                 .contains(OUTPUTFILE_TAG));
 
         // additionally we check if type is equal to input-file, output-file
-        final String attr_type = attributes.getValue(ATTR_TYPE);
-        isPort = TYPE_INPUT_FILE.equals(attr_type)
-                || TYPE_OUTPUT_FILE.equals(attr_type)
-                || TYPE_OUTPUT_PREFIX.equals(attr_type)
-                || TYPE_INPUT_PREFIX.equals(attr_type);
+        final String attrType = attributes.getValue(ATTR_TYPE);
+        isPort = TYPE_INPUT_FILE.equals(attrType)
+                || TYPE_OUTPUT_FILE.equals(attrType)
+                || TYPE_OUTPUT_PREFIX.equals(attrType)
+                || TYPE_INPUT_PREFIX.equals(attrType);
 
         return isPort;
     }
@@ -744,14 +751,16 @@ public class ParamHandler extends DefaultHandler {
         // find suffix border
         int i = m_currentPath.length() - 2;
         for (; i > 0; --i) {
-            if (m_currentPath.charAt(i) == PATH_SEPARATOR)
+            if (m_currentPath.charAt(i) == PATH_SEPARATOR) {
                 break;
+            }
         }
 
         // i should point to the prefix position
-        if (i != 0)
+        if (i != 0) {
             m_currentPath = m_currentPath.substring(0, i + 1);
-        else
+        } else {
             m_currentPath = ""; // reset prefix if we reached the top level
+        }
     }
 }

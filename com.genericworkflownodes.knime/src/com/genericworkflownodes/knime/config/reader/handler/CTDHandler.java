@@ -19,7 +19,6 @@
 package com.genericworkflownodes.knime.config.reader.handler;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -34,33 +33,33 @@ import com.genericworkflownodes.knime.config.NodeConfiguration;
  */
 public class CTDHandler extends DefaultHandler {
 
-    private static String ATTR_NAME = "name";
-    private static String ATTR_VERSION = "version";
-    private static String TAG_DESCRIPTION = "description";
-    private static String TAG_MANUAL = "manual";
-    private static String ATTR_DOCURL = "docurl";
-    private static String ATTR_CATEGORY = "category";
-    private static String TAG_CLI = "cli";
-    private static String TAG_RELOCATORS = "relocators";
-    private static String TAG_PARAMETERS = "PARAMETERS";
-    private static String TAG_EXECUTABLE_NAME = "executableName";
-    private static String TAG_EXECUTABLE_PATH = "executablePath";
-    private static String TAG_TOOL = "tool";
+    private static final String ATTR_NAME = "name";
+    private static final String ATTR_VERSION = "version";
+    private static final String TAG_DESCRIPTION = "description";
+    private static final String TAG_MANUAL = "manual";
+    private static final String ATTR_DOCURL = "docurl";
+    private static final String ATTR_CATEGORY = "category";
+    private static final String TAG_CLI = "cli";
+    private static final String TAG_RELOCATORS = "relocators";
+    private static final String TAG_PARAMETERS = "PARAMETERS";
+    private static final String TAG_EXECUTABLE_NAME = "executableName";
+    private static final String TAG_EXECUTABLE_PATH = "executablePath";
+    private static final String TAG_TOOL = "tool";
 
     /**
      * The {@link INodeConfiguration} generated while parsing the CTD document.
      */
-    private NodeConfiguration config;
+    private NodeConfiguration m_config;
 
     /**
      * The content contained in the current xml tag.
      */
-    private StringBuilder currentContent;
+    private StringBuilder m_currentContent;
 
     /**
      * The {@link XMLReader} that uses this content handler.
      */
-    private XMLReader xmlReader;
+    private XMLReader m_xmlReader;
 
     /**
      * C'tor.
@@ -69,9 +68,9 @@ public class CTDHandler extends DefaultHandler {
      *            The {@link XMLReader} that uses this content handler.
      */
     public CTDHandler(XMLReader xmlReader) {
-        this.xmlReader = xmlReader;
-        currentContent = new StringBuilder();
-        config = new NodeConfiguration();
+        m_xmlReader = xmlReader;
+        m_currentContent = new StringBuilder();
+        m_config = new NodeConfiguration();
     }
 
     /**
@@ -80,37 +79,37 @@ public class CTDHandler extends DefaultHandler {
      * @return The processed node configuration.
      */
     public INodeConfiguration getNodeConfiguration() {
-        return config;
+        return m_config;
     }
 
     @Override
     public void characters(char[] ch, int start, int length)
             throws SAXException {
-        currentContent.append(ch, start, length);
+        m_currentContent.append(ch, start, length);
     }
 
     @Override
     public void startElement(String uri, String localName, String name,
             Attributes attributes) throws SAXException {
-        currentContent.setLength(0);
+        m_currentContent.setLength(0);
         if (TAG_PARAMETERS.equals(name)) {
-            xmlReader.setContentHandler(new ParamHandler(xmlReader, this,
-                    config));
+            m_xmlReader.setContentHandler(new ParamHandler(m_xmlReader, this,
+                    m_config));
         } else if (TAG_RELOCATORS.equals(name)) {
-            xmlReader.setContentHandler(new RelocatorHandler(xmlReader, this,
-                    config));
+            m_xmlReader.setContentHandler(new RelocatorHandler(m_xmlReader,
+                    this, m_config));
         } else if (TAG_CLI.equals(name)) {
-            xmlReader.setContentHandler(new CLIElementHandler(xmlReader, this,
-                    config));
+            m_xmlReader.setContentHandler(new CLIElementHandler(m_xmlReader,
+                    this, m_config));
         } else if (TAG_TOOL.equals(name)) {
             // root tag -> parse out the attribute values
-            config.setName(attributes.getValue(ATTR_NAME));
-            config.setVersion(attributes.getValue(ATTR_VERSION));
+            m_config.setName(attributes.getValue(ATTR_NAME));
+            m_config.setVersion(attributes.getValue(ATTR_VERSION));
             if (attributes.getValue(ATTR_DOCURL) != null) {
-                config.setDocUrl(attributes.getValue(ATTR_DOCURL));
+                m_config.setDocUrl(attributes.getValue(ATTR_DOCURL));
             }
             if (attributes.getValue(ATTR_CATEGORY) != null) {
-                config.setCategory(attributes.getValue(ATTR_CATEGORY));
+                m_config.setCategory(attributes.getValue(ATTR_CATEGORY));
             }
         }
     }
@@ -119,13 +118,13 @@ public class CTDHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String name)
             throws SAXException {
         if (TAG_DESCRIPTION.equals(name)) {
-            config.setDescription(currentContent.toString());
+            m_config.setDescription(m_currentContent.toString());
         } else if (TAG_MANUAL.equals(name)) {
-            config.setManual(currentContent.toString());
+            m_config.setManual(m_currentContent.toString());
         } else if (TAG_EXECUTABLE_PATH.equals(name)) {
-            config.setExecutablePath(currentContent.toString());
+            m_config.setExecutablePath(m_currentContent.toString());
         } else if (TAG_EXECUTABLE_NAME.equals(name)) {
-            config.setExecutableName(currentContent.toString());
+            m_config.setExecutableName(m_currentContent.toString());
         }
     }
 }

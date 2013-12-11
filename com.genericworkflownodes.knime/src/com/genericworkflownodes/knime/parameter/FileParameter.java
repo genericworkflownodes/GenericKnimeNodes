@@ -47,16 +47,16 @@ public class FileParameter extends StringParameter implements IFileParameter {
     /**
      * The port associated to the file parameter.
      */
-    private Port port;
+    private Port m_port;
 
     @Override
     public void setPort(final Port port) {
-        this.port = port;
+        m_port = port;
     }
 
     @Override
     public Port getPort() {
-        return port;
+        return m_port;
     }
 
 }

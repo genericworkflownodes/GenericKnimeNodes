@@ -24,7 +24,7 @@
         <ITEM name="sn" value="0" type="double" description="write peaks with S/N &gt; &apos;sn&apos; values only" required="false" advanced="false" />
         <ITEMLIST name="rm_pc_charge" type="int" description="Remove MS(2) spectra with these precursor charges. All spectra without precursor are kept!" required="false" advanced="false">
         </ITEMLIST>
-        <ITEMLIST name="level" type="int" description="MS levels to extract" required="false" advanced="false">
+        <ITEMLIST name="level" type="int" description="MS levels to extract" required="false" advanced="false" restrictions="1:">
           <LISTITEM value="1"/>
           <LISTITEM value="2"/>
           <LISTITEM value="3"/>

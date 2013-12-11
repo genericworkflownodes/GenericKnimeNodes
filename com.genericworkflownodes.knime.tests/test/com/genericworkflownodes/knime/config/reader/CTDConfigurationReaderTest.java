@@ -29,6 +29,7 @@ import org.junit.Test;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
+import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.StringListParameter;
 import com.genericworkflownodes.knime.test.data.TestDataSource;
 
@@ -55,6 +56,31 @@ public class CTDConfigurationReaderTest {
         FileListParameter flp = (FileListParameter) config
                 .getParameter("FeatureLinkerUnlabeled.1.in");
         assertEquals(0, flp.getValue().size());
+    }
+
+    @Test
+    public void testReadFileFilter() throws Exception {
+        CTDConfigurationReader reader = new CTDConfigurationReader();
+        assertNotNull(reader);
+        INodeConfiguration config = reader.read(TestDataSource.class
+                .getResourceAsStream("FileFilter.ctd"));
+
+        assertEquals("File Handling", config.getCategory());
+        assertNotNull(config.getParameter("FileFilter.1.in"));
+        assertTrue(config.getParameter("FileFilter.1.in") instanceof FileParameter);
+        assertNotNull(config.getInputPortByName("FileFilter.1.in"));
+        assertEquals("1.11.0", config.getVersion());
+
+        FileParameter fp = (FileParameter) config
+                .getParameter("FileFilter.1.in");
+        assertNull(fp.getValue());
+
+        // get list restrictions
+        assertNotNull(config.getParameter("FileFilter.1.peak_options.level"));
+        assertTrue(config.getParameter("FileFilter.1.peak_options.level") instanceof IntegerListParameter);
+        IntegerListParameter ilp = (IntegerListParameter) config
+                .getParameter("FileFilter.1.peak_options.level");
+        assertEquals(Integer.valueOf(1), ilp.getLowerBound());
     }
 
     @Test

@@ -20,8 +20,9 @@ package com.genericworkflownodes.knime.config.writer;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -63,15 +64,26 @@ public class CTDConfigurationWriter {
         return StringEscapeUtils.escapeXml(t);
     }
 
+    /**
+     * C'tor for CTDConfigurationWriter.
+     * 
+     * @param target
+     *            The file where the ctd will be stored.
+     * @throws IOException
+     *             If io operations fail.
+     */
     public CTDConfigurationWriter(File target) throws IOException {
-        outputWriter = new BufferedWriter(new FileWriter(target));
+        outputWriter = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(target), "UTF-8"));
         currentIndent = 0;
         currentNodeState = null;
     }
 
     /**
+     * Construct writer directly using a {@link BufferedWriter}.
      * 
      * @param out
+     *            The {@link BufferedWriter} where the content will be written.
      */
     public CTDConfigurationWriter(BufferedWriter out) {
         outputWriter = out;
@@ -106,11 +118,12 @@ public class CTDConfigurationWriter {
     }
 
     private void streamPut(String text) throws IOException {
-        for (int i = 0; i < currentIndent; ++i)
-            outputWriter.write("\t");
+        for (int i = 0; i < currentIndent; ++i) {
+            outputWriter.write('\t');
+        }
 
         outputWriter.write(text);
-        outputWriter.write("\n");
+        outputWriter.write('\n');
     }
 
     /**
@@ -123,13 +136,15 @@ public class CTDConfigurationWriter {
         streamPut(String.format("<manual>%s</manual>",
                 xmlEscapeText(currentConfig.getManual()))); // manual
 
-        if (currentConfig.getExecutableName() != null)
+        if (currentConfig.getExecutableName() != null) {
             streamPut(String.format("<executableName>%s</executableName>",
                     xmlEscapeText(currentConfig.getExecutableName())));
+        }
 
-        if (currentConfig.getExecutablePath() != null)
+        if (currentConfig.getExecutablePath() != null) {
             streamPut(String.format("<executablePath>%s</executablePath>",
                     xmlEscapeText(currentConfig.getExecutablePath())));
+        }
 
         if (currentConfig.getCLI() != null
                 && currentConfig.getCLI().getCLIElement().size() > 0) {
@@ -192,13 +207,14 @@ public class CTDConfigurationWriter {
         assert keys.length > 1;
 
         List<String> prefixes = new ArrayList<String>();
-        for (int i = 0; i < (keys.length - 1); ++i)
+        for (int i = 0; i < (keys.length - 1); ++i) {
             prefixes.add(keys[i]);
+        }
 
         return prefixes;
     }
 
-    private void writeParamXML() throws Exception {
+    private void writeParamXML() throws IOException {
 
         currentNodeState = new ArrayList<String>();
 
@@ -213,120 +229,11 @@ public class CTDConfigurationWriter {
 
             // output the actual parameter
             Parameter<?> p = currentConfig.getParameter(key);
+            // handle depending on list or not
             if (p instanceof ListParameter) {
-                StringBuffer item = new StringBuffer();
-                item.append("<ITEMLIST name=\"");
-                item.append(p.getKey());
-                item.append("\"");
-
-                // type
-                item.append(" type=\"");
-                if (p instanceof FileListParameter) {
-                    if (currentConfig.getInputPortByName(key) != null) {
-                        if (currentConfig.getInputPortByName(key).isPrefix()) {
-                            item.append("input-prefix");
-                        } else {
-                            item.append("input-file");
-                        }
-                    } else if (currentConfig.getOutputPortByName(key) != null) {
-                        if (currentConfig.getOutputPortByName(key).isPrefix()) {
-                            item.append("output-prefix");
-                        } else {
-                            item.append("output-file");
-                        }
-                    }
-                } else if (p instanceof StringListParameter) {
-                    item.append("string");
-                } else if (p instanceof DoubleListParameter) {
-                    item.append("double");
-                } else if (p instanceof IntegerListParameter) {
-                    item.append("int");
-                }
-                item.append("\"");
-
-                // description
-                addDescription(p, item);
-
-                item.append(">");
-                streamPut(item.toString());
-
-                // add restrictions
-                if (p instanceof DoubleParameter
-                        || p instanceof IntegerParameter) {
-                    addNumberRestrictions(item, p);
-                } else if (p instanceof FileListParameter) {
-                    addMimeTypeRestrictions(item, p);
-                }
-
-                // add tags
-                addParameterAttributes(p, item, key);
-
-                indent();
-                for (String val : ((ListParameter) p).getStrings()) {
-                    streamPut(String.format("<LISTITEM value=\"%s\"/>", val));
-                }
-                outdent();
-                streamPut("</ITEMLIST>");
+                writeItemList(key, p);
             } else {
-                // construct parameter entry
-                StringBuffer item = new StringBuffer();
-                item.append("<ITEM name=\"");
-                item.append(p.getKey());
-                item.append("\"");
-
-                // value
-                item.append(" value=\"");
-                if (p.getValue() != null && p.getValue().toString() != null)
-                    item.append(p.getValue().toString());
-                item.append("\"");
-
-                // type
-                item.append(" type=\"");
-                if (p instanceof FileParameter) {
-                    if (currentConfig.getInputPortByName(key) != null) {
-                        if (currentConfig.getInputPortByName(key).isPrefix()) {
-                            item.append("input-prefix");
-                        } else {
-                            item.append("input-file");
-                        }
-                    } else if (currentConfig.getOutputPortByName(key) != null) {
-                        if (currentConfig.getOutputPortByName(key).isPrefix()) {
-                            item.append("output-prefix");
-                        } else {
-                            item.append("output-file");
-                        }
-                    }
-                } else if (p instanceof BoolParameter
-                        || p instanceof StringParameter
-                        || p instanceof StringChoiceParameter) {
-                    item.append("string");
-                } else if (p instanceof DoubleParameter) {
-                    item.append("double");
-                } else if (p instanceof IntegerParameter) {
-                    item.append("int");
-                }
-                item.append("\"");
-
-                // description
-                addDescription(p, item);
-
-                // add tags
-                addParameterAttributes(p, item, key);
-
-                // restrictions
-                if (p instanceof BoolParameter) {
-                    addBoolRestrictions(item);
-                } else if (p instanceof DoubleParameter
-                        || p instanceof IntegerParameter) {
-                    addNumberRestrictions(item, p);
-                } else if (p instanceof StringChoiceParameter) {
-                    addStringChoices(item, p);
-                } else if (p instanceof FileParameter) {
-                    addMimeTypeRestrictions(item, p);
-                }
-
-                item.append(" />");
-                streamPut(item.toString());
+                writeItem(key, p);
             }
         }
 
@@ -334,6 +241,132 @@ public class CTDConfigurationWriter {
 
         outdent();
         streamPut("</PARAMETERS>");
+    }
+
+    private void writeItem(String key, Parameter<?> p) throws IOException {
+        // construct parameter entry
+        StringBuffer item = new StringBuffer();
+        item.append("<ITEM name=\"");
+        item.append(p.getKey());
+        item.append('\"');
+
+        // value
+        item.append(" value=\"");
+        if (p.getValue() != null && p.getValue().toString() != null) {
+            item.append(p.getValue().toString());
+        }
+        item.append('\"');
+
+        // type
+        addItemType(key, p, item);
+
+        // description
+        addDescription(p, item);
+
+        // add tags
+        addParameterAttributes(p, item, key);
+
+        // restrictions
+        if (p instanceof BoolParameter) {
+            addBoolRestrictions(item);
+        } else if (p instanceof DoubleParameter
+                || p instanceof IntegerParameter) {
+            addNumberRestrictions(item, p);
+        } else if (p instanceof StringChoiceParameter) {
+            addStringChoices(item, p);
+        } else if (p instanceof FileParameter) {
+            addMimeTypeRestrictions(item, p);
+        }
+
+        item.append(" />");
+        streamPut(item.toString());
+    }
+
+    private void writeItemList(String key, Parameter<?> p) throws IOException {
+        StringBuffer item = new StringBuffer();
+        item.append("<ITEMLIST name=\"");
+        item.append(p.getKey());
+        item.append('\"');
+
+        // type
+        addListType(key, p, item);
+
+        // description
+        addDescription(p, item);
+
+        // add restrictions
+        if (p instanceof DoubleListParameter
+                || p instanceof IntegerListParameter) {
+            addNumberRestrictions(item, p);
+        } else if (p instanceof FileListParameter) {
+            addMimeTypeRestrictions(item, p);
+        }
+
+        // add tags
+        addParameterAttributes(p, item, key);
+
+        item.append('>');
+        streamPut(item.toString());
+
+        indent();
+        for (String val : ((ListParameter) p).getStrings()) {
+            streamPut(String.format("<LISTITEM value=\"%s\"/>", val));
+        }
+        outdent();
+        streamPut("</ITEMLIST>");
+    }
+
+    private void addItemType(String key, Parameter<?> p, StringBuffer item) {
+        item.append(" type=\"");
+        if (p instanceof FileParameter) {
+            if (currentConfig.getInputPortByName(key) != null) {
+                if (currentConfig.getInputPortByName(key).isPrefix()) {
+                    item.append("input-prefix");
+                } else {
+                    item.append("input-file");
+                }
+            } else if (currentConfig.getOutputPortByName(key) != null) {
+                if (currentConfig.getOutputPortByName(key).isPrefix()) {
+                    item.append("output-prefix");
+                } else {
+                    item.append("output-file");
+                }
+            }
+        } else if (p instanceof BoolParameter || p instanceof StringParameter
+                || p instanceof StringChoiceParameter) {
+            item.append("string");
+        } else if (p instanceof DoubleParameter) {
+            item.append("double");
+        } else if (p instanceof IntegerParameter) {
+            item.append("int");
+        }
+        item.append('\"');
+    }
+
+    private void addListType(String key, Parameter<?> p, StringBuffer item) {
+        item.append(" type=\"");
+        if (p instanceof FileListParameter) {
+            if (currentConfig.getInputPortByName(key) != null) {
+                if (currentConfig.getInputPortByName(key).isPrefix()) {
+                    item.append("input-prefix");
+                } else {
+                    item.append("input-file");
+                }
+            } else if (currentConfig.getOutputPortByName(key) != null) {
+                if (currentConfig.getOutputPortByName(key).isPrefix()) {
+                    item.append("output-prefix");
+                } else {
+                    item.append("output-file");
+                }
+            }
+        } else if (p instanceof StringListParameter) {
+            item.append("string");
+        } else if (p instanceof DoubleListParameter) {
+            item.append("double");
+        } else if (p instanceof IntegerListParameter) {
+            item.append("int");
+        }
+        item.append('\"');
     }
 
     private void addMimeTypeRestrictions(StringBuffer item, Parameter<?> p) {
@@ -346,20 +379,21 @@ public class CTDConfigurationWriter {
             sep = ",";
             item.append(String.format("*.%s", mt));
         }
-        item.append("\"");
+        item.append('\"');
     }
 
     private void addParameterAttributes(Parameter<?> p, StringBuffer item,
-            String key) throws Exception {
+            String key) {
         item.append(" advanced=\"" + (p.isAdvanced() ? "true" : "false") + "\"");
         item.append(" required=\"" + (p.isOptional() ? "false" : "true") + "\"");
     }
 
     private void addDescription(Parameter<?> p, StringBuffer item) {
         item.append(" description=\"");
-        if (p.getDescription() != null)
+        if (p.getDescription() != null) {
             item.append(xmlEscapeText(p.getDescription()));
-        item.append("\"");
+        }
+        item.append('\"');
     }
 
     private void addStringChoices(StringBuffer item, Parameter<?> p) {
@@ -370,91 +404,108 @@ public class CTDConfigurationWriter {
         item.append(" restrictions=\"");
         String sep = "";
         for (String rv : values) {
-            if (scp.isOptional() && "".equals(rv))
+            if (scp.isOptional() && "".equals(rv)) {
                 continue;
+            }
             item.append(sep);
             item.append(rv);
             sep = ",";
         }
-        item.append("\"");
+        item.append('\"');
     }
 
     private void addNumberRestrictions(StringBuffer item, Parameter<?> p) {
         StringBuffer restriction = new StringBuffer();
         if (p instanceof DoubleParameter) {
-            DoubleParameter dp = (DoubleParameter) p;
-            boolean lbSet = Double.NEGATIVE_INFINITY != dp.getLowerBound()
-                    .doubleValue();
-            boolean ubSet = Double.POSITIVE_INFINITY != dp.getUpperBound()
-                    .doubleValue();
-            if (lbSet) {
-                restriction.append(String
-                        .format(Locale.ENGLISH, "%f", dp.getLowerBound())
-                        .replaceAll("0*$", "").replaceAll("\\.$", ""));
-            }
-            if (ubSet || lbSet) {
-                restriction.append(":");
-            }
-            if (ubSet) {
-                restriction.append(String
-                        .format(Locale.ENGLISH, "%f", dp.getUpperBound())
-                        .replaceAll("0*$", "").replaceAll("\\.$", ""));
-            }
+            addDoubleParameterRestrictions(p, restriction);
         } else if (p instanceof IntegerParameter) {
-            IntegerParameter ip = (IntegerParameter) p;
-            boolean lbSet = Integer.MIN_VALUE != ip.getLowerBound()
-                    .doubleValue();
-            boolean ubSet = Integer.MAX_VALUE != ip.getUpperBound()
-                    .doubleValue();
-            if (lbSet) {
-                restriction.append(String.format("%d", ip.getLowerBound()));
-            }
-            if (ubSet || lbSet) {
-                restriction.append(":");
-            }
-            if (ubSet) {
-                restriction.append(String.format("%d", ip.getUpperBound()));
-            }
+            addIntegerParameterRestrictions(p, restriction);
         } else if (p instanceof IntegerListParameter) {
-            IntegerListParameter ilp = (IntegerListParameter) p;
-            boolean lbSet = Integer.MIN_VALUE != ilp.getLowerBound()
-                    .doubleValue();
-            boolean ubSet = Integer.MAX_VALUE != ilp.getUpperBound()
-                    .doubleValue();
-
-            if (lbSet) {
-                restriction.append(String.format("%d", ilp.getLowerBound()));
-            }
-            if (ubSet || lbSet) {
-                restriction.append(":");
-            }
-            if (ubSet) {
-                restriction.append(String.format("%d", ilp.getUpperBound()));
-            }
+            addIntegerListParameterRestrictions(p, restriction);
         } else if (p instanceof DoubleListParameter) {
-            DoubleListParameter dlp = (DoubleListParameter) p;
-            boolean lbSet = Double.NEGATIVE_INFINITY != dlp.getLowerBound()
-                    .doubleValue();
-            boolean ubSet = Double.POSITIVE_INFINITY != dlp.getUpperBound()
-                    .doubleValue();
-            if (lbSet) {
-                restriction.append(String
-                        .format(Locale.ENGLISH, "%f", dlp.getLowerBound())
-                        .replaceAll("0*$", "").replaceAll("\\.$", ""));
-            }
-            if (ubSet || lbSet) {
-                restriction.append(":");
-            }
-            if (ubSet) {
-                restriction.append(String
-                        .format(Locale.ENGLISH, "%f", dlp.getUpperBound())
-                        .replaceAll("0*$", "").replaceAll("\\.$", ""));
-            }
+            addDoubleListParameterRestrictions(p, restriction);
         }
         if (!"".equals(restriction.toString())) {
             item.append(" restrictions=\"");
             item.append(restriction.toString());
-            item.append("\"");
+            item.append('\"');
+        }
+    }
+
+    private void addDoubleListParameterRestrictions(Parameter<?> p,
+            StringBuffer restriction) {
+        DoubleListParameter dlp = (DoubleListParameter) p;
+        boolean lbSet = Double.NEGATIVE_INFINITY != dlp.getLowerBound()
+                .doubleValue();
+        boolean ubSet = Double.POSITIVE_INFINITY != dlp.getUpperBound()
+                .doubleValue();
+        if (lbSet) {
+            restriction.append(String
+                    .format(Locale.ENGLISH, "%f", dlp.getLowerBound())
+                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+        }
+        if (ubSet || lbSet) {
+            restriction.append(':');
+        }
+        if (ubSet) {
+            restriction.append(String
+                    .format(Locale.ENGLISH, "%f", dlp.getUpperBound())
+                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+        }
+    }
+
+    private void addIntegerListParameterRestrictions(Parameter<?> p,
+            StringBuffer restriction) {
+        IntegerListParameter ilp = (IntegerListParameter) p;
+        boolean lbSet = Integer.MIN_VALUE != ilp.getLowerBound().doubleValue();
+        boolean ubSet = Integer.MAX_VALUE != ilp.getUpperBound().doubleValue();
+
+        if (lbSet) {
+            restriction.append(String.format("%d", ilp.getLowerBound()));
+        }
+        if (ubSet || lbSet) {
+            restriction.append(':');
+        }
+        if (ubSet) {
+            restriction.append(String.format("%d", ilp.getUpperBound()));
+        }
+    }
+
+    private void addIntegerParameterRestrictions(Parameter<?> p,
+            StringBuffer restriction) {
+        IntegerParameter ip = (IntegerParameter) p;
+        boolean lbSet = Integer.MIN_VALUE != ip.getLowerBound().doubleValue();
+        boolean ubSet = Integer.MAX_VALUE != ip.getUpperBound().doubleValue();
+        if (lbSet) {
+            restriction.append(String.format("%d", ip.getLowerBound()));
+        }
+        if (ubSet || lbSet) {
+            restriction.append(':');
+        }
+        if (ubSet) {
+            restriction.append(String.format("%d", ip.getUpperBound()));
+        }
+    }
+
+    private void addDoubleParameterRestrictions(Parameter<?> p,
+            StringBuffer restriction) {
+        DoubleParameter dp = (DoubleParameter) p;
+        boolean lbSet = Double.NEGATIVE_INFINITY != dp.getLowerBound()
+                .doubleValue();
+        boolean ubSet = Double.POSITIVE_INFINITY != dp.getUpperBound()
+                .doubleValue();
+        if (lbSet) {
+            restriction.append(String
+                    .format(Locale.ENGLISH, "%f", dp.getLowerBound())
+                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+        }
+        if (ubSet || lbSet) {
+            restriction.append(':');
+        }
+        if (ubSet) {
+            restriction.append(String
+                    .format(Locale.ENGLISH, "%f", dp.getUpperBound())
+                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
         }
     }
 
@@ -478,8 +529,9 @@ public class CTDConfigurationWriter {
         int smallerListSize = Math.min(prefix.size(), currentNodeState.size());
         for (; commonPrefix < smallerListSize; ++commonPrefix) {
             if (!prefix.get(commonPrefix).equals(
-                    currentNodeState.get(commonPrefix)))
+                    currentNodeState.get(commonPrefix))) {
                 break;
+            }
         }
 
         for (int i = commonPrefix; i < currentNodeState.size(); ++i) {
@@ -489,8 +541,9 @@ public class CTDConfigurationWriter {
         for (int i = commonPrefix; i < prefix.size(); ++i) {
             String description = currentConfig
                     .getSectionDescription(concatenate(prefix, i));
-            if (description == null)
+            if (description == null) {
                 description = "";
+            }
 
             streamPut(String.format("<NODE name=\"%s\" description=\"%s\">",
                     prefix.get(i), xmlEscapeText(description)));
@@ -514,7 +567,7 @@ public class CTDConfigurationWriter {
      * @param out
      * @throws Exception
      */
-    public void write(INodeConfiguration config) throws Exception {
+    public void write(INodeConfiguration config) throws IOException {
         currentIndent = 0;
         currentConfig = config;
 

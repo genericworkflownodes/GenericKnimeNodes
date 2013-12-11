@@ -86,6 +86,7 @@ public class CTDConfigurationWriterTest {
         assertEquals(2, levels.getValue().get(1).intValue());
         assertEquals(3, levels.getValue().get(2).intValue());
         assertEquals(false, levels.isAdvanced());
+        assertEquals(Integer.valueOf(1), levels.getLowerBound());
 
         StringChoiceParameter int_precision = (StringChoiceParameter) config
                 .getParameter("FileFilter.1.peak_options.int_precision");
