@@ -68,11 +68,12 @@ public class IntegerListParameter extends NumberListParameter<Integer> {
             String[] toks = s.split(SEPARATOR_TOKEN);
 
             for (int i = 0; i < toks.length; i++) {
-                this.getValue().add(Integer.parseInt(toks[i]));
+                getValue().add(Integer.parseInt(toks[i]));
             }
         } catch (NumberFormatException e) {
             throw new InvalidParameterValueException(
-                    "The given string cannot be transformed into a integer list.");
+                    "The given string cannot be transformed into a integer list.",
+                    e);
         }
     }
 
@@ -97,8 +98,9 @@ public class IntegerListParameter extends NumberListParameter<Integer> {
             return "";
         }
         StringBuffer sb = new StringBuffer();
-        for (Integer d : this.getValue()) {
-            sb.append(String.format("%d", d) + SEPARATOR_TOKEN);
+        for (Integer d : getValue()) {
+            sb.append(String.format("%d", d));
+            sb.append(SEPARATOR_TOKEN);
         }
         return sb.toString();
     }
@@ -106,7 +108,7 @@ public class IntegerListParameter extends NumberListParameter<Integer> {
     @Override
     public List<String> getStrings() {
         List<String> ret = new ArrayList<String>();
-        for (Integer i : this.getValue()) {
+        for (Integer i : getValue()) {
             ret.add(i.toString());
         }
         return ret;
@@ -117,7 +119,7 @@ public class IntegerListParameter extends NumberListParameter<Integer> {
         if (getValue() == null) {
             return "";
         }
-        String[] ret = new String[this.getValue().size()];
+        String[] ret = new String[getValue().size()];
         int idx = 0;
         for (Integer i : getValue()) {
             ret[idx++] = i.toString();
@@ -127,9 +129,9 @@ public class IntegerListParameter extends NumberListParameter<Integer> {
 
     @Override
     public void fillFromStrings(final String[] values) {
-        this.setValue(new ArrayList<Integer>());
+        setValue(new ArrayList<Integer>());
         for (int i = 0; i < values.length; i++) {
-            this.getValue().add(Integer.parseInt(values[i]));
+            getValue().add(Integer.parseInt(values[i]));
         }
     }
 }

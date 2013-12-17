@@ -46,7 +46,7 @@ public class StringChoiceParameter extends Parameter<String> {
     /**
      * List of labels for each of the allowed strings.
      */
-    private List<String> labels;
+    private List<String> m_labels;
 
     /**
      * Constructor.
@@ -59,7 +59,7 @@ public class StringChoiceParameter extends Parameter<String> {
     public StringChoiceParameter(final String key, final String value) {
         super(key, value);
         allowedValues = new ArrayList<String>(0);
-        labels = new ArrayList<String>(0);
+        m_labels = new ArrayList<String>(0);
     }
 
     /**
@@ -73,7 +73,7 @@ public class StringChoiceParameter extends Parameter<String> {
     public StringChoiceParameter(final String key, final List<String> values) {
         super(key, values.get(0));
         allowedValues = values;
-        labels = values;
+        m_labels = values;
 
         // for optional value we use the empty string as default value
         if (isOptional()) {
@@ -107,7 +107,7 @@ public class StringChoiceParameter extends Parameter<String> {
             final List<String> labels) {
         super(key, values.get(0));
         allowedValues = values;
-        this.labels = labels;
+        m_labels = labels;
 
         // for optional value we use null=unselected as default value
         if (isOptional()) {
@@ -164,12 +164,13 @@ public class StringChoiceParameter extends Parameter<String> {
      */
     public List<String> getLabels() {
         if (isOptional()) {
-            ArrayList<String> tLabels = new ArrayList<String>(labels.size() + 1);
+            ArrayList<String> tLabels = new ArrayList<String>(
+                    m_labels.size() + 1);
             tLabels.add("");
-            tLabels.addAll(labels);
+            tLabels.addAll(m_labels);
             return tLabels;
         } else {
-            return labels;
+            return m_labels;
         }
     }
 

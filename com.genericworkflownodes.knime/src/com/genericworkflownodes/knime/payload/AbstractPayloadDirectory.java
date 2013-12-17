@@ -28,7 +28,7 @@ import java.io.File;
  */
 abstract class AbstractPayloadDirectory implements IPayloadDirectory {
 
-    private static String BIN_EXT = "bin";
+    private static final String BIN_EXT = "bin";
 
     @Override
     public File getExecutableDirectory() {

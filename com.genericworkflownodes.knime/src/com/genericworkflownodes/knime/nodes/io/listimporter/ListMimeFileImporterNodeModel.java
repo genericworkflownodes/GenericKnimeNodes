@@ -58,7 +58,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
     static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
 
     /**
-     * Model containing the file names and optional extension
+     * Model containing the file names and optional extension.
      */
     private SettingsModelStringArray m_filenames = new SettingsModelStringArray(
             ListMimeFileImporterNodeModel.CFG_FILENAME, new String[] {});

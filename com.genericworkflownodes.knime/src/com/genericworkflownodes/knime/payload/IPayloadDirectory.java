@@ -34,7 +34,7 @@ public interface IPayloadDirectory {
     /**
      * Returns the file system location of the payload directory.
      * 
-     * @return
+     * @return The file system location of the payload directory.
      */
     File getPath();
 
@@ -42,7 +42,7 @@ public interface IPayloadDirectory {
      * Returns the directory where the executables are located. In most cases it
      * will be getPath()/bin.
      * 
-     * @return
+     * @return The executable directory.
      */
     File getExecutableDirectory();
 

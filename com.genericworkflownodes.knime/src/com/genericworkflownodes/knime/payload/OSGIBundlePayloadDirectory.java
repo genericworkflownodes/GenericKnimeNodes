@@ -35,7 +35,7 @@ import org.osgi.framework.Version;
 public class OSGIBundlePayloadDirectory extends AbstractPayloadDirectory
         implements IPayloadDirectory {
 
-    private final class VersionDirectoriesFilter implements FileFilter {
+    private static final class VersionDirectoriesFilter implements FileFilter {
         @Override
         public boolean accept(File fileToTest) {
             if (fileToTest.isDirectory()) {
@@ -46,7 +46,7 @@ public class OSGIBundlePayloadDirectory extends AbstractPayloadDirectory
         }
     }
 
-    private static String PAYLOAD_DIR_NAME = "payload";
+    private static final String PAYLOAD_DIR_NAME = "payload";
 
     private BundleContext pluginBundleContext;
     private File pluginPayloadDirectory;
@@ -57,6 +57,7 @@ public class OSGIBundlePayloadDirectory extends AbstractPayloadDirectory
      * package.
      * 
      * @param bundleContext
+     *            The OSGI bundle context.
      */
     public OSGIBundlePayloadDirectory(BundleContext bundleContext) {
         pluginBundleContext = bundleContext;

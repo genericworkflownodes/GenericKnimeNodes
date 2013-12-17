@@ -69,9 +69,9 @@ public abstract class Parameter<T> implements Serializable {
     /**
      * Constructor with unique m_key of parameter and generic m_value to store.
      * 
-     * @param m_key
+     * @param key
      *            the key of the parameter
-     * @param m_value
+     * @param value
      *            the generic value of the parameter
      */
     public Parameter(final String key, final T value) {
@@ -137,7 +137,7 @@ public abstract class Parameter<T> implements Serializable {
      * @param description
      *            the description text of the parameter.
      */
-    public void setDescription(final String description) {
+    public final void setDescription(final String description) {
         m_description = description;
     }
 
@@ -156,7 +156,7 @@ public abstract class Parameter<T> implements Serializable {
      * @param section
      *            the section of the parameter.
      */
-    public void setSection(final String section) {
+    public final void setSection(final String section) {
         m_section = section;
     }
 
@@ -185,7 +185,7 @@ public abstract class Parameter<T> implements Serializable {
     /**
      * Sets whether the parameter is deemed optional.
      * 
-     * @param m_isOptional
+     * @param isOptional
      *            flag whether parameter is optional.
      */
     public void setIsOptional(final boolean isOptional) {
@@ -240,7 +240,7 @@ public abstract class Parameter<T> implements Serializable {
      * @param newAdvanced
      *            New isAdvanced flag for the parameter.
      */
-    public void setAdvanced(final boolean newAdvanced) {
+    public final void setAdvanced(final boolean newAdvanced) {
         m_isAdvanced = newAdvanced;
     }
 
@@ -258,6 +258,6 @@ public abstract class Parameter<T> implements Serializable {
     /**
      * Separator token.
      */
-    public static String SEPARATOR_TOKEN = "@@@__@@@";
+    public static final String SEPARATOR_TOKEN = "@@@__@@@";
 
 }

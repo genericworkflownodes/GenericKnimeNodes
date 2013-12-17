@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -39,8 +39,10 @@ public class ListMimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
     /**
      * New pane for configuring ListMimeFileImporter node dialog. This is just a
      * suggestion to demonstrate possible default dialog components.
+     * 
+     * @param obj
      */
-    protected ListMimeFileImporterNodeDialog(Object obj) {
+    protected ListMimeFileImporterNodeDialog() {
         super();
         addDialogComponent(new DialogComponentMultiFileChooser(
                 new SettingsModelStringArray(

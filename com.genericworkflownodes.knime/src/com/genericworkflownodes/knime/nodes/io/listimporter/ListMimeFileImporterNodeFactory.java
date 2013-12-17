@@ -69,7 +69,7 @@ public class ListMimeFileImporterNodeFactory extends
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new ListMimeFileImporterNodeDialog(new Object());
+        return new ListMimeFileImporterNodeDialog();
     }
 
 }

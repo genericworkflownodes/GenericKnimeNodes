@@ -18,12 +18,10 @@
  */
 package com.genericworkflownodes.knime.parameter;
 
-import java.security.Policy.Parameters;
-
 import com.genericworkflownodes.knime.port.Port;
 
 /**
- * Describes the interface requirements for {@link Parameters} representing
+ * Describes the interface requirements for {@link Parameter} representing
  * either files or lists of files.
  * 
  * @author aiche

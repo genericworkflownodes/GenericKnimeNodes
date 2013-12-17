@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JButton;
@@ -67,7 +68,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
      * 
      * @author aiche
      */
-    private class FileListModel extends AbstractListModel {
+    private static class FileListModel extends AbstractListModel {
         /**
          * The serialVersionUID.
          */
@@ -76,7 +77,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         /**
          * The resulting files.
          */
-        private ArrayList<File> files;
+        private List<File> files;
 
         @Override
         public Object getElementAt(final int index) {
@@ -145,7 +146,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
          * 
          * @return The list of stored files.
          */
-        public ArrayList<File> getFiles() {
+        public List<File> getFiles() {
             return files;
         }
 
@@ -214,10 +215,6 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         SpringLayout springLayout = new SpringLayout();
         getComponentPanel().setLayout(springLayout);
-
-        // final JPanel panel = new JPanel();
-        // SpringLayout springLayout = new SpringLayout();
-        // panel.setLayout(springLayout);
 
         // Create some items to add to the list
         listbox = new JList(new FileListModel(model));

@@ -57,20 +57,39 @@ public class StringListParameter extends Parameter<List<String>> implements
         validValues.clear();
     }
 
+    /**
+     * Sets a list of valid values for the {@link StringListParameter}.
+     * 
+     * @param newRestrictions
+     *            The new valid values.
+     */
     public void setRestrictions(List<String> newRestrictions) {
         validValues = newRestrictions;
     }
 
+    /**
+     * Appends a single value as valid value to the existing valid values.
+     * 
+     * @param allowedValue
+     *            The appended valid value.
+     */
     public void addRestrictions(String allowedValue) {
-        if (!validValues.contains(allowedValue))
+        if (!validValues.contains(allowedValue)) {
             validValues.add(allowedValue);
+        }
     }
 
+    /**
+     * Returns the valid values of the {@link StringListParameter}.
+     * 
+     * @return The valid values.
+     */
     public String[] getRestrictions() {
-        if (!validValues.isEmpty())
+        if (!validValues.isEmpty()) {
             return validValues.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-        else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -99,16 +118,17 @@ public class StringListParameter extends Parameter<List<String>> implements
         }
         StringBuffer sb = new StringBuffer();
         for (String s : getValue()) {
-            sb.append(s + SEPARATOR_TOKEN);
+            sb.append(s);
+            sb.append(SEPARATOR_TOKEN);
         }
         return sb.toString();
     }
 
     @Override
     public boolean validate(final List<String> values) {
-        if (validValues.isEmpty())
+        if (validValues.isEmpty()) {
             return true;
-        else {
+        } else {
             return validValues.containsAll(values);
         }
     }

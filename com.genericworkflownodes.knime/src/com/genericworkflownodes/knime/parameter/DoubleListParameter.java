@@ -73,7 +73,8 @@ public class DoubleListParameter extends NumberListParameter<Double> {
             }
         } catch (NumberFormatException e) {
             throw new InvalidParameterValueException(
-                    "The given string cannot be transformed into a double list.");
+                    "The given string cannot be transformed into a double list.",
+                    e);
         }
     }
 
@@ -100,7 +101,8 @@ public class DoubleListParameter extends NumberListParameter<Double> {
         }
         StringBuffer sb = new StringBuffer();
         for (Double d : getValue()) {
-            sb.append(String.format(Locale.ENGLISH, "%f", d) + SEPARATOR_TOKEN);
+            sb.append(String.format(Locale.ENGLISH, "%f", d));
+            sb.append(SEPARATOR_TOKEN);
         }
         return sb.toString();
     }

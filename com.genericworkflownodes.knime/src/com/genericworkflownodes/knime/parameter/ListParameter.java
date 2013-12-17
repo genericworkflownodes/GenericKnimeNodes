@@ -43,6 +43,7 @@ public interface ListParameter {
      * @param values
      *            list of strings
      * @throws InvalidParameterValueException
+     *             If the values doesn't contain valid list elements.
      */
     void fillFromStrings(String[] values) throws InvalidParameterValueException;
 }

@@ -47,8 +47,8 @@ public class TemporaryPayloadDirectory extends AbstractPayloadDirectory
             super(new File(System.getProperty("java.io.tmpdir"), prefix + "-"
                     + Long.toString(System.nanoTime())).getAbsolutePath());
 
-            this.mkdirs();
-            this.deleteOnExit();
+            mkdirs();
+            deleteOnExit();
         }
     }
 
@@ -58,6 +58,12 @@ public class TemporaryPayloadDirectory extends AbstractPayloadDirectory
      */
     private TemporaryDirectory tmpDirectory;
 
+    /**
+     * Creates a new temporary payload directory using the given prefix.
+     * 
+     * @param prefix
+     *            Prefix of the payload directory.
+     */
     public TemporaryPayloadDirectory(String prefix) {
         try {
             tmpDirectory = new TemporaryDirectory(prefix);

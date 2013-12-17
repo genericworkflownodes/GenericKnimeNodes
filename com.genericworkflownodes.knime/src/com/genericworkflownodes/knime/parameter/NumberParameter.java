@@ -37,12 +37,12 @@ public abstract class NumberParameter<T extends Number> extends Parameter<T> {
     /**
      * The lower bound of the given numerical parameter.
      */
-    private T lowerBound;
+    private T m_lowerBound;
 
     /**
      * The upper bound of the given numerical parameter.
      */
-    private T upperBound;
+    private T m_upperBound;
 
     /**
      * Constructor.
@@ -59,8 +59,8 @@ public abstract class NumberParameter<T extends Number> extends Parameter<T> {
     public NumberParameter(final String key, final T value, final T lowerBound,
             final T upperBound) {
         super(key, value);
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
+        m_lowerBound = lowerBound;
+        m_upperBound = upperBound;
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class NumberParameter<T extends Number> extends Parameter<T> {
      * @return lower bound
      */
     public T getLowerBound() {
-        return lowerBound;
+        return m_lowerBound;
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class NumberParameter<T extends Number> extends Parameter<T> {
      *            The new lower bound for the given numerical parameter.
      */
     public void setLowerBound(final T lowerBound) {
-        this.lowerBound = lowerBound;
+        m_lowerBound = lowerBound;
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class NumberParameter<T extends Number> extends Parameter<T> {
      * @return upper bound
      */
     public T getUpperBound() {
-        return upperBound;
+        return m_upperBound;
     }
 
     /**
@@ -98,6 +98,6 @@ public abstract class NumberParameter<T extends Number> extends Parameter<T> {
      *            The new upper bound for the given numerical parameter.
      */
     public void setUpperBound(final T upperBound) {
-        this.upperBound = upperBound;
+        m_upperBound = upperBound;
     }
 }
