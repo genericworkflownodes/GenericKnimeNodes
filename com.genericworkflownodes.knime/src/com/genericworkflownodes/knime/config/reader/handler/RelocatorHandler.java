@@ -33,27 +33,27 @@ import com.genericworkflownodes.knime.relocator.Relocator;
  */
 public class RelocatorHandler extends DefaultHandler {
 
-    private static String ATTR_REFERENCE = "reference";
-    private static String ATTR_PATTERN = "pattern";
+    private static final String ATTR_REFERENCE = "reference";
+    private static final String ATTR_PATTERN = "pattern";
 
-    private static String ELEM_RELOCATORS = "relocators";
+    private static final String ELEM_RELOCATORS = "relocators";
 
     /**
      * The parent handler that invoked this handler for a sub tree of the XML
      * document.
      */
-    private CTDHandler parentHandler;
+    private CTDHandler m_parentHandler;
 
     /**
      * The {@link XMLReader} that processes the entire document.
      */
-    private XMLReader xmlReader;
+    private XMLReader m_xmlReader;
 
     /**
      * The {@link NodeConfiguration} that will be filled while parsing the
      * document.
      */
-    private NodeConfiguration config;
+    private NodeConfiguration m_config;
 
     /**
      * C'tor.
@@ -68,9 +68,9 @@ public class RelocatorHandler extends DefaultHandler {
      */
     public RelocatorHandler(XMLReader xmlReader, CTDHandler parentHandler,
             NodeConfiguration config) {
-        this.xmlReader = xmlReader;
-        this.parentHandler = parentHandler;
-        this.config = config;
+        m_xmlReader = xmlReader;
+        m_parentHandler = parentHandler;
+        m_config = config;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class RelocatorHandler extends DefaultHandler {
         String reference = attributes.getValue(ATTR_REFERENCE);
         String pattern = attributes.getValue(ATTR_PATTERN);
 
-        config.getRelocators().add(new Relocator(reference, pattern));
+        m_config.getRelocators().add(new Relocator(reference, pattern));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class RelocatorHandler extends DefaultHandler {
 
         // get back to the parent handler
         if (ELEM_RELOCATORS.equals(name)) {
-            xmlReader.setContentHandler(parentHandler);
+            m_xmlReader.setContentHandler(m_parentHandler);
         }
     }
 }

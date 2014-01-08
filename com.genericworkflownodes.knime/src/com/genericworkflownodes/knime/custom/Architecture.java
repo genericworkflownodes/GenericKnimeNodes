@@ -51,6 +51,14 @@ public enum Architecture {
         return thisArch;
     }
 
+    /**
+     * Creates a new {@link Architecture} object from the given string.
+     * 
+     * @param arch
+     *            The string that should be converted into an
+     *            {@link Architecture}
+     * @return The {@link Architecture} corresponding to the given string.
+     */
     public static Architecture fromString(final String arch) {
         if ("64".equals(arch)) {
             return X86_64;
@@ -79,6 +87,11 @@ public enum Architecture {
         return archAsString;
     }
 
+    /**
+     * Returns the {@link Architecture} as an OSGI conform string.
+     * 
+     * @return The architecture as OSGI conform string.
+     */
     public String toOsgiArch() {
         String osgiArch = "";
 
@@ -88,6 +101,7 @@ public enum Architecture {
             break;
         case X86_64:
             osgiArch = "x86_64";
+            break;
         default:
             break;
         }

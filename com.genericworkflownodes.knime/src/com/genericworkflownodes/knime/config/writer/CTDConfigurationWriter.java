@@ -55,6 +55,8 @@ import com.genericworkflownodes.util.StringUtils;
  */
 public class CTDConfigurationWriter {
 
+    private static final String REMOVE_TRAILING_DOT_RE = "\\.$";
+    private static final String REMOVE_TRAILING_0_RE = "0*$";
     private BufferedWriter outputWriter;
     private int currentIndent;
     private List<String> currentNodeState;
@@ -205,7 +207,6 @@ public class CTDConfigurationWriter {
     private List<String> getPrefix(String paramKey) {
         String[] keys = paramKey.split("\\.");
         assert keys.length > 1;
-
         List<String> prefixes = new ArrayList<String>();
         for (int i = 0; i < (keys.length - 1); ++i) {
             prefixes.add(keys[i]);
@@ -264,7 +265,7 @@ public class CTDConfigurationWriter {
         addDescription(p, item);
 
         // add tags
-        addParameterAttributes(p, item, key);
+        addParameterAttributes(p, item);
 
         // restrictions
         if (p instanceof BoolParameter) {
@@ -303,7 +304,7 @@ public class CTDConfigurationWriter {
         }
 
         // add tags
-        addParameterAttributes(p, item, key);
+        addParameterAttributes(p, item);
 
         item.append('>');
         streamPut(item.toString());
@@ -319,19 +320,7 @@ public class CTDConfigurationWriter {
     private void addItemType(String key, Parameter<?> p, StringBuffer item) {
         item.append(" type=\"");
         if (p instanceof FileParameter) {
-            if (currentConfig.getInputPortByName(key) != null) {
-                if (currentConfig.getInputPortByName(key).isPrefix()) {
-                    item.append("input-prefix");
-                } else {
-                    item.append("input-file");
-                }
-            } else if (currentConfig.getOutputPortByName(key) != null) {
-                if (currentConfig.getOutputPortByName(key).isPrefix()) {
-                    item.append("output-prefix");
-                } else {
-                    item.append("output-file");
-                }
-            }
+            addFileType(key, item);
         } else if (p instanceof BoolParameter || p instanceof StringParameter
                 || p instanceof StringChoiceParameter) {
             item.append("string");
@@ -343,22 +332,26 @@ public class CTDConfigurationWriter {
         item.append('\"');
     }
 
+    private void addFileType(String key, StringBuffer item) {
+        if (currentConfig.getInputPortByName(key) != null) {
+            if (currentConfig.getInputPortByName(key).isPrefix()) {
+                item.append("input-prefix");
+            } else {
+                item.append("input-file");
+            }
+        } else if (currentConfig.getOutputPortByName(key) != null) {
+            if (currentConfig.getOutputPortByName(key).isPrefix()) {
+                item.append("output-prefix");
+            } else {
+                item.append("output-file");
+            }
+        }
+    }
+
     private void addListType(String key, Parameter<?> p, StringBuffer item) {
         item.append(" type=\"");
         if (p instanceof FileListParameter) {
-            if (currentConfig.getInputPortByName(key) != null) {
-                if (currentConfig.getInputPortByName(key).isPrefix()) {
-                    item.append("input-prefix");
-                } else {
-                    item.append("input-file");
-                }
-            } else if (currentConfig.getOutputPortByName(key) != null) {
-                if (currentConfig.getOutputPortByName(key).isPrefix()) {
-                    item.append("output-prefix");
-                } else {
-                    item.append("output-file");
-                }
-            }
+            addFileType(key, item);
         } else if (p instanceof StringListParameter) {
             item.append("string");
         } else if (p instanceof DoubleListParameter) {
@@ -382,8 +375,7 @@ public class CTDConfigurationWriter {
         item.append('\"');
     }
 
-    private void addParameterAttributes(Parameter<?> p, StringBuffer item,
-            String key) {
+    private void addParameterAttributes(Parameter<?> p, StringBuffer item) {
         item.append(" advanced=\"" + (p.isAdvanced() ? "true" : "false") + "\"");
         item.append(" required=\"" + (p.isOptional() ? "false" : "true") + "\"");
     }
@@ -442,7 +434,8 @@ public class CTDConfigurationWriter {
         if (lbSet) {
             restriction.append(String
                     .format(Locale.ENGLISH, "%f", dlp.getLowerBound())
-                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+                    .replaceAll(REMOVE_TRAILING_0_RE, "")
+                    .replaceAll(REMOVE_TRAILING_DOT_RE, ""));
         }
         if (ubSet || lbSet) {
             restriction.append(':');
@@ -450,7 +443,8 @@ public class CTDConfigurationWriter {
         if (ubSet) {
             restriction.append(String
                     .format(Locale.ENGLISH, "%f", dlp.getUpperBound())
-                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+                    .replaceAll(REMOVE_TRAILING_0_RE, "")
+                    .replaceAll(REMOVE_TRAILING_DOT_RE, ""));
         }
     }
 
@@ -497,7 +491,8 @@ public class CTDConfigurationWriter {
         if (lbSet) {
             restriction.append(String
                     .format(Locale.ENGLISH, "%f", dp.getLowerBound())
-                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+                    .replaceAll(REMOVE_TRAILING_0_RE, "")
+                    .replaceAll(REMOVE_TRAILING_DOT_RE, ""));
         }
         if (ubSet || lbSet) {
             restriction.append(':');
@@ -505,7 +500,8 @@ public class CTDConfigurationWriter {
         if (ubSet) {
             restriction.append(String
                     .format(Locale.ENGLISH, "%f", dp.getUpperBound())
-                    .replaceAll("0*$", "").replaceAll("\\.$", ""));
+                    .replaceAll(REMOVE_TRAILING_0_RE, "")
+                    .replaceAll(REMOVE_TRAILING_DOT_RE, ""));
         }
     }
 
@@ -563,9 +559,9 @@ public class CTDConfigurationWriter {
      * Writes the given {@link INodeConfiguration} to the stream.
      * 
      * @param config
-     * @param store
-     * @param out
-     * @throws Exception
+     *            The config that should be written to the stream.
+     * @throws IOException
+     *             If io operations fail.
      */
     public void write(INodeConfiguration config) throws IOException {
         currentIndent = 0;

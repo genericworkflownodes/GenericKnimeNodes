@@ -51,15 +51,28 @@ import com.genericworkflownodes.util.Helper;
  */
 public class MimeFileViewerNodeModel extends NodeModel {
 
-    public static String NUM_LINES = "MAX_NUMBER_LINES";
+    private static final int BUFFER_SIZE = 2048;
+
+    /** 
+     * 
+     */
+    public static final String NUM_LINES = "MAX_NUMBER_LINES";
 
     private SettingsModelInteger max_num_lines = MimeFileViewerNodeDialog
             .createIntModel();
 
-    private String data;
+    /**
+     * The file content loaded from the file.
+     */
+    private String m_data;
 
+    /**
+     * Returns the content read from the mime file.
+     * 
+     * @return The file content.
+     */
     public String getContent() {
-        return data;
+        return m_data;
     }
 
     /**
@@ -75,7 +88,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        data = "";
+        m_data = "";
 
     }
 
@@ -116,8 +129,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
         @SuppressWarnings("unchecked")
         Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
 
-        int BUFFSIZE = 2048;
-        byte[] BUFFER = new byte[BUFFSIZE];
+        byte[] BUFFER = new byte[BUFFER_SIZE];
 
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
@@ -128,11 +140,11 @@ public class MimeFileViewerNodeModel extends NodeModel {
                 InputStream in = zip.getInputStream(entry);
                 int len;
                 int totlen = 0;
-                while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
+                while ((len = in.read(BUFFER, 0, BUFFER_SIZE)) >= 0) {
                     System.arraycopy(BUFFER, 0, data, totlen, len);
                     totlen += len;
                 }
-                this.data = new String(data);
+                m_data = new String(data);
             }
         }
         zip.close();
@@ -149,7 +161,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
                 new File(internDir, "loadeddata")));
         ZipEntry entry = new ZipEntry("rawdata.bin");
         out.putNextEntry(entry);
-        out.write(data.getBytes());
+        out.write(m_data.getBytes());
         out.close();
     }
 
@@ -166,7 +178,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
         File file = new File(po.getURIContents().get(0).getURI());
 
         int maxLines = max_num_lines.getIntValue();
-        data = Helper.readFileSummary(file, maxLines);
+        m_data = Helper.readFileSummary(file, maxLines);
 
         return new PortObject[] {};
     }

@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.custom;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -42,12 +41,6 @@ import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLoca
  * @author aiche
  */
 public abstract class GenericActivator extends AbstractUIPlugin {
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOGGER = Logger
-            .getLogger(GenericActivator.class.getCanonicalName());
 
     /**
      * Plugin properties.
@@ -165,7 +158,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
     /**
      * Returns a {@link List} of {@link ExternalTool}s contained in the plugin.
      * 
-     * @return
+     * @return the list of tools in this plugin.
      */
     public abstract List<ExternalTool> getTools();
 

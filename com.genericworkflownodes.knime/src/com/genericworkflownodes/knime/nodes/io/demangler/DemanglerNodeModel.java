@@ -160,7 +160,7 @@ public class DemanglerNodeModel extends NodeModel {
         if (availableDemanglers == null || availableDemanglers.size() == 0) {
             throw new InvalidSettingsException(
                     "No IDemangler found for "
-                            + fileExtension.toString()
+                            + fileExtension
                             + ". Please register before transforming the a file with this MIMEType to a KNIME table.");
         }
 

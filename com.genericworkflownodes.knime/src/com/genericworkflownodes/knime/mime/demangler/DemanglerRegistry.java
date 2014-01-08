@@ -37,11 +37,6 @@ import org.knime.core.node.NodeLogger;
 public class DemanglerRegistry implements IDemanglerRegistry {
 
     /**
-     * The managed registry.
-     */
-    private static IDemanglerRegistry registry;
-
-    /**
      * The id of the used extension point.
      */
     private static final String EXTENSION_POINT_ID = "com.genericworkflownodes.knime.mime.demangler.Demangler";
@@ -52,11 +47,29 @@ public class DemanglerRegistry implements IDemanglerRegistry {
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(DemanglerRegistry.class);
 
+    /**
+     * Private c'tor to ensure singleton pattern.
+     */
+    private DemanglerRegistry() {
+    }
+
+    /**
+     * Initialization-on-demand holder idiom holder for the DemanglerRegistry
+     * instance.
+     * 
+     * @author aiche
+     */
+    private static class LazyHolder {
+        private static final DemanglerRegistry INSTANCE = new DemanglerRegistry();
+    }
+
+    /**
+     * Returns the global IDemanglerRegistry.
+     * 
+     * @return The IDemanglerRegistry.
+     */
     public static IDemanglerRegistry getDemanglerRegistry() {
-        if (registry == null) {
-            registry = new DemanglerRegistry();
-        }
-        return registry;
+        return LazyHolder.INSTANCE;
     }
 
     @Override

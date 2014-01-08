@@ -37,14 +37,12 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
-import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
-import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
 import com.genericworkflownodes.knime.parameter.IntegerParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
@@ -191,8 +189,8 @@ public class ParamHandler extends DefaultHandler {
      * @param parentHandler
      *            The parent handler for the global document.
      * @param config
-     *            The {@link NodeConfiguration} that will be filled while
-     *            parsing the document.
+     *            The NodeConfiguration that will be filled while parsing the
+     *            document.
      */
     public ParamHandler(XMLReader xmlReader, CTDHandler parentHandler,
             NodeConfiguration config) {
@@ -280,9 +278,7 @@ public class ParamHandler extends DefaultHandler {
                 m_listValues.add(listValue);
             }
         } catch (Exception e) {
-            //
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -296,10 +292,10 @@ public class ParamHandler extends DefaultHandler {
 
     /**
      * Extracts common parameters like isAdvanced, isOptional, and description
-     * from the {@link Attributes} and passes them to the current parameter.
+     * from the Attributes and passes them to the current parameter.
      * 
      * @param attributes
-     *            The {@link Attributes} containing the necessary values.
+     *            The Attributes containing the necessary values.
      */
     private void setCommonParameters(Attributes attributes) {
         // set flags for parameter
@@ -315,9 +311,9 @@ public class ParamHandler extends DefaultHandler {
      * Convert the current element into a {@link StringListParameter}.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void handleStringList(String paramName, Attributes attributes) {
         if (isPort(attributes)) {
@@ -335,12 +331,12 @@ public class ParamHandler extends DefaultHandler {
 
     /**
      * Convert the current element into a Port and the respective
-     * {@link IFileParameter}.
+     * IFileParameter.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter.
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void createPort(String paramName, Attributes attributes,
             boolean isList) {
@@ -429,12 +425,12 @@ public class ParamHandler extends DefaultHandler {
     }
 
     /**
-     * Convert the current element into a {@link DoubleListParameter}.
+     * Convert the current element into a DoubleListParameter.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void handleDoubleList(String paramName, Attributes attributes) {
         m_currentParameter = new DoubleListParameter(paramName,
@@ -453,12 +449,12 @@ public class ParamHandler extends DefaultHandler {
     }
 
     /**
-     * Convert the current element into a {@link IntegerListParameter}.
+     * Convert the current element into a IntegerListParameter.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void handleIntList(String paramName, Attributes attributes) {
         m_currentParameter = new IntegerListParameter(paramName,
@@ -477,14 +473,14 @@ public class ParamHandler extends DefaultHandler {
     }
 
     /**
-     * Convert the current element into a {@link StringParameter}.
+     * Convert the current element into a StringParameter.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter
      * @param paramValue
-     *            The value of the {@link Parameter} as given in the param file.
+     *            The value of the Parameter as given in the param file.
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void handleStringType(String paramName, String paramValue,
             Attributes attributes) {
@@ -510,12 +506,11 @@ public class ParamHandler extends DefaultHandler {
     }
 
     /**
-     * Returns true if the {@link Parameter} is a {@link BoolParameter}.
+     * Returns true if the Parameter is a BoolParameter.
      * 
      * @param restrictions
      *            The restrictions encoding the bool restrictions.
-     * @return True if the parameter is a {@link BoolParameter}, false
-     *         otherwise.
+     * @return True if the parameter is a BoolParameter, false otherwise.
      */
     private boolean isBooleanParameter(final String restrictions) {
         if (restrictions == null || restrictions.trim().length() == 0) {
@@ -555,14 +550,14 @@ public class ParamHandler extends DefaultHandler {
     }
 
     /**
-     * Convert the current element into a {@link IntegerParameter}.
+     * Convert the current element into a IntegerParameter.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter
      * @param paramValue
-     *            The value of the {@link Parameter} as given in the param file.
+     *            The value of the Parameter as given in the param file.
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void handleIntType(final String paramName, final String paramValue,
             Attributes attributes) {
@@ -581,14 +576,14 @@ public class ParamHandler extends DefaultHandler {
     }
 
     /**
-     * Convert the current element into a {@link DoubleParameter}.
+     * Convert the current element into a DoubleParameter.
      * 
      * @param paramName
-     *            The name of the {@link Parameter}
+     *            The name of the Parameter
      * @param paramValue
-     *            The value of the {@link Parameter} as given in the param file.
+     *            The value of the Parameter as given in the param file.
      * @param attributes
-     *            Attributes of the {@link Parameter}.
+     *            Attributes of the Parameter.
      */
     private void handleDoubleType(final String paramName,
             final String paramValue, Attributes attributes) {
@@ -658,8 +653,8 @@ public class ParamHandler extends DefaultHandler {
      * 
      * @param attributes
      *            The attributes to check for the tags attribute.
-     * @return A {@link Set} of all tags. The {@link Set} is empty if no tags
-     *         were given or the tags attribute was not given at all.
+     * @return A Set of all tags. The Set is empty if no tags were given or the
+     *         tags attribute was not given at all.
      */
     private Set<String> getTags(final Attributes attributes) {
         String tags = attributes.getValue(ATTR_TAGS);
@@ -694,7 +689,8 @@ public class ParamHandler extends DefaultHandler {
                 }
             } catch (InvalidParameterValueException e) {
                 // should not happen
-                e.printStackTrace();
+                LOG.log(Level.SEVERE, "Got InvalidParameterValueException: "
+                        + e.getMessage());
             }
             m_extractedParameters.put(
                     m_currentPath + m_currentParameter.getKey(),
@@ -710,7 +706,7 @@ public class ParamHandler extends DefaultHandler {
 
     /**
      * Translate all parameters extracted from the ParamXML file into the given
-     * {@link INodeConfiguration}.
+     * INodeConfiguration.
      */
     private void transferValuesToConfig() {
         // add parameters
