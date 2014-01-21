@@ -36,7 +36,8 @@ import org.knime.core.node.port.PortObjectSpec;
  * 
  * @author aiche
  */
-public class PrefixURIPortObject extends URIPortObject {
+public class PrefixURIPortObject extends URIPortObject implements
+        IPrefixURIPortObject {
 
     /**
      * The key used to save the additional model settings or the
@@ -94,11 +95,7 @@ public class PrefixURIPortObject extends URIPortObject {
         m_prefix = prefix;
     }
 
-    /**
-     * Returns the prefix that was used to generate the associated file list.
-     * 
-     * @return The prefix.
-     */
+    @Override
     public String getPrefix() {
         return m_prefix;
     }

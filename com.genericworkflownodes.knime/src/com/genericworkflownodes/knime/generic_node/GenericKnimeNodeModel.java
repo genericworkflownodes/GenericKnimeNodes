@@ -50,6 +50,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.base.data.prefixport.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.prefixport.PrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
@@ -740,7 +741,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
             if (isPrefix) {
                 // we pass only the prefix to the tool
-                PrefixURIPortObject puri = (PrefixURIPortObject) inData[i];
+                IPrefixURIPortObject puri = (IPrefixURIPortObject) inData[i];
                 ((FileParameter) p).setValue(puri.getPrefix());
             } else if (isMultiFile) {
                 // we need to collect all filenames and then set them as a batch
