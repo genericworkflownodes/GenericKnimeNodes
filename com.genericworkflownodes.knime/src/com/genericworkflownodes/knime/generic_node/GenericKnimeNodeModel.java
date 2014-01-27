@@ -70,6 +70,7 @@ import com.genericworkflownodes.util.FileStashFactory;
 import com.genericworkflownodes.util.FileStashProperties;
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.IFileStash;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -812,8 +813,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
                 // add prefix to and files to output list
                 for (File out_file : files) {
-                    uris.add(new URIContent(out_file.toURI(),
-                            getExtension(out_file.getName())));
+                    uris.add(new URIContent(out_file.toURI(), MIMETypeHelper
+                            .getExtension(out_file.getName())));
                 }
 
                 outports[i] = new PrefixURIPortObject(uris, f.getAbsolutePath());
@@ -821,11 +822,11 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                 // multi output file
                 for (URI filename : outputFileNames.get(i)) {
                     someFileName = filename.getPath();
-                    uris.add(new URIContent(filename, getExtension(filename
-                            .getPath())));
+                    uris.add(new URIContent(filename, MIMETypeHelper
+                            .getExtension(filename.getPath())));
                 }
 
-                String mimeType = getExtension(someFileName);
+                String mimeType = MIMETypeHelper.getExtension(someFileName);
                 if (mimeType == null)
                     throw new NonExistingMimeTypeException(someFileName);
 
@@ -835,20 +836,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         }
 
         return outports;
-    }
-
-    /**
-     * Extracts the extension from the given path.
-     * 
-     * @param path
-     * @return
-     */
-    private String getExtension(String path) {
-        if (path.lastIndexOf('.') == -1) {
-            return "";
-        } else {
-            return path.substring(path.lastIndexOf('.') + 1);
-        }
     }
 
 }
