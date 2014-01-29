@@ -21,13 +21,10 @@ package com.genericworkflownodes.knime.base.data.prefixport;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComponent;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.filestore.FileStorePortObject;
 import org.knime.core.data.uri.IURIPortObject;
@@ -53,14 +50,30 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 public class FileStoreURIPortObject extends FileStorePortObject implements
         IURIPortObject {
 
+    /**
+     * Access to the PortObjectSerializer.
+     * 
+     * @return The PortObjectSerializer.
+     */
     public static final PortObjectSerializer<FileStoreURIPortObject> getPortObjectSerializer() {
         return FileStoreURIPortObjectSerializer.getSerializer();
     }
 
     /**
+     * The key of the rel-path setting stored while loading/saving.
+     */
+    private static final String SETTINGS_KEY_REL_PATH = "rel-path";
+
+    /**
      * List of files stored in the port object.
      */
     private List<URIContent> m_uriContents;
+
+    /**
+     * List of paths stored inside the underlying filestore, relative to it's
+     * location.
+     */
+    private List<String> m_relPaths;
 
     /**
      * The PortObjectSpec of the underlying content.
@@ -76,6 +89,7 @@ public class FileStoreURIPortObject extends FileStorePortObject implements
     public FileStoreURIPortObject(FileStore fs) {
         super(fs);
         m_uriContents = new ArrayList<URIContent>();
+        m_relPaths = new ArrayList<String>();
     }
 
     /**
@@ -84,6 +98,7 @@ public class FileStoreURIPortObject extends FileStorePortObject implements
      */
     FileStoreURIPortObject() {
         m_uriContents = new ArrayList<URIContent>();
+        m_relPaths = new ArrayList<String>();
     }
 
     /**
@@ -92,7 +107,7 @@ public class FileStoreURIPortObject extends FileStorePortObject implements
      * 
      * @return A folder name.
      */
-    private File getFile() {
+    private File getFileStoreRootDirectory() {
         File fsf = getFileStore().getFile();
         // make sure that it is a directory as we want to store all content in
         // this directory
@@ -102,14 +117,24 @@ public class FileStoreURIPortObject extends FileStorePortObject implements
         return fsf;
     }
 
+    /**
+     * Adds the given file to the {@link FileStoreURIPortObject}.
+     * 
+     * @param filename
+     *            The relative path that should be stored inside the file-store,
+     *            e.g., outfile.txt or subfolder/outfile.txt.
+     * @return A {@link File} object pointing to the registered file.
+     */
     public File registerFile(String filename) {
-        File child = new File(getFile(), filename);
+        // register the URIContent
+        File child = new File(getFileStoreRootDirectory(), filename);
         URIContent uric = new URIContent(child.toURI(),
                 MIMETypeHelper.getMIMEtypeExtension(filename));
 
         // update content and spec accordingly
         m_uriContents.add(uric);
         m_uriPortObjectSpec = URIPortObjectSpec.create(m_uriContents);
+        m_relPaths.add(filename);
 
         // give the file object to the client so he can work with it
         return child;
@@ -148,25 +173,28 @@ public class FileStoreURIPortObject extends FileStorePortObject implements
      */
     void save(final ModelContentWO model, final ExecutionMonitor exec)
             throws CanceledExecutionException {
-        int i = 0;
-        for (URIContent uri : m_uriContents) {
+        // store manged URIs
+        for (int i = 0; i < m_uriContents.size() && i < m_relPaths.size(); ++i) {
             ModelContentWO child = model.addModelContent("file-" + i);
-            uri.save(child);
-            i++;
+            m_uriContents.get(i).save(child);
+            child.addString(SETTINGS_KEY_REL_PATH, m_relPaths.get(i));
         }
     }
 
     void load(final ModelContentRO model, PortObjectSpec spec,
             ExecutionMonitor exec) throws InvalidSettingsException {
         List<URIContent> list = new ArrayList<URIContent>();
+        List<String> relPathList = new ArrayList<String>();
         for (String key : model.keySet()) {
             if (key.startsWith("file-")) {
                 ModelContentRO child = model.getModelContent(key);
                 list.add(URIContent.load(child));
+                relPathList.add(child.getString(SETTINGS_KEY_REL_PATH));
             }
         }
 
         m_uriContents = list;
+        m_relPaths = relPathList;
         m_uriPortObjectSpec = (URIPortObjectSpec) spec;
     }
 
@@ -185,40 +213,28 @@ public class FileStoreURIPortObject extends FileStorePortObject implements
         // call super if they have something todo
         super.postConstruct();
 
-        // validate m_uriContents against content of the file store
+        List<URIContent> relocatedURIContents = new ArrayList<URIContent>();
 
-        for (URIContent content : m_uriContents) {
-            System.out.println("Validating: " + content.getURI().toString());
-        }
-
-        // clear the current state
-        // m_uriContents.clear();
-
-        // construct uri_content/spec from directory content (recursively)
-        // fillFromFile(getFileStore().getFile());
-        // m_uriPortObjectSpec = URIPortObjectSpec.create(m_uriContents);
-    }
-
-    private void fillFromFile(File fs_dir) {
-        Iterator<File> fIt = FileUtils.iterateFiles(fs_dir,
-                TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-
-        while (fIt.hasNext()) {
-            File currentFile = fIt.next();
-            if (!currentFile.isDirectory()) {
-                final String ext = MIMETypeHelper
-                        .getMIMEtypeExtension(currentFile.getAbsolutePath());
-                m_uriContents.add(new URIContent(currentFile.toURI(), ext));
-            } else {
-                fillFromFile(currentFile);
+        //
+        for (int i = 0; i < m_uriContents.size() && i < m_relPaths.size(); ++i) {
+            File fileInNewFileStore = new File(getFileStoreRootDirectory(), m_relPaths.get(i));
+            if (!fileInNewFileStore.exists()) {
+                throw new IOException(String.format(
+                        "Could not locate file %s in FileStoreURIPortObject.",
+                        m_relPaths.get(i)));
             }
 
+            // create new URIContent using the rel path and the old extension
+            // infos
+            relocatedURIContents.add(new URIContent(fileInNewFileStore.toURI(),
+                    m_uriContents.get(i).getExtension()));
         }
+
+        m_uriContents = relocatedURIContents;
     }
 
     @Override
     protected void flushToFileStore() throws IOException {
         super.flushToFileStore();
-        // nothing todo .. for now
     }
 }
