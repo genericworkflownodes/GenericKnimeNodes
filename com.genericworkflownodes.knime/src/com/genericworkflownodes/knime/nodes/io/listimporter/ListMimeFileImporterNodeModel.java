@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -44,7 +45,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * This is the model implementation of ListMimeFileImporter.
  * 
- * @author roettig
+ * @author roettig, aiche
  */
 public class ListMimeFileImporterNodeModel extends NodeModel {
 
@@ -70,7 +71,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      */
     protected ListMimeFileImporterNodeModel() {
         super(new PortType[] {}, new PortType[] { new PortType(
-                URIPortObject.class) });
+                IURIPortObject.class) });
     }
 
     /**
@@ -78,9 +79,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // TODO Code executed on reset.
-        // Models build during execute are cleared here.
-        // Also data handled in load/saveInternals will be erased here.
     }
 
     /**
@@ -205,7 +203,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             File in = new File(filename);
 
             if (!in.canRead()) {
-                throw new Exception("cannot read from input file: "
+                throw new Exception("Cannot read from input file: "
                         + in.getAbsolutePath());
             }
 

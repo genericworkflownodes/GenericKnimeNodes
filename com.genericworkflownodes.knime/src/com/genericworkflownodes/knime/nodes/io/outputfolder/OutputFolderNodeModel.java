@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -40,7 +40,7 @@ public class OutputFolderNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected OutputFolderNodeModel() {
-        super(new PortType[] { new PortType(URIPortObject.class) },
+        super(new PortType[] { new PortType(IURIPortObject.class) },
                 new PortType[] {});
     }
 
@@ -51,7 +51,7 @@ public class OutputFolderNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inObjects,
             final ExecutionContext exec) throws Exception {
 
-        URIPortObject obj = (URIPortObject) inObjects[0];
+        IURIPortObject obj = (IURIPortObject) inObjects[0];
         List<URIContent> uris = obj.getURIContents();
 
         if (uris.size() == 0) {

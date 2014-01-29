@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -88,7 +89,7 @@ public class ManglerNodeModel extends NodeModel {
      */
     protected ManglerNodeModel() {
         super(new PortType[] { new PortType(BufferedDataTable.class) },
-                new PortType[] { new PortType(URIPortObject.class) });
+                new PortType[] { new PortType(IURIPortObject.class) });
         fileStash = FileStashFactory.createTemporary();
     }
 
@@ -150,7 +151,7 @@ public class ManglerNodeModel extends NodeModel {
 
             if (availableMangler == null || availableMangler.size() == 0) {
                 throw new InvalidSettingsException(
-                        "no IDemangler found for the given table configuration. "
+                        "No IDemangler found for the given table configuration. "
                                 + "Please register one before transforming the a file with "
                                 + "this MIMEType to a KNIME table.");
             }

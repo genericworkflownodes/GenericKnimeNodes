@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -54,7 +54,7 @@ public class OutputFilesNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected OutputFilesNodeModel() {
-        super(new PortType[] { new PortType(URIPortObject.class) },
+        super(new PortType[] { new PortType(IURIPortObject.class) },
                 new PortType[] {});
     }
 
@@ -144,12 +144,12 @@ public class OutputFilesNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        URIPortObject obj = (URIPortObject) inObjects[0];
+        IURIPortObject obj = (IURIPortObject) inObjects[0];
         List<URIContent> uris = obj.getURIContents();
 
         if (uris.size() == 0) {
             throw new Exception(
-                    "There were no URIs in the supplied URIPortObject");
+                    "There were no URIs in the supplied IURIPortObject");
         }
 
         int idx = 1;

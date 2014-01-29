@@ -29,6 +29,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -91,7 +92,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
      */
     protected MimeFileImporterNodeModel() {
         super(new PortType[] {}, new PortType[] { new PortType(
-                URIPortObject.class) });
+                IURIPortObject.class) });
     }
 
     /**
@@ -136,7 +137,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 
         File in = new File(tmp_filename.getStringValue());
         if (!in.canRead()) {
-            throw new InvalidSettingsException("input file cannot be read: "
+            throw new InvalidSettingsException("Input file cannot be read: "
                     + tmp_filename.getStringValue());
         }
 
@@ -240,7 +241,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
         File file = new File(m_filename.getStringValue());
 
         if (!file.exists()) {
-            throw new Exception("file does not exist: "
+            throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
         }
 

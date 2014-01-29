@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
@@ -77,7 +77,7 @@ public class DemanglerNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected DemanglerNodeModel() {
-        super(new PortType[] { new PortType(URIPortObject.class) },
+        super(new PortType[] { new PortType(IURIPortObject.class) },
                 new PortType[] { new PortType(BufferedDataTable.class) });
     }
 
@@ -188,11 +188,11 @@ public class DemanglerNodeModel extends NodeModel {
         BufferedDataContainer container = exec.createDataContainer(demangler
                 .getTableSpec());
 
-        URIPortObject obj = (URIPortObject) inObjects[0];
+        IURIPortObject obj = (IURIPortObject) inObjects[0];
         List<URIContent> uris = obj.getURIContents();
         if (uris.size() == 0) {
             throw new Exception(
-                    "No URI was supplied in MIMEURIPortObject at input port 0");
+                    "No URI was supplied in IURIPortObject at input port 0");
         } else if (uris.size() != 1) {
             throw new Exception(String.format(
                     "We can only demangle a single file but got %d.",
