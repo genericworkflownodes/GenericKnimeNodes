@@ -26,17 +26,14 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -51,10 +48,9 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.knime.base.data.prefixport.FileStorePrefixURIPortObject;
-import com.genericworkflownodes.knime.base.data.prefixport.FileStoreURIPortObject;
-import com.genericworkflownodes.knime.base.data.prefixport.IPrefixURIPortObject;
-import com.genericworkflownodes.knime.base.data.prefixport.PrefixURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
@@ -73,7 +69,6 @@ import com.genericworkflownodes.util.FileStashFactory;
 import com.genericworkflownodes.util.FileStashProperties;
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.IFileStash;
-import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -794,81 +789,4 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             }
         }
     }
-
-    /**
-     * Converts the given list of output files to an array of {@link PortObject}
-     * s that can be passed on in the current workflow.
-     * 
-     * @param outputFileNames
-     *            The output name as list of lists of {@link URI}.
-     * @param exec
-     *            The execution context of the current node.
-     * @return
-     * @throws NonExistingMimeTypeException
-     */
-    private PortObject[] processOutput(final List<List<URI>> outputFileNames,
-            final ExecutionContext exec) throws NonExistingMimeTypeException {
-        int nOut = m_nodeConfig.getOutputPorts().size();
-
-        // create output tables
-        URIPortObject[] outports = new URIPortObject[nOut];
-
-        for (int i = 0; i < nOut; i++) {
-            List<URIContent> uris = new ArrayList<URIContent>();
-
-            String someFileName = "";
-
-            if (m_nodeConfig.getOutputPorts().get(i).isPrefix()) {
-                // we have generated a list of files based on a prefix
-                URI filename = outputFileNames.get(i).get(0);
-                final File f = new File(filename);
-                final String f_name = f.getName();
-
-                // list a files sharing the prefix
-                List<File> files = new ArrayList<File>();
-
-                Iterator<File> fIt = FileUtils.iterateFiles(f.getParentFile(),
-                        TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-
-                while (fIt.hasNext()) {
-                    File tf = fIt.next();
-                    if (!tf.isDirectory()) {
-                        final String abs_path = tf.getAbsolutePath();
-                        final String name_output_folder = abs_path
-                                .substring(f.getParentFile().getAbsolutePath()
-                                        .length() + 1);
-
-                        if (name_output_folder.startsWith(f_name)) {
-                            files.add(tf);
-                        }
-                    }
-                }
-
-                // add prefix to and files to output list
-                for (File out_file : files) {
-                    uris.add(new URIContent(out_file.toURI(), MIMETypeHelper
-                            .getExtension(out_file.getName())));
-                }
-
-                outports[i] = new PrefixURIPortObject(uris, f.getAbsolutePath());
-            } else {
-                // multi output file
-                for (URI filename : outputFileNames.get(i)) {
-                    someFileName = filename.getPath();
-                    uris.add(new URIContent(filename, MIMETypeHelper
-                            .getExtension(filename.getPath())));
-                }
-
-                String mimeType = MIMETypeHelper.getExtension(someFileName);
-                if (mimeType == null)
-                    throw new NonExistingMimeTypeException(someFileName);
-
-                outports[i] = new URIPortObject(uris);
-            }
-
-        }
-
-        return outports;
-    }
-
 }
