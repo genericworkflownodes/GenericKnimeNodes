@@ -118,4 +118,5 @@ public class PrefixURIPortObject extends URIPortObject implements
         // save our own settings
         model.addString(SETTINGS_KEY_PREFIX, m_prefix);
     }
+
 }

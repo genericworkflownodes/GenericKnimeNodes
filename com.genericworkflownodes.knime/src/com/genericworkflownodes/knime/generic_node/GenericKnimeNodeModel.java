@@ -51,6 +51,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.base.data.prefixport.FileStorePrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.prefixport.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.prefixport.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.prefixport.PrefixURIPortObject;
@@ -539,6 +540,10 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         PortObject[] outports = new PortObject[outPorts.size()];
         for (int i = 0; i < outPorts.size(); ++i) {
             outports[i] = outPorts.get(i);
+            // if we have an prefix port we need to trigger reindexing
+            if (outports[i] instanceof FileStorePrefixURIPortObject) {
+                ((FileStorePrefixURIPortObject) outports[i]).collectFiles();
+            }
         }
 
         return outports;
@@ -559,25 +564,27 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
     private List<PortObject> transferOutgoingPorts2Config(final File jobdir,
             PortObject[] inData, ExecutionContext exec) throws Exception {
 
-        List<List<URI>> outfiles = new ArrayList<List<URI>>();
-
-        int nOut = m_nodeConfig.getOutputPorts().size();
-
+        final int nOut = m_nodeConfig.getOutputPorts().size();
         List<PortObject> outPorts = new ArrayList<PortObject>(nOut);
 
         for (int i = 0; i < nOut; i++) {
             Port port = m_nodeConfig.getOutputPorts().get(i);
             String name = port.getName();
             String ext = getOutputType(i);
+            boolean isPrefix = port.isPrefix();
 
             Parameter<?> p = m_nodeConfig.getParameter(name);
-            // used to remember which files we actually generated here
-            List<URI> fileURIs = new ArrayList<URI>();
 
             // basenames and number of output files guessed from input
             List<String> basenames = getOutputBaseNames();
 
             if (p instanceof FileListParameter && port.isMultiFile()) {
+                // we currently do not support lists of prefixes
+                if (isPrefix) {
+                    throw new InvalidSettingsException(
+                            "GKN currently does not support lists of prefixes as output.");
+                }
+
                 FileListParameter flp = (FileListParameter) p;
                 List<String> fileNames = new ArrayList<String>();
 
@@ -595,7 +602,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                             basenames.get(f), i, f);
                     File file = fsupo.registerFile(file_basename + "." + ext);
                     fileNames.add(file.getAbsolutePath());
-                    fileURIs.add(file.toURI());
                     outPorts.add(fsupo);
                 }
 
@@ -615,26 +621,36 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
                 // create basename: <base_name>_<port_nr>_<outfile_nr>
                 String file_basename = String.format("%s_%d", basename, i);
+                String fileName = file_basename + '.' + ext;
 
-                FileStoreURIPortObject fsupo = new FileStoreURIPortObject(
-                        exec.createFileStore(m_nodeConfig.getName() + "_" + i));
+                if (isPrefix) {
+                    FileStorePrefixURIPortObject fspup = new FileStorePrefixURIPortObject(
+                            exec.createFileStore(m_nodeConfig.getName() + "_"
+                                    + i), fileName);
+                    ((FileParameter) p).setValue(fspup.getPrefix());
+                    GenericNodesPlugin.log("> setting param " + name + "->"
+                            + fspup.getPrefix());
 
-                // we do not append the file extension if we have a prefix
-                File file = fsupo.registerFile(file_basename + "." + ext);
-                ((FileParameter) p).setValue(file.getAbsolutePath());
-                GenericNodesPlugin.log("> setting param " + name + "->" + file);
+                    outPorts.add(fspup);
+                } else {
+                    FileStoreURIPortObject fsupo = new FileStoreURIPortObject(
+                            exec.createFileStore(m_nodeConfig.getName() + "_"
+                                    + i));
 
-                // remember output file
-                fileURIs.add(file.toURI());
-                outPorts.add(fsupo);
+                    // we do not append the file extension if we have a prefix
+                    File file = fsupo.registerFile(fileName);
+                    ((FileParameter) p).setValue(file.getAbsolutePath());
+                    GenericNodesPlugin.log("> setting param " + name + "->"
+                            + file);
+
+                    // remember output file
+                    outPorts.add(fsupo);
+                }
             } else {
                 throw new Exception(
                         "Invalid connection between ports and parameters.");
             }
-
-            outfiles.add(fileURIs);
         }
-
         return outPorts;
     }
 
