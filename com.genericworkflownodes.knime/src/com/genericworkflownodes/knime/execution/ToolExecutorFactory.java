@@ -18,6 +18,11 @@
  */
 package com.genericworkflownodes.knime.execution;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+
 /**
  * Manages the matching and instantiation of a matching {@link IToolExecutor} to
  * the given parameters.
@@ -25,6 +30,9 @@ package com.genericworkflownodes.knime.execution;
  * @author aiche
  */
 public class ToolExecutorFactory {
+
+    private static final String EXECUTOR_EXTENSION_POINT_ID = "com.genericworkflownodes.knime.execution.Executor";
+    private static final String COMMAND_GENERATOR_EXTENSION_POINT_ID = "com.genericworkflownodes.knime.execution.CommandGenerator";
 
     /**
      * Creates a configured {@link IToolExecutor}.
@@ -51,45 +59,89 @@ public class ToolExecutorFactory {
             throws UnknownToolExecutorException,
             UnknownCommandGeneratorException {
 
+        IToolExecutor executor = getExecutor(executorClassName);
+        executor.setCommandGenerator(getCommandGenerator(commandGeneratorClassName));
+        return executor;
+    }
+
+    /**
+     * Queries the extension registry for a matching command generator.
+     * 
+     * @param commandGeneratorClassName
+     *            The class name we're looking for.
+     * @return The ICommandGenerator matching the given class name.
+     * @throws UnknownCommandGeneratorException
+     *             If no matching ICommandGenerator was found or the given class
+     *             name was empty.
+     */
+    private static ICommandGenerator getCommandGenerator(
+            final String commandGeneratorClassName)
+            throws UnknownCommandGeneratorException {
+        if (commandGeneratorClassName == null
+                || "".equals(commandGeneratorClassName)) {
+            throw new UnknownCommandGeneratorException("");
+        }
+
+        try {
+            IExtensionRegistry reg = Platform.getExtensionRegistry();
+            IConfigurationElement[] elements = reg
+                    .getConfigurationElementsFor(COMMAND_GENERATOR_EXTENSION_POINT_ID);
+
+            // try to find matching extension
+            for (IConfigurationElement elem : elements) {
+                // check if we have the IToolExecutor we were looking for
+                if (elem.getAttribute("name").equals(commandGeneratorClassName)) {
+                    final Object o = elem.createExecutableExtension("class");
+                    // cast is guaranteed to work based on the extension point
+                    // definition
+                    return (ICommandGenerator) o;
+                }
+            }
+            // we didn't find a matching ICommandGenerator
+            throw new UnknownCommandGeneratorException(
+                    commandGeneratorClassName);
+        } catch (CoreException e) {
+            throw new UnknownCommandGeneratorException(
+                    commandGeneratorClassName, e);
+        }
+    }
+
+    /**
+     * Queries the extension registry for a matching tool executor.
+     * 
+     * @param executorClassName
+     *            The class name we're looking for.
+     * @return The {@link IToolExecutor} matching the given class name.
+     * @throws UnknownToolExecutorException
+     *             If no matching IToolExecutor was found or the given class
+     *             name was empty.
+     */
+    private static IToolExecutor getExecutor(final String executorClassName)
+            throws UnknownToolExecutorException {
         // precheck the input
         if (executorClassName == null || "".equals(executorClassName)) {
             throw new UnknownToolExecutorException("");
         }
 
-        if (commandGeneratorClassName == null
-                || "".equals(commandGeneratorClassName)) {
-            throw new UnknownToolExecutorException("");
-        }
-
-        IToolExecutor executor;
-
         try {
-            executor = (IToolExecutor) Class.forName(executorClassName)
-                    .newInstance();
-        } catch (IllegalAccessException ex) {
-            throw new UnknownToolExecutorException(executorClassName, ex);
-        } catch (ClassNotFoundException ex) {
-            throw new UnknownToolExecutorException(executorClassName, ex);
-        } catch (InstantiationException ex) {
-            throw new UnknownToolExecutorException(executorClassName, ex);
-        }
+            IExtensionRegistry reg = Platform.getExtensionRegistry();
+            IConfigurationElement[] elements = reg
+                    .getConfigurationElementsFor(EXECUTOR_EXTENSION_POINT_ID);
 
-        try {
-            // configure the m_executor
-            ICommandGenerator generator = (ICommandGenerator) Class.forName(
-                    commandGeneratorClassName).newInstance();
-            executor.setCommandGenerator(generator);
-        } catch (IllegalAccessException ex) {
-            throw new UnknownCommandGeneratorException(
-                    commandGeneratorClassName, ex);
-        } catch (ClassNotFoundException ex) {
-            throw new UnknownCommandGeneratorException(
-                    commandGeneratorClassName, ex);
-        } catch (InstantiationException ex) {
-            throw new UnknownCommandGeneratorException(
-                    commandGeneratorClassName, ex);
+            // try to find matching extension
+            for (IConfigurationElement elem : elements) {
+                // check if we have the IToolExecutor we were looking for
+                if (elem.getAttribute("name").equals(executorClassName)) {
+                    final Object o = elem.createExecutableExtension("class");
+                    // cast is guaranteed to work based on the extension point
+                    // definition
+                    return (IToolExecutor) o;
+                }
+            }
+            // we didn't find a matching IToolExecutor
+            throw new UnknownToolExecutorException(executorClassName);
+        } catch (CoreException e) {
+            throw new UnknownToolExecutorException(executorClassName, e);
         }
-
-        return executor;
     }
 }
