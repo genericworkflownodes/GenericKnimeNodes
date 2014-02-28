@@ -54,8 +54,8 @@ import com.genericworkflownodes.knime.base.data.prefixport.PrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
-import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
+import com.genericworkflownodes.knime.execution.ToolExecutorFactory;
 import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
@@ -200,73 +200,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             }
         }
         return portTypes;
-    }
-
-    /**
-     * Prepares the execution of the node.
-     * 
-     * @param jobdir
-     *            The directory in which the executable of the node should be
-     *            executed.
-     * @param exec
-     *            The {@link ExecutionContext} of the node.
-     * @throws Exception
-     *             In case of failure.
-     */
-    private void prepareExecute(final File jobdir, final ExecutionContext exec)
-            throws Exception {
-
-        instantiateToolExecutor();
-
-        m_executor.setWorkingDirectory(jobdir);
-        m_executor.prepareExecution(m_nodeConfig, m_pluginConfig);
-
-        executeTool(exec);
-    }
-
-    /**
-     * Try to instantiate the IToolExecutor specified by the plugin.
-     * 
-     * @throws Exception
-     */
-    private void instantiateToolExecutor() throws Exception {
-
-        String executorClassName = "";
-        String commandGeneratorClassName = "";
-        try {
-            executorClassName = m_pluginConfig.getPluginProperties()
-                    .getProperty("executor");
-            commandGeneratorClassName = m_pluginConfig.getPluginProperties()
-                    .getProperty("commandGenerator");
-            if (executorClassName == null || "".equals(executorClassName)) {
-                throw new Exception(
-                        "No m_executor was specified by the plugin.");
-            }
-
-            m_executor = (IToolExecutor) Class.forName(executorClassName)
-                    .newInstance();
-
-            // configure the m_executor
-            ICommandGenerator generator = (ICommandGenerator) Class.forName(
-                    commandGeneratorClassName).newInstance();
-            m_executor.setCommandGenerator(generator);
-
-        } catch (IllegalAccessException ex) {
-            throw new Exception(
-                    "Could not instantiate m_executor/generator (IllegalAccessException): "
-                            + executorClassName + "/"
-                            + commandGeneratorClassName, ex);
-        } catch (ClassNotFoundException ex) {
-            throw new Exception(
-                    "Could not instantiate m_executor/generator (ClassNotFoundException): "
-                            + executorClassName + "/"
-                            + commandGeneratorClassName, ex);
-        } catch (InstantiationException ex) {
-            throw new Exception(
-                    "Could not instantiate m_executor/generator (InstantiationException): "
-                            + executorClassName + "/"
-                            + commandGeneratorClassName, ex);
-        }
     }
 
     /**
@@ -569,12 +502,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        // fetch node descriptors
-        String nodeName = m_nodeConfig.getName();
-
         // create job directory
-        File jobdir = Helper
-                .getTempDir(nodeName, !GenericNodesPlugin.isDebug());
+        File jobdir = Helper.getTempDir(m_nodeConfig.getName(),
+                !GenericNodesPlugin.isDebug());
         GenericNodesPlugin.log("jobdir=" + jobdir);
 
         // transfer the incoming files into the nodeConfiguration
@@ -584,8 +514,16 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         List<List<URI>> outputFiles = transferOutgoingPorts2Config(jobdir,
                 inObjects);
 
+        // prepare the executor
+        m_executor = ToolExecutorFactory.createToolExecutor(m_pluginConfig
+                .getPluginProperties().getProperty("executor"), m_pluginConfig
+                .getPluginProperties().getProperty("commandGenerator"));
+
+        m_executor.setWorkingDirectory(jobdir);
+        m_executor.prepareExecution(m_nodeConfig, m_pluginConfig);
+
         // launch executable
-        prepareExecute(jobdir, exec);
+        executeTool(exec);
 
         // process result files
         PortObject[] outports = processOutput(outputFiles, exec);
