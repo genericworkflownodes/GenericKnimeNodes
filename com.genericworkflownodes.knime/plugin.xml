@@ -47,6 +47,10 @@
             class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
             name="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor">
       </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
+            name="LocalToolExecutor">
+      </executor>
    </extension>
    <extension
          point="com.genericworkflownodes.knime.execution.CommandGenerator">
@@ -61,6 +65,18 @@
       <commandgenerator
             class="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator"
             name="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.BALLCommandGenerator"
+            name="BALLCommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.CLICommandGenerator"
+            name="CLICommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator"
+            name="OpenMSCommandGenerator">
       </commandgenerator>
    </extension>
 </plugin>
