@@ -39,7 +39,27 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
+/**
+ * Dialog indicating that binaries for a certain plugin are missing.
+ * 
+ * @author aiche
+ */
 public class MissingBinariesDialog extends Dialog {
+
+    /**
+     * Margin in the grid layout.
+     */
+    private static final int GRID_LAYOUT_MARGIN = 15;
+
+    /**
+     * Initial size (height) of the dialog.
+     */
+    private static final int INITIAL_SIZE_Y = 190;
+
+    /**
+     * Initial size (width) of the dialog.
+     */
+    private static final int INITIAL_SIZE_X = 478;
 
     /**
      * The bundle with missing binaries.
@@ -65,6 +85,15 @@ public class MissingBinariesDialog extends Dialog {
      * Create the dialog.
      * 
      * @param parentShell
+     *            The parent shell.
+     * @param bundleName
+     *            The name of the bundle that is checked.
+     * @param preferencePageId
+     *            The Id of the preference page that holds the information on
+     *            the given plug-in.
+     * @param preferenceStore
+     *            The preference store that holds the information on the
+     *            binaries.
      */
     public MissingBinariesDialog(Shell parentShell, final String bundleName,
             final String preferencePageId, IPreferenceStore preferenceStore) {
@@ -78,13 +107,14 @@ public class MissingBinariesDialog extends Dialog {
      * Create contents of the dialog.
      * 
      * @param parent
+     *            The parent composite.
      */
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite container = (Composite) super.createDialogArea(parent);
         GridLayout gl_container = new GridLayout(2, false);
-        gl_container.marginWidth = 15;
-        gl_container.marginHeight = 15;
+        gl_container.marginWidth = GRID_LAYOUT_MARGIN;
+        gl_container.marginHeight = GRID_LAYOUT_MARGIN;
         container.setLayout(gl_container);
 
         // The warning icon
@@ -144,6 +174,7 @@ public class MissingBinariesDialog extends Dialog {
      * Create contents of the button bar.
      * 
      * @param parent
+     *            The parent composite.
      */
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
@@ -156,7 +187,7 @@ public class MissingBinariesDialog extends Dialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(478, 190);
+        return new Point(INITIAL_SIZE_X, INITIAL_SIZE_Y);
     }
 
 }

@@ -18,15 +18,10 @@
  */
 package com.genericworkflownodes.knime;
 
-import java.io.File;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
-
-import com.genericworkflownodes.knime.preferences.PreferenceInitializer;
-import com.genericworkflownodes.util.FileStashFactory;
 
 /**
  * This is the OSGI bundle activator.
@@ -114,8 +109,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
 
         IPreferenceStore store = GenericNodesPlugin.getDefault()
                 .getPreferenceStore();
-        FileStashFactory.setTempParentDirectory(new File(store
-                .getString(PreferenceInitializer.PREF_FILE_STASH_LOCATION)));
     }
 
     /**

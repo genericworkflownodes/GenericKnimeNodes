@@ -34,7 +34,7 @@ public class StringListParameter extends Parameter<List<String>> implements
         ListParameter {
 
     /**
-     * Set of allowed entries for this StringListParameter
+     * Set of allowed entries for this StringListParameter.
      */
     private List<String> validValues;
 

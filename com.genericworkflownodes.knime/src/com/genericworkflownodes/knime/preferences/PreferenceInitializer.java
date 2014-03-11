@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.util.FileStashFactory;
 
 /**
  * Initializer for the GKN preferences.
@@ -47,8 +46,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
                 .getPreferenceStore();
 
         // set default values
-        store.setDefault(PREF_FILE_STASH_LOCATION, FileStashFactory
-                .getTempParentDirectory().getAbsolutePath());
         store.setDefault(PREF_DEBUG_MODE, GenericNodesPlugin.isDebug());
     }
 

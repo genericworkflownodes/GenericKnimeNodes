@@ -111,7 +111,8 @@ public class MIMETypeHelper {
      * Extracts the extension from the given path.
      * 
      * @param path
-     * @return
+     *            The path from which the extension should be extracted.
+     * @return The file extension of the given path.
      */
     public static String getExtension(String path) {
         if (path.lastIndexOf('.') == -1) {
