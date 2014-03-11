@@ -51,48 +51,51 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
     /**
      * The parsed configuration.
      */
-    INodeConfiguration config;
+    private INodeConfiguration m_config;
 
     @Override
-    public INodeConfiguration read(InputStream in) throws Exception {
+    public INodeConfiguration read(InputStream in)
+            throws InvalidCTDFileException {
+        try {
+            // create schema and parser for validation and parsing
+            SchemaFactory schemaFactory = SchemaFactory
+                    .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema ctdSchema = schemaFactory.newSchema(SchemaProvider.class
+                    .getResource("CTD.xsd"));
+            SAXParserFactory spfac = SAXParserFactory.newInstance();
+            spfac.setValidating(false);
+            spfac.setSchema(ctdSchema);
 
-        // create schema and parser for validation and parsing
-        SchemaFactory schemaFactory = SchemaFactory
-                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema ctdSchema = schemaFactory.newSchema(SchemaProvider.class
-                .getResource("CTD.xsd"));
-        SAXParserFactory spfac = SAXParserFactory.newInstance();
-        spfac.setValidating(false);
-        spfac.setSchema(ctdSchema);
+            SAXParser sp = spfac.newSAXParser();
 
-        SAXParser sp = spfac.newSAXParser();
-
-        CTDHandler handler = new CTDHandler(sp.getXMLReader());
-        sp.parse(in, handler);
-
-        config = handler.getNodeConfiguration();
+            CTDHandler handler = new CTDHandler(sp.getXMLReader());
+            sp.parse(in, handler);
+            m_config = handler.getNodeConfiguration();
+        } catch (Exception e) {
+            throw new InvalidCTDFileException("Failed to parse CTD file.", e);
+        }
 
         // validate mappings of CLI config
-        for (CLIElement cliElement : config.getCLI().getCLIElement()) {
+        for (CLIElement cliElement : m_config.getCLI().getCLIElement()) {
             validateCLIElement(cliElement);
         }
 
         // validate mappings in OutputConverter
-        for (Relocator relocator : config.getRelocators()) {
+        for (Relocator relocator : m_config.getRelocators()) {
             validateRelocator(relocator);
         }
 
         // validate ports
-        for (Port port : config.getInputPorts()) {
-            validatePort(port, config);
+        for (Port port : m_config.getInputPorts()) {
+            validatePort(port);
         }
 
-        for (Port port : config.getOutputPorts()) {
-            validatePort(port, config);
+        for (Port port : m_config.getOutputPorts()) {
+            validatePort(port);
         }
 
         // return parsed and validated config
-        return config;
+        return m_config;
     }
 
     /**
@@ -106,34 +109,40 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
      * </ul>
      * 
      * @param port
-     * @throws Exception
+     *            The port to validate.
+     * @throws InvalidCTDFileException
+     *             If the given port is invalid.
      */
-    private void validatePort(final Port port, final INodeConfiguration config)
-            throws Exception {
+    private void validatePort(final Port port) throws InvalidCTDFileException {
         // check if the referenced parameter exists
-        Parameter<?> p = config.getParameter(port.getName());
-        if (p == null)
-            throw new Exception(String.format(
+        Parameter<?> p = m_config.getParameter(port.getName());
+        if (p == null) {
+            throw new InvalidCTDFileException(String.format(
                     "The given port %s has no corresponding parameter.",
                     port.getName()));
-        if (!(p instanceof IFileParameter))
-            throw new Exception(
+        }
+        if (!(p instanceof IFileParameter)) {
+            throw new InvalidCTDFileException(
                     String.format(
                             "The parameter corresponding to port %s is not a IFileParameter.",
                             port.getName()));
-        if (port.isMultiFile() && !(p instanceof FileListParameter))
-            throw new Exception(
+        }
+        if (port.isMultiFile() && !(p instanceof FileListParameter)) {
+            throw new InvalidCTDFileException(
                     String.format(
                             "The given port %s is a multifile port but the corresponding parameter is a single file parameter.",
                             port.getName()));
-        if (!port.isMultiFile() && !(p instanceof FileParameter))
-            throw new Exception(
+        }
+        if (!port.isMultiFile() && !(p instanceof FileParameter)) {
+            throw new InvalidCTDFileException(
                     String.format(
                             "The given port %s is a singlefile port but the corresponding parameter is a multifile parameter.",
                             port.getName()));
-        if (port.getMimeTypes().size() < 1)
-            throw new Exception(String.format(
+        }
+        if (port.getMimeTypes().size() < 1) {
+            throw new InvalidCTDFileException(String.format(
                     "The given port %s has no MIMETypes.", port.getName()));
+        }
     }
 
     /**
@@ -142,11 +151,11 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
      * 
      * @param cliElement
      *            The {@link CLIElement} to check.
-     * @throws Exception
+     * @throws InvalidCTDFileException
      *             Is thrown if the parameter contains invalid information.
      */
     private void validateCLIElement(final CLIElement cliElement)
-            throws Exception {
+            throws InvalidCTDFileException {
         if (cliElement.getMapping().size() > 0) {
 
             for (CLIMapping mapping : cliElement.getMapping()) {
@@ -159,11 +168,12 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
             if (cliElement.getMapping().size() > 1) {
                 for (CLIMapping mapping : cliElement.getMapping()) {
                     // find mapped parameter
-                    if (config.getParameter(mapping.getReferenceName()) != null) {
+                    if (m_config.getParameter(mapping.getReferenceName()) != null
+                            && m_config
+                                    .getParameter(mapping.getReferenceName()) instanceof BoolParameter) {
                         // check that it is not boolean
-                        if (config.getParameter(mapping.getReferenceName()) instanceof BoolParameter) {
-                            throw new Exception();
-                        }
+                        throw new InvalidCTDFileException(
+                                "Cannot map multiple parameters when one is boolean.");
                     }
                 }
             }
@@ -171,19 +181,19 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
     }
 
     /**
-     * Checks if the paramter given in the mapping element exists.
+     * Checks if the parameter given in the mapping element exists.
      * 
      * @param cliMapping
      *            The {@link CLIMapping} to check.
-     * @throws Exception
+     * @throws InvalidCTDFileException
      *             Is thrown if their exists no parameter corresponding to the
      *             given mapping.
      */
     private void checkIfMappedParameterExists(final CLIMapping cliMapping)
-            throws Exception {
-        if (config.getParameter(cliMapping.getReferenceName()) == null
+            throws InvalidCTDFileException {
+        if (m_config.getParameter(cliMapping.getReferenceName()) == null
                 && !portWithRefNameExists(cliMapping.getReferenceName())) {
-            throw new Exception("Unknown Parameter "
+            throw new InvalidCTDFileException("Unknown Parameter "
                     + cliMapping.getReferenceName());
         }
     }
@@ -200,9 +210,9 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
 
         // check inPorts
         hasPortWithMappingName |= findInPortList(mappingRefName,
-                config.getInputPorts());
+                m_config.getInputPorts());
         hasPortWithMappingName |= findInPortList(mappingRefName,
-                config.getOutputPorts());
+                m_config.getOutputPorts());
 
         return hasPortWithMappingName;
     }
@@ -232,14 +242,15 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
      * 
      * @param relocator
      *            The relocator to validate.
-     * @throws Exception
+     * @throws InvalidCTDFileException
      *             Is thrown if the port points to a non existing output port.
      */
-    private void validateRelocator(final Relocator relocator) throws Exception {
+    private void validateRelocator(final Relocator relocator)
+            throws InvalidCTDFileException {
         // check if converter ref exists
         if (!findInPortList(relocator.getReferencedParamter(),
-                config.getOutputPorts())) {
-            throw new Exception(
+                m_config.getOutputPorts())) {
+            throw new InvalidCTDFileException(
                     "Invalid Output Converter: No output port with name "
                             + relocator.getReferencedParamter() + " exists.");
         }
