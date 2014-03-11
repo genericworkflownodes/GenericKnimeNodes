@@ -40,7 +40,7 @@ import com.genericworkflownodes.knime.execution.IToolExecutor;
  */
 public class DummyToolExecutor implements IToolExecutor {
 
-    private volatile long sleepTime = 5000;
+    private volatile long sleepTime = 2000;
     private volatile int returnCode = 0;
     private final Object monitor = new Object();
     private volatile boolean killed = false;
@@ -60,15 +60,15 @@ public class DummyToolExecutor implements IToolExecutor {
     /**
      * Sets the sleep time.
      * 
-     * @param sleepTime
+     * @param newSleepTime
      *            the sleep time. Must be greater than zero.
      */
-    public void setSleepTime(long sleepTime) {
+    public void setSleepTime(long newSleepTime) {
         if (sleepTime < 0) {
             throw new IllegalArgumentException(
                     "sleepTime must be greater than zero.");
         }
-        this.sleepTime = sleepTime;
+        sleepTime = newSleepTime;
     }
 
     /**
@@ -81,24 +81,10 @@ public class DummyToolExecutor implements IToolExecutor {
         this.returnCode = returnCode;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.genericworkflownodes.knime.execution.IToolExecutor#setCommandGenerator
-     * (com.genericworkflownodes.knime.execution.ICommandGenerator)
-     */
     @Override
     public void setCommandGenerator(ICommandGenerator generator) {
-        // TODO Auto-generated method stub
-
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.genericworkflownodes.knime.execution.IToolExecutor#execute()
-     */
     @Override
     public int execute() throws Exception {
         completed = false;
@@ -118,15 +104,6 @@ public class DummyToolExecutor implements IToolExecutor {
         return returnCode;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.genericworkflownodes.knime.execution.IToolExecutor#prepareExecution
-     * (com.genericworkflownodes.knime.config.INodeConfiguration,
-     * com.genericworkflownodes.knime.config.INodeConfigurationStore,
-     * com.genericworkflownodes.knime.config.IPluginConfiguration)
-     */
     @Override
     public void prepareExecution(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration) throws Exception {
@@ -134,11 +111,6 @@ public class DummyToolExecutor implements IToolExecutor {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.genericworkflownodes.knime.execution.IToolExecutor#kill()
-     */
     @Override
     public void kill() {
         synchronized (monitor) {
@@ -147,47 +119,20 @@ public class DummyToolExecutor implements IToolExecutor {
         killed = true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.genericworkflownodes.knime.execution.IToolExecutor#getReturnCode()
-     */
     @Override
     public int getReturnCode() {
         return returnCode;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.genericworkflownodes.knime.execution.IToolExecutor#setWorkingDirectory
-     * (java.io.File)
-     */
     @Override
     public void setWorkingDirectory(File directory) throws Exception {
-        // TODO Auto-generated method stub
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.genericworkflownodes.knime.execution.IToolExecutor#getToolOutput()
-     */
     @Override
     public String getToolOutput() {
         return "Slept " + sleepTime + "ms, got killed=" + killed;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.genericworkflownodes.knime.execution.IToolExecutor#getToolErrorOutput
-     * ()
-     */
     @Override
     public String getToolErrorOutput() {
         return "Slept " + sleepTime + "ms, got killed=" + killed;
