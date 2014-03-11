@@ -18,10 +18,7 @@
  */
 package com.genericworkflownodes.knime.preferences;
 
-import java.io.File;
-
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -30,7 +27,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.util.FileStashFactory;
 
 /**
  * GKN preferences page.
@@ -44,11 +40,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements
      * Debug mode UI element.
      */
     private BooleanFieldEditor debugModeFieldEditor;
-
-    /**
-     * File stash location UI element.
-     */
-    private DirectoryFieldEditor fileStashLocationFieldEditor;
 
     /**
      * Default c'tor.
@@ -67,14 +58,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements
     @Override
     protected void createFieldEditors() {
         Composite parent = getFieldEditorParent();
-
-        fileStashLocationFieldEditor = new DirectoryFieldEditor(
-                PreferenceInitializer.PREF_FILE_STASH_LOCATION,
-                "File stash directory:", parent);
         debugModeFieldEditor = new BooleanFieldEditor(
                 PreferenceInitializer.PREF_DEBUG_MODE, "Debug mode", parent);
-
-        addField(fileStashLocationFieldEditor);
         addField(debugModeFieldEditor);
     }
 
@@ -84,17 +69,8 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
     @Override
     public boolean performOk() {
-        IPreferenceStore store = GenericNodesPlugin.getDefault()
-                .getPreferenceStore();
-        //
-        String dir = fileStashLocationFieldEditor.getStringValue();
-        FileStashFactory.setTempParentDirectory(new File(dir));
-        store.setValue(PreferenceInitializer.PREF_FILE_STASH_LOCATION, dir);
-
-        //
         boolean flag = debugModeFieldEditor.getBooleanValue();
         GenericNodesPlugin.setDebug(flag);
-
         return true;
     }
 

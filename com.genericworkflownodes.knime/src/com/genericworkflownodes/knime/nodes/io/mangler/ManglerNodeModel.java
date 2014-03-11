@@ -26,7 +26,6 @@ import java.util.List;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -41,11 +40,9 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
-import com.genericworkflownodes.util.FileStashFactory;
-import com.genericworkflownodes.util.FileStashProperties;
-import com.genericworkflownodes.util.IFileStash;
 
 /**
  * This is the model implementation of ManglerNodeModel.
@@ -82,15 +79,12 @@ public class ManglerNodeModel extends NodeModel {
      */
     private DataTableSpec inputTalbeSpecification;
 
-    private IFileStash fileStash;
-
     /**
      * Constructor for the node model.
      */
     protected ManglerNodeModel() {
         super(new PortType[] { new PortType(BufferedDataTable.class) },
                 new PortType[] { new PortType(IURIPortObject.class) });
-        fileStash = FileStashFactory.createTemporary();
     }
 
     /**
@@ -98,14 +92,22 @@ public class ManglerNodeModel extends NodeModel {
      */
     @Override
     protected PortObject[] execute(final PortObject[] inData,
-            final ExecutionContext exec) throws Exception {
+            final ExecutionContext exec) throws IOException {
 
         // translate portobject to table
 
         BufferedDataTable table = (BufferedDataTable) inData[0];
 
         // create a file where we can write to
-        File file = fileStash.getFile(demangler.getMIMEType(), "mime");
+
+        FileStoreURIPortObject fsupo;
+        fsupo = new FileStoreURIPortObject(
+                exec.createFileStore("ManglerNodeModel"));
+
+        // File file = fileStash.getFile(demangler.getMIMEType(), "mime");
+
+        File file = fsupo.registerFile("mangled_file."
+                + demangler.getMIMEType());
 
         // translate the filename to a URIContent
         URIContent outputURI = new URIContent(file.toURI(),
@@ -118,7 +120,7 @@ public class ManglerNodeModel extends NodeModel {
         List<URIContent> uriList = new ArrayList<URIContent>();
         uriList.add(outputURI);
 
-        return new URIPortObject[] { new URIPortObject(uriList) };
+        return new FileStoreURIPortObject[] { fsupo };
     }
 
     /**
@@ -126,14 +128,6 @@ public class ManglerNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        demangler = null;
-        availableMangler = null;
-        try {
-            fileStash.deleteAllFiles();
-        } catch (IOException e) {
-            LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
-                    e);
-        }
     }
 
     /**
@@ -196,15 +190,16 @@ public class ManglerNodeModel extends NodeModel {
         List<IDemangler> matchingManglers = DemanglerRegistry
                 .getDemanglerRegistry().getMangler(inputTalbeSpecification);
 
-        demangler = null;
+        boolean found = false;
         for (IDemangler mangler : matchingManglers) {
             if (manglerClassName.equals(mangler.getClass().getName())) {
                 demangler = mangler;
+                found = true;
                 break;
             }
         }
 
-        if (demangler == null) {
+        if (!found) {
             throw new InvalidSettingsException(
                     "Could not find an implementation for the previously selected mangler: "
                             + manglerClassName);
@@ -226,10 +221,6 @@ public class ManglerNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        File file = FileStashProperties.readLocation(internDir);
-        if (file != null) {
-            fileStash = FileStashFactory.createPersistent(file);
-        } // else leave temporary file stash
     }
 
     /**
@@ -239,7 +230,6 @@ public class ManglerNodeModel extends NodeModel {
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        FileStashProperties.saveLocation(fileStash, internDir);
     }
 
 }
