@@ -49,6 +49,19 @@ public enum OperatingSystem {
         return thisOS;
     }
 
+    /**
+     * Creates a new OS from a string.
+     * 
+     * <ul>
+     * <li>win => WIN</li>
+     * <li>mac => MAC</li>
+     * <li>* => UNIX</li>
+     * </ul>
+     * 
+     * @param os
+     *            The string to convert.
+     * @return An OS corresponding to the string.
+     */
     public static OperatingSystem fromString(final String os) {
         if ("win".equals(os)) {
             return WIN;
@@ -78,6 +91,11 @@ public enum OperatingSystem {
         return osAsString;
     }
 
+    /**
+     * Return the OS in OSGI like string (e.g., windows = win32).
+     * 
+     * @return The OS as OSGI like string.
+     */
     public String toOsgiOs() {
         String osgiOSString = "unknown";
         switch (this) {

@@ -28,7 +28,6 @@ import org.eclipse.ui.PlatformUI;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocator;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
@@ -38,7 +37,10 @@ import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLoca
  */
 public class GenericStartup implements IStartup {
 
-    public static final String PREFERENCE_WARN_IF_BINARIES_ARE_MISSING = "WARN_IF_BINARIES_ARE_MISSING";
+    /**
+     * Preference key for warn if binaries are missing.
+     */
+    static final String PREFERENCE_WARN_IF_BINARIES_ARE_MISSING = "WARN_IF_BINARIES_ARE_MISSING";
 
     /**
      * The central static logger.
@@ -60,11 +62,11 @@ public class GenericStartup implements IStartup {
      * Create the GenericStartup with the name of the plugin. The name is used
      * to build the dialogs and find the correct pref-page.
      * 
+     * @param genericActivator
+     *            The BundleActivator.
      * @param preferencePageId
      *            The id of the preference page to open if there are missing
      *            binaries.
-     * @param preferenceStore
-     *            The preference store of the plugin.
      */
     public GenericStartup(GenericActivator genericActivator,
             final String preferencePageId) {
@@ -101,9 +103,13 @@ public class GenericStartup implements IStartup {
                             // we should (in any case) have a valid payload now
                             m_pluginActivator.getBinariesManager().register();
                         } catch (InvocationTargetException e) {
-                            e.printStackTrace();
+                            LOGGER.error(
+                                    "Error in earlyStartup (InvocationTargetException)",
+                                    e);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            LOGGER.error(
+                                    "Error in earlyStartup (InterruptedException)",
+                                    e);
                         }
                     }
                 });
@@ -142,8 +148,7 @@ public class GenericStartup implements IStartup {
      * @return A list containing all binaries that were not correctly
      *         initialized.
      * @throws Exception
-     *             If the {@link IToolLocator} could not be initialized
-     *             correctly.
+     *             If the IToolLocator could not be initialized correctly.
      */
     public List<String> findUnitializedBinaries() throws Exception {
         List<String> uninitializedBinaries = new ArrayList<String>();
