@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for GKN base plugin
-Bundle-SymbolicName: com.genericworkflownodes.knime.tests
+Bundle-SymbolicName: com.genericworkflownodes.knime.tests;singleton:=true
 Bundle-Version: 0.8.0.qualifier
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
 Fragment-Host: com.genericworkflownodes.knime;bundle-version="0.8.0"

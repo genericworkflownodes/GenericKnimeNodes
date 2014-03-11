@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.genericworkflownodes.knime.feature"
-      label="Generic Workflow Nodes for KNIME"
+      id="com.genericworkflownodes.knime.testing.feature"
+      label="GenericKnimeNodes-Testing"
       version="0.8.0.qualifier"
       provider-name="Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team">
 
    <description url="http://www.genericworkflownodes.com">
-      This feature provides the KNIME plugin com.genericworkflownodes.knime providing basic functionality for further plugins depending on the GenericKnimeNodes mechanism.
-
-See http://www.genericworkflownodes.com for details.
+      Test feature for com.genericworkflownodes.knime
    </description>
 
    <copyright>
       Copyright (c) 2011-2014, Marc Röttig, Stephan Aiche, and Björn Kahlert.
    </copyright>
 
-   <license url="http://www.gnu.org/copyleft/lesser.html">
+<license url="http://www.gnu.org/copyleft/lesser.html">
       GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -183,18 +181,12 @@ permanent authorization for you to choose that version for the
 Library.
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.knime.workbench.core"/>
-      <import plugin="org.knime.workbench.repository"/>
-      <import plugin="org.knime.base"/>
-      <import plugin="org.knime.core.data.uritype" version="2.7.0" match="greaterOrEqual"/>
-   </requires>
-
    <plugin
-         id="com.genericworkflownodes.knime"
+         id="com.genericworkflownodes.knime.tests"
          download-size="0"
          install-size="0"
-         version="0.8.0.qualifier"/>
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
 
 </feature>
