@@ -1,0 +1,13 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package org.ballproject.knime.nodes.mimetypes;
+
+import org.ballproject.knime.types.MIMEtype;
+
+public class __NAME__MIMEtype extends MIMEtype
+{
+	public __NAME__MIMEtype()
+	{
+		super("__EXT__");
+	}
+}

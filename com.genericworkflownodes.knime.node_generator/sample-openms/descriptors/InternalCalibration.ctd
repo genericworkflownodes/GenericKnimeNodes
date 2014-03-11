@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="InternalCalibration" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_InternalCalibration.html" category="Signal processing and preprocessing" >
+<description><![CDATA[Applies an internal calibration.]]></description>
+<manual><![CDATA[Applies an internal calibration.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="InternalCalibration" description="Applies an internal calibration.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;InternalCalibration&apos;">
+      <ITEM name="in" value="" type="input-file" description="input peak file " required="true" advanced="false" supported_formats="*.mzML,*.featureXML" />
+      <ITEM name="out" value="" type="output-file" description="output file " required="true" advanced="false" supported_formats="*.mzML,*.featureXML" />
+      <ITEM name="ref_peaks" value="" type="input-file" description="input file containing reference m/z values (either as textfile with one m/z per line and no header or as idXML file)" required="false" advanced="false" supported_formats="*.csv,*.idXML" />
+      <ITEM name="type" value="spectrumwise" type="string" description="The kind of internal calibration that should be applied." required="false" advanced="false" restrictions="spectrumwise,global" />
+      <ITEM name="trafo" value="" type="output-file" description="output transformation file (only for global calibration)" required="false" advanced="false" supported_formats="*.trafoXML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Settings for the internal calibration.">
+        <ITEM name="mz_tolerance" value="1" type="double" description="Allowed tolerance between peak and reference m/z." required="false" advanced="false" restrictions="0:" />
+        <ITEM name="mz_tolerance_unit" value="Da" type="string" description="Unit for mz_tolerance." required="false" advanced="false" restrictions="Da,ppm" />
+        <ITEM name="rt_tolerance" value="10" type="int" description="Allowed tolerance between peak and reference rt." required="false" advanced="false" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

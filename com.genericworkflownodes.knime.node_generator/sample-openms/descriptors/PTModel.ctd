@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="PTModel" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_PTModel.html" category="Peptide property prediction" >
+<description><![CDATA[Trains a model for the prediction of proteotypic peptides from a training set.]]></description>
+<manual><![CDATA[Trains a model for the prediction of proteotypic peptides from a training set.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="PTModel" description="Trains a model for the prediction of proteotypic peptides from a training set.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;PTModel&apos;">
+      <ITEM name="in_positive" value="" type="input-file" description="input file with positive examples" required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="in_negative" value="" type="input-file" description="input file with negative examples" required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="output-file" description="output file: the model in libsvm format" required="true" advanced="false" supported_formats="*.txt" />
+      <ITEM name="c" value="1" type="double" description="the penalty parameter of the svm" required="false" advanced="false" />
+      <ITEM name="svm_type" value="C_SVC" type="string" description="the type of the svm (NU_SVC or C_SVC)" required="false" advanced="false" restrictions="NU_SVC,C_SVC" />
+      <ITEM name="nu" value="0.5" type="double" description="the nu parameter [0..1] of the svm (for nu-SVR)" required="false" advanced="false" restrictions="0:1" />
+      <ITEM name="kernel_type" value="OLIGO" type="string" description="the kernel type of the svm" required="false" advanced="false" restrictions="LINEAR,RBF,POLY,OLIGO" />
+      <ITEM name="degree" value="1" type="int" description="the degree parameter of the kernel function of the svm (POLY kernel)" required="false" advanced="false" restrictions="1:" />
+      <ITEM name="border_length" value="22" type="int" description="length of the POBK" required="false" advanced="false" restrictions="1:" />
+      <ITEM name="k_mer_length" value="1" type="int" description="k_mer length of the POBK" required="false" advanced="false" restrictions="1:" />
+      <ITEM name="sigma" value="5" type="double" description="sigma of the POBK" required="false" advanced="false" />
+      <ITEM name="max_positive_count" value="1000" type="int" description="quantity of positive samples for training (randomly chosen if smaller than available quantity)" required="false" advanced="false" restrictions="1:" />
+      <ITEM name="max_negative_count" value="1000" type="int" description="quantity of positive samples for training (randomly chosen if smaller than available quantity)" required="false" advanced="false" restrictions="1:" />
+      <ITEM name="redundant" value="false" type="string" description="if the input sets are redundant and the redundant peptides should occur more than once in the training set, this flag has to be set" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="additive_cv" value="false" type="string" description="if the step sizes should be interpreted additively (otherwise the actual value is multiplied with the step size to get the new value" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="cv" description="Parameters for the grid search / cross validation:">
+        <ITEM name="skip_cv" value="false" type="string" description="Has to be set if the cv should be skipped and the model should just be trained with the specified parameters." required="false" advanced="false" restrictions="true,false" />
+        <ITEM name="number_of_runs" value="10" type="int" description="number of runs for the CV" required="false" advanced="false" restrictions="1:" />
+        <ITEM name="number_of_partitions" value="10" type="int" description="number of CV partitions" required="false" advanced="false" restrictions="2:" />
+        <ITEM name="degree_start" value="1" type="int" description="starting point of degree" required="false" advanced="false" restrictions="1:" />
+        <ITEM name="degree_step_size" value="2" type="int" description="step size point of degree" required="false" advanced="false" />
+        <ITEM name="degree_stop" value="4" type="int" description="stopping point of degree" required="false" advanced="false" />
+        <ITEM name="c_start" value="1" type="double" description="starting point of c" required="false" advanced="false" />
+        <ITEM name="c_step_size" value="100" type="double" description="step size of c" required="false" advanced="false" />
+        <ITEM name="c_stop" value="1000" type="double" description="stopping point of c" required="false" advanced="false" />
+        <ITEM name="nu_start" value="0.1" type="double" description="starting point of nu" required="false" advanced="false" restrictions="0:1" />
+        <ITEM name="nu_step_size" value="1.3" type="double" description="step size of nu" required="false" advanced="false" />
+        <ITEM name="nu_stop" value="0.9" type="double" description="stopping point of nu" required="false" advanced="false" restrictions="0:1" />
+        <ITEM name="sigma_start" value="1" type="double" description="starting point of sigma" required="false" advanced="false" />
+        <ITEM name="sigma_step_size" value="1.3" type="double" description="step size of sigma" required="false" advanced="false" />
+        <ITEM name="sigma_stop" value="15" type="double" description="stopping point of sigma" required="false" advanced="false" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

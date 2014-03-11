@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="image2file.png" type="Other">
+    <name>Image2FilePort</name>
+    
+    <shortDescription>
+        Converts an Image Port to a File port by saving it as png.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Converts an Image Port to a File port by saving it as png. Note that non-PNG files will crash at execution and not at configure.</intro>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input Image">Image that should be exported to a file.</inPort>
+    </ports>    
+</knimeNode>

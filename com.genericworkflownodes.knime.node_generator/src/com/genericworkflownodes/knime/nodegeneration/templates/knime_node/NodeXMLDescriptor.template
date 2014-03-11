@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="__ICON__" type="Manipulator">
+	<name>__NODENAME__</name>
+    
+	<shortDescription>
+		__DESCRIPTION__
+    </shortDescription>
+    
+	<fullDescription>
+		<intro>__MANUAL__
+		</intro>
+        
+__OPTIONS__
+	</fullDescription>
+    
+	<ports>
+__INPORTS____OUTPORTS__	</ports>
+	<views>
+		<view index="0" name="Logview">Shows the stdout/stderr output of the tool.</view>
+	</views>    
+</knimeNode>

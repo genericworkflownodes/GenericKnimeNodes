@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="OpenSwathRTNormalizer" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_OpenSwathRTNormalizer.html" category="Targeted Experiments" >
+<description><![CDATA[This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.]]></description>
+<manual><![CDATA[This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="OpenSwathRTNormalizer" description="This tool will take a description of RT peptides and their normalized retention time to write out a transformation file on how to transoform the RT space into the normalized space.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;OpenSwathRTNormalizer&apos;">
+      <ITEMLIST name="in" type="input-file" description="Input files separated by blank" required="true" advanced="false" supported_formats="*.mzML">
+      </ITEMLIST>
+      <ITEM name="tr" value="" type="input-file" description="transition file with the RT peptides (&apos;TraML&apos; or &apos;csv&apos;)" required="true" advanced="false" supported_formats="*.csv,*.traML" />
+      <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.trafoXML" />
+      <ITEM name="rt_norm" value="" type="input-file" description="RT normalization file (how to map the RTs of this run to the ones stored in the library)" required="false" advanced="false" supported_formats="*.trafoXML" />
+      <ITEM name="min_rsq" value="0.95" type="double" description="Minimum r-squared of RT peptides regression" required="false" advanced="false" />
+      <ITEM name="min_coverage" value="0.6" type="double" description="Minimum relative amount of RT peptides to keep" required="false" advanced="false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

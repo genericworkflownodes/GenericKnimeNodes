@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.4"?>
+
+<plugin>
+   <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>  
+   
+   <extension point="org.knime.workbench.repository.categories">
+    <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
+    <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" level-id="IO" name="IO" path="/community/GenericKnimeNodes"/>      
+    <category description="/community/GenericKnimeNodes/View" icon="icons/category.png" level-id="Util" name="Util" path="/community/GenericKnimeNodes"/>
+    <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="KNIMEConversion" name="KNIMEConversion" path="/community/GenericKnimeNodes"/>
+    <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="Flow" name="Flow" path="/community/GenericKnimeNodes"/>
+   </extension>
+
+   <extension point="org.knime.workbench.repository.nodes">
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory" id="com.genericworkflownodes.knime.nodes.io.exporter.MimeFileExporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfiles.OutputFilesNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listexporter.ListMimeFileExporterNodeFactory"/>
+	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory" id="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
+   	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
+	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
+</extension>
+   
+   <extension point="org.knime.product.splashExtension">
+        <splashExtension icon="icons/GKN.png" id="com.genericworkflownodes.knime.splashExtension"/>
+   </extension>
+   
+   <extension point="org.eclipse.equinox.preferences.preferences">
+      <initializer class="com.genericworkflownodes.knime.preferences.PreferenceInitializer"/>
+   </extension>
+   
+   <extension point="org.eclipse.ui.preferencePages">
+      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.PreferencePage" name="Generic KNIME Nodes"/>
+   </extension>
+   <extension
+         point="com.genericworkflownodes.knime.execution.Executor">
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
+            name="LocalToolExecutor">
+      </executor>
+   </extension>
+   <extension
+         point="com.genericworkflownodes.knime.execution.CommandGenerator">
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.BALLCommandGenerator"
+            name="com.genericworkflownodes.knime.execution.impl.BALLCommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.CLICommandGenerator"
+            name="com.genericworkflownodes.knime.execution.impl.CLICommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator"
+            name="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.BALLCommandGenerator"
+            name="BALLCommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.CLICommandGenerator"
+            name="CLICommandGenerator">
+      </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator"
+            name="OpenMSCommandGenerator">
+      </commandgenerator>
+   </extension>
+</plugin>

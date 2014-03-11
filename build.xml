@@ -1,72 +1,154 @@
-<project name="pluginbuilder" default="custom.plugin.build" basedir=".">
+<project name="pluginbuilder" default="custom.plugin.generate_sources" basedir=".">
 
 	<property name="debug" value="true" />
-	
-	<property name="plugin.dir" value="sample" description="directory in which to find the files from which you want to generate a KNIME plugin"/>
 
-	<property name="base.plugin.name" value="org.ballproject.knime" />
+	<property name="base.plugin.name" value="com.genericworkflownodes.knime" />
 	<property name="base.plugin.version.major" value="0" />
-	<property name="base.plugin.version.minor" value="6" />
-	<property name="base.plugin.version.patch" value="1" />
-	
+	<property name="base.plugin.version.minor" value="7" />
+	<property name="base.plugin.version.patch" value="0" />
+
+	<property name="nodegenerator.name" value="com.genericworkflownodes.knime.node_generator" />
+
 	<!-- do not edit below this line -->
 
 	<property file="build.properties" />
-	<property file="${plugin.dir}/plugin.properties" />
+
+	<!-- DEFAULT: this works only if it was not set previously the build.properties -->
+	<property name="default.plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample-openms" description="Directory containing the files from which you want to generate the KNIME plugin." />
 
 	<property name="base.plugin.version" value="${base.plugin.version.major}.${base.plugin.version.minor}.${base.plugin.version.patch}" />
-	<property name="custom.plugin.name" value="${pluginPackage}" />
-	<property name="custom.plugin.version" value="${pluginVersion}" />
-	
+
 	<tstamp>
-		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ss-SZ"/> <!-- about ISO8601 -->
+		<format property="fulltime" pattern="yyyy-MM-dd'T'HH-mm-ss-SZ" />
+		<!-- about ISO8601 -->
 	</tstamp>
 	<property name="tmp" value="${java.io.tmpdir}/GKN-${fulltime}" />
-	<property name="base.plugin.build.dir" value="${tmp}/basePlugin" />
-  <property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" /> 
-	<property name="custom.plugin.build.src" value="${tmp}/customPlugin-sources" />
-	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
-	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
-	<property name="src" value="src" />
-  
-  <!-- the classpath for the base plugin (KNIME and jars in lib/) -->
-  <path id="base.plugin.classpath">
-    <!-- include all jars found in KNIME SDK plugins -->
-    <fileset dir="${knime.sdk}/plugins">
-      <include name="**/*.jar" />
-    </fileset>
-    <!-- include our own dependencies -->
-    <fileset dir="lib">
-      <include name="*.jar" />
-    </fileset>
-  </path>
 
-  <!-- the classpath used to compile and generate the plugin sources -->
-  <path id="custom.plugin.classpath">
-    <pathelement location="${base.plugin.build.jar}"/>
-    <path refid="base.plugin.classpath"/>
-  </path>
+	<property name="base.plugin.src" value="com.genericworkflownodes.knime" />
+	<property name="base.plugin.build.dir" value="${tmp}/basePlugin" />
+	<property name="base.plugin.build.jar" value="build/${base.plugin.name}_${base.plugin.version}.jar" />
+	<property name="base.plugin.test.dir" value="${tmp}/basePlugin-test" />
+
+	<property name="nodegenerator.src" value="com.genericworkflownodes.knime.node_generator" />
+	<property name="nodegenerator.build.dir" value="${tmp}/nodeGenerator" />
+	<property name="nodegenerator.build.jar" value="build/${nodegenerator.name}_${base.plugin.version}.jar" />
+
+	<property name="src" value="src" />
+	<property name="test" value="test" />
+
+	<!-- the classpath for the base plugin (KNIME and jars in lib/) -->
+	<path id="base.plugin.classpath">
+		<!-- include all jars found in KNIME SDK plugins -->
+		<fileset dir="${knime.sdk}/plugins">
+			<include name="**/*.jar" />
+			<exclude name="**/ant.jar" />
+		</fileset>
+		<!-- include our own dependencies -->
+		<fileset dir="${base.plugin.src}/lib">
+			<include name="*.jar" />
+			<exclude name="junit.jar" />
+			<exclude name="org.hamcrest.core_1.1.0.v20090501071000.jar" />
+		</fileset>
+		<!-- include our own files -->
+		<pathelement location="${base.plugin.src}/${src}" />
+	</path>
+
+	<!-- add the junit.jar only to the testing classpath -->
+	<path id="base.plugin.test.build.classpath">
+		<path refid="base.plugin.classpath" />
+		<pathelement location="${base.plugin.build.jar}" />
+		<pathelement location="${base.plugin.src}/${test}" />
+		<pathelement location="${base.plugin.src}/lib/junit.jar" />
+		<pathelement location="${base.plugin.src}/lib/org.hamcrest.core_1.1.0.v20090501071000.jar" />
+	</path>
+
+	<path id="base.plugin.test.run.classpath">
+		<path refid="base.plugin.test.build.classpath" />
+		<pathelement location="${base.plugin.test.dir}" />
+	</path>
+
+	<path id="nodegenerator.build.classpath">
+		<pathelement location="${base.plugin.build.jar}" />
+		<!-- include our own dependencies -->
+		<fileset dir="${nodegenerator.src}/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="nodegenerator.exec.classpath">
+		<path refid="nodegenerator.build.classpath" />
+		<pathelement location="${nodegenerator.build.jar}" />
+	</path>
+
+	<!-- the classpath used to compile and generate the plugin sources -->
+	<path id="custom.plugin.build.classpath">
+		<pathelement location="${base.plugin.build.jar}" />
+		<path refid="base.plugin.classpath" />
+	</path>
 
 	<target name="clean">
 		<delete dir="${tmp}" />
 	</target>
 
-  <target name="knime.sdk.condition">
-    <!-- check if knime.sdk was set correctly -->
-    <condition property="knime.sdk.exists">
-      <available file="${knime.sdk}" type="dir"/>
-    </condition>
-  </target>
-  
-  <target name="knime.sdk.check" depends="knime.sdk.condition" unless="knime.sdk.exists" >
-    <echo message="knime.sdk was not set properly. Please edit the a file build.properties containing the following settings:" />
-    <echo message="knime.sdk=/path/to/your/knime/sdk" />
-    <fail message="Cannot build without a valid knime.sdk."/>
+	<!-- plugin.dir checks -->
+	<target name="plugin.dir.condition">
+		<!-- Check if the user set a plugin.dir or if we need to use the default.plugin.dir -->
+		<condition property="plugin.dir.isset">
+			<isset property="plugin.dir" />
+		</condition>
+
+		<!-- if not set overwrite -->
+		<condition property="plugin.dir" value="${default.plugin.dir}">
+			<not>
+				<isset property="plugin.dir" />
+			</not>
+		</condition>
+	</target>
+
+	<target name="plugin.dir.check" depends="plugin.dir.condition" unless="plugin.dir.isset">
+		<echo message="Using default plugin.dir: ${plugin.dir}" />
+		<echo message="If you want to use a custom plugin dir, just add a plugin.dir property to the" />
+		<echo message="build.properties file." />
+	</target>
+
+  <!-- Load Plugin Information -->
+  <target name="load-custom-plugin-info" depends="plugin.dir.check" >
+  	<property file="${plugin.dir}/plugin.properties" />
+
+    <property name="custom.plugin.name" value="${pluginPackage}" />
+  	<property name="custom.plugin.version" value="${pluginVersion}" />
+
+  	<property name="default.custom.plugin.generator.target" value="generated_plugin/${custom.plugin.name}_${custom.plugin.version}/" />
+
+		<condition property="custom.plugin.generator.target" value="${default.custom.plugin.generator.target}">
+			<not>
+				<isset property="custom.plugin.generator.target" />
+			</not>
+		</condition>
+
+  	<property name="custom.plugin.build.src" value="${custom.plugin.generator.target}/${custom.plugin.name}" />
+
+  	<property name="custom.plugin.build.dir" value="${tmp}/customPlugin" />
+  	<property name="custom.plugin.build.jar" value="build/${custom.plugin.name}_${custom.plugin.version}.jar" />
   </target>
 
-	<target name="prepare" depends="knime.sdk.check,clean">
+	<!-- knime.sdk checks -->
+	<target name="knime.sdk.condition">
+		<!-- check if knime.sdk was set correctly -->
+		<condition property="knime.sdk.exists">
+			<available file="${knime.sdk}" type="dir" />
+		</condition>
+	</target>
+
+	<target name="knime.sdk.check" depends="knime.sdk.condition" unless="knime.sdk.exists">
+		<echo message="knime.sdk was not set properly. Please edit the a file build.properties containing the following settings:" />
+		<echo message="knime.sdk=/path/to/your/knime/sdk" />
+		<fail message="Cannot build without a valid knime.sdk." />
+	</target>
+
+	<target name="prepare" depends="knime.sdk.check,clean,load-custom-plugin-info">
 		<echo message="knime.sdk.exists: ${knime.sdk.exists}" />
-		
+		<echo message="plugin.dir: ${plugin.dir}" />
 		<mkdir dir="${tmp}" />
 		<mkdir dir="build" />
 	</target>
@@ -75,84 +157,101 @@
 		<echo message="Debug: ${debug}" />
 
 		<mkdir dir="${base.plugin.build.dir}" />
-		
-		<copy file="data/plugin.xml" todir="${base.plugin.build.dir}" />
-		<copy file="data/build.properties" todir="${base.plugin.build.dir}" />
+
+		<copy file="${base.plugin.src}/plugin.xml" todir="${base.plugin.build.dir}" />
+		<copy file="${base.plugin.src}/build.properties" todir="${base.plugin.build.dir}" />
 
 		<mkdir dir="${base.plugin.build.dir}/lib" />
 		<copy todir="${base.plugin.build.dir}/lib" failonerror="true" overwrite="true">
-			<fileset dir="lib/">
+			<fileset dir="${base.plugin.src}/lib/">
 				<include name="*.jar" />
 			</fileset>
 		</copy>
 
 		<mkdir dir="${base.plugin.build.dir}/META-INF" />
 		<copy todir="${base.plugin.build.dir}/META-INF" failonerror="true" overwrite="true">
-			<fileset dir="data">
+			<fileset dir="${base.plugin.src}/META-INF">
 				<include name="MANIFEST.MF" />
 			</fileset>
 		</copy>
-		<replace file="${base.plugin.build.dir}/META-INF/MANIFEST.MF" token="@@pluginVersion@@" value="${base.plugin.version}" />
 
 		<antcall target="base.plugin.classes.build" />
 
-		<mkdir dir="${base.plugin.build.dir}/data" />
-		<copy file="data/org.ballproject.knime.base.mime.demangler.DemanglerProvider.exsd" todir="${base.plugin.build.dir}/data" />
+		<mkdir dir="${base.plugin.build.dir}/schema" />
+		<copy file="${base.plugin.src}/schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd" todir="${base.plugin.build.dir}/schema" />
 
 		<mkdir dir="${base.plugin.build.dir}/icons" />
 		<copy todir="${base.plugin.build.dir}/icons" failonerror="true" overwrite="true">
-			<fileset dir="data">
-				<include name="**/*.png"/>
-				<include name="**/*.jpg"/>
-				<include name="**/*.gif"/>
+			<fileset dir="${base.plugin.src}/icons">
+				<include name="**/*.png" />
+				<include name="**/*.jpg" />
+				<include name="**/*.gif" />
 			</fileset>
 		</copy>
-		<copy file="data/GKN.png" todir="${base.plugin.build.dir}/icons" />
-
 		<zip destfile="${base.plugin.build.jar}" basedir="${base.plugin.build.dir}" />
 	</target>
 
 	<target name="base.plugin.classes.build">
-		<javac srcdir="${src}" destdir="${base.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+		<javac srcdir="${base.plugin.src}/${src}" destdir="${base.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath refid="base.plugin.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
 			<compilerarg value="-Xlint:deprecation" />
 		</javac>
 
-		<touch file="${base.plugin.build.dir}/org/ballproject/knime/baseplugin.properties" />
-		<propertyfile file="${base.plugin.build.dir}/org/ballproject/knime/baseplugin.properties">
-			<entry key="debug" value="${debug}" />
-		</propertyfile>
-
 		<!-- copy factory-xmls and other stuff -->
 		<copy todir="${base.plugin.build.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${src}">
+			<fileset dir="${base.plugin.src}/${src}">
 				<!--<exclude name="**/*.java"/>-->
 				<exclude name="**/package.htm*" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="custom.plugin.build" depends="base.plugin.build">
-		<mkdir dir="${custom.plugin.build.dir}"/>
+	<target name="nodegenerator.build" depends="base.plugin.build">
+		<mkdir dir="${nodegenerator.build.dir}" />
+		<javac srcdir="${nodegenerator.src}/${src}" destdir="${nodegenerator.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="nodegenerator.build.classpath" />
+			<compilerarg value="-Xlint:unchecked" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+
+		<!-- copy templates and assets into nodegenerator.jar
+		 e.g.,
+		 		* assets/.classpath
+		 		* templates/BinaryResources.template
+		 -->
+		<copy todir="${nodegenerator.build.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${nodegenerator.src}/${src}">
+				<!--<exclude name="**/*.java"/>-->
+				<exclude name="**/package.htm*" />
+			</fileset>
+		</copy>
+
+
+		<zip destfile="${nodegenerator.build.jar}" basedir="${nodegenerator.build.dir}" />
+	</target>
+
+	<target name="custom.plugin.build" depends="nodegenerator.build">
 		<antcall target="custom.plugin.generate_sources" />
 		<antcall target="custom.plugin.classes.build" />
 		<zip destfile="${custom.plugin.build.jar}" basedir="${custom.plugin.build.dir}" />
 	</target>
 
-	<target name="custom.plugin.generate_sources" description="run node generator">
-    <java classname="org.ballproject.knime.nodegeneration.Main" failonerror="true" fork="true">
-      <!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
-      <!-- handle the to long classpath -->
-      <env key="CLASSPATH" path="${env.CLASSPATH}:${toString:custom.plugin.classpath}"/>
+	<target name="custom.plugin.generate_sources" description="run node generator" depends="nodegenerator.build">
+		<echo message="${toString:nodegenerator.exec.classpath}" />
+		<java classname="com.genericworkflownodes.knime.nodegeneration.Main" failonerror="true" fork="true">
+			<!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
+			<!-- handle the to long classpath -->
+			<env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}" />
 			<arg value="${plugin.dir}" />
-		  <arg value="${custom.plugin.build.src}" />
-    </java>
+			<arg value="${custom.plugin.generator.target}" />
+		</java>
 	</target>
 
 	<target name="custom.plugin.classes.build">
+		<mkdir dir="${custom.plugin.build.dir}/" />
 		<javac srcdir="${custom.plugin.build.src}" destdir="${custom.plugin.build.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
-			<classpath refid="custom.plugin.classpath" />
+			<classpath refid="custom.plugin.build.classpath" />
 			<compilerarg value="-Xlint:unchecked" />
 			<compilerarg value="-Xlint:deprecation" />
 		</javac>
@@ -176,15 +275,33 @@
 		</copy>
 	</target>
 
-	<target name="test" depends="base.plugin.build">
+	<!-- TESTING RELATED TARGETS -->
+	<target name="base.plugin.test-build" depends="base.plugin.build">
+		<mkdir dir="${base.plugin.test.dir}" />
+
+		<javac srcdir="${base.plugin.src}/${test}" destdir="${base.plugin.test.dir}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
+			<classpath refid="base.plugin.test.build.classpath" />
+			<compilerarg value="-Xlint:unchecked" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+	</target>
+
+	<target name="base.plugin.test" depends="base.plugin.test-build">
 		<junit printsummary="yes" haltonfailure="yes" showoutput="yes">
-  		<classpath refid="base.plugin.classpath"/>
-	
-	    <!--<formatter type="plain"/>-->
-			<test name="org.ballproject.knime.test.CTDNodeConfigurationWriterTest" />
-			<test name="org.ballproject.knime.test.CTDNodeConfigurationReaderTest" />
-			<test name="org.ballproject.knime.test.ParameterTest" />
-			<test name="org.ballproject.knime.test.MIMEFileStuffTest" />
+			<classpath refid="base.plugin.test.run.classpath" />
+			<formatter type="plain" usefile="false" />
+
+			<batchtest fork="yes">
+				<fileset dir="${base.plugin.src}/${test}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTests.java" />
+					<!-- this is actually not a test -->
+					<exclude name="**/TestDataSource.java" />
+				</fileset>
+			</batchtest>
 		</junit>
+	</target>
+
+	<target name="test" depends="base.plugin.test">
 	</target>
 </project>

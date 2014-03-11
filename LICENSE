@@ -1,5 +1,3 @@
-
-
 GenericKnimeNodes is licensed under the 
 
  GNU LESSER GENERAL PUBLIC LICENSE V3
@@ -7,7 +5,7 @@ GenericKnimeNodes is licensed under the
 (see LGPL.LICENSE and GPL.LICENSE).
 
 
-Author: Marc Röttig (2011)
+Authors: Marc Röttig (2011), Stephan Aiche (2012), Björn Kahlert (2012)
 
 
 ## Dependencies:
@@ -20,8 +18,6 @@ GenericKnimeNodes depends upon
 - SwingX which is also licensed under the GNU LESSER GENERAL PUBLIC LICENSE V3
 - BeanShell which is also licensed under the GNU LESSER GENERAL PUBLIC LICENSE V3
 - for our Apache Xerces binary dependecies please notice the Apache License 2.0 (APACHE.LICENSE)
-- for our Apache ANT binary dependecies please notice the Apache License 2.0 (APACHE.LICENSE)
-- for our Apache ANT-contrib binary dependecies please notice the Apache License 2.0 (APACHE.LICENSE)
 - for our JAXEN binary dependencies please notice the following
 
 

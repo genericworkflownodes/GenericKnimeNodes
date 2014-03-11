@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="InclusionExclusionListCreator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_InclusionExclusionListCreator.html" category="Targeted Experiments" >
+<description><![CDATA[Creates inclusion and/or exclusion lists.]]></description>
+<manual><![CDATA[Creates inclusion and/or exclusion lists.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="InclusionExclusionListCreator" description="Creates inclusion and/or exclusion lists.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;InclusionExclusionListCreator&apos;">
+      <ITEM name="include" value="" type="input-file" description="Inclusion list input file in FASTA or featureXML format." required="false" advanced="false" supported_formats="*.featureXML,*.fasta" />
+      <ITEM name="exclude" value="" type="input-file" description="Exclusion list input file in featureXML, idXML or FASTA format." required="false" advanced="false" supported_formats="*.featureXML,*.idXML,*.fasta" />
+      <ITEM name="out" value="" type="output-file" description="Output file (tab delimited csv file)." required="true" advanced="false" supported_formats="*.csv" />
+      <ITEM name="rt_model" value="" type="input-file" description="RTModel file used for the rt prediction of peptides in FASTA files." required="false" advanced="false" supported_formats="*.txt" />
+      <ITEM name="pt_model" value="" type="input-file" description="PTModel file used for the pt prediction of peptides in FASTA files (only needed for inclusion_strategy PreotinBased_LP)." required="false" advanced="false" supported_formats="*.txt" />
+      <ITEMLIST name="inclusion_charges" type="int" description="List containing the charge states to be considered for the inclusion list compounds, space separated." required="false" advanced="false" restrictions="1:">
+      </ITEMLIST>
+      <ITEM name="inclusion_strategy" value="ALL" type="string" description="strategy to be used for selection" required="false" advanced="false" restrictions="FeatureBased_LP,ProteinBased_LP,ALL" />
+      <ITEMLIST name="exclusion_charges" type="int" description="List containing the charge states to be considered for the exclusion list compounds (for idXML and FASTA input), space separated." required="false" advanced="false" restrictions="1:">
+      </ITEMLIST>
+      <ITEM name="raw_data" value="" type="input-file" description="File containing the raw data (only needed for FeatureBased_LP)." required="false" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Inclusion/Exclusion algorithm section">
+        <NODE name="InclusionExclusionList" description="">
+          <ITEM name="missed_cleavages" value="0" type="int" description="Number of missed cleavages used for protein digestion.#br#" required="false" advanced="false" />
+          <NODE name="RT" description="">
+            <ITEM name="unit" value="minutes" type="string" description="Create lists with units as seconds instead of minutes" required="false" advanced="false" restrictions="minutes,seconds" />
+            <ITEM name="use_relative" value="true" type="string" description="Use relative RT window, which depends on RT of precursor." required="false" advanced="false" restrictions="true,false" />
+            <ITEM name="window_relative" value="0.05" type="double" description="[for RT:use_relative == true] The relative factor X for the RT exclusion window, e.g. the window is calculated as [rt - rt*X, rt + rt*X]." required="false" advanced="false" restrictions="0:10" />
+            <ITEM name="window_absolute" value="90" type="double" description="[for RT:use_relative == false] The absolute value X for the RT exclusion window in [sec], e.g. the window is calculated as [rt - X, rt + X]." required="false" advanced="false" restrictions="0:" />
+          </NODE>
+          <NODE name="merge" description="">
+            <ITEM name="mz_tol" value="10" type="double" description="Two inclusion/exclusion windows are merged when they (almost) overlap in RT (see &apos;rt_tol&apos;) and are close in m/z by this tolerance. Unit of this is defined in &apos;mz_tol_unit&apos;." required="false" advanced="false" restrictions="0:" />
+            <ITEM name="mz_tol_unit" value="ppm" type="string" description="Unit of &apos;mz_tol&apos;" required="false" advanced="false" restrictions="ppm,Da" />
+            <ITEM name="rt_tol" value="1.1" type="double" description="Maximal RT delta (in seconds) which would allow two windows in RT to overlap (which causes merging the windows). Two inclusion/exclusion windows are merged when they (almost) overlap in RT and are close in m/z by this tolerance (see &apos;mz_tol&apos;). Unit of this param is [seconds]." required="false" advanced="false" restrictions="0:" />
+          </NODE>
+        </NODE>
+        <NODE name="PrecursorSelection" description="">
+          <ITEM name="ms2_spectra_per_rt_bin" value="5" type="int" description="Number of allowed MS/MS spectra in a retention time bin." required="false" advanced="false" restrictions="1:" />
+          <ITEM name="min_peak_distance" value="3" type="double" description="The minimal distance (in Da) of two peaks in one spectrum so that they can be selected." required="false" advanced="false" restrictions="0:" />
+          <ITEM name="selection_window" value="2" type="double" description="All peaks within a mass window (in Da) of a selected peak are also selected for fragmentation." required="false" advanced="false" restrictions="0:" />
+          <ITEM name="exclude_overlapping_peaks" value="false" type="string" description="If true overlapping or nearby peaks (within min_peak_distance) are excluded for selection." required="false" advanced="false" restrictions="true,false" />
+          <NODE name="Exclusion" description="">
+            <ITEM name="use_dynamic_exclusion" value="false" type="string" description="If true dynamic exclusion is applied." required="false" advanced="false" restrictions="true,false" />
+            <ITEM name="exclusion_time" value="100" type="double" description="The time (in seconds) a feature is excluded." required="false" advanced="false" restrictions="0:" />
+          </NODE>
+          <NODE name="ProteinBasedInclusion" description="">
+            <ITEM name="max_list_size" value="1000" type="int" description="The maximal number of precursors in the inclusion list." required="false" advanced="false" restrictions="1:" />
+            <NODE name="rt" description="">
+              <ITEM name="min_rt" value="960" type="double" description="Minimal rt in seconds." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="max_rt" value="3840" type="double" description="Maximal rt in seconds." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="rt_step_size" value="30" type="double" description="rt step size in seconds." required="false" advanced="false" restrictions="1:" />
+              <ITEM name="rt_window_size" value="100" type="int" description="rt window size in seconds." required="false" advanced="false" restrictions="1:" />
+            </NODE>
+            <NODE name="thresholds" description="">
+              <ITEM name="min_protein_id_probability" value="0.95" type="double" description="Minimal protein probability for a protein to be considered identified." required="false" advanced="false" restrictions="0:1" />
+              <ITEM name="min_pt_weight" value="0.5" type="double" description="Minimal pt weight of a precursor" required="false" advanced="false" restrictions="0:1" />
+              <ITEM name="min_mz" value="500" type="double" description="Minimal mz to be considered in protein based LP formulation." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="max_mz" value="5000" type="double" description="Minimal mz to be considered in protein based LP formulation." required="false" advanced="false" restrictions="0:" />
+              <ITEM name="use_peptide_rule" value="false" type="string" description="Use peptide rule instead of minimal protein id probability" required="false" advanced="false" restrictions="true,false" />
+              <ITEM name="min_peptide_ids" value="2" type="int" description="If use_peptide_rule is true, this parameter sets the minimal number of peptide ids for a protein id" required="false" advanced="false" restrictions="1:" />
+              <ITEM name="min_peptide_probability" value="0.95" type="double" description="If use_peptide_rule is true, this parameter sets the minimal probability for a peptide to be safely identified" required="false" advanced="false" restrictions="0:1" />
+            </NODE>
+          </NODE>
+        </NODE>
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

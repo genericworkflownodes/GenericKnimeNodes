@@ -1,0 +1,48 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package __BASE__.knime.nodes.__NODENAME__;
+
+import java.io.InputStream;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeFactory;
+
+import __BASE__.knime.PluginActivator;
+
+public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory {
+	
+	public __NODENAME__NodeFactory() {
+	}
+
+	@Override
+	public __NODENAME__NodeModel createNodeModel() {
+		INodeConfiguration tmpConfig;
+		try {
+			tmpConfig = getNodeConfiguration();
+			return new __NODENAME__NodeModel(tmpConfig, PluginActivator
+					.getInstance().getPluginConfiguration());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	@Override
+	public GenericKnimeNodeDialog createNodeDialogPane() {
+		INodeConfiguration tmpConfig;
+		try {
+			tmpConfig = getNodeConfiguration();
+			return new __NODENAME__NodeDialog(tmpConfig);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	protected InputStream getConfigAsStream() {
+		return this.getClass().getResourceAsStream("config/config.xml");
+	}
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="FeatureFinderIsotopeWavelet" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_FeatureFinderIsotopeWavelet.html" category="Quantitation" >
+<description><![CDATA[Detects two-dimensional features in LC-MS data.]]></description>
+<manual><![CDATA[Detects two-dimensional features in LC-MS data.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="FeatureFinderIsotopeWavelet" description="Detects two-dimensional features in LC-MS data.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;FeatureFinderIsotopeWavelet&apos;">
+      <ITEM name="in" value="" type="input-file" description="input file" required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Algorithm section">
+        <ITEM name="max_charge" value="3" type="int" description="The maximal charge state to be considered." required="false" advanced="false" restrictions="1:" />
+        <ITEM name="intensity_threshold" value="-1" type="double" description="The final threshold t&apos; is build upon the formula: t&apos; = av+t*sd, where t is the intensity_threshold, av the average intensity within the wavelet transformed signal and sd the standard deviation of the transform. If you set intensity_threshold=-1, t&apos; will be zero.#br#As the &apos;optimal&apos; value for this parameter is highly data dependent, we would recommend to start with -1, which will also extract features with very low signal-to-noise ratio. Subsequently, one might increase the threshold to find an optimized trade-off between false positives and true positives. Depending on the dynamic range of your spectra, suitable value ranges include: -1, [0:10], and if your data features even very high intensity values, t can also adopt values up to around 30. Please note that this parameter is not of an integer type, s.t. you can also use t:=0.1, e.g." required="false" advanced="false" />
+        <ITEM name="intensity_type" value="ref" type="string" description="Determines the intensity type returned for the identified features. &apos;ref&apos; (default) returns the sum of the intensities of each isotopic peak within an isotope pattern. &apos;trans&apos; refers to the intensity of the monoisotopic peak within the wavelet transform. &apos;corrected&apos; refers also to the transformed intensity with an attempt to remove the effects of the convolution. While the latter ones might be preferable for qualitative analyses, &apos;ref&apos; might be the best option to obtain quantitative results. Please note that intensity values might be spoiled (in particular for the option &apos;ref&apos;), as soon as patterns overlap (see also the explanations given in the class documentation of FeatureFinderAlgorihtmIsotopeWavelet)." required="false" advanced="true" restrictions="ref,trans,corrected" />
+        <ITEM name="check_ppm" value="false" type="string" description="Enables/disables a ppm test vs. the averagine model, i.e. potential peptide masses are checked for plausibility. In addition, a heuristic correcting potential mass shifts induced by the wavelet is applied." required="false" advanced="true" restrictions="true,false" />
+        <ITEM name="hr_data" value="false" type="string" description="Must be true in case of high-resolution data, i.e. for spectra featuring large m/z-gaps (present in FTICR and Orbitrap data, e.g.). Please check a single MS scan out of your recording, if you are unsure." required="false" advanced="false" restrictions="true,false" />
+        <NODE name="sweep_line" description="">
+          <ITEM name="rt_votes_cutoff" value="5" type="int" description="Defines the minimum number of subsequent scans where a pattern must occur to be considered as a feature." required="false" advanced="true" restrictions="0:" />
+          <ITEM name="rt_interleave" value="1" type="int" description="Defines the maximum number of scans (w.r.t. rt_votes_cutoff) where an expected pattern is missing. There is usually no reason to change the default value." required="false" advanced="true" restrictions="0:" />
+        </NODE>
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

@@ -1,0 +1,4 @@
+<mimetypes xmlns="http://www.ball-project.org/mimetypes">
+ <mimetype name="FASTA" binary="false" ext="FASTA" description="FASTA"/>
+ <mimetype name="PS" binary="false" ext="PS" description="Postscript PS"/>
+</mimetypes>
