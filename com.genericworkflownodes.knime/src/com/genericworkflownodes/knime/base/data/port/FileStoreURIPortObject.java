@@ -21,7 +21,7 @@ package com.genericworkflownodes.knime.base.data.port;
 import org.knime.core.data.filestore.FileStore;
 
 /**
- * 
+ * IURIPortObject managed by the FileStore.
  * 
  * @author aiche
  */

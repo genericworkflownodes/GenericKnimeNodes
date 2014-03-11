@@ -209,7 +209,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
      *            The {@link ExecutionContext} of the node.
      * @throws Exception
      */
-    private void executeTool(final ExecutionContext exec) throws Exception {
+    private void executeTool(final ExecutionContext exec)
+            throws ExecutionFailedException {
 
         final AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
                 m_executor);
@@ -235,12 +236,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             retcode = asyncExecutor.getReturnCode();
         } catch (ExecutionException ex) {
             // it means that the task threw an exception, assume retcode == -1
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            LOGGER.warn(sw.toString());
-            sw.close();
-            pw.close();
+            throw new ExecutionFailedException(m_nodeConfig.getName(), ex);
+        } catch (InterruptedException iex) {
+            throw new ExecutionFailedException(m_nodeConfig.getName(), iex);
         }
 
         GenericNodesPlugin.log("STDOUT: " + m_executor.getToolOutput());
@@ -253,7 +251,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                     + m_executor.getToolOutput());
             LOGGER.error("Failing process stderr: "
                     + m_executor.getToolErrorOutput());
-            throw new Exception("Execution of external tool failed.");
+            throw new ExecutionFailedException(m_nodeConfig.getName());
         }
 
     }

@@ -51,6 +51,11 @@ public abstract class AbstractFileStoreURIPortObject extends
         FileStorePortObject implements IURIPortObject {
 
     /**
+     * The number of extensions to show if string representation is generated.
+     */
+    private static final int NUMBER_OF_EXTENSIONS_TO_SHOW = 3;
+
+    /**
      * The key of the rel-path setting stored while loading/saving.
      */
     private static final String SETTINGS_KEY_REL_PATH = "rel-path";
@@ -102,7 +107,11 @@ public abstract class AbstractFileStoreURIPortObject extends
         File fsf = getFileStore().getFile();
         // make sure that it is a directory as we want to store all content in
         // this directory
-        fsf.mkdirs();
+        if (!fsf.exists()) {
+            // this should not fail
+            boolean success = fsf.mkdirs();
+            assert success;
+        }
         assert fsf.isDirectory();
 
         return fsf;
@@ -138,7 +147,8 @@ public abstract class AbstractFileStoreURIPortObject extends
         b.append(size);
         b.append(size == 1 ? " file (extension: " : " files (extensions: ");
         b.append(ConvenienceMethods.getShortStringFrom(
-                m_uriPortObjectSpec.getFileExtensions(), 3));
+                m_uriPortObjectSpec.getFileExtensions(),
+                NUMBER_OF_EXTENSIONS_TO_SHOW));
         b.append(")");
         return b.toString();
     }

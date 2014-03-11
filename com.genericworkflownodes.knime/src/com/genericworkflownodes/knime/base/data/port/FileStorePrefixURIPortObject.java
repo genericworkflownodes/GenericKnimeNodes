@@ -31,17 +31,23 @@ import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
 import org.knime.core.node.port.PortObjectSpec;
 
+/**
+ * PortObject collecting URIs stored with a common prefix. Mostly used when the
+ * number of generated files is not known in advance.
+ * 
+ * @author aiche
+ */
 public class FileStorePrefixURIPortObject extends
         AbstractFileStoreURIPortObject implements IPrefixURIPortObject {
 
     /**
      * Key to access/store the prefix value from/to model content.
      */
-    private final static String SETTINGS_KEY_PREFIX = "prefix";
+    private static final String SETTINGS_KEY_PREFIX = "prefix";
     /**
      * Key to access/store the base class content from/to model content.
      */
-    private final static String SETTINGS_KEY_PARENT_SETTINGS = "parent";
+    private static final String SETTINGS_KEY_PARENT_SETTINGS = "parent";
 
     /**
      * The actual prefix, relative to the filestore.
@@ -49,7 +55,7 @@ public class FileStorePrefixURIPortObject extends
     private String m_prefix;
 
     /**
-     * The default c'tor
+     * The default c'tor.
      */
     FileStorePrefixURIPortObject() {
         m_prefix = "";

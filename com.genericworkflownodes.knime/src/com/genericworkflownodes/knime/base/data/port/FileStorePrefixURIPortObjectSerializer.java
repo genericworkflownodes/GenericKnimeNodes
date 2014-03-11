@@ -34,11 +34,21 @@ import org.knime.core.node.port.PortObjectZipInputStream;
 import org.knime.core.node.port.PortObjectZipOutputStream;
 
 /**
- * @author aiche
+ * {@link PortObjectSerializer} for the {@link FileStorePrefixURIPortObject}.
  * 
+ * @author aiche
  */
 public class FileStorePrefixURIPortObjectSerializer extends
         PortObjectSerializer<FileStorePrefixURIPortObject> {
+
+    /**
+     * Model identifier.
+     */
+    private static final String MODEL_IDENT = "model";
+    /**
+     * content.xml file name.
+     */
+    private static final String CONTENT_XML = "content.xml";
 
     /**
      * Private c'tor to ensure singleton pattern.
@@ -74,12 +84,11 @@ public class FileStorePrefixURIPortObjectSerializer extends
         model.addInt("version", 1);
         model.addString("class_name", portObject.getClass().getName());
         // get model content from PortObject
-        ModelContentWO subModel = model.addModelContent("model");
+        ModelContentWO subModel = model.addModelContent(MODEL_IDENT);
         portObject.save(subModel, exec);
         // save model content to stream
-        out.putNextEntry(new ZipEntry("content.xml"));
+        out.putNextEntry(new ZipEntry(CONTENT_XML));
         model.saveToXML(out);
-
     }
 
     @Override
@@ -90,7 +99,7 @@ public class FileStorePrefixURIPortObjectSerializer extends
 
         // retrieve model content from stream
         ZipEntry entry = in.getNextEntry();
-        if (!"content.xml".equals(entry.getName())) {
+        if (!CONTENT_XML.equals(entry.getName())) {
             throw new IOException("Expected zip entry content.xml, got "
                     + entry.getName());
         }
@@ -102,7 +111,7 @@ public class FileStorePrefixURIPortObjectSerializer extends
 
         // ..and load from model content from stream
         try {
-            ModelContentRO subModel = model.getModelContent("model");
+            ModelContentRO subModel = model.getModelContent(MODEL_IDENT);
             result.load(subModel, spec, exec);
             return result;
         } catch (InvalidSettingsException e) {
