@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.base.data.prefixport;
+package com.genericworkflownodes.knime.base.data.port;
 
 import java.util.List;
 
@@ -36,7 +36,8 @@ import org.knime.core.node.port.PortObjectSpec;
  * 
  * @author aiche
  */
-public class PrefixURIPortObject extends URIPortObject {
+public class PrefixURIPortObject extends URIPortObject implements
+        IPrefixURIPortObject {
 
     /**
      * The key used to save the additional model settings or the
@@ -94,11 +95,7 @@ public class PrefixURIPortObject extends URIPortObject {
         m_prefix = prefix;
     }
 
-    /**
-     * Returns the prefix that was used to generate the associated file list.
-     * 
-     * @return The prefix.
-     */
+    @Override
     public String getPrefix() {
         return m_prefix;
     }
@@ -121,4 +118,5 @@ public class PrefixURIPortObject extends URIPortObject {
         // save our own settings
         model.addString(SETTINGS_KEY_PREFIX, m_prefix);
     }
+
 }

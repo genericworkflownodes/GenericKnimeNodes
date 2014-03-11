@@ -26,16 +26,14 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.knime.base.filehandling.mime.MIMEMap;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -50,7 +48,9 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.knime.base.data.prefixport.PrefixURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
@@ -91,7 +91,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
      * Short-cut for optional ports.
      */
     public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-            URIPortObject.class, true);
+            IURIPortObject.class, true);
 
     /**
      * Contains information on which of the available output types is selected
@@ -193,7 +193,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
      */
     private static PortType[] createOPOs(List<Port> ports) {
         PortType[] portTypes = new PortType[ports.size()];
-        Arrays.fill(portTypes, URIPortObject.TYPE);
+        Arrays.fill(portTypes, IURIPortObject.TYPE);
         for (int i = 0; i < ports.size(); i++) {
             if (ports.get(i).isOptional()) {
                 portTypes[i] = OPTIONAL_PORT_TYPE;
@@ -209,7 +209,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
      *            The {@link ExecutionContext} of the node.
      * @throws Exception
      */
-    private void executeTool(final ExecutionContext exec) throws Exception {
+    private void executeTool(final ExecutionContext exec)
+            throws ExecutionFailedException {
 
         final AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
                 m_executor);
@@ -235,12 +236,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             retcode = asyncExecutor.getReturnCode();
         } catch (ExecutionException ex) {
             // it means that the task threw an exception, assume retcode == -1
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
-            LOGGER.warn(sw.toString());
-            sw.close();
-            pw.close();
+            throw new ExecutionFailedException(m_nodeConfig.getName(), ex);
+        } catch (InterruptedException iex) {
+            throw new ExecutionFailedException(m_nodeConfig.getName(), iex);
         }
 
         GenericNodesPlugin.log("STDOUT: " + m_executor.getToolOutput());
@@ -253,7 +251,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                     + m_executor.getToolOutput());
             LOGGER.error("Failing process stderr: "
                     + m_executor.getToolErrorOutput());
-            throw new Exception("Execution of external tool failed.");
+            throw new ExecutionFailedException(m_nodeConfig.getName());
         }
 
     }
@@ -511,8 +509,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         transferIncomingPorts2Config(inObjects);
 
         // prepare input data and parameter values
-        List<List<URI>> outputFiles = transferOutgoingPorts2Config(jobdir,
-                inObjects);
+        List<PortObject> outPorts = transferOutgoingPorts2Config(jobdir,
+                inObjects, exec);
 
         // prepare the executor
         m_executor = ToolExecutorFactory.createToolExecutor(m_pluginConfig
@@ -526,10 +524,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         executeTool(exec);
 
         // process result files
-        PortObject[] outports = processOutput(outputFiles, exec);
+        // PortObject[] outports = processOutput(outputFiles, exec);
 
         if (!GenericNodesPlugin.isDebug()) {
             FileUtils.deleteDirectory(jobdir);
+        }
+
+        PortObject[] outports = new PortObject[outPorts.size()];
+        for (int i = 0; i < outPorts.size(); ++i) {
+            outports[i] = outPorts.get(i);
+            // if we have an prefix port we need to trigger reindexing
+            if (outports[i] instanceof FileStorePrefixURIPortObject) {
+                ((FileStorePrefixURIPortObject) outports[i]).collectFiles();
+            }
         }
 
         return outports;
@@ -547,26 +554,30 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
      * @throws Exception
      *             If the input has an invalid configuration.
      */
-    private List<List<URI>> transferOutgoingPorts2Config(final File jobdir,
-            PortObject[] inData) throws Exception {
+    private List<PortObject> transferOutgoingPorts2Config(final File jobdir,
+            PortObject[] inData, ExecutionContext exec) throws Exception {
 
-        List<List<URI>> outfiles = new ArrayList<List<URI>>();
-
-        int nOut = m_nodeConfig.getOutputPorts().size();
+        final int nOut = m_nodeConfig.getOutputPorts().size();
+        List<PortObject> outPorts = new ArrayList<PortObject>(nOut);
 
         for (int i = 0; i < nOut; i++) {
             Port port = m_nodeConfig.getOutputPorts().get(i);
             String name = port.getName();
             String ext = getOutputType(i);
+            boolean isPrefix = port.isPrefix();
 
             Parameter<?> p = m_nodeConfig.getParameter(name);
-            // used to remember which files we actually generated here
-            List<URI> fileURIs = new ArrayList<URI>();
 
             // basenames and number of output files guessed from input
             List<String> basenames = getOutputBaseNames();
 
             if (p instanceof FileListParameter && port.isMultiFile()) {
+                // we currently do not support lists of prefixes
+                if (isPrefix) {
+                    throw new InvalidSettingsException(
+                            "GKN currently does not support lists of prefixes as output.");
+                }
+
                 FileListParameter flp = (FileListParameter) p;
                 List<String> fileNames = new ArrayList<String>();
 
@@ -575,13 +586,16 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                             "Cannot determine number of output files if no input file is given.");
                 }
 
+                FileStoreURIPortObject fsupo = new FileStoreURIPortObject(
+                        exec.createFileStore(m_nodeConfig.getName() + "_" + i));
+
                 for (int f = 0; f < basenames.size(); ++f) {
                     // create basename: <base_name>_<port_nr>_<outfile_nr>
                     String file_basename = String.format("%s_%d_%d",
                             basenames.get(f), i, f);
-                    File file = m_fileStash.getFile(file_basename, ext);
+                    File file = fsupo.registerFile(file_basename + "." + ext);
                     fileNames.add(file.getAbsolutePath());
-                    fileURIs.add(file.toURI());
+                    outPorts.add(fsupo);
                 }
 
                 // overwrite existing settings with new values generated by the
@@ -600,23 +614,37 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
                 // create basename: <base_name>_<port_nr>_<outfile_nr>
                 String file_basename = String.format("%s_%d", basename, i);
-                // we do not append the file extension if we have a prefix
+                String fileName = file_basename + '.' + ext;
 
-                File file = m_fileStash.getFile(file_basename, ext);
-                ((FileParameter) p).setValue(file.getAbsolutePath());
-                GenericNodesPlugin.log("> setting param " + name + "->" + file);
+                if (isPrefix) {
+                    FileStorePrefixURIPortObject fspup = new FileStorePrefixURIPortObject(
+                            exec.createFileStore(m_nodeConfig.getName() + "_"
+                                    + i), fileName);
+                    ((FileParameter) p).setValue(fspup.getPrefix());
+                    GenericNodesPlugin.log("> setting param " + name + "->"
+                            + fspup.getPrefix());
 
-                // remember output file
-                fileURIs.add(file.toURI());
+                    outPorts.add(fspup);
+                } else {
+                    FileStoreURIPortObject fsupo = new FileStoreURIPortObject(
+                            exec.createFileStore(m_nodeConfig.getName() + "_"
+                                    + i));
+
+                    // we do not append the file extension if we have a prefix
+                    File file = fsupo.registerFile(fileName);
+                    ((FileParameter) p).setValue(file.getAbsolutePath());
+                    GenericNodesPlugin.log("> setting param " + name + "->"
+                            + file);
+
+                    // remember output file
+                    outPorts.add(fsupo);
+                }
             } else {
                 throw new Exception(
                         "Invalid connection between ports and parameters.");
             }
-
-            outfiles.add(fileURIs);
         }
-
-        return outfiles;
+        return outPorts;
     }
 
     /**
@@ -715,7 +743,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             // find the internal port for this PortObject
             Port port = m_nodeConfig.getInputPorts().get(i);
 
-            URIPortObject po = (URIPortObject) inData[i];
+            IURIPortObject po = (IURIPortObject) inData[i];
             List<URIContent> uris = po.getURIContents();
 
             String name = port.getName();
@@ -724,7 +752,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
             if (uris.size() > 1 && (!isMultiFile && !isPrefix)) {
                 throw new Exception(
-                        "URIPortObject with multiple URIs supplied at single URI port #"
+                        "IURIPortObject with multiple URIs supplied at single URI port #"
                                 + i);
             }
 
@@ -740,7 +768,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
             if (isPrefix) {
                 // we pass only the prefix to the tool
-                PrefixURIPortObject puri = (PrefixURIPortObject) inData[i];
+                IPrefixURIPortObject puri = (IPrefixURIPortObject) inData[i];
                 ((FileParameter) p).setValue(puri.getPrefix());
             } else if (isMultiFile) {
                 // we need to collect all filenames and then set them as a batch
@@ -759,95 +787,4 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             }
         }
     }
-
-    /**
-     * Converts the given list of output files to an array of {@link PortObject}
-     * s that can be passed on in the current workflow.
-     * 
-     * @param outputFileNames
-     *            The output name as list of lists of {@link URI}.
-     * @param exec
-     *            The execution context of the current node.
-     * @return
-     * @throws NonExistingMimeTypeException
-     */
-    private PortObject[] processOutput(final List<List<URI>> outputFileNames,
-            final ExecutionContext exec) throws NonExistingMimeTypeException {
-        int nOut = m_nodeConfig.getOutputPorts().size();
-
-        // create output tables
-        URIPortObject[] outports = new URIPortObject[nOut];
-
-        for (int i = 0; i < nOut; i++) {
-            List<URIContent> uris = new ArrayList<URIContent>();
-
-            String someFileName = "";
-
-            if (m_nodeConfig.getOutputPorts().get(i).isPrefix()) {
-                // we have generated a list of files based on a prefix
-                URI filename = outputFileNames.get(i).get(0);
-                final File f = new File(filename);
-                final String f_name = f.getName();
-
-                // list a files sharing the prefix
-                List<File> files = new ArrayList<File>();
-
-                Iterator<File> fIt = FileUtils.iterateFiles(f.getParentFile(),
-                        TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-
-                while (fIt.hasNext()) {
-                    File tf = fIt.next();
-                    if (!tf.isDirectory()) {
-                        final String abs_path = tf.getAbsolutePath();
-                        final String name_output_folder = abs_path
-                                .substring(f.getParentFile().getAbsolutePath()
-                                        .length() + 1);
-
-                        if (name_output_folder.startsWith(f_name)) {
-                            files.add(tf);
-                        }
-                    }
-                }
-
-                // add prefix to and files to output list
-                for (File out_file : files) {
-                    uris.add(new URIContent(out_file.toURI(),
-                            getExtension(out_file.getName())));
-                }
-
-                outports[i] = new PrefixURIPortObject(uris, f.getAbsolutePath());
-            } else {
-                // multi output file
-                for (URI filename : outputFileNames.get(i)) {
-                    someFileName = filename.getPath();
-                    uris.add(new URIContent(filename, getExtension(filename
-                            .getPath())));
-                }
-
-                String mimeType = getExtension(someFileName);
-                if (mimeType == null)
-                    throw new NonExistingMimeTypeException(someFileName);
-
-                outports[i] = new URIPortObject(uris);
-            }
-
-        }
-
-        return outports;
-    }
-
-    /**
-     * Extracts the extension from the given path.
-     * 
-     * @param path
-     * @return
-     */
-    private String getExtension(String path) {
-        if (path.lastIndexOf('.') == -1) {
-            return "";
-        } else {
-            return path.substring(path.lastIndexOf('.') + 1);
-        }
-    }
-
 }
