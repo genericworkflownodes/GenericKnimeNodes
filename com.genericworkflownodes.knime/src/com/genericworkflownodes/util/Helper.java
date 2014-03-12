@@ -36,7 +36,7 @@ import java.util.Random;
  * 
  * @author roettig, aiche
  */
-public class Helper {
+public final class Helper {
 
     /**
      * Size of the buffer when copying streams to files.

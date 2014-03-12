@@ -28,13 +28,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
@@ -53,21 +52,21 @@ public class BinariesManager implements IRunnableWithProgress {
     /**
      * The logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(BinariesManager.class
-            .getCanonicalName());
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(BinariesManager.class);
 
     /**
      * An abstraction of the payload directory.
      */
-    private IPayloadDirectory payloadDirectory;
+    private IPayloadDirectory m_payloadDirectory;
 
-    private GenericActivator genericActivator;
+    private GenericActivator m_genericActivator;
 
     public BinariesManager(IPayloadDirectory payloadDirectory,
             final GenericActivator genericActivator) {
         // initialize the payload directory
-        this.payloadDirectory = payloadDirectory;
-        this.genericActivator = genericActivator;
+        m_payloadDirectory = payloadDirectory;
+        m_genericActivator = genericActivator;
     }
 
     /**
@@ -78,20 +77,20 @@ public class BinariesManager implements IRunnableWithProgress {
     public boolean hasValidPayload() {
         // check if all extracted paths still available, if one fails,
         // re-extract
-        if (payloadDirectory.isEmpty()) {
+        if (m_payloadDirectory.isEmpty()) {
             return false;
         } else {
             boolean extractedPayloadIsValid = true;
             try {
                 // for each node find the executable
-                for (ExternalTool tool : genericActivator.getTools()) {
+                for (ExternalTool tool : m_genericActivator.getTools()) {
                     File toolExecutable = PluginPreferenceToolLocator
                             .getToolLocatorService().getToolPath(tool,
                                     ToolPathType.SHIPPED);
                     // check if it exists and if it is in our payload
                     if (!toolExecutable.exists()
                             || !toolExecutable.getAbsolutePath().startsWith(
-                                    payloadDirectory.getPath()
+                                    m_payloadDirectory.getPath()
                                             .getAbsolutePath())) {
                         extractedPayloadIsValid = false;
                         if (PluginPreferenceToolLocator.getToolLocatorService()
@@ -102,8 +101,8 @@ public class BinariesManager implements IRunnableWithProgress {
                     }
                 }
             } catch (Exception e) {
-                LOGGER.warning("Error during payload check. Assume there is no extracted payload.");
-                LOGGER.warning(e.getMessage());
+                LOGGER.warn("Error during payload check. Assume there is no extracted payload.");
+                LOGGER.warn(e.getMessage());
                 return false;
             }
             return extractedPayloadIsValid;
@@ -128,8 +127,14 @@ public class BinariesManager implements IRunnableWithProgress {
         makePayloadExecutable();
     }
 
+    /**
+     * Deletes the payload.
+     * 
+     * @throws IOException
+     *             If deletion fails.
+     */
     public void cleanPayload() throws IOException {
-        FileUtils.deleteDirectory(payloadDirectory.getPath());
+        FileUtils.deleteDirectory(m_payloadDirectory.getPath());
     }
 
     /**
@@ -139,7 +144,7 @@ public class BinariesManager implements IRunnableWithProgress {
     private void makePayloadExecutable() {
         @SuppressWarnings("unchecked")
         Iterator<File> fIt = FileUtils.iterateFiles(
-                payloadDirectory.getExecutableDirectory(),
+                m_payloadDirectory.getExecutableDirectory(),
                 TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
         while (fIt.hasNext()) {
             fIt.next().setExecutable(true);
@@ -158,29 +163,31 @@ public class BinariesManager implements IRunnableWithProgress {
     private void extractPayloadZIP(IProgressMonitor monitor) throws IOException {
         // check if a zip file for that combination of OS and data model exists
         if (hasPayload()) {
-            // count number of entries in the zip file
-            monitor.beginTask(
-                    "Checking shipped binaries for plugin "
-                            + genericActivator.getPluginConfiguration()
-                                    .getPluginName(), IProgressMonitor.UNKNOWN);
-            int numEntries = ZipUtils.countEntries(getPayloadStream());
-            monitor.done();
+            try {
+                // count number of entries in the zip file
+                monitor.beginTask("Checking shipped binaries for plugin "
+                        + m_genericActivator.getPluginConfiguration()
+                                .getPluginName(), IProgressMonitor.UNKNOWN);
+                int numEntries = ZipUtils.countEntries(getPayloadStream());
+                monitor.done();
 
-            // extract it
-            monitor.beginTask(
-                    "Extracting shipped binaries for plugin "
-                            + genericActivator.getPluginConfiguration()
-                                    .getPluginName(), numEntries);
-            ZipUtils.decompressTo(payloadDirectory.getPath(),
-                    getPayloadStream(), monitor);
-            monitor.done();
+                // extract it
+                monitor.beginTask("Extracting shipped binaries for plugin "
+                        + m_genericActivator.getPluginConfiguration()
+                                .getPluginName(), numEntries);
+                ZipUtils.decompressTo(m_payloadDirectory.getPath(),
+                        getPayloadStream(), monitor);
+                monitor.done();
+            } catch (UnZipFailureException e) {
+                LOGGER.error("Failure during decompression of payload.", e);
+            }
         }
     }
 
     /**
      * Returns true if the given plugin has a payload fragment.
      * 
-     * @return
+     * @return True if a payload was found, false otherwise.
      */
     public boolean hasPayload() {
         InputStream pStream = getPayloadStream();
@@ -188,7 +195,7 @@ public class BinariesManager implements IRunnableWithProgress {
     }
 
     private InputStream getPayloadStream() {
-        Enumeration<URL> e = genericActivator.getBundle().findEntries("/",
+        Enumeration<URL> e = m_genericActivator.getBundle().findEntries("/",
                 getZipFileName(), true);
         if (e != null && e.hasMoreElements()) {
             try {
@@ -231,10 +238,10 @@ public class BinariesManager implements IRunnableWithProgress {
     private void registerExtractedBinaries() {
 
         // get binary path
-        File binaryDirectory = payloadDirectory.getExecutableDirectory();
+        File binaryDirectory = m_payloadDirectory.getExecutableDirectory();
 
         // for each node find the executable
-        for (ExternalTool tool : genericActivator.getTools()) {
+        for (ExternalTool tool : m_genericActivator.getTools()) {
             File executable = getExecutableName(binaryDirectory,
                     tool.getExecutableName());
             if (executable != null) {
@@ -252,13 +259,16 @@ public class BinariesManager implements IRunnableWithProgress {
                                 .updateToolPathType(tool, ToolPathType.SHIPPED);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error(
+                            String.format(
+                                    "Failed to register extracted binaries for tool %s.",
+                                    tool), e);
                 }
 
             } else {
                 // TODO: handle non existent binaries, check if we have a
                 // configured one, otherwise warn
-                LOGGER.warning("Did not find any binaries for your platform.");
+                LOGGER.warn("Did not find any binaries for your platform.");
             }
         }
 
@@ -293,7 +303,7 @@ public class BinariesManager implements IRunnableWithProgress {
      *             I thrown in case of IO errors.
      */
     private void loadEnvironmentVariables() throws IOException {
-        File iniFile = new File(payloadDirectory.getPath(), getINIFileName());
+        File iniFile = new File(m_payloadDirectory.getPath(), getINIFileName());
 
         // check if we extracted also an ini file
         if (!iniFile.exists()) {
@@ -313,7 +323,7 @@ public class BinariesManager implements IRunnableWithProgress {
         }
 
         // transfer the variables to the pluginconfig
-        genericActivator.getPluginConfiguration().updateEnvironmentVariables(
+        m_genericActivator.getPluginConfiguration().updateEnvironmentVariables(
                 environmentVariables);
     }
 
@@ -323,7 +333,7 @@ public class BinariesManager implements IRunnableWithProgress {
         try {
             extractBinaries(monitor);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, e.getMessage());
+            LOGGER.error("Error in BinariesManager::run()", e);
         }
     }
 
@@ -336,7 +346,7 @@ public class BinariesManager implements IRunnableWithProgress {
             loadEnvironmentVariables();
             registerExtractedBinaries();
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, e.getMessage());
+            LOGGER.error("Error in BinariesManager::register()", e);
         }
     }
 }

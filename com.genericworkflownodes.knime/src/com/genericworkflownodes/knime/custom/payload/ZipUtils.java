@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * 
  * @author roettig, aiche
  */
-public class ZipUtils {
+public final class ZipUtils {
 
     private static final int BUFFER_SIZE = 2048;
 
@@ -45,10 +45,18 @@ public class ZipUtils {
      *            The zip file stream.
      * @param monitor
      *            A already started progress monitor.
+     * @throws UnZipFailureException
+     *             If decompression fails.
      */
     public static void decompressTo(File targetDir, InputStream zipStream,
-            IProgressMonitor monitor) {
-        targetDir.mkdirs();
+            IProgressMonitor monitor) throws UnZipFailureException {
+        if (!targetDir.exists()) {
+            boolean createDirs = targetDir.mkdirs();
+            if (!createDirs) {
+                throw new UnZipFailureException(
+                        "Unable to create the target directory.");
+            }
+        }
         FileOutputStream fout = null;
         try {
             ZipInputStream zin = new ZipInputStream(zipStream);
@@ -88,10 +96,12 @@ public class ZipUtils {
                 try {
                     fout.close();
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    throw new UnZipFailureException(
+                            "Failed to close stream when handling first exception.",
+                            e1);
                 }
             }
-            e.printStackTrace();
+            throw new UnZipFailureException(e.getMessage(), e);
         }
     }
 
@@ -101,8 +111,11 @@ public class ZipUtils {
      * @param zipStream
      *            The input stream containing the zip file.
      * @return The number of files/folders in the zip stream.
+     * @throws UnZipFailureException
+     *             If decompression fails.
      */
-    public static int countEntries(InputStream zipStream) {
+    public static int countEntries(InputStream zipStream)
+            throws UnZipFailureException {
         int numEntries = 0;
         try {
             ZipInputStream zin = new ZipInputStream(zipStream);
@@ -111,8 +124,14 @@ public class ZipUtils {
             }
             zin.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new UnZipFailureException(e.getMessage(), e);
         }
         return numEntries;
+    }
+
+    /**
+     * Private c'tor.
+     */
+    private ZipUtils() {
     }
 }

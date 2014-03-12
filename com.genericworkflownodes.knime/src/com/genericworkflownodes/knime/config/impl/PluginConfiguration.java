@@ -36,28 +36,28 @@ public class PluginConfiguration implements IPluginConfiguration {
     /**
      * The name of the plugin.
      */
-    private final String pluginId;
+    private final String m_pluginId;
 
     /**
      * The path where all binaries are stored (as string).
      */
-    private final String binariesPath;
+    private final String m_binariesPath;
 
     /**
      * The name of the plugin for the GUI.
      */
-    private final String pluginName;
+    private final String m_pluginName;
 
     /**
      * Additional properties of the plugin.
      */
-    private Properties props;
+    private Properties m_props;
 
     /**
      * A {@link Map} containing entries for environment variables, needed to
      * execute the binaries located in the plugin.
      */
-    private Map<String, String> env;
+    private Map<String, String> m_env;
 
     /**
      * C'tor for {@link PluginConfiguration}.
@@ -68,18 +68,15 @@ public class PluginConfiguration implements IPluginConfiguration {
      *            The path where all the binaries are located.
      * @param props
      *            Additional properties.
-     * @param env
-     *            A {@link Map} containing entries for environment variables,
-     *            needed to execute the binaries located in the plugin.
      */
     public PluginConfiguration(final String pluginId, final String pluginName,
             final String binariesPath, final Properties props) {
 
-        this.pluginId = pluginId;
-        this.pluginName = pluginName;
-        this.binariesPath = binariesPath;
-        this.props = props;
-        env = new HashMap<String, String>();
+        m_pluginId = pluginId;
+        m_pluginName = pluginName;
+        m_binariesPath = binariesPath;
+        m_props = props;
+        m_env = new HashMap<String, String>();
     }
 
     /**
@@ -87,11 +84,12 @@ public class PluginConfiguration implements IPluginConfiguration {
      * the correct values.
      */
     private void fixEnvironmentVariables() {
-        for (String envName : env.keySet()) {
-            if (env.get(envName).contains("$ROOT")) {
+        for (String envName : m_env.keySet()) {
+            if (m_env.get(envName).contains("$ROOT")) {
                 // update the map entry with the correct path
-                env.put(envName,
-                        env.get(envName).replace("$ROOT",
+                m_env.put(
+                        envName,
+                        m_env.get(envName).replace("$ROOT",
                                 new File(getBinariesPath()).getAbsolutePath()));
 
             }
@@ -103,7 +101,7 @@ public class PluginConfiguration implements IPluginConfiguration {
      */
     @Override
     public final String getPluginId() {
-        return pluginId;
+        return m_pluginId;
     }
 
     /**
@@ -111,7 +109,7 @@ public class PluginConfiguration implements IPluginConfiguration {
      */
     @Override
     public final String getBinariesPath() {
-        return binariesPath;
+        return m_binariesPath;
     }
 
     /**
@@ -119,7 +117,7 @@ public class PluginConfiguration implements IPluginConfiguration {
      */
     @Override
     public final Properties getPluginProperties() {
-        return props;
+        return m_props;
     }
 
     /**
@@ -127,7 +125,7 @@ public class PluginConfiguration implements IPluginConfiguration {
      */
     @Override
     public final Map<String, String> getEnvironmentVariables() {
-        return env;
+        return m_env;
     }
 
     /**
@@ -135,8 +133,8 @@ public class PluginConfiguration implements IPluginConfiguration {
      */
     @Override
     public void updateEnvironmentVariables(final Map<String, String> env) {
-        this.env.clear();
-        this.env.putAll(env);
+        m_env.clear();
+        m_env.putAll(env);
         fixEnvironmentVariables();
     }
 
@@ -145,7 +143,7 @@ public class PluginConfiguration implements IPluginConfiguration {
      */
     @Override
     public String getPluginName() {
-        return pluginName;
+        return m_pluginName;
     }
 
 }

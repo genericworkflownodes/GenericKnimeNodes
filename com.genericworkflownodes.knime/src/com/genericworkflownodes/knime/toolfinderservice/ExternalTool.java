@@ -41,6 +41,16 @@ public final class ExternalTool {
      */
     private String m_executableName;
 
+    /**
+     * C'tor.
+     * 
+     * @param pluginName
+     *            Name of the plugin.
+     * @param toolName
+     *            Name of the tool.
+     * @param executableName
+     *            Name of the executable.
+     */
     public ExternalTool(String pluginName, String toolName,
             String executableName) {
         m_pluginName = pluginName;

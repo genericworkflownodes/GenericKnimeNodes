@@ -80,8 +80,9 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
             Parameter<?> param = config.getParameter(key);
 
             // skip file parameters
-            if (param instanceof IFileParameter)
+            if (param instanceof IFileParameter) {
                 continue;
+            }
 
             settings.addString(key, param.getStringRep());
         }
@@ -99,8 +100,9 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
         for (String key : config.getParameterKeys()) {
             Parameter<?> param = config.getParameter(key);
             // skip file parameters
-            if (param instanceof IFileParameter)
+            if (param instanceof IFileParameter) {
                 continue;
+            }
 
             String value = null;
             try {
@@ -111,8 +113,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
             try {
                 param.fillFromString(value);
             } catch (InvalidParameterValueException e) {
-                e.printStackTrace();
-                throw new NotConfigurableException(e.getMessage());
+                throw new NotConfigurableException(e.getMessage(), e);
             }
         }
 
@@ -124,8 +125,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
                 int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
                 sel_ports[i] = idx;
             } catch (InvalidSettingsException e) {
-                e.printStackTrace();
-                throw new NotConfigurableException(e.getMessage());
+                throw new NotConfigurableException(e.getMessage(), e);
             }
         }
         mtc.setSelectedTypes(sel_ports);
