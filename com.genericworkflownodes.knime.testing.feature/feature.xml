@@ -13,7 +13,7 @@
       Copyright (c) 2011-2014, Marc Röttig, Stephan Aiche, and Björn Kahlert.
    </copyright>
 
-<license url="http://www.gnu.org/copyleft/lesser.html">
+   <license url="http://www.gnu.org/copyleft/lesser.html">
       GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -180,6 +180,10 @@ apply, that proxy&apos;s public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
    </license>
+
+   <requires>
+      <import feature="org.knime.features.testingapplication" version="2.9.0" match="greaterOrEqual"/>
+   </requires>
 
    <plugin
          id="com.genericworkflownodes.knime.tests"
