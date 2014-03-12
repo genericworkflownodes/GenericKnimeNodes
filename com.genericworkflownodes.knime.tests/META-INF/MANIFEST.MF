@@ -7,3 +7,4 @@ Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the Generi
 Fragment-Host: com.genericworkflownodes.knime;bundle-version="0.8.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.knime.testing;bundle-version="[2.7.0,3.0.0)"
+Bundle-ClassPath: gkn-tests.jar
