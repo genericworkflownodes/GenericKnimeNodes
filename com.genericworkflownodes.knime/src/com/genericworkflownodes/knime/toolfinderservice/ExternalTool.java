@@ -99,7 +99,9 @@ public final class ExternalTool {
         if (obj == this) {
             return true;
         }
-        if (obj == null || !(obj instanceof ExternalTool)) {
+        if (obj == null) {
+            return false;
+        } else if (!(obj instanceof ExternalTool)) {
             return false;
         }
         ExternalTool eTool = (ExternalTool) obj;

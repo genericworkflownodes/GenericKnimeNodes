@@ -27,7 +27,7 @@ import org.osgi.framework.Version;
 /**
  * A payload directory abstraction that uses the private bundle storage area
  * provided by the OSGI framework ({@link BundleContext#getDataFile(String)}) to
- * store the payload persistently. It also checks on startup if previouse
+ * store the payload persistently. It also checks on startup if previous
  * installations are still available in the same directory.
  * 
  * @author aiche
