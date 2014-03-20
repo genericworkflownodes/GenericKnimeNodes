@@ -54,12 +54,24 @@ public class PluginPreferenceToolLocator implements IToolLocator {
      */
     private static PluginPreferenceToolLocator toolLocatorService;
 
+    /**
+     * List of managed tools.
+     */
     private Set<ExternalTool> tools;
 
+    /**
+     * C'tor.
+     */
     public PluginPreferenceToolLocator() {
         tools = new HashSet<ExternalTool>();
     }
 
+    /**
+     * Initializes the service from the given preference store.
+     * 
+     * @param store
+     *            The preference store.
+     */
     public void init(IPreferenceStore store) {
         pluginPreferenceStore = store;
     }
@@ -74,7 +86,7 @@ public class PluginPreferenceToolLocator implements IToolLocator {
     }
 
     @Override
-    public File getToolPath(ExternalTool tool) throws Exception {
+    public File getToolPath(ExternalTool tool) throws UnknownToolPathException {
         if (tools.contains(tool)) {
             // determine which tool to use
             return getToolPath(tool, getConfiguredToolPathType(tool));
@@ -85,11 +97,9 @@ public class PluginPreferenceToolLocator implements IToolLocator {
 
     @Override
     public File getToolPath(ExternalTool tool, ToolPathType toolPathType)
-            throws Exception {
+            throws UnknownToolPathException {
         if (toolPathType == ToolPathType.UNKNOWN) {
-            throw new Exception(
-                    "There is no path (shipped or user-defined) stored for the tool: "
-                            + tool.getKey());
+            throw new UnknownToolPathException(tool.getKey());
         } else {
             String path = pluginPreferenceStore.getString(preferenceKey(tool,
                     toolPathType));
@@ -102,8 +112,10 @@ public class PluginPreferenceToolLocator implements IToolLocator {
      * where the path should be stored.
      * 
      * @param tool
+     *            The tool.
      * @param type
-     * @return
+     *            The type.
+     * @return The corresponding preference key.
      */
     private String preferenceKey(ExternalTool tool, ToolPathType type) {
         return tool.getKey() + "-" + type.toString();
@@ -137,8 +149,7 @@ public class PluginPreferenceToolLocator implements IToolLocator {
     }
 
     @Override
-    public ToolPathType getConfiguredToolPathType(ExternalTool tool)
-            throws Exception {
+    public ToolPathType getConfiguredToolPathType(ExternalTool tool) {
         if (pluginPreferenceStore.contains(tool.getKey() + CHOICE_SUFFIX)) {
             return ToolPathType.fromString(pluginPreferenceStore.getString(tool
                     .getKey() + CHOICE_SUFFIX));
@@ -167,9 +178,9 @@ public class PluginPreferenceToolLocator implements IToolLocator {
     /**
      * Gives access to the instance specific tool locator service.
      * 
-     * @return
+     * @return The {@link IToolLocator}.
      */
-    public synchronized static IToolLocator getToolLocatorService() {
+    public static synchronized IToolLocator getToolLocatorService() {
         if (toolLocatorService == null) {
             toolLocatorService = new PluginPreferenceToolLocator();
 

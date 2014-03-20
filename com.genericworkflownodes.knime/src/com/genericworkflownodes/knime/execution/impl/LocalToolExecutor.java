@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
 
@@ -34,8 +36,11 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
+import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
+import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
 import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
+import com.genericworkflownodes.util.StringUtils;
 
 /**
  * The LocalToolExecutor handles the basic tasks associated with the execution
@@ -58,7 +63,7 @@ public class LocalToolExecutor implements IToolExecutor {
         /**
          * The stream that is gobbled.
          */
-        InputStream is;
+        InputStream m_is;
 
         /**
          * The string where the extracted messages are stored.
@@ -69,20 +74,21 @@ public class LocalToolExecutor implements IToolExecutor {
                 .getProperty("line.separator");
 
         StreamGobbler(InputStream is) {
-            this.is = is;
+            m_is = is;
             target = new StringBuffer();
         }
 
         @Override
         public void run() {
             try {
-                InputStreamReader isr = new InputStreamReader(is);
+                InputStreamReader isr = new InputStreamReader(m_is);
                 BufferedReader br = new BufferedReader(isr);
                 String line = null;
-                while ((line = br.readLine()) != null)
+                while ((line = br.readLine()) != null) {
                     target.append(line + LINE_SEPARATOR);
+                }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);
             }
         }
 
@@ -99,50 +105,60 @@ public class LocalToolExecutor implements IToolExecutor {
     /**
      * NodeLogger used for this executor.
      */
-    protected static final NodeLogger logger = NodeLogger
+    protected static final NodeLogger LOGGER = NodeLogger
             .getLogger(LocalToolExecutor.class);
 
     /**
      * The working directory where the process will be executed.
      */
-    private File workingDirectory;
+    private File m_workingDirectory;
 
     /**
      * The environment variables that will be passed to the running environment.
      */
-    private final Map<String, String> environmentVariables;
+    private final Map<String, String> m_environmentVariables;
 
     /**
      * The return code of the process.
      */
-    private int returnCode;
+    private int m_returnCode;
 
     /**
      * The std-out of the executed process.
      */
-    private String stdOut;
+    private String m_stdOut;
 
     /**
      * The std-err of the executed process.
      */
-    private String stdErr;
+    private String m_stdErr;
 
-    private Process process;
+    private Process m_process;
 
-    private ICommandGenerator generator;
+    private ICommandGenerator m_generator;
 
-    private File executable;
+    /**
+     * The executable.
+     */
+    private File m_executable;
 
-    private List<String> commands;
+    /**
+     * Indicator if the found executable was shipped with the plugin or is
+     * self-configured.
+     */
+    private boolean m_isShippedExecutable;
 
+    private List<String> m_commands;
+
+    /**
+     * C'tor.
+     */
     public LocalToolExecutor() {
-        environmentVariables = new TreeMap<String, String>();
-        returnCode = -1;
-        executable = null;
-        workingDirectory = null;
-
-        stdErr = "";
-        stdOut = "";
+        m_environmentVariables = new TreeMap<String, String>();
+        m_returnCode = -1;
+        m_stdErr = "";
+        m_stdOut = "";
+        m_isShippedExecutable = false;
     }
 
     /**
@@ -152,26 +168,26 @@ public class LocalToolExecutor implements IToolExecutor {
      * 
      * @param directory
      *            The new working directory.
-     * @throws Exception
+     * @throws IOException
      *             If the path does not exist or points to a file (and not a
      *             directory).
      */
     @Override
-    public void setWorkingDirectory(File directory) throws Exception {
-        workingDirectory = directory;
-        if (!workingDirectory.isDirectory() || !workingDirectory.exists()) {
-            throw new Exception(directory + " is not a directory!");
+    public void setWorkingDirectory(File directory) throws IOException {
+        m_workingDirectory = directory;
+        if (!m_workingDirectory.isDirectory() || !m_workingDirectory.exists()) {
+            throw new IOException(directory + " is not a directory!");
         }
     }
 
     /**
-     * Adds the environment variables included in @p newEnvironmentVariables to
-     * the environment variables of the tool.
+     * Adds the environment variables included in
+     * <code>newEnvironmentVariables</code> to the environment variables of the
+     * tool.
      * 
-     * @note If the environment variable is a path (e.g., PATH or
-     *       LD_LIBRARY_PATH) the environment variable will be extended and not
-     *       overwritten (i.e.,
-     *       LD_LIBRARY_PATH=<specified-value>:$LD_LIBRARY_PATH).
+     * @note If the given variables reference existing variables with the syntax
+     *       <code>${VNAME}</code> they will be extended by the corresponding
+     *       system values.
      * 
      * @note Existing values with equal keys will be overwritten.
      * 
@@ -180,7 +196,7 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     private void addEnvironmentVariables(
             Map<String, String> newEnvironmentVariables) {
-        environmentVariables.putAll(newEnvironmentVariables);
+        m_environmentVariables.putAll(newEnvironmentVariables);
     }
 
     /**
@@ -191,7 +207,7 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     @Override
     public int getReturnCode() {
-        return returnCode;
+        return m_returnCode;
     }
 
     /**
@@ -201,7 +217,7 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     @Override
     public String getToolOutput() {
-        return stdOut;
+        return m_stdOut;
     }
 
     /**
@@ -209,78 +225,117 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     @Override
     public void kill() {
-        process.destroy();
+        m_process.destroy();
     }
 
     /**
      * Returns the working directory.
      * 
-     * @return
+     * @return The working directory where the process will be executed.
      */
     public File getWorkingDirectory() {
-        return workingDirectory;
+        return m_workingDirectory;
     }
 
-    /**
-     * The execute method used by derived classes to execute their command.
-     * 
-     * Calling this method will block until completion (successful or failed) of
-     * the command.
-     * 
-     * @return The return value of the executed process.
-     * @throws Exception
-     */
     @Override
-    public int execute() throws Exception {
+    public int execute() throws ToolExecutionFailedException {
 
         try {
             List<String> command = new ArrayList<String>();
-            command.add(executable.getCanonicalPath());
-            command.addAll(commands);
+            command.add(m_executable.getCanonicalPath());
+            command.addAll(m_commands);
+
+            // emit command
+            LOGGER.debug("Executing: " + StringUtils.join(command, " "));
 
             // build process
             ProcessBuilder builder = new ProcessBuilder(command);
-
             setupProcessEnvironment(builder);
 
-            if (workingDirectory != null) {
-                builder.directory(workingDirectory);
+            if (m_workingDirectory != null) {
+                builder.directory(m_workingDirectory);
             }
 
             // execute
-            process = builder.start();
+            m_process = builder.start();
 
             // prepare capture of cerr/cout streams
             StreamGobbler stdOutGobbler = new StreamGobbler(
-                    process.getInputStream());
+                    m_process.getInputStream());
             StreamGobbler stdErrGobbler = new StreamGobbler(
-                    process.getErrorStream());
+                    m_process.getErrorStream());
 
             // start separate threads to capture the cerr/cout streams
             stdErrGobbler.start();
             stdOutGobbler.start();
 
             // fetch return code
-            returnCode = process.waitFor();
+            m_returnCode = m_process.waitFor();
 
             // extract messages from stderr and stdout
-            stdOut = stdOutGobbler.getContent();
-            stdErr = stdErrGobbler.getContent();
+            m_stdOut = stdOutGobbler.getContent();
+            m_stdErr = stdErrGobbler.getContent();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            LOGGER.warn("Failed to execute tool " + m_executable.getName(), e);
+            throw new ToolExecutionFailedException("Failed to execute tool "
+                    + m_executable.getName(), e);
         }
 
-        return returnCode;
+        return m_returnCode;
     }
 
     /**
+     * Expand environment variables in the given string referenced by
+     * <code>${VNAME}</code>.
+     * 
+     * @param value
+     *            The string where the variables should be replaced.
+     * @return The string with replaced variables.
+     */
+    private String expandEnvironmentVariables(String value) {
+        // matching pattern for ${VNAME}
+        final Pattern variableNamePattern = Pattern.compile("\\$\\{([^}]+)\\}");
+
+        // expand variables in value
+        boolean found = true;
+        while (found) {
+            Matcher m = variableNamePattern.matcher(value);
+            found = m.find();
+            if (found) {
+                String variableName = m.group(1);
+                // extract current variable value
+                String replacement = "";
+                if (System.getenv(variableName) != null) {
+                    replacement = System.getenv(variableName);
+                }
+
+                Pattern specificVariablePattern = Pattern.compile("\\$\\{"
+                        + variableName + "\\}");
+
+                Matcher replaceMatcher = specificVariablePattern.matcher(value);
+                value = replaceMatcher.replaceAll(replacement);
+            }
+        }
+
+        return value;
+    }
+
+    /**
+     * Initializes the environment variables of the given ProcessBuilder.
+     * 
+     * @note If the used binaries where not shipped with the plugin, this method
+     *       will do nothing.
+     * 
      * @param builder
+     *            The builder that should be initialized.
      */
     private void setupProcessEnvironment(ProcessBuilder builder) {
-        for (String key : environmentVariables.keySet()) {
-            String value = environmentVariables.get(key);
-            builder.environment().put(key, value);
+        if (m_isShippedExecutable) {
+            for (String key : m_environmentVariables.keySet()) {
+                String value = expandEnvironmentVariables(m_environmentVariables
+                        .get(key));
+                builder.environment().put(key, value);
+            }
         }
     }
 
@@ -296,8 +351,8 @@ public class LocalToolExecutor implements IToolExecutor {
         findExecutable(nodeConfiguration, pluginConfiguration);
         addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
 
-        commands = generator.generateCommands(nodeConfiguration,
-                pluginConfiguration, workingDirectory);
+        m_commands = m_generator.generateCommands(nodeConfiguration,
+                pluginConfiguration, m_workingDirectory);
     }
 
     /**
@@ -310,25 +365,30 @@ public class LocalToolExecutor implements IToolExecutor {
     private void findExecutable(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration) throws Exception {
 
-        executable = PluginPreferenceToolLocator.getToolLocatorService()
-                .getToolPath(
-                        new ExternalTool(pluginConfiguration.getPluginId(),
-                                nodeConfiguration.getName(), nodeConfiguration
-                                        .getExecutableName()));
+        final ExternalTool tool = new ExternalTool(
+                pluginConfiguration.getPluginId(), nodeConfiguration.getName(),
+                nodeConfiguration.getExecutableName());
 
-        if (executable == null) {
+        m_executable = PluginPreferenceToolLocator.getToolLocatorService()
+                .getToolPath(tool);
+
+        if (m_executable == null) {
             throw new Exception("Neither externally configured nor shipped "
                     + "binaries exist for this node. Aborting execution.");
         }
+
+        // we have a tool, let's check what kind it is
+        m_isShippedExecutable = PluginPreferenceToolLocator
+                .getToolLocatorService().getConfiguredToolPathType(tool) == ToolPathType.SHIPPED;
     }
 
     @Override
     public void setCommandGenerator(ICommandGenerator generator) {
-        this.generator = generator;
+        m_generator = generator;
     }
 
     @Override
     public String getToolErrorOutput() {
-        return stdErr;
+        return m_stdErr;
     }
 }

@@ -19,11 +19,13 @@
 package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
+import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
 
 /**
  * Class useful for unit testing.
@@ -86,11 +88,11 @@ public class DummyToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public int execute() throws Exception {
+    public int execute() throws ToolExecutionFailedException {
         completed = false;
         killed = false;
         if (throwException) {
-            throw new Exception("I failed");
+            throw new ToolExecutionFailedException("I failed");
         }
         try {
             synchronized (monitor) {
@@ -125,7 +127,7 @@ public class DummyToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public void setWorkingDirectory(File directory) throws Exception {
+    public void setWorkingDirectory(File directory) throws IOException {
     }
 
     @Override

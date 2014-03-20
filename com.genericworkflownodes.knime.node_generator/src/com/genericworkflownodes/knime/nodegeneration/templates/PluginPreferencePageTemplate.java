@@ -43,6 +43,6 @@ public class PluginPreferencePageTemplate extends Template {
         super(NodeGenerator.class
                 .getResourceAsStream("templates/PluginPreferencePage.template"));
 
-        this.replace("__BASE__", packageName);
+        replace("__BASE__", packageName);
     }
 }

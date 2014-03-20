@@ -41,7 +41,13 @@ public interface IToolLocator {
 
         private final String asString;
 
-        ToolPathType(final String s) {
+        /**
+         * C'tor.
+         * 
+         * @param s
+         *            The String representation.
+         */
+        private ToolPathType(final String s) {
             asString = s;
         }
 
@@ -56,20 +62,16 @@ public interface IToolLocator {
          * thrown.
          * 
          * @param choice
-         * @return
-         * @throws Exception
-         *             If the given choice is not a valid VALID_CHOICE.
+         *            The name that should be matched.
+         * @return The matching {@link ToolPathType}.
          */
-        public static ToolPathType fromString(final String choice)
-                throws Exception {
+        public static ToolPathType fromString(final String choice) {
             if (SHIPPED.toString().equals(choice)) {
                 return SHIPPED;
             } else if (USER_DEFINED.toString().equals(choice)) {
                 return USER_DEFINED;
-            } else if (UNKNOWN.toString().equals(choice)) {
-                return UNKNOWN;
             } else {
-                throw new Exception("The given choice is not a valid one.");
+                return UNKNOWN;
             }
         }
     }
@@ -80,11 +82,12 @@ public interface IToolLocator {
      * path is specified it will return new File("").
      * 
      * @param tool
-     * @return
-     * @throws Exception
+     *            The tool for which the tool path should be found.
+     * @return A File object pointing to the tool.
+     * @throws UnknownToolPathException
      *             Throws an exception if no valid configuration exists.
      */
-    public File getToolPath(ExternalTool tool) throws Exception;
+    public File getToolPath(ExternalTool tool) throws UnknownToolPathException;
 
     /**
      * 
@@ -93,12 +96,12 @@ public interface IToolLocator {
      * @param toolPathType
      *            The tool path type (shipped or user-defined).
      * @return A {@link File} pointing to the executable of the tool.
-     * @throws Exception
+     * @throws UnknownToolPathException
      *             An exception is thrown if there is no executable for the
      *             tool.
      */
     public File getToolPath(ExternalTool tool, ToolPathType toolPathType)
-            throws Exception;
+            throws UnknownToolPathException;
 
     /**
      * Sets the tool path for the tool @p tool to the path specified by @p path.

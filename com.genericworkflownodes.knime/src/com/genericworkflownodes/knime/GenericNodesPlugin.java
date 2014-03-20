@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
@@ -29,10 +28,11 @@ import org.osgi.framework.BundleContext;
  * @author roettig,aiche
  */
 public class GenericNodesPlugin extends AbstractUIPlugin {
+
     /**
      * The shared instance.
      */
-    private static GenericNodesPlugin GKN_PLUGIN;
+    private static GenericNodesPlugin gknPLugin;
 
     /**
      * The central static logger.
@@ -41,9 +41,9 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
             .getLogger(GenericNodesPlugin.class);
 
     /**
-     * Debuggin state of the plugin.
+     * Debugging state of the plug-in.
      */
-    private static boolean DEBUG = false;
+    private static boolean isDebugModeEnabled = false;
 
     /**
      * Logging method for debugging purpose.
@@ -52,44 +52,29 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      *            The message to log.
      */
     public static void log(final String message) {
-        if (GenericNodesPlugin.DEBUG) {
+        if (GenericNodesPlugin.isDebugModeEnabled) {
             LOGGER.info(message);
         }
     }
 
     /**
-     * Check if the plugin is in DEBUG mode.
+     * Check if the plug-in is in isDebugModeEnabled mode.
      * 
      * @return True if debugging is enabled, false otherwise.
      */
     public static boolean isDebug() {
-        return GenericNodesPlugin.DEBUG;
+        return GenericNodesPlugin.isDebugModeEnabled;
     }
 
     /**
-     * Change debug setting.
-     */
-    public static void toggleDebug() {
-        GenericNodesPlugin.DEBUG = !GenericNodesPlugin.DEBUG;
-        System.out.println("toggling Debug Mode");
-    }
-
-    /**
-     * Sets the debug status of the plugin.
+     * Sets the isDebugModeEnabled status of the plug-in.
      * 
      * @param debugEnabled
-     *            The new debug status.
+     *            The new isDebugModeEnabled status.
      */
     public static void setDebug(final boolean debugEnabled) {
-        GenericNodesPlugin.DEBUG = debugEnabled;
-        System.out.println("setting Debug Mode :" + debugEnabled);
-    }
-
-    /**
-     * The constructor.
-     */
-    public GenericNodesPlugin() {
-        super();
+        GenericNodesPlugin.isDebugModeEnabled = debugEnabled;
+        LOGGER.debug("Setting GKN isDebugModeEnabled mode: " + debugEnabled);
     }
 
     /**
@@ -98,17 +83,13 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      * @param context
      *            The OSGI bundle context
      * @throws Exception
-     *             If this GKN_PLUGIN could not be started
+     *             If this gknPLugin could not be started
      */
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
-        GKN_PLUGIN = this;
-
-        log("starting GKN_PLUGIN: GenericNodesPlugin");
-
-        IPreferenceStore store = GenericNodesPlugin.getDefault()
-                .getPreferenceStore();
+        gknPLugin = this;
+        log("starting gknPLugin: GenericNodesPlugin");
     }
 
     /**
@@ -117,11 +98,11 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      * @param context
      *            The OSGI bundle context
      * @throws Exception
-     *             If this GKN_PLUGIN could not be stopped
+     *             If this gknPLugin could not be stopped
      */
     @Override
     public void stop(final BundleContext context) throws Exception {
-        GKN_PLUGIN = null;
+        gknPLugin = null;
         super.stop(context);
     }
 
@@ -131,7 +112,7 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      * @return Singleton instance of the Plugin
      */
     public static GenericNodesPlugin getDefault() {
-        return GKN_PLUGIN;
+        return gknPLugin;
     }
 
 }
