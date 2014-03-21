@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -52,13 +53,21 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
     @SuppressWarnings("unused")
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(ListZipLoopEndNodeModel.class);
-    private static int PORT_COUNT = 4;
+    private static final int PORT_COUNT = 4;
 
     private int m_numOfAssignedPorts;
     private List<List<URIContent>> m_uris;
+    /**
+     * Indicating if the loop is already running.
+     */
+    private boolean m_loopStarted;
 
+    /**
+     * C'tor.
+     */
     protected ListZipLoopEndNodeModel() {
         super(createInputPortObjectSpecs(), createOutputPortObjectSpecs());
+        m_loopStarted = false;
     }
 
     public static final PortType OPTIONAL_PORT_TYPE = new PortType(
@@ -66,7 +75,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
     private static PortType[] createInputPortObjectSpecs() {
         PortType[] portTypes = new PortType[PORT_COUNT];
-        Arrays.fill(portTypes, URIPortObject.TYPE);
+        Arrays.fill(portTypes, IURIPortObject.TYPE);
         portTypes[1] = OPTIONAL_PORT_TYPE;
         portTypes[2] = OPTIONAL_PORT_TYPE;
         portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -75,7 +84,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
     private static PortType[] createOutputPortObjectSpecs() {
         PortType[] portTypes = new PortType[PORT_COUNT];
-        Arrays.fill(portTypes, URIPortObject.TYPE);
+        Arrays.fill(portTypes, IURIPortObject.TYPE);
         portTypes[1] = OPTIONAL_PORT_TYPE;
         portTypes[2] = OPTIONAL_PORT_TYPE;
         portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -116,15 +125,15 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-            throws Exception {
+            throws IllegalStateException {
 
-        if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
+        if (!(getLoopStartNode() instanceof LoopStartNodeTerminator)) {
             throw new IllegalStateException("Loop End is not connected"
                     + " to matching/corresponding Loop Start node. You"
                     + " are trying to create an infinite loop!");
         }
 
-        if (m_uris == null) {
+        if (!m_loopStarted) {
             // first time we are getting to this: open container
             m_uris = new ArrayList<List<URIContent>>();
             for (int i = 0; i < m_numOfAssignedPorts; i++) {
@@ -133,12 +142,13 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
         }
 
         for (int i = 0; i < m_numOfAssignedPorts; i++) {
-            URIPortObject po = (URIPortObject) inObjects[i];
+            IURIPortObject po = (IURIPortObject) inObjects[i];
+            // TODO: is it save to always use 0
             m_uris.get(i).add(po.getURIContents().get(0));
         }
 
-        boolean terminateLoop = ((LoopStartNodeTerminator) this
-                .getLoopStartNode()).terminateLoop();
+        boolean terminateLoop = ((LoopStartNodeTerminator) getLoopStartNode())
+                .terminateLoop();
 
         if (terminateLoop) {
             URIPortObject[] ret = new URIPortObject[PORT_COUNT];
@@ -152,7 +162,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
                 }
             }
 
-            m_uris = null;
+            m_loopStarted = false;
             return ret;
         } else {
             continueLoop();
@@ -172,7 +182,8 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
     @Override
     protected void reset() {
-        m_uris = null;
+        // ensure we have no running loop
+        m_loopStarted = false;
     }
 
     @Override

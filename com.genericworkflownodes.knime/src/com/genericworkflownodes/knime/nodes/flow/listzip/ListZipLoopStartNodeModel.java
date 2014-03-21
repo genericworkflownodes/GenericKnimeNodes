@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -82,11 +83,11 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
     }
 
     private static final PortType OPTIONAL_PORT_TYPE = new PortType(
-            URIPortObject.class, true);
+            IURIPortObject.class, true);
 
     private static PortType[] createIncomingPortObjects() {
         PortType[] portTypes = new PortType[PORT_COUNT];
-        Arrays.fill(portTypes, URIPortObject.TYPE);
+        Arrays.fill(portTypes, IURIPortObject.TYPE);
         portTypes[1] = OPTIONAL_PORT_TYPE;
         portTypes[2] = OPTIONAL_PORT_TYPE;
         portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -95,7 +96,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 
     private static PortType[] createOutgoingPortObjects() {
         PortType[] portTypes = new PortType[PORT_COUNT];
-        Arrays.fill(portTypes, URIPortObject.TYPE);
+        Arrays.fill(portTypes, IURIPortObject.TYPE);
         portTypes[1] = OPTIONAL_PORT_TYPE;
         portTypes[2] = OPTIONAL_PORT_TYPE;
         portTypes[3] = OPTIONAL_PORT_TYPE;
@@ -140,7 +141,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-            throws Exception {
+            throws InvalidSettingsException {
 
         // check the loop conditions
         if (m_iteration == 0) {
@@ -148,11 +149,11 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
 
             // check the content of the different Ports
             if (!m_reuse.getBooleanValue()) {
-                int numberOfURIs = ((URIPortObject) inObjects[0])
+                int numberOfURIs = ((IURIPortObject) inObjects[0])
                         .getURIContents().size();
                 for (int i = 1; i < m_numAssignedIncomingPorts; ++i) {
-                    if (((URIPortObject) inObjects[i]).getURIContents().size() != numberOfURIs) {
-                        throw new Exception(
+                    if (((IURIPortObject) inObjects[i]).getURIContents().size() != numberOfURIs) {
+                        throw new InvalidSettingsException(
                                 "Invalid settings. The number of URIs at the incoming ports differ.");
                     }
                 }
@@ -162,7 +163,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
             assert getLoopEndNode() != null : "No end node set";
         }
 
-        URIPortObject[] uriOutputObjects = new URIPortObject[PORT_COUNT];
+        IURIPortObject[] uriOutputObjects = new URIPortObject[PORT_COUNT];
         m_rowCount = ((URIPortObject) inObjects[0]).getURIContents().size();
 
         // 1st port is handled separately
@@ -184,7 +185,8 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
                     uriOutputObjects[i] = new URIPortObject(localUriContents);
                 }
             } else {
-                uriOutputObjects[i] = new URIPortObject(new ArrayList<URIContent>());
+                uriOutputObjects[i] = new URIPortObject(
+                        new ArrayList<URIContent>());
             }
         }
 
