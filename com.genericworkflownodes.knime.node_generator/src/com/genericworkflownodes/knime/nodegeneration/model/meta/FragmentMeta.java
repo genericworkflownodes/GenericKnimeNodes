@@ -20,8 +20,8 @@ package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
 import java.io.File;
 
-import com.genericworkflownodes.knime.custom.Architecture;
-import com.genericworkflownodes.knime.custom.OperatingSystem;
+import com.genericworkflownodes.knime.os.Architecture;
+import com.genericworkflownodes.knime.os.OperatingSystem;
 
 /**
  * 

@@ -25,12 +25,12 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.genericworkflownodes.knime.custom.Architecture;
-import com.genericworkflownodes.knime.custom.OperatingSystem;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
+import com.genericworkflownodes.knime.os.Architecture;
+import com.genericworkflownodes.knime.os.OperatingSystem;
 
 /**
  * Abstraction of the payload directory inside the generated plugin.
