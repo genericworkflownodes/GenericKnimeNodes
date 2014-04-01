@@ -9,6 +9,7 @@ Bundle-ClassPath: genericnodes.config.jar,
 Require-Bundle: org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)"
 Export-Package: com.genericworkflownodes.knime.cliwrapper,
  com.genericworkflownodes.knime.config;uses:="com.genericworkflownodes.knime.parameter,com.genericworkflownodes.knime.port,com.genericworkflownodes.knime.cliwrapper",
+ com.genericworkflownodes.knime.config.impl,
  com.genericworkflownodes.knime.config.reader;uses:="com.genericworkflownodes.knime.config",
  com.genericworkflownodes.knime.config.writer;uses:="com.genericworkflownodes.knime.config",
  com.genericworkflownodes.knime.os,
