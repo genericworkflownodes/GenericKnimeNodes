@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool xsi:noNamespaceSchemaLocation="http://page.mi.fu-berlin.de/aiche/schemas/CTD.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<name>BLAST</name>
+	<version>2.2.1</version>
+	<description><![CDATA[BLAST.]]></description>
+	<manual><![CDATA[BLAST.]]></manual>
+	<docurl>http://www.google.de</docurl>
+	<category>Sequence Tools</category>
+	<cli>
+		<clielement optionIdentifier="-i" isList="false">
+			<mapping referenceName="blastall.i" />
+		</clielement>
+		<clielement optionIdentifier="-d">
+			<mapping referenceName="blastall.d" />
+		</clielement>
+	</cli>
+	<outputConverters>
+		<converter class="DummyConverter" ref="blastall.o" />
+		<converter class="DummyConverter2" ref="blastall.o">
+			<converterProperty name="prop1" value="val1" />
+			<converterProperty name="prop2" value="val2" />
+		</converter>
+	</outputConverters>
+	<PARAMETERS version="1.6.2"
+		xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<NODE name="blastall" description="">
+			<ITEM name="i" value="" type="input-file" description="input file" required="true" supported_formats="*.FASTA" />
+			<ITEM name="o" value="" type="output-file" description="output file" required="true" supported_formats="*.BLASTXML" />
+			<ITEM name="p" value="blastp" type="string" description="mode" restrictions="blastp,blastn" />
+			<ITEM name="d" value="" type="string" required="true" description="database path" />
+			<ITEM name="e" value="0.001" type="float" description="cutoff evalue" />
+			<ITEM name="G" value="-1" type="float" description="gap opening" />
+			<ITEM name="E" value="-1" type="float" description="gap extension" />
+			<ITEM name="M" value="BLOSUM62" type="string" description="scoring matrix" restrictions="BLOSUM62,BLOSUM45" />
+		</NODE>
+	</PARAMETERS>
+</tool>
