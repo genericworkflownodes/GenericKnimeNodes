@@ -7,6 +7,8 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSour
 
 public class GeneratedPluginMeta extends PluginMeta {
 
+    private static final String PLUGIN_VERSION_REGEX = "^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$";
+
     /**
      * Returns the plugin name.
      * <p>
@@ -58,8 +60,7 @@ public class GeneratedPluginMeta extends PluginMeta {
      * @return True if it is a valid version, false otherwise.
      */
     private static boolean isPluginVersionValid(final String pluginVersion) {
-        return pluginVersion
-                .matches("^\\d+(\\.\\d+(\\.\\d+(.[a-zA-Z0-9]+)?)?)?$");
+        return pluginVersion.matches(PLUGIN_VERSION_REGEX);
     }
 
     /**
@@ -113,9 +114,25 @@ public class GeneratedPluginMeta extends PluginMeta {
     private final String name;
     private final String nodeRepositoyPath;
 
-    public GeneratedPluginMeta(NodesSourceDirectory sourceDirectory) {
+    /**
+     * Creates a Meta info object for the generated plug-in based on the
+     * information contained in the source directory.
+     * 
+     * @param sourceDirectory
+     *            The directory containing the plug-in that will be generated.
+     * @param nodeGeneratorQualifier
+     *            The version qualifier of the node generator.
+     */
+    public GeneratedPluginMeta(NodesSourceDirectory sourceDirectory,
+            String nodeGeneratorQualifier) {
         super(getPackageRoot(sourceDirectory.getProperties()),
                 getPluginVersion(sourceDirectory.getProperties()));
+
+        // update the version qualifier based on the version of the node
+        // generator
+        if (nodeGeneratorQualifier != null) {
+            updateVersion(nodeGeneratorQualifier);
+        }
 
         if (getId() == null || getId().isEmpty()) {
             throw new InvalidParameterException("No package name was specified");
@@ -188,5 +205,4 @@ public class GeneratedPluginMeta extends PluginMeta {
     public final String getNodeRepositoryRoot() {
         return nodeRepositoyPath;
     }
-
 }

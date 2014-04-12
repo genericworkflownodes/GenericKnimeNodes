@@ -7,10 +7,31 @@
   <property name="config.plugin.version.minor" value="8" />
   <property name="config.plugin.version.patch" value="0" />
 
+  <!-- check if we are in a checkout -->
+  <available file=".git" type="dir" property="git.present"/>
+
+  <!-- get git last change date -->
+  <target name="git.timestamp" description="Get git last change date" if="git.present">
+    <exec executable="git" outputproperty="timestamp.out" resultproperty="timestamp.res" failifexecutionfails="false" errorproperty="timestamp.error">
+      <arg value="log"/>
+      <arg value="-n1"/>
+      <arg value="--simplify-by-decoration"/>
+      <arg value="--pretty=%ai"/>
+      <redirector>
+        <outputfilterchain>
+          <containsregex pattern="^([0-9]*)-([0-9]*)-([0-9]*)\s([0-9]*):([0-9]*):.*$" replace="\1\2\3\4\5"/>
+        </outputfilterchain>
+      </redirector>
+    </exec>
+    <echo message="timestamp.out: ${timestamp.out}" />
+    <echo message="timestamp.res: ${timestamp.res}" />
+    <property name="git.last.change.date" value="${timestamp.out}" />
+  </target>
+
   <property name="nodegenerator.name" value="com.genericworkflownodes.knime.node_generator" />
 
   <!-- DEFAULT: this works only if it was not set previously the build.properties -->
-  <property name="default.c" value="com.genericworkflownodes.knime.node_generator/sample-openms" description="Directory containing the files from which you want to generate the KNIME plugin." />
+  <property name="default.plugin.dir" value="com.genericworkflownodes.knime.node_generator/sample-openms" description="Directory containing the files from which you want to generate the KNIME plugin." />
 
   <property name="config.plugin.version" value="${config.plugin.version.major}.${config.plugin.version.minor}.${config.plugin.version.patch}" />
 
@@ -175,7 +196,7 @@
     <zip destfile="${nodegenerator.build.jar}" basedir="${nodegenerator.build.dir}" />
   </target>
 
-  <target name="custom.plugin.generate_sources" description="run node generator" depends="nodegenerator.build">
+  <target name="custom.plugin.generate_sources" description="run node generator" depends="nodegenerator.build,git.timestamp">
     <echo message="${toString:nodegenerator.exec.classpath}" />
     <java classname="com.genericworkflownodes.knime.nodegeneration.Main" failonerror="true" fork="true">
       <!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
@@ -183,6 +204,7 @@
       <env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}" />
       <arg value="${plugin.dir}" />
       <arg value="${custom.plugin.generator.target}" />
+      <arg value="${timestamp.out}" />
     </java>
   </target>
 

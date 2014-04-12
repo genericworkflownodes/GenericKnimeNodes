@@ -18,6 +18,9 @@
  */
 package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 
  * Meta information of a eclipse plugin.
@@ -27,7 +30,7 @@ package com.genericworkflownodes.knime.nodegeneration.model.meta;
 public class PluginMeta {
 
     private final String id;
-    private final String version;
+    private String version;
 
     /**
      * @param id
@@ -55,6 +58,34 @@ public class PluginMeta {
      */
     public String getVersion() {
         return version;
+    }
+
+    /**
+     * Updates the version qualifier of the plug-in meta. Update the qualifier
+     * part of the plug-in version, e.g., 0.1.0.20000101 update with 20100101 ->
+     * 0.1.0.20100101
+     * 
+     * @param qualifier
+     *            The potentially higher qualifier.
+     */
+    protected void updateVersion(String qualifier) {
+        final Pattern p = Pattern
+                .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
+        Matcher m = p.matcher(getVersion());
+        boolean found = m.find();
+        assert found : "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$";
+
+        // version has no qualifier
+        String newVersion = m.group(1)
+                + (m.group(2) != null ? m.group(2) : ".0")
+                + (m.group(3) != null ? m.group(3) : ".0");
+        // append qualifier
+        if (m.group(4) == null || qualifier.compareTo(m.group(4)) < 0) {
+            newVersion += "." + qualifier;
+        } else {
+            newVersion += m.group(4);
+        }
+        version = newVersion;
     }
 
 }

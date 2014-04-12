@@ -97,6 +97,8 @@ public class NodeGenerator {
         }
     }
 
+    private final String nodeGeneratorLastChangeDate;
+
     private final NodesSourceDirectory srcDir;
     private final GeneratedPluginMeta generatedPluginMeta;
     private final FeatureMeta featureMeta;
@@ -118,13 +120,17 @@ public class NodeGenerator {
      * @param buildDir
      *            directory that will contain the generated plugin (the
      *            directory will not be flushed before the generation)
+     * @param lastChangeDate
+     *            Last change date of the node generator / GKN.
      * @throws NodeGeneratorException
      */
-    public NodeGenerator(File sourceDir, File buildDir)
+    public NodeGenerator(File sourceDir, File buildDir, String lastChangeDate)
             throws NodeGeneratorException {
         try {
             if (buildDir == null)
                 throw new NodeGeneratorException("buildDir must not be null");
+
+            nodeGeneratorLastChangeDate = lastChangeDate;
 
             baseBinaryDirectory = new Directory(buildDir);
             baseBinaryDirectory.mkdir();
@@ -138,7 +144,8 @@ public class NodeGenerator {
             }
 
             srcDir = new NodesSourceDirectory(sourceDir);
-            generatedPluginMeta = new GeneratedPluginMeta(srcDir);
+            generatedPluginMeta = new GeneratedPluginMeta(srcDir,
+                    lastChangeDate);
             featureMeta = new FeatureMeta(srcDir, generatedPluginMeta);
             pluginBuildDir = new NodesBuildDirectory(buildDir,
                     generatedPluginMeta.getPackageRoot());
@@ -173,9 +180,9 @@ public class NodeGenerator {
                     "plugin.properties")).write(new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    this.put("executor",
+                    put("executor",
                             srcDir.getProperty("executor", "LocalToolExecutor"));
-                    this.put("commandGenerator", srcDir.getProperty(
+                    put("commandGenerator", srcDir.getProperty(
                             "commandGenerator", "CLICommandGenerator"));
                 }
             });
@@ -251,7 +258,7 @@ public class NodeGenerator {
             // src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
             if (srcDir.getPayloadDirectory() != null) {
                 // create payload fragments
-                fragmentMetas = this.createPayloadFragments();
+                fragmentMetas = createPayloadFragments();
             }
 
             // copy assets
@@ -261,7 +268,7 @@ public class NodeGenerator {
             copyContributingPlugins();
 
             // create feature
-            this.generateFeature();
+            generateFeature();
 
             LOGGER.info("KNIME plugin sources successfully created in:\n\t"
                     + pluginBuildDir);
