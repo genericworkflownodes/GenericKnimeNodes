@@ -80,9 +80,12 @@ public class PluginMeta {
                 + (m.group(2) != null ? m.group(2) : ".0")
                 + (m.group(3) != null ? m.group(3) : ".0");
         // append qualifier
-        if (m.group(4) == null || qualifier.compareTo(m.group(4)) < 0) {
+        if (m.group(4) == null
+                || qualifier.compareTo(m.group(4).substring(1)) > 0) {
+            // external qualifier
             newVersion += "." + qualifier;
         } else {
+            // our own
             newVersion += m.group(4);
         }
         version = newVersion;
