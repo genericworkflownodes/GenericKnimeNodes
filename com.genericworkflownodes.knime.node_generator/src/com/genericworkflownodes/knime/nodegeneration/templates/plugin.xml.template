@@ -2,22 +2,22 @@
 <?eclipse version="3.0"?>
 
 <plugin>   
-	<extension point="org.knime.workbench.repository.categories">      
-	</extension>
-	
-	<extension point="org.knime.workbench.repository.nodes">
-	</extension>
-	   
-	<extension point="org.knime.product.splashExtension">
-	</extension>
-	   
-	<extension point="org.eclipse.ui.preferencePages">
-	</extension>
-	   
-	<extension point="org.eclipse.ui.startup">
-	</extension>
+    <extension point="org.knime.workbench.repository.categories">      
+    </extension>
+    
+    <extension point="org.knime.workbench.repository.nodes">
+    </extension>
+       
+    <extension point="org.knime.product.splashExtension">
+    </extension>
+       
+    <extension point="org.eclipse.ui.preferencePages">
+    </extension>
+       
+    <extension point="org.eclipse.ui.startup">
+    </extension>
 
-	<extension point="org.knime.base.filehandling.mimetypes">
-	</extension> 
+    <extension point="org.knime.base.filehandling.mimetypes">
+    </extension> 
 
 </plugin>

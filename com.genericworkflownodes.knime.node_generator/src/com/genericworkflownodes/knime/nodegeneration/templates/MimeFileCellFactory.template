@@ -6,21 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MimeFileCellFactory {
-	private static MimeFileCellFactory inst;
+    private static MimeFileCellFactory inst;
 
-	private List<String> mimetypes = new ArrayList<String>();
+    private List<String> mimetypes = new ArrayList<String>();
 
-	public static MimeFileCellFactory getInstance() {
-		if (inst == null)
-			inst = new MimeFileCellFactory();
-		return inst;
-	}
+    public static MimeFileCellFactory getInstance() {
+        if (inst == null)
+            inst = new MimeFileCellFactory();
+        return inst;
+    }
 
-	private MimeFileCellFactory() {
-		__MIMETYPES__
-	}
+    private MimeFileCellFactory() {
+        __MIMETYPES__
+    }
 
-	public List<String> getMimeTypes() {
-		return mimetypes;
-	}
+    public List<String> getMimeTypes() {
+        return mimetypes;
+    }
 }
