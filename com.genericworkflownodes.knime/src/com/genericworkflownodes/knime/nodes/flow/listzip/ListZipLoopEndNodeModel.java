@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2011, Marc Röttig.
- * Copyright (c) 2013, Stephan Aiche.
+ * Copyright (c) 2013-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -25,10 +25,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
-import org.knime.core.data.uri.URIPortObjectSpec;
+import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.BufferedDataTableHolder;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -43,20 +49,38 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.LoopStartNodeTerminator;
 
+import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
+
 /**
  * Node model for the ListZipEnd node.
  * 
  * @author roettig, aiche
  */
-public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
-    // the logger instance
-    @SuppressWarnings("unused")
+public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
+        BufferedDataTableHolder {
+
+    /**
+     * The logger instance.
+     */
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(ListZipLoopEndNodeModel.class);
+    /**
+     * Number of incoming/outgoing ports.
+     */
     private static final int PORT_COUNT = 4;
 
-    private int m_numOfAssignedPorts;
+    /**
+     * Array of containers used to make filestores permanent.
+     */
+    private BufferedDataContainer[] m_bufferedContainers;
+
+    /**
+     * List of URIContents collected during execution. Used later on to create
+     * the outgoing port objects.
+     */
     private List<List<URIContent>> m_uris;
+
     /**
      * Indicating if the loop is already running.
      */
@@ -71,7 +95,7 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
     }
 
     public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-            URIPortObject.class, true);
+            IURIPortObject.class, true);
 
     private static PortType[] createInputPortObjectSpecs() {
         PortType[] portTypes = new PortType[PORT_COUNT];
@@ -94,38 +118,23 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
     @Override
     protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
-        List<URIPortObjectSpec> specs = new ArrayList<URIPortObjectSpec>();
+        PortObjectSpec[] outputSpec = new PortObjectSpec[PORT_COUNT];
 
+        // we simply copy the incoming spec to the outgoing
         for (int i = 0; i < PORT_COUNT; i++) {
-            if (inSpecs[i] == null) {
-                break;
-            }
-            URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
-            specs.add(spec);
+            outputSpec[i] = inSpecs[i];
         }
-
-        return getOutSpec(specs);
+        return outputSpec;
     }
 
-    private PortObjectSpec[] getOutSpec(List<URIPortObjectSpec> specs) {
-        m_numOfAssignedPorts = specs.size();
-
-        PortObjectSpec[] ret = new PortObjectSpec[PORT_COUNT];
-
-        for (int i = 0; i < PORT_COUNT; i++) {
-            if (i < m_numOfAssignedPorts) {
-                ret[i] = specs.get(i);
-            } else {
-                ret[i] = null;
-            }
-        }
-
-        return ret;
+    private DataTableSpec createPseudoSpec() {
+        DataColumnSpec colSpec = new DataColumnSpecCreator("holder-cells",
+                PortObjectHandlerCell.TYPE).createSpec();
+        return new DataTableSpec(colSpec);
     }
 
     @Override
-    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-            throws IllegalStateException {
+    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) {
 
         if (!(getLoopStartNode() instanceof LoopStartNodeTerminator)) {
             throw new IllegalStateException("Loop End is not connected"
@@ -134,36 +143,65 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
         }
 
         if (!m_loopStarted) {
-            // first time we are getting to this: open container
-            m_uris = new ArrayList<List<URIContent>>();
-            for (int i = 0; i < m_numOfAssignedPorts; i++) {
+            // first time we are getting to this: create container
+            m_uris = new ArrayList<List<URIContent>>(PORT_COUNT);
+            m_bufferedContainers = new BufferedDataContainer[PORT_COUNT];
+
+            for (int i = 0; i < PORT_COUNT; ++i) {
+                // create data container
+                m_bufferedContainers[i] = exec
+                        .createDataContainer(createPseudoSpec());
+
+                // create container to collect the incoming uris
                 m_uris.add(new ArrayList<URIContent>());
             }
+            m_loopStarted = true;
         }
 
-        for (int i = 0; i < m_numOfAssignedPorts; i++) {
-            IURIPortObject po = (IURIPortObject) inObjects[i];
-            // TODO: is it save to always use 0
-            m_uris.get(i).add(po.getURIContents().get(0));
-        }
-
-        boolean terminateLoop = ((LoopStartNodeTerminator) getLoopStartNode())
-                .terminateLoop();
-
-        if (terminateLoop) {
-            URIPortObject[] ret = new URIPortObject[PORT_COUNT];
-
-            for (int i = 0; i < PORT_COUNT; i++) {
-                if (i < m_numOfAssignedPorts) {
-                    ret[i] = new URIPortObject(m_uris.get(i));
-                } else {
-                    List<URIContent> uriC = new ArrayList<URIContent>();
-                    ret[i] = new URIPortObject(uriC);
-                }
+        for (int i = 0; i < PORT_COUNT; i++) {
+            if (inObjects[i] == null) {
+                // skip unconnected ports
+                continue;
             }
 
+            IURIPortObject po = (IURIPortObject) inObjects[i];
+
+            // some data we need
+            int currentIteration = peekFlowVariableInt("currentIteration");
+
+            if (po.getURIContents().size() > 1) {
+                LOGGER.warn(String
+                        .format("More then one incoming object at port %d. The outgoing port will only hold the first one.",
+                                i));
+            }
+            // register file uri
+            m_uris.get(i).add(po.getURIContents().get(0));
+
+            // if we have a filestore port object, add it to the container
+            // .. all our filestore port objects are derived from
+            // AbstractFileStoreURIPortObject
+            if (po instanceof AbstractFileStoreURIPortObject) {
+                PortObjectHandlerCell pfsc = new PortObjectHandlerCell(
+                        (AbstractFileStoreURIPortObject) po);
+                String rowKey = String.format("Row_%d_%d", i, currentIteration);
+                m_bufferedContainers[i].addRowToTable(new DefaultRow(rowKey,
+                        pfsc));
+            }
+        }
+
+        // check if this is the last iteration
+        if (((LoopStartNodeTerminator) getLoopStartNode()).terminateLoop()) {
+            URIPortObject[] portObjects = new URIPortObject[PORT_COUNT];
+
+            for (int i = 0; i < PORT_COUNT; i++) {
+                // assign collected uris to new portobject
+                portObjects[i] = new URIPortObject(m_uris.get(i));
+                // close the container
+                m_bufferedContainers[i].close();
+            }
             m_loopStarted = false;
-            return ret;
+
+            return portObjects;
         } else {
             continueLoop();
             return new PortObject[PORT_COUNT];
@@ -198,6 +236,21 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode {
     @Override
     protected void validateSettings(NodeSettingsRO arg0)
             throws InvalidSettingsException {
+    }
+
+    @Override
+    public BufferedDataTable[] getInternalTables() {
+        /*
+         * BufferedDataTable[] tables = new BufferedDataTable[PORT_COUNT]; for
+         * (int i = 0; i < PORT_COUNT; ++i) { tables[i] =
+         * m_bufferedContainers[i].getTable(); } return tables;
+         */
+        return null;
+    }
+
+    @Override
+    public void setInternalTables(BufferedDataTable[] tables) {
+        assert tables.length == PORT_COUNT;
     }
 
 }

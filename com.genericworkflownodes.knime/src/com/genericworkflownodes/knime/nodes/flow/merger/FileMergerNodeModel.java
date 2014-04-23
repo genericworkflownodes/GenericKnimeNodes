@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -87,7 +88,7 @@ public class FileMergerNodeModel extends NodeModel {
 
         // collect all files from the input ports
         for (PortObject inPort : inData) {
-            outPutURIs.addAll(((URIPortObject) inPort).getURIContents());
+            outPutURIs.addAll(((IURIPortObject) inPort).getURIContents());
         }
 
         URIPortObject outPort = new URIPortObject(outPutURIs);
