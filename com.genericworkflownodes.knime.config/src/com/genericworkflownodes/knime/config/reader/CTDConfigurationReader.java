@@ -139,10 +139,6 @@ public class CTDConfigurationReader implements INodeConfigurationReader {
                             "The given port %s is a singlefile port but the corresponding parameter is a multifile parameter.",
                             port.getName()));
         }
-        if (port.getMimeTypes().size() < 1) {
-            throw new InvalidCTDFileException(String.format(
-                    "The given port %s has no MIMETypes.", port.getName()));
-        }
     }
 
     /**

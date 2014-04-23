@@ -422,12 +422,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
             // check whether input MIMEType is in list of allowed MIMETypes
             boolean ok = false;
-
-            for (int j = 0; j < m_fileEndingsInPorts[i].length && !ok; j++) {
-                if (mt.equals(MIMEMap.getMIMEType(m_fileEndingsInPorts[i][j]))) {
-                    ok = true;
+            if (m_fileEndingsInPorts[i].length > 0) {
+                for (int j = 0; j < m_fileEndingsInPorts[i].length && !ok; j++) {
+                    if (mt.equals(MIMEMap
+                            .getMIMEType(m_fileEndingsInPorts[i][j]))) {
+                        ok = true;
+                    }
                 }
+            } else {
+                // we accept all incoming data if the node does not restrict the
+                // file endings
+                ok = true;
             }
+
             // we require consistent file endings for non prefix ports
             if (!ok && !m_nodeConfig.getInputPorts().get(i).isPrefix()) {
                 String mismatch = String.format(
@@ -446,8 +453,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         try {
 
             File executable = PluginPreferenceToolLocator
-                    .getToolLocatorService().getToolPath(
-                            getToolForNode());
+                    .getToolLocatorService().getToolPath(getToolForNode());
 
             if (executable == null) {
                 throw new InvalidSettingsException(
@@ -465,8 +471,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
     private ExternalTool getToolForNode() {
         return new ExternalTool(m_pluginConfig.getPluginId(),
-                m_nodeConfig.getName(), m_nodeConfig
-                        .getExecutableName());
+                m_nodeConfig.getName(), m_nodeConfig.getExecutableName());
     }
 
     protected PortObjectSpec[] createOutSpec() {

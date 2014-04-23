@@ -254,7 +254,7 @@ public class CTDConfigurationWriter {
         // value
         item.append(" value=\"");
         if (p.getValue() != null && p.getValue().toString() != null) {
-            item.append(p.getValue().toString());
+            item.append(xmlEscapeText(p.getValue().toString()));
         }
         item.append('\"');
 
@@ -311,7 +311,8 @@ public class CTDConfigurationWriter {
 
         indent();
         for (String val : ((ListParameter) p).getStrings()) {
-            streamPut(String.format("<LISTITEM value=\"%s\"/>", val));
+            streamPut(String.format("<LISTITEM value=\"%s\"/>",
+                    xmlEscapeText(val)));
         }
         outdent();
         streamPut("</ITEMLIST>");

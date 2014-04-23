@@ -16,8 +16,8 @@ public class NodeModelTemplate extends Template {
         super(NodeGenerator.class
                 .getResourceAsStream("templates/knime_node/NodeModel.template"));
 
-        this.replace("__BASE__", packageName);
-        this.replace("__NODENAME__", nodeName);
+        replace("__BASE__", packageName);
+        replace("__NODENAME__", nodeName);
 
         fillMimeTypes(nodeConfiguration);
     }
@@ -26,23 +26,21 @@ public class NodeModelTemplate extends Template {
             throws UnknownMimeTypeException {
         String clazzez = "";
         for (Port port : config.getInputPorts()) {
-            String tmp = "{";
-            for (String type : port.getMimeTypes()) {
-                String ext = type.toLowerCase();
-                if (ext == null) {
-                    throw new UnknownMimeTypeException(type);
+            if (port.getMimeTypes().isEmpty()) {
+                clazzez += "{}, ";
+            } else {
+                String tmp = "{";
+                for (String type : port.getMimeTypes()) {
+                    String ext = type.toLowerCase();
+                    if (ext == null) {
+                        throw new UnknownMimeTypeException(type);
+                    }
+                    tmp += "\"" + ext + "\",";
                 }
-                /*
-                 * if(port.isMultiFile()) tmp +=
-                 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
-                 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
-                 * "FileCell.class),";
-                 */
-                tmp += "\"" + ext + "\",";
+                tmp = tmp.substring(0, tmp.length() - 1);
+                tmp += "},";
+                clazzez += tmp;
             }
-            tmp = tmp.substring(0, tmp.length() - 1);
-            tmp += "},";
-            clazzez += tmp;
         }
 
         if (!clazzez.equals("")) {
@@ -54,23 +52,21 @@ public class NodeModelTemplate extends Template {
 
         clazzez = "";
         for (Port port : config.getOutputPorts()) {
-            String tmp = "{";
-            for (String type : port.getMimeTypes()) {
-                String ext = type.toLowerCase();
-                if (ext == null) {
-                    throw new UnknownMimeTypeException(type);
+            if (port.getMimeTypes().isEmpty()) {
+                clazzez += "{},";
+            } else {
+                String tmp = "{";
+                for (String type : port.getMimeTypes()) {
+                    String ext = type.toLowerCase();
+                    if (ext == null) {
+                        throw new UnknownMimeTypeException(type);
+                    }
+                    tmp += "\"" + ext + "\",";
                 }
-                /*
-                 * if(port.isMultiFile()) tmp +=
-                 * "DataType.getType(ListCell.class, DataType.getType(" + ext +
-                 * "FileCell.class)),"; else tmp += "DataType.getType(" + ext +
-                 * "FileCell.class),";
-                 */
-                tmp += "\"" + ext + "\",";
+                tmp = tmp.substring(0, tmp.length() - 1);
+                tmp += "},";
+                clazzez += tmp;
             }
-            tmp = tmp.substring(0, tmp.length() - 1);
-            tmp += "},";
-            clazzez += tmp;
         }
 
         if (!clazzez.equals("")) {
@@ -88,7 +84,7 @@ public class NodeModelTemplate extends Template {
         } else {
             clazzez = clazzez.substring(0, clazzez.length() - 1);
         }
-        this.replace("__INCLAZZEZ__", clazzez);
+        replace("__INCLAZZEZ__", clazzez);
     }
 
     private void createOutClazzezModel(String clazzez) {
@@ -97,7 +93,7 @@ public class NodeModelTemplate extends Template {
         } else {
             clazzez = clazzez.substring(0, clazzez.length() - 1);
         }
-        this.replace("__OUTCLAZZEZ__", clazzez);
+        replace("__OUTCLAZZEZ__", clazzez);
     }
 
 }
