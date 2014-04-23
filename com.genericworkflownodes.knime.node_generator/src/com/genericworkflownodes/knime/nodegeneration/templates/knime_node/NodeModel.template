@@ -7,6 +7,9 @@ import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.IPluginConfiguration;
 
+/**
+    @brief __NODENAME__ Node Model.
+*/
 public class __NODENAME__NodeModel extends GenericKnimeNodeModel {  
     protected __NODENAME__NodeModel(INodeConfiguration nodeConfig,
             IPluginConfiguration pluginConfig) {

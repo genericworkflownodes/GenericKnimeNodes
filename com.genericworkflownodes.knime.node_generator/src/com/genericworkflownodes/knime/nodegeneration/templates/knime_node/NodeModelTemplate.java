@@ -35,10 +35,10 @@ public class NodeModelTemplate extends Template {
                     if (ext == null) {
                         throw new UnknownMimeTypeException(type);
                     }
-                    tmp += "\"" + ext + "\",";
+                    tmp += "\"" + ext + "\" ,";
                 }
                 tmp = tmp.substring(0, tmp.length() - 1);
-                tmp += "},";
+                tmp += "}, ";
                 clazzez += tmp;
             }
         }
@@ -61,10 +61,10 @@ public class NodeModelTemplate extends Template {
                     if (ext == null) {
                         throw new UnknownMimeTypeException(type);
                     }
-                    tmp += "\"" + ext + "\",";
+                    tmp += "\"" + ext + "\" ,";
                 }
                 tmp = tmp.substring(0, tmp.length() - 1);
-                tmp += "},";
+                tmp += "}, ";
                 clazzez += tmp;
             }
         }

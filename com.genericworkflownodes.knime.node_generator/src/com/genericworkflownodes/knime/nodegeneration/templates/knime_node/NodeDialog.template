@@ -6,6 +6,9 @@ import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 
+/**
+    @brief __NODENAME__ Node Dialog.
+*/
 public class __NODENAME__NodeDialog extends GenericKnimeNodeDialog
 {
     protected __NODENAME__NodeDialog(INodeConfiguration config)
