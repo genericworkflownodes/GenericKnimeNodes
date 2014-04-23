@@ -239,4 +239,13 @@ public abstract class AbstractFileStoreURIPortObject extends
     protected void flushToFileStore() throws IOException {
         super.flushToFileStore();
     }
+
+    /**
+     * Gives access to the underlying file store.
+     * 
+     * @return The underlying file store.
+     */
+    FileStore getInternalFileStore() {
+        return super.getFileStore();
+    }
 }
