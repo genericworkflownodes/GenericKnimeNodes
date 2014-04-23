@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -22,6 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -52,7 +55,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * This is the model implementation of MimeFileImporter.
  * 
- * @author roettig
+ * @author roettig, aiche
  */
 public class MimeFileImporterNodeModel extends NodeModel {
 
@@ -70,6 +73,9 @@ public class MimeFileImporterNodeModel extends NodeModel {
      */
     private SettingsModelString m_filename = new SettingsModelString(
             MimeFileImporterNodeModel.CFG_FILENAME, "");
+    /**
+     * SettingsModel for potential file extension override.
+     */
     private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
             CFG_FILE_EXTENSION, "", false);
 
@@ -135,11 +141,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("No File selected.");
         }
 
-        File in = new File(tmp_filename.getStringValue());
-        if (!in.canRead()) {
-            throw new InvalidSettingsException("Input file cannot be read: "
-                    + tmp_filename.getStringValue());
-        }
+        convertToURL(tmp_filename);
 
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
@@ -159,6 +161,41 @@ public class MimeFileImporterNodeModel extends NodeModel {
                     "File of unknown MIME type selected: "
                             + tmp_filename.getStringValue());
         }
+    }
+
+    /**
+     * Extract a URL from the given SettingsModelString, trying different
+     * conversion approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
+     * 
+     * @param filename_settings
+     *            The settings object containing the URL to convert.
+     * @return A URL object.
+     * @throws InvalidSettingsException
+     *             If the string in the given settings object cannot be
+     *             converted properly.
+     */
+    private URL convertToURL(SettingsModelString filename_settings)
+            throws InvalidSettingsException {
+        URL url;
+
+        String urlS = filename_settings.getStringValue();
+        if (urlS == null) {
+            throw new InvalidSettingsException("URL must not be null");
+        }
+        try {
+            url = new URL(urlS);
+        } catch (MalformedURLException e) {
+            // might be a file, bug fix 3477
+            File file = new File(urlS);
+            try {
+                url = file.toURI().toURL();
+            } catch (Exception fileURLEx) {
+                throw new InvalidSettingsException("Invalid URL: "
+                        + e.getMessage(), e);
+            }
+        }
+
+        return url;
     }
 
     /**
@@ -237,9 +274,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-
-        File file = new File(m_filename.getStringValue());
-
+        File file = new File(convertToURL(m_filename).toURI());
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
