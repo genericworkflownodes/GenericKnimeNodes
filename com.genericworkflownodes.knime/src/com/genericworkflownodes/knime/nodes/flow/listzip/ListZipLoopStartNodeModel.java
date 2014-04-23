@@ -164,17 +164,17 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
         }
 
         IURIPortObject[] uriOutputObjects = new URIPortObject[PORT_COUNT];
-        m_rowCount = ((URIPortObject) inObjects[0]).getURIContents().size();
+        m_rowCount = ((IURIPortObject) inObjects[0]).getURIContents().size();
 
         // 1st port is handled separately
-        URIContent uri = ((URIPortObject) inObjects[0]).getURIContents().get(
+        URIContent uri = ((IURIPortObject) inObjects[0]).getURIContents().get(
                 m_iteration);
         List<URIContent> uriContents = new ArrayList<URIContent>();
         uriContents.add(uri);
         uriOutputObjects[0] = new URIPortObject(uriContents);
 
         for (int i = 1; i < PORT_COUNT; i++) {
-            URIPortObject in = (URIPortObject) inObjects[i];
+            IURIPortObject in = (IURIPortObject) inObjects[i];
             if (i < m_numAssignedIncomingPorts) {
                 if (m_reuse.getBooleanValue()) {
                     uriOutputObjects[i] = new URIPortObject(in.getURIContents());
