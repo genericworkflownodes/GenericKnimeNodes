@@ -1,9 +1,9 @@
 /**
- * Copyright (c) 2012, Marc Ršttig.
+ * Copyright (c) 2012, Marc RÃ¶ttig.
  * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +22,7 @@ package com.genericworkflownodes.knime.parameter;
 /**
  * The InvalidParameterValueException is thrown when the supplied value for a
  * parameter could not be validated.
- * 
+ *
  * @author roettig
  */
 public class InvalidParameterValueException extends Exception {
@@ -34,7 +34,7 @@ public class InvalidParameterValueException extends Exception {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            the detail message.
      */
@@ -44,7 +44,7 @@ public class InvalidParameterValueException extends Exception {
 
     /**
      * Constructor.
-     * 
+     *
      * @param msg
      *            the detail message.
      * @param t
