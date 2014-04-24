@@ -19,10 +19,9 @@
 
 package com.genericworkflownodes.knime.generic_node;
 
-import java.io.FileNotFoundException;
-
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
@@ -41,6 +40,13 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * @author aiche
  */
 public class GenericKnimeNodeDialog extends NodeDialogPane {
+
+    /**
+     * The logger.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(GenericKnimeNodeDialog.class);
+
     /**
      * The node configuration.
      */
@@ -56,23 +62,22 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
      */
     private MimeTypeChooserDialog mtc;
 
-    public GenericKnimeNodeDialog(INodeConfiguration config) {
-        this.config = config;
-        try {
-            dialog = new ParameterDialog(this.config);
-            addTab("Parameters", dialog);
-            mtc = new MimeTypeChooserDialog(this.config);
-            addTab("OutputTypes", mtc);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    /**
+     * Creates a new GenericKnimeNodeDialog for the given node configuration.
+     * 
+     * @param configuration
+     *            The node configuration that should be visualized.
+     */
+    public GenericKnimeNodeDialog(INodeConfiguration configuration) {
+        config = configuration;
+        dialog = new ParameterDialog(config);
+        addTab("Parameters", dialog);
+        mtc = new MimeTypeChooserDialog(config);
+        addTab("OutputTypes", mtc);
     }
 
     @Override
-    protected void saveSettingsTo(NodeSettingsWO settings)
-            throws InvalidSettingsException {
+    protected void saveSettingsTo(NodeSettingsWO settings) {
         // ensure all edit operations are finished
         dialog.stopEditing();
         // transfer values
@@ -87,10 +92,12 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
             settings.addString(key, param.getStringRep());
         }
 
-        int[] sel_ports = mtc.getSelectedTypes();
+        int[] selectedPorts = mtc.getSelectedTypes();
 
         for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
-            settings.addInt("GENERIC_KNIME_NODES_outtype#" + i, sel_ports[i]);
+            settings.addInt(
+                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUTTYPE_PREFIX
+                            + i, selectedPorts[i]);
         }
     }
 
@@ -108,7 +115,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
             try {
                 value = settings.getString(key);
             } catch (InvalidSettingsException e) {
-                e.printStackTrace();
+                LOGGER.warn("Invalid value detected.", e);
             }
             try {
                 param.fillFromString(value);
@@ -118,16 +125,18 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
         }
 
         int nP = config.getNumberOfOutputPorts();
-        int[] sel_ports = new int[nP];
+        int[] selectedPorts = new int[nP];
 
         for (int i = 0; i < nP; i++) {
             try {
-                int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
-                sel_ports[i] = idx;
+                int idx = settings
+                        .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUTTYPE_PREFIX
+                                + i);
+                selectedPorts[i] = idx;
             } catch (InvalidSettingsException e) {
                 throw new NotConfigurableException(e.getMessage(), e);
             }
         }
-        mtc.setSelectedTypes(sel_ports);
+        mtc.setSelectedTypes(selectedPorts);
     }
 }

@@ -235,11 +235,6 @@ public abstract class AbstractFileStoreURIPortObject extends
         m_uriContents = relocatedURIContents;
     }
 
-    @Override
-    protected void flushToFileStore() throws IOException {
-        super.flushToFileStore();
-    }
-
     /**
      * Gives access to the underlying file store.
      * 
