@@ -163,13 +163,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
     public abstract List<ExternalTool> getTools();
 
     /**
-     * Returns the list of {@link MIMEType}s provided by the plugin.
-     * 
-     * @return Returns the list of {@link MIMEType}s provided by the plugin.
-     */
-    public abstract List<String> getMIMETypes();
-
-    /**
      * Gives access to the plugin config of the derived plugin.
      * 
      * @return The plugin config.
