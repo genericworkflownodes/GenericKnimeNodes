@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2011, Marc Röttig.
+ * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -30,6 +31,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
+import org.knime.core.node.NodeLogger;
+
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.list_editor.ListEditorComponent;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier.ParameterVerifier;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
@@ -49,13 +52,27 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
 public class ParamCellEditor extends AbstractCellEditor implements
         TableCellEditor {
 
+    /**
+     * Logger instance.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(ParamCellEditor.class);
+
+    /**
+     * ActionListener for choice parameters (e.g., StringChoice).
+     * 
+     * @author aiche
+     * 
+     * @param <T>
+     *            The type of the represented parameter.
+     */
     private final class ChoiceParamActionListener<T extends Parameter<?>>
             implements ActionListener {
 
         /**
          * The underlying parameter.
          */
-        private final T representedParametere;
+        private final T representedParameter;
 
         /**
          * C'tor.
@@ -64,7 +81,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
          *            The underlying parameter.
          */
         public ChoiceParamActionListener(T param) {
-            representedParametere = param;
+            representedParameter = param;
         }
 
         @Override
@@ -72,10 +89,11 @@ public class ParamCellEditor extends AbstractCellEditor implements
             JComboBox cb = (JComboBox) e.getSource();
             String selectedParamValue = (String) cb.getSelectedItem();
             try {
-                representedParametere.fillFromString(selectedParamValue);
+                representedParameter.fillFromString(selectedParamValue);
             } catch (InvalidParameterValueException ex) {
                 // cannot happen
-                ex.printStackTrace();
+                LOGGER.error(String.format("Filled with invalid value %s",
+                        selectedParamValue), ex);
             }
         }
     }
@@ -121,7 +139,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
                             param.getMnemonic()));
                 }
             } catch (InvalidParameterValueException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
         if (param instanceof StringChoiceParameter) {
@@ -134,7 +152,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
                 param.fillFromString(choiceComboBox.getSelectedItem()
                         .toString());
             } catch (InvalidParameterValueException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
         if (param instanceof ListParameter) {
@@ -142,7 +160,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
             try {
                 param.fillFromString(workaround);
             } catch (InvalidParameterValueException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
 

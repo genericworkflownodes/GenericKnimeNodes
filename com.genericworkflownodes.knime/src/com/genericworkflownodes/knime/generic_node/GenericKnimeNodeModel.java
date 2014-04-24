@@ -81,6 +81,8 @@ import com.genericworkflownodes.util.Helper;
  * @author
  */
 public abstract class GenericKnimeNodeModel extends NodeModel {
+    static final String GENERIC_KNIME_NODES_OUTTYPE_PREFIX = "GENERIC_KNIME_NODES_outtype#";
+
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(GenericKnimeNodeModel.class);
 
@@ -278,7 +280,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         }
 
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
-            settings.addInt("GENERIC_KNIME_NODES_outtype#" + i,
+            settings.addInt(GENERIC_KNIME_NODES_OUTTYPE_PREFIX + i,
                     getOutputTypeIndex(i));
         }
     }
@@ -313,7 +315,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         }
 
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
-            int idx = settings.getInt("GENERIC_KNIME_NODES_outtype#" + i);
+            int idx = settings.getInt(GENERIC_KNIME_NODES_OUTTYPE_PREFIX + i);
             m_selectedOutputType[i] = idx;
         }
     }

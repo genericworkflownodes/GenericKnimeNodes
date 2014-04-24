@@ -24,6 +24,7 @@ package com.genericworkflownodes.knime.generic_node;
  */
 public class ExecutionFailedException extends Exception {
 
+    private static final String FAILED_TO_EXECUTE_NODE_MESSAGE = "Failed to execute node %s";
     /**
      * The serialVersionUID.
      */
@@ -36,7 +37,7 @@ public class ExecutionFailedException extends Exception {
      *            The name of the Node that couldn't be executed.
      */
     public ExecutionFailedException(final String nodeName) {
-        super(String.format("Failed to execute node %s", nodeName));
+        super(String.format(FAILED_TO_EXECUTE_NODE_MESSAGE, nodeName));
     }
 
     /**
@@ -48,6 +49,6 @@ public class ExecutionFailedException extends Exception {
      *            The cause.
      */
     public ExecutionFailedException(String nodeName, Throwable t) {
-        super(String.format("Failed to execute node %s", nodeName), t);
+        super(String.format(FAILED_TO_EXECUTE_NODE_MESSAGE, nodeName), t);
     }
 }

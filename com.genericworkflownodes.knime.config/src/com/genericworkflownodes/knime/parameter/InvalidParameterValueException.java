@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2012, Marc RÃ¶ttig.
+ * Copyright (c) 2012, Marc Ršttig.
+ * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -23,7 +24,6 @@ package com.genericworkflownodes.knime.parameter;
  * parameter could not be validated.
  * 
  * @author roettig
- * 
  */
 public class InvalidParameterValueException extends Exception {
 

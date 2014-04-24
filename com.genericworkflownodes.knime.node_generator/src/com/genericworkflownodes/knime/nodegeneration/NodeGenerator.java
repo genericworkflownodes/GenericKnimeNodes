@@ -52,7 +52,6 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.MimeFileCellFactoryTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
@@ -186,13 +185,6 @@ public class NodeGenerator {
                             "commandGenerator", "CLICommandGenerator"));
                 }
             });
-
-            // src/[PACKAGE]/knime/nodes/mimetypes/MimeFileCellFactory.java
-            new MimeFileCellFactoryTemplate(
-                    generatedPluginMeta.getPackageRoot(), srcDir.getMIMETypes())
-                    .write(new File(pluginBuildDir.getKnimeNodesDirectory(),
-                            "mimetypes" + File.separator
-                                    + "MimeFileCellFactory.java"));
 
             PluginXMLTemplate pluginXML = new PluginXMLTemplate();
             List<String> nodeNames = new LinkedList<String>();

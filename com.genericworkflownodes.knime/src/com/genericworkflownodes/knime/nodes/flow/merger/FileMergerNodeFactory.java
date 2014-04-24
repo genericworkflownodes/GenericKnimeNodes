@@ -60,7 +60,7 @@ public class FileMergerNodeFactory extends NodeFactory<FileMergerNodeModel> {
      */
     @Override
     public boolean hasDialog() {
-        return true;
+        return false;
     }
 
     /**

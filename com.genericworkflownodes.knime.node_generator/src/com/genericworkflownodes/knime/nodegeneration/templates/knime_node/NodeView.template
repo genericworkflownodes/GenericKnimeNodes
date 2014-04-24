@@ -2,12 +2,16 @@
 // DO NOT MODIFY
 package __BASE__.knime.nodes.__NODENAME__;
 
-import com.genericworkflownodes.knime.generic_node.*;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeView;
 
+/**
+    @brief __NODENAME__ Node View.
+*/
 public class __NODENAME__NodeView extends GenericKnimeNodeView
 {
-	protected __NODENAME__NodeView(GenericKnimeNodeModel nodeModel)
-	{
-		super(nodeModel);
-	}
+    protected __NODENAME__NodeView(GenericKnimeNodeModel nodeModel)
+    {
+        super(nodeModel);
+    }
 }

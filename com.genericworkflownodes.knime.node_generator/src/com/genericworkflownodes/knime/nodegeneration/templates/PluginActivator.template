@@ -11,43 +11,37 @@ import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.impl.PluginConfiguration;
 import com.genericworkflownodes.knime.custom.GenericActivator;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import __BASE__.knime.nodes.mimetypes.MimeFileCellFactory;
 
 public class PluginActivator extends GenericActivator {
 
-	private static PluginActivator INSTANCE = null;
-	private static List<ExternalTool> TOOLS = Arrays.asList(__EXTERNAL_TOOLS__); 
-	private static IPluginConfiguration PLUGIN_CONFIG = null;
+    private static PluginActivator INSTANCE = null;   
+    private static IPluginConfiguration PLUGIN_CONFIG = null;
+    private static final List<ExternalTool> TOOLS = Arrays.asList(__EXTERNAL_TOOLS__);
 
-	@Override
-	public void start(final BundleContext context) throws Exception {
-		super.start(context);
-		initializePlugin();
-		INSTANCE = this;
-	}
+    @Override
+    public void start(final BundleContext context) throws Exception {
+        super.start(context);
+        initializePlugin();
+        INSTANCE = this;
+    }
 
-	@Override
-	public List<String> getMIMETypes() {
-		return MimeFileCellFactory.getInstance().getMimeTypes();
-	}
-
-	public static PluginActivator getInstance() {
-		return INSTANCE;
-	}
-	
-	@Override
-	public List<ExternalTool> getTools() {
-		return TOOLS;
-	}
-	
-	@Override
-	public IPluginConfiguration getPluginConfiguration() {
-		if (PLUGIN_CONFIG == null) {
-			// construct the plugin config
-			PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", getPreferenceStore()
-					.getString("binaries_path"), PluginActivator.getInstance()
-					.getProperties());
-		}
-		return PLUGIN_CONFIG;
-	}
+    public static PluginActivator getInstance() {
+        return INSTANCE;
+    }
+    
+    @Override
+    public List<ExternalTool> getTools() {
+        return TOOLS;
+    }
+    
+    @Override
+    public IPluginConfiguration getPluginConfiguration() {
+        if (PLUGIN_CONFIG == null) {
+            // construct the plugin config
+            PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", getPreferenceStore()
+                    .getString("binaries_path"), PluginActivator.getInstance()
+                    .getProperties());
+        }
+        return PLUGIN_CONFIG;
+    }
 }

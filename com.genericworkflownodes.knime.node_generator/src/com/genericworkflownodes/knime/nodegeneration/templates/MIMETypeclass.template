@@ -6,8 +6,8 @@ import org.ballproject.knime.types.MIMEtype;
 
 public class __NAME__MIMEtype extends MIMEtype
 {
-	public __NAME__MIMEtype()
-	{
-		super("__EXT__");
-	}
+    public __NAME__MIMEtype()
+    {
+        super("__EXT__");
+    }
 }

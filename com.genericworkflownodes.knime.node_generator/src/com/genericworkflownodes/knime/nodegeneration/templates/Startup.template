@@ -5,7 +5,7 @@ package @@BASE@@.knime;
 import com.genericworkflownodes.knime.custom.GenericStartup;
 
 public class Startup extends GenericStartup {
-	public Startup() {
-		super(PluginActivator.getInstance(), "@@BASE@@.knime.preferences.PluginPreferencePage");
-	}
+    public Startup() {
+        super(PluginActivator.getInstance(), "@@BASE@@.knime.preferences.PluginPreferencePage");
+    }
 }
