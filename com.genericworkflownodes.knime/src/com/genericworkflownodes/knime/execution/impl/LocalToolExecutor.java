@@ -140,12 +140,6 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     private File m_executable;
 
-    /**
-     * Indicator if the found executable was shipped with the plugin or is
-     * self-configured.
-     */
-    private boolean m_isShippedExecutable;
-
     private List<String> m_commands;
 
     /**
@@ -156,7 +150,6 @@ public class LocalToolExecutor implements IToolExecutor {
         m_returnCode = -1;
         m_stdErr = "";
         m_stdOut = "";
-        m_isShippedExecutable = false;
     }
 
     /**
@@ -328,12 +321,10 @@ public class LocalToolExecutor implements IToolExecutor {
      *            The builder that should be initialized.
      */
     private void setupProcessEnvironment(ProcessBuilder builder) {
-        if (m_isShippedExecutable) {
-            for (String key : m_environmentVariables.keySet()) {
-                String value = expandEnvironmentVariables(m_environmentVariables
-                        .get(key));
-                builder.environment().put(key, value);
-            }
+        for (String key : m_environmentVariables.keySet()) {
+            String value = expandEnvironmentVariables(m_environmentVariables
+                    .get(key));
+            builder.environment().put(key, value);
         }
     }
 

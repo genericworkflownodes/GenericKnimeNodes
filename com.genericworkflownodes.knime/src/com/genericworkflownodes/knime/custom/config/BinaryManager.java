@@ -128,7 +128,7 @@ public final class BinaryManager {
 
                 // fix value
                 if (v.contains(ROOT_REPLACEMENT)) {
-                    v.replace(ROOT_REPLACEMENT, rootPath);
+                    v = v.replace(ROOT_REPLACEMENT, rootPath);
                 }
 
                 // transfer the environment variables into the generic activator
