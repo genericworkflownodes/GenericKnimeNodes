@@ -58,11 +58,13 @@ import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeaturePr
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentManifestMFTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeDialogTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeModelTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeViewTemplate;
+import com.genericworkflownodes.knime.nodegeneration.util.UnZipFailureException;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 import com.genericworkflownodes.knime.nodegeneration.writer.PropertiesWriter;
 
@@ -268,10 +270,11 @@ public class NodeGenerator {
      * @throws NodeGeneratorException
      * @throws PathnameIsNoDirectoryException
      * @throws IOException
+     * @throws UnZipFailureException
      */
     private List<FragmentMeta> createPayloadFragments()
             throws NodeGeneratorException, PathnameIsNoDirectoryException,
-            IOException {
+            IOException, UnZipFailureException {
 
         List<FragmentMeta> createdFragments = srcDir.getPayloadDirectory()
                 .getFragmentMetas(generatedPluginMeta);
@@ -292,8 +295,8 @@ public class NodeGenerator {
             new FragmentManifestMFTemplate(fragmentMeta).write(fragmentDir
                     .getManifestMf());
 
-            // copy assets
-            copyAsset(".classpath", fragmentDir.getAbsolutePath());
+            new FragmentProjectTemplate(fragmentMeta.getId()).write(new File(
+                    fragmentDir, ".project"));
 
             // copy the binaries
             fragmentDir.getBinaryResourcesDirectory().copyPayload(

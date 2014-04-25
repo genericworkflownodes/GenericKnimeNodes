@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.custom.payload;
+package com.genericworkflownodes.knime.nodegeneration.util;
 
 /**
  * Exception indicating that decompression failed.

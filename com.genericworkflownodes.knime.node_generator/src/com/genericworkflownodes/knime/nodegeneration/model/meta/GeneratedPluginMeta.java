@@ -2,6 +2,8 @@ package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
 import java.security.InvalidParameterException;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 
@@ -111,8 +113,40 @@ public class GeneratedPluginMeta extends PluginMeta {
         return true;
     }
 
+    /**
+     * Updates the version qualifier of the plug-in meta. Update the qualifier
+     * part of the plug-in version, e.g., 0.1.0.20000101 update with 20100101 ->
+     * 0.1.0.20100101
+     * 
+     * @param qualifier
+     *            The potentially higher qualifier.
+     */
+    protected String updateVersion(String qualifier) {
+        final Pattern p = Pattern
+                .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
+        Matcher m = p.matcher(getVersion());
+        boolean found = m.find();
+        assert found : "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$";
+
+        // version has no qualifier
+        String newVersion = m.group(1)
+                + (m.group(2) != null ? m.group(2) : ".0")
+                + (m.group(3) != null ? m.group(3) : ".0");
+        // append qualifier
+        if (m.group(4) == null
+                || qualifier.compareTo(m.group(4).substring(1)) > 0) {
+            // external qualifier
+            newVersion += "." + qualifier;
+        } else {
+            // our own
+            newVersion += m.group(4);
+        }
+        return newVersion;
+    }
+
     private final String name;
     private final String nodeRepositoyPath;
+    private final String generatedPluginVersion;
 
     /**
      * Creates a Meta info object for the generated plug-in based on the
@@ -131,7 +165,9 @@ public class GeneratedPluginMeta extends PluginMeta {
         // update the version qualifier based on the version of the node
         // generator
         if (nodeGeneratorQualifier != null) {
-            updateVersion(nodeGeneratorQualifier);
+            generatedPluginVersion = updateVersion(nodeGeneratorQualifier);
+        } else {
+            generatedPluginVersion = getVersion();
         }
 
         if (getId() == null || getId().isEmpty()) {
@@ -204,5 +240,15 @@ public class GeneratedPluginMeta extends PluginMeta {
      */
     public final String getNodeRepositoryRoot() {
         return nodeRepositoyPath;
+    }
+
+    /**
+     * Returns the version of the generated plug-in which includes also version
+     * information from the node generator.
+     * 
+     * @return The version of the generated plugin.
+     */
+    public final String getGeneratedPluginVersion() {
+        return generatedPluginVersion;
     }
 }

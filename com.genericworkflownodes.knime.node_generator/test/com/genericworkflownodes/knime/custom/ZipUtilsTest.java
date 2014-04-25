@@ -25,12 +25,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.junit.Test;
 
-import com.genericworkflownodes.knime.custom.payload.UnZipFailureException;
-import com.genericworkflownodes.knime.custom.payload.ZipUtils;
-import com.genericworkflownodes.knime.test.data.TestDataSource;
+import com.genericworkflownodes.knime.nodegeneration.util.UnZipFailureException;
+import com.genericworkflownodes.knime.nodegeneration.util.ZipUtils;
 
 /**
  * Test for {@link ZipUtils}.
@@ -38,43 +36,6 @@ import com.genericworkflownodes.knime.test.data.TestDataSource;
  * @author aiche
  */
 public class ZipUtilsTest {
-
-    class TestMonitor implements IProgressMonitor {
-
-        @Override
-        public void beginTask(String name, int totalWork) {
-        }
-
-        @Override
-        public void done() {
-        }
-
-        @Override
-        public void internalWorked(double work) {
-        }
-
-        @Override
-        public boolean isCanceled() {
-            return false;
-        }
-
-        @Override
-        public void setCanceled(boolean value) {
-        }
-
-        @Override
-        public void setTaskName(String name) {
-        }
-
-        @Override
-        public void subTask(String name) {
-        }
-
-        @Override
-        public void worked(int work) {
-        }
-
-    }
 
     public static File createTempDirectory() throws IOException {
         final File temp;
@@ -98,8 +59,7 @@ public class ZipUtilsTest {
     public void testDecompressTo() throws IOException, UnZipFailureException {
         File targetDir = createTempDirectory();
         ZipUtils.decompressTo(targetDir,
-                TestDataSource.class.getResourceAsStream("testing.zip"),
-                new TestMonitor());
+                getClass().getResourceAsStream("testing.zip"));
 
         assertTrue(new File(targetDir, "subir1").exists());
         assertTrue(new File(targetDir, "subir1").isDirectory());
@@ -113,15 +73,14 @@ public class ZipUtilsTest {
 
     @Test
     public void testCountEntries() throws UnZipFailureException {
-        int numEntries = ZipUtils.countEntries(TestDataSource.class
-                .getResourceAsStream("testing.zip"));
+        int numEntries = ZipUtils.countEntries(getClass().getResourceAsStream(
+                "testing.zip"));
         assertEquals(4, numEntries);
     }
 
     @Test(expected = UnZipFailureException.class)
     public void testCorruptCountEntries() throws UnZipFailureException {
-        ZipUtils.countEntries(TestDataSource.class
-                .getResourceAsStream("corrupt.zip"));
+        ZipUtils.countEntries(getClass().getResourceAsStream("corrupt.zip"));
     }
 
     @Test(expected = UnZipFailureException.class)
@@ -129,7 +88,6 @@ public class ZipUtilsTest {
             UnZipFailureException {
         File targetDir = createTempDirectory();
         ZipUtils.decompressTo(targetDir,
-                TestDataSource.class.getResourceAsStream("corrupt.zip"),
-                new TestMonitor());
+                getClass().getResourceAsStream("corrupt.zip"));
     }
 }
