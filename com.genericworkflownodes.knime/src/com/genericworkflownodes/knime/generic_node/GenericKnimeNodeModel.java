@@ -452,6 +452,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             m_pluginConfig.getBinaryManager().findBinary(
                     m_nodeConfig.getExecutableName());
         } catch (NoBinaryAvailableException e) {
+            LOGGER.warn(e.getMessage());
             throw new InvalidSettingsException(
                     "Failed to find matching binary.", e);
         }

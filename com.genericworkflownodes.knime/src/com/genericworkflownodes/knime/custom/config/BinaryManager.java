@@ -159,7 +159,7 @@ public final class BinaryManager {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
         Enumeration<URL> e = bundle.findEntries(BUNDLE_PATH, fileName, true);
 
-        if (!e.hasMoreElements()) {
+        if (e == null || !e.hasMoreElements()) {
             return null;
         } else {
             try {

@@ -280,6 +280,9 @@ public class NodeGenerator {
                 .getFragmentMetas(generatedPluginMeta);
 
         for (FragmentMeta fragmentMeta : createdFragments) {
+            LOGGER.info(String.format("Creating binary fragment %s",
+                    fragmentMeta.getId()));
+
             FragmentDirectory fragmentDir = new FragmentDirectory(
                     baseBinaryDirectory, fragmentMeta);
 

@@ -34,7 +34,8 @@ public class NoBinaryAvailableException extends Exception {
      * Error message.
      */
     private static final String EXCEPTION_MESSAGE = "Couldn't find a binary file for the executable %s. "
-            + "Please refer to the GKN Troubleshooting guide on how to provide missing binaries.";
+            + "Please refer to the GKN Troubleshooting guide on how to provide missing binaries "
+            + "(see https://github.com/genericworkflownodes/GenericKnimeNodes/wiki/How-to-handle-missing-binaries).";
 
     /**
      * C'tor.
