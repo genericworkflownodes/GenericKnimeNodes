@@ -51,7 +51,6 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginM
 import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureBuildPropertiesTemplate;
@@ -208,18 +207,9 @@ public class NodeGenerator {
                     .write(new File(pluginBuildDir.getKnimeDirectory(),
                             "PluginActivator.java"));
 
-            // src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
-            new PluginPreferencePageTemplate(generatedPluginMeta.getId())
-                    .write(new File(new File(
-                            pluginBuildDir.getKnimeDirectory(), "preferences"),
-                            "PluginPreferencePage.java"));
-
             // icons/*
             copyFolderIcon();
             registerSplashIcon(pluginXML);
-
-            // register preference page
-            pluginXML.registerPreferencePage(generatedPluginMeta);
 
             // register the mime types
             pluginXML.registerMIMETypeEntries(srcDir.getMIMETypes());

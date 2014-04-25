@@ -148,29 +148,6 @@ public class PluginXMLTemplate {
                 .addAttribute("id", clazz).addAttribute("category-path", path);
     }
 
-    /**
-     * Adds the preference page to the plugin.xml file.
-     * 
-     * @param meta
-     */
-    public void registerPreferencePage(GeneratedPluginMeta meta) {
-        Node node = doc
-                .selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
-
-        String category = "com.genericworkflownodes.knime.preferences.PreferencePage";
-        String clazz = meta.getPackageRoot()
-                + ".knime.preferences.PluginPreferencePage";
-        String id = clazz;
-        String name = meta.getName();
-
-        Element preferencePageExtensionPoint = (Element) node;
-        preferencePageExtensionPoint.addElement("page")
-                .addAttribute("category", category)
-                .addAttribute("class", clazz).addAttribute("id", id)
-                .addAttribute("name", name);
-
-    }
-
     public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {
         // <mimetype name="mzML">
         // <fileextension name="mzML"></fileextension>
