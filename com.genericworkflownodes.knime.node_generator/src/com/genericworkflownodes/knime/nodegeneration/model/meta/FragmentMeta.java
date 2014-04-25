@@ -48,7 +48,7 @@ public class FragmentMeta extends PluginMeta {
     public FragmentMeta(GeneratedPluginMeta hostMeta, Architecture arch,
             OperatingSystem os, File payloadFile) {
         super(String.format("%s.%s.%s", hostMeta.getId(), os.toOsgiOs(),
-                arch.toOsgiArch()), hostMeta.getVersion());
+                arch.toOsgiArch()), hostMeta.getGeneratedPluginVersion());
         this.hostMeta = hostMeta;
         this.arch = arch;
         this.os = os;
