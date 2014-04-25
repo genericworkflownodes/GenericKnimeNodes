@@ -51,20 +51,20 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginM
 import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.StartupTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentManifestMFTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeDialogTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeModelTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeViewTemplate;
+import com.genericworkflownodes.knime.nodegeneration.util.UnZipFailureException;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 import com.genericworkflownodes.knime.nodegeneration.writer.PropertiesWriter;
 
@@ -142,7 +142,7 @@ public class NodeGenerator {
 
             srcDir = new NodesSourceDirectory(sourceDir);
             generatedPluginMeta = new GeneratedPluginMeta(srcDir,
-                    lastChangeDate);
+                    nodeGeneratorLastChangeDate);
             featureMeta = new FeatureMeta(srcDir, generatedPluginMeta);
             pluginBuildDir = new NodesBuildDirectory(buildDir,
                     generatedPluginMeta.getPackageRoot());
@@ -209,25 +209,9 @@ public class NodeGenerator {
                     .write(new File(pluginBuildDir.getKnimeDirectory(),
                             "PluginActivator.java"));
 
-            // src/[PACKAGE]/knime/PluginActivator.java
-            new StartupTemplate(generatedPluginMeta.getId()).write(new File(
-                    pluginBuildDir.getKnimeDirectory(), "Startup.java"));
-
-            // src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
-            new PluginPreferencePageTemplate(generatedPluginMeta.getId())
-                    .write(new File(new File(
-                            pluginBuildDir.getKnimeDirectory(), "preferences"),
-                            "PluginPreferencePage.java"));
-
             // icons/*
             copyFolderIcon();
             registerSplashIcon(pluginXML);
-
-            // register preference page
-            pluginXML.registerPreferencePage(generatedPluginMeta);
-
-            // register startup
-            pluginXML.registerStartupClass(generatedPluginMeta);
 
             // register the mime types
             pluginXML.registerMIMETypeEntries(srcDir.getMIMETypes());
@@ -286,15 +270,19 @@ public class NodeGenerator {
      * @throws NodeGeneratorException
      * @throws PathnameIsNoDirectoryException
      * @throws IOException
+     * @throws UnZipFailureException
      */
     private List<FragmentMeta> createPayloadFragments()
             throws NodeGeneratorException, PathnameIsNoDirectoryException,
-            IOException {
+            IOException, UnZipFailureException {
 
         List<FragmentMeta> createdFragments = srcDir.getPayloadDirectory()
                 .getFragmentMetas(generatedPluginMeta);
 
         for (FragmentMeta fragmentMeta : createdFragments) {
+            LOGGER.info(String.format("Creating binary fragment %s",
+                    fragmentMeta.getId()));
+
             FragmentDirectory fragmentDir = new FragmentDirectory(
                     baseBinaryDirectory, fragmentMeta);
 
@@ -310,8 +298,8 @@ public class NodeGenerator {
             new FragmentManifestMFTemplate(fragmentMeta).write(fragmentDir
                     .getManifestMf());
 
-            // copy assets
-            copyAsset(".classpath", fragmentDir.getAbsolutePath());
+            new FragmentProjectTemplate(fragmentMeta.getId()).write(new File(
+                    fragmentDir, ".project"));
 
             // copy the binaries
             fragmentDir.getBinaryResourcesDirectory().copyPayload(

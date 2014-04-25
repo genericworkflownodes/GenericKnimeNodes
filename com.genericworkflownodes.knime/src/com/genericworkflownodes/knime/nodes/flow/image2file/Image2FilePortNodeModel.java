@@ -50,6 +50,7 @@ import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
  */
 public class Image2FilePortNodeModel extends NodeModel {
 
+    @SuppressWarnings("unused")
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(Image2FilePortNodeModel.class);
 

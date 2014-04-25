@@ -60,24 +60,30 @@ public class PayloadDirectory {
     public List<FragmentMeta> getFragmentMetas(
             GeneratedPluginMeta generatedPluginMeta) {
 
-        if (payloadDirectory != null && payloadDirectory.exists()) {
-            containedFragments.clear();
-            for (String payload : payloadDirectory.list()) {
-                Matcher m = payloadFormat.matcher(payload);
-                if (!m.find()) {
-                    LOGGER.warning("Ignoring incompatible file in payload directory: "
-                            + payload);
-                    continue;
-                }
-                LOGGER.info("Create payload fragment for " + payload);
+        String[] expectedFragments = new String[] { "binaries_mac_64.zip",
+                "binaries_lnx_64.zip", "binaries_lnx_32.zip",
+                "binaries_win_64.zip", "binaries_win_32.zip" };
 
-                OperatingSystem os = OperatingSystem.fromString(m.group(1));
-                Architecture arch = Architecture.fromString(m.group(2));
+        for (String potentialFragment : expectedFragments) {
+            // get the matching properties
+            Matcher m = payloadFormat.matcher(potentialFragment);
+            m.find();
+            OperatingSystem os = OperatingSystem.fromString(m.group(1));
+            Architecture arch = Architecture.fromString(m.group(2));
 
+            File payload = new File(payloadDirectory, potentialFragment);
+
+            if (payload.exists()) {
                 containedFragments.add(new FragmentMeta(generatedPluginMeta,
-                        arch, os, new File(payloadDirectory, payload)));
+                        arch, os, payload));
+            } else {
+                // generate dummy fragment .. will allow users to link their
+                // own stuff into the fragment
+                containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                        arch, os, null));
             }
         }
+
         return containedFragments;
     }
 }

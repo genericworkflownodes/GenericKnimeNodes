@@ -69,7 +69,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
     @Override
     public boolean performOk() {
+        IPreferenceStore store = GenericNodesPlugin.getDefault()
+                .getPreferenceStore();
         boolean flag = debugModeFieldEditor.getBooleanValue();
+        store.setValue(PreferenceInitializer.PREF_DEBUG_MODE, flag);
         GenericNodesPlugin.setDebug(flag);
         return true;
     }

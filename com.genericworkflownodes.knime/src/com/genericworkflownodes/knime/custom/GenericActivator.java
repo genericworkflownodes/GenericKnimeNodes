@@ -22,17 +22,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
-import com.genericworkflownodes.knime.custom.payload.BinariesManager;
-import com.genericworkflownodes.knime.payload.IPayloadDirectory;
-import com.genericworkflownodes.knime.payload.OSGIBundlePayloadDirectory;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 
 /**
  * This class is an abstract bundle activator which holds the code necessary to
@@ -43,42 +38,24 @@ import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLoca
 public abstract class GenericActivator extends AbstractUIPlugin {
 
     /**
+     * The logger.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(GenericActivator.class);
+
+    /**
      * Plugin properties.
      */
     private Properties props = new Properties();
 
-    /**
-     * An abstraction of the payload directory.
-     */
-    private IPayloadDirectory payloadDirectory;
-
-    /**
-     * The bundle context for access inside the activator.
-     */
-    private BundleContext bundleContext;
-
-    /**
-     * Handles the extraction of the payload.
-     */
-    private BinariesManager binariesManager;
-
-    /**
-     * Default c'tor.
-     */
-    public GenericActivator() {
-        super();
-    }
-
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
-        bundleContext = context;
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
         super.stop(context);
-        bundleContext = null;
     }
 
     /**
@@ -94,16 +71,8 @@ public abstract class GenericActivator extends AbstractUIPlugin {
      *             In case of io errors.
      */
     public final void initializePlugin() throws IOException {
-        registerNodes();
-
-        // initialize the payload directory
-        payloadDirectory = new OSGIBundlePayloadDirectory(bundleContext);
-        binariesManager = new BinariesManager(payloadDirectory, this);
-        final IPreferenceStore pStore = getPreferenceStore();
-        pStore.setValue("binaries_path", payloadDirectory.getPath()
-                .getCanonicalPath());
-
         loadPluginProperties();
+        registerNodes();
     }
 
     /**
@@ -114,13 +83,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
      */
     private void loadPluginProperties() throws IOException {
         props.load(this.getClass().getResourceAsStream("plugin.properties"));
-        if (GenericNodesPlugin.isDebug()) {
-            GenericNodesPlugin.log(getPluginConfiguration().getPluginId()
-                    + " plugin properties are ... ");
-            for (Object key : props.keySet()) {
-                GenericNodesPlugin.log(key + " -> " + props.get(key));
-            }
-        }
     }
 
     /**
@@ -131,8 +93,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
      */
     private void registerNodes() {
         for (ExternalTool tool : getTools()) {
-            PluginPreferenceToolLocator.getToolLocatorService().registerTool(
-                    tool);
         }
     }
 
@@ -143,16 +103,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
      */
     public final Properties getProperties() {
         return props;
-    }
-
-    /**
-     * Gives access to the {@link BinariesManager} responsible for
-     * extracting/registering/handling the binaries contained in the payload.
-     * 
-     * @return the binariesManager
-     */
-    public final BinariesManager getBinariesManager() {
-        return binariesManager;
     }
 
     /**

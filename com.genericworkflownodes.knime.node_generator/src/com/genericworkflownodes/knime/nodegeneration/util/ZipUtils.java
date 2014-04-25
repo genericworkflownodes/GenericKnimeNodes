@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.custom.payload;
+package com.genericworkflownodes.knime.nodegeneration.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * Utility class that provides convenience functions to handle zip files.
@@ -43,13 +41,11 @@ public final class ZipUtils {
      *            The directory where the zip should be extracted.
      * @param zipStream
      *            The zip file stream.
-     * @param monitor
-     *            A already started progress monitor.
      * @throws UnZipFailureException
      *             If decompression fails.
      */
-    public static void decompressTo(File targetDir, InputStream zipStream,
-            IProgressMonitor monitor) throws UnZipFailureException {
+    public static void decompressTo(File targetDir, InputStream zipStream)
+            throws UnZipFailureException {
         if (!targetDir.exists()) {
             boolean createDirs = targetDir.mkdirs();
             if (!createDirs) {
@@ -69,10 +65,8 @@ public final class ZipUtils {
 
                 if (ze.isDirectory()) {
                     targetFile.mkdirs();
-                    monitor.subTask("Extracting " + ze.getName());
                 } else {
                     if (!targetFile.getParentFile().exists()) {
-                        monitor.subTask("Extracting " + ze.getName());
                         targetFile.getParentFile().mkdirs();
                     }
 
@@ -87,7 +81,6 @@ public final class ZipUtils {
                     fout.flush();
                     fout.close();
                 }
-                monitor.worked(1);
             }
             zin.close();
         } catch (Exception e) {

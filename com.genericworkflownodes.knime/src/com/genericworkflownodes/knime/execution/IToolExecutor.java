@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
 /**
  * Defines a tool executor for generic tools.

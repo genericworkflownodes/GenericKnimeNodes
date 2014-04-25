@@ -46,18 +46,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
     private static boolean isDebugModeEnabled = false;
 
     /**
-     * Logging method for debugging purpose.
-     * 
-     * @param message
-     *            The message to log.
-     */
-    public static void log(final String message) {
-        if (GenericNodesPlugin.isDebugModeEnabled) {
-            LOGGER.info(message);
-        }
-    }
-
-    /**
      * Check if the plug-in is in isDebugModeEnabled mode.
      * 
      * @return True if debugging is enabled, false otherwise.
@@ -89,7 +77,6 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         gknPLugin = this;
-        log("starting gknPLugin: GenericNodesPlugin");
     }
 
     /**

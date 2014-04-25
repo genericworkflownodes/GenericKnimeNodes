@@ -16,14 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config.impl;
+package com.genericworkflownodes.knime.custom.config.impl;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.BinaryManager;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
 /**
  * Default implementation of {@link IPluginConfiguration}.
@@ -39,11 +37,6 @@ public class PluginConfiguration implements IPluginConfiguration {
     private final String m_pluginId;
 
     /**
-     * The path where all binaries are stored (as string).
-     */
-    private final String m_binariesPath;
-
-    /**
      * The name of the plugin for the GUI.
      */
     private final String m_pluginName;
@@ -54,46 +47,30 @@ public class PluginConfiguration implements IPluginConfiguration {
     private Properties m_props;
 
     /**
-     * A {@link Map} containing entries for environment variables, needed to
-     * execute the binaries located in the plugin.
+     * The binary manager for the plugin.
      */
-    private Map<String, String> m_env;
+    private final BinaryManager m_binaryManager;
 
     /**
      * C'tor for {@link PluginConfiguration}.
      * 
      * @param pluginId
-     *            The name of the plugin.
-     * @param binariesPath
-     *            The path where all the binaries are located.
+     *            The id of the plugin.
+     * @param pluginName
+     *            Then name of the plugin.
      * @param props
      *            Additional properties.
+     * @param classFromPlugin
+     *            A class from the specific plugin, needed to proper initialize
+     *            BinaryManager.
      */
+    @SuppressWarnings("rawtypes")
     public PluginConfiguration(final String pluginId, final String pluginName,
-            final String binariesPath, final Properties props) {
-
+            final Properties props, Class classFromPlugin) {
         m_pluginId = pluginId;
         m_pluginName = pluginName;
-        m_binariesPath = binariesPath;
         m_props = props;
-        m_env = new HashMap<String, String>();
-    }
-
-    /**
-     * This methods expands place holders inside the environment variables with
-     * the correct values.
-     */
-    private void fixEnvironmentVariables() {
-        for (String envName : m_env.keySet()) {
-            if (m_env.get(envName).contains("$ROOT")) {
-                // update the map entry with the correct path
-                m_env.put(
-                        envName,
-                        m_env.get(envName).replace("$ROOT",
-                                new File(getBinariesPath()).getAbsolutePath()));
-
-            }
-        }
+        m_binaryManager = new BinaryManager(classFromPlugin);
     }
 
     /**
@@ -108,14 +85,6 @@ public class PluginConfiguration implements IPluginConfiguration {
      * {@inheritDoc}
      */
     @Override
-    public final String getBinariesPath() {
-        return m_binariesPath;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public final Properties getPluginProperties() {
         return m_props;
     }
@@ -124,26 +93,13 @@ public class PluginConfiguration implements IPluginConfiguration {
      * {@inheritDoc}
      */
     @Override
-    public final Map<String, String> getEnvironmentVariables() {
-        return m_env;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateEnvironmentVariables(final Map<String, String> env) {
-        m_env.clear();
-        m_env.putAll(env);
-        fixEnvironmentVariables();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getPluginName() {
         return m_pluginName;
+    }
+
+    @Override
+    public BinaryManager getBinaryManager() {
+        return m_binaryManager;
     }
 
 }

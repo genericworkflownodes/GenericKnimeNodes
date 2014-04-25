@@ -33,13 +33,11 @@ import java.util.regex.Pattern;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
-import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
-import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 import com.genericworkflownodes.util.StringUtils;
 
 /**
@@ -142,12 +140,6 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     private File m_executable;
 
-    /**
-     * Indicator if the found executable was shipped with the plugin or is
-     * self-configured.
-     */
-    private boolean m_isShippedExecutable;
-
     private List<String> m_commands;
 
     /**
@@ -158,7 +150,6 @@ public class LocalToolExecutor implements IToolExecutor {
         m_returnCode = -1;
         m_stdErr = "";
         m_stdOut = "";
-        m_isShippedExecutable = false;
     }
 
     /**
@@ -330,12 +321,10 @@ public class LocalToolExecutor implements IToolExecutor {
      *            The builder that should be initialized.
      */
     private void setupProcessEnvironment(ProcessBuilder builder) {
-        if (m_isShippedExecutable) {
-            for (String key : m_environmentVariables.keySet()) {
-                String value = expandEnvironmentVariables(m_environmentVariables
-                        .get(key));
-                builder.environment().put(key, value);
-            }
+        for (String key : m_environmentVariables.keySet()) {
+            String value = expandEnvironmentVariables(m_environmentVariables
+                    .get(key));
+            builder.environment().put(key, value);
         }
     }
 
@@ -349,37 +338,25 @@ public class LocalToolExecutor implements IToolExecutor {
     public void prepareExecution(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration) throws Exception {
         findExecutable(nodeConfiguration, pluginConfiguration);
-        addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
 
+        addEnvironmentVariables(pluginConfiguration.getBinaryManager()
+                .getProcessEnvironment(nodeConfiguration.getExecutableName()));
         m_commands = m_generator.generateCommands(nodeConfiguration,
                 pluginConfiguration, m_workingDirectory);
     }
 
     /**
      * Tries to find the needed tool by searching in the
-     * PluginPreferenceToolLocator and the plugin package.
+     * PluginPreferenceToolLocator and the plug-in package.
      * 
-     * @return
-     * @throws Exception
+     * @throws NoBinaryAvailableException
+     *             If no matching binary was found.
      */
     private void findExecutable(INodeConfiguration nodeConfiguration,
-            IPluginConfiguration pluginConfiguration) throws Exception {
-
-        final ExternalTool tool = new ExternalTool(
-                pluginConfiguration.getPluginId(), nodeConfiguration.getName(),
+            IPluginConfiguration pluginConfiguration)
+            throws NoBinaryAvailableException {
+        m_executable = pluginConfiguration.getBinaryManager().findBinary(
                 nodeConfiguration.getExecutableName());
-
-        m_executable = PluginPreferenceToolLocator.getToolLocatorService()
-                .getToolPath(tool);
-
-        if (m_executable == null) {
-            throw new Exception("Neither externally configured nor shipped "
-                    + "binaries exist for this node. Aborting execution.");
-        }
-
-        // we have a tool, let's check what kind it is
-        m_isShippedExecutable = PluginPreferenceToolLocator
-                .getToolLocatorService().getConfiguredToolPathType(tool) == ToolPathType.SHIPPED;
     }
 
     @Override

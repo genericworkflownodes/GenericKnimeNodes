@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.config.writer.CTDConfigurationWriter;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 
 /**

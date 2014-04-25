@@ -5,7 +5,7 @@ package __BASE__.knime.nodes.__NODENAME__;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
 /**
     @brief __NODENAME__ Node Model.

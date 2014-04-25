@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014, Stephan Aiche.
+ * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,39 +16,43 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.custom.payload;
+package com.genericworkflownodes.knime.custom.config;
+
+import java.util.Properties;
 
 /**
- * Exception indicating that decompression failed.
+ * Provides all plugin specific configuration settings.
  * 
  * @author aiche
  */
-public class UnZipFailureException extends Exception {
+public interface IPluginConfiguration {
 
     /**
+     * The id of the plugin.
      * 
+     * @return The name of the configured plugin.
      */
-    private static final long serialVersionUID = -4658692812024105223L;
+    String getPluginId();
 
     /**
-     * C'tor.
+     * General properties of the plugin.
      * 
-     * @param message
-     *            Detailed description of the failure.
+     * @return A {@link Properties} object containing additional properties of
+     *         the plugin.
      */
-    public UnZipFailureException(String message) {
-        super(message);
-    }
+    Properties getPluginProperties();
 
     /**
-     * C'tor.
+     * The name of the plugin as it would be shown in the GUI.
      * 
-     * @param message
-     *            Detailed description of the failure.
-     * @param t
-     *            The cause.
+     * @return
      */
-    public UnZipFailureException(String message, Throwable t) {
-        super(message, t);
-    }
+    String getPluginName();
+
+    /**
+     * Gives access to the binary manager, responsible for the current plugin.
+     * 
+     * @return The binary manager for this plugin.
+     */
+    BinaryManager getBinaryManager();
 }

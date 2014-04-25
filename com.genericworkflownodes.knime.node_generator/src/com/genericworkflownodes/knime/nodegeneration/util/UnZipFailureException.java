@@ -16,30 +16,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.toolfinderservice;
+package com.genericworkflownodes.knime.nodegeneration.util;
 
 /**
- * Indicates that no tool path was configured for this tool.
+ * Exception indicating that decompression failed.
  * 
  * @author aiche
  */
-public class UnknownToolPathException extends Exception {
+public class UnZipFailureException extends Exception {
 
     /**
-     * serialVersionUID.
+     * 
      */
-    private static final long serialVersionUID = -7437711126155913809L;
+    private static final long serialVersionUID = -4658692812024105223L;
 
     /**
      * C'tor.
      * 
-     * @param toolname
-     *            The name of the tool that was not properly configured.
+     * @param message
+     *            Detailed description of the failure.
      */
-    public UnknownToolPathException(String toolname) {
-        super(
-                "There is no path (shipped or user-defined) stored for the tool: "
-                        + toolname);
+    public UnZipFailureException(String message) {
+        super(message);
     }
 
+    /**
+     * C'tor.
+     * 
+     * @param message
+     *            Detailed description of the failure.
+     * @param t
+     *            The cause.
+     */
+    public UnZipFailureException(String message, Throwable t) {
+        super(message, t);
+    }
 }

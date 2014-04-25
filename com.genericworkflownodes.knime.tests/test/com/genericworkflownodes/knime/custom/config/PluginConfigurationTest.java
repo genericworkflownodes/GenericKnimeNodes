@@ -16,18 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config.impl;
+package com.genericworkflownodes.knime.custom.config;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
-import java.util.TreeMap;
 
 import org.junit.Test;
+
+import com.genericworkflownodes.knime.custom.config.impl.PluginConfiguration;
 
 /**
  * Test for {@link PluginConfiguration}.
@@ -56,7 +55,7 @@ public class PluginConfigurationTest {
 
     /**
      * Test method for
-     * {@link com.genericworkflownodes.knime.config.impl.PluginConfiguration#PluginConfiguration(java.lang.String, java.lang.String, java.lang.String, java.util.Properties)}
+     * {@link com.genericworkflownodes.knime.custom.config.PluginConfiguration#PluginConfiguration(java.lang.String, java.lang.String, java.lang.String, java.util.Properties)}
      * .
      */
     @Test
@@ -64,39 +63,11 @@ public class PluginConfigurationTest {
         Properties pluginProperties = new Properties();
         pluginProperties.setProperty("test.property", "value");
         PluginConfiguration pc = new PluginConfiguration("plugin.id",
-                "plugin.name", "/path/to/binaries", pluginProperties);
+                "plugin.name", pluginProperties, getClass());
         assertEquals("plugin.id", pc.getPluginId());
         assertEquals("plugin.name", pc.getPluginName());
-        assertEquals("/path/to/binaries", pc.getBinariesPath());
         assertEquals("value",
                 pc.getPluginProperties().getProperty("test.property"));
-    }
-
-    /**
-     * Test method for
-     * {@link com.genericworkflownodes.knime.config.impl.PluginConfiguration#updateEnvironmentVariables(java.util.Map)}
-     * .
-     * 
-     * @throws IOException
-     */
-    @Test
-    public void testUpdateEnvironmentVariables() throws IOException {
-        Map<String, String> env = new TreeMap<String, String>();
-        env.put("ENABLE_SOME_FEATURE", "TRUE");
-        env.put("SOME_PATH_INSIDE_THE_PLUGIN", "$ROOT/path");
-
-        File tmpDir = createTempDirectory();
-
-        PluginConfiguration pc = new PluginConfiguration("plugin.id",
-                "plugin.name", tmpDir.getAbsolutePath(), new Properties());
-
-        pc.updateEnvironmentVariables(env);
-        Map<String, String> fixedEnv = pc.getEnvironmentVariables();
-        assertTrue(fixedEnv.containsKey("ENABLE_SOME_FEATURE"));
-        assertEquals("TRUE", fixedEnv.get("ENABLE_SOME_FEATURE"));
-        assertTrue(fixedEnv.containsKey("SOME_PATH_INSIDE_THE_PLUGIN"));
-        assertEquals(String.format("%s/path", tmpDir.getAbsolutePath()),
-                fixedEnv.get("SOME_PATH_INSIDE_THE_PLUGIN"));
     }
 
 }

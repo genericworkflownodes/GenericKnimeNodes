@@ -7,13 +7,14 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginM
 
 public class ManifestMFTemplate extends Template {
 
-    public ManifestMFTemplate(GeneratedPluginMeta pluginMeta) throws IOException {
+    public ManifestMFTemplate(GeneratedPluginMeta pluginMeta)
+            throws IOException {
         super(NodeGenerator.class
                 .getResourceAsStream("templates/MANIFEST.MF.template"));
 
-        this.replace("@@pluginName@@", pluginMeta.getName());
-        this.replace("@@pluginVersion@@", pluginMeta.getVersion());
-        this.replace("@@packageName@@", pluginMeta.getPackageRoot());
+        replace("@@pluginName@@", pluginMeta.getName());
+        replace("@@pluginVersion@@", pluginMeta.getGeneratedPluginVersion());
+        replace("@@packageName@@", pluginMeta.getPackageRoot());
     }
 
 }
