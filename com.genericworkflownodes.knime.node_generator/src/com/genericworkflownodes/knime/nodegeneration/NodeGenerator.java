@@ -54,7 +54,6 @@ import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTe
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginPreferencePageTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.StartupTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
@@ -142,7 +141,7 @@ public class NodeGenerator {
 
             srcDir = new NodesSourceDirectory(sourceDir);
             generatedPluginMeta = new GeneratedPluginMeta(srcDir,
-                    lastChangeDate);
+                    nodeGeneratorLastChangeDate);
             featureMeta = new FeatureMeta(srcDir, generatedPluginMeta);
             pluginBuildDir = new NodesBuildDirectory(buildDir,
                     generatedPluginMeta.getPackageRoot());
@@ -209,10 +208,6 @@ public class NodeGenerator {
                     .write(new File(pluginBuildDir.getKnimeDirectory(),
                             "PluginActivator.java"));
 
-            // src/[PACKAGE]/knime/PluginActivator.java
-            new StartupTemplate(generatedPluginMeta.getId()).write(new File(
-                    pluginBuildDir.getKnimeDirectory(), "Startup.java"));
-
             // src/[PACKAGE]/knime/preferences/PluginPreferencePage.java
             new PluginPreferencePageTemplate(generatedPluginMeta.getId())
                     .write(new File(new File(
@@ -225,9 +220,6 @@ public class NodeGenerator {
 
             // register preference page
             pluginXML.registerPreferencePage(generatedPluginMeta);
-
-            // register startup
-            pluginXML.registerStartupClass(generatedPluginMeta);
 
             // register the mime types
             pluginXML.registerMIMETypeEntries(srcDir.getMIMETypes());

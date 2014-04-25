@@ -90,7 +90,7 @@ public class PluginXMLTemplate {
     public void registerPath(String path) {
         List<String> prefixes = Utils.getPathPrefixes(path);
         for (String prefix : prefixes) {
-            this.registerPathPrefix(prefix);
+            registerPathPrefix(prefix);
         }
     }
 
@@ -138,7 +138,7 @@ public class PluginXMLTemplate {
      */
     public void registerNode(String clazz, String path) {
         LOGGER.info("registering Node " + clazz);
-        this.registerPath(path);
+        registerPath(path);
 
         Node node = doc
                 .selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
@@ -168,24 +168,6 @@ public class PluginXMLTemplate {
                 .addAttribute("category", category)
                 .addAttribute("class", clazz).addAttribute("id", id)
                 .addAttribute("name", name);
-
-    }
-
-    /**
-     * Adds the startup class to the plugin.xml file.
-     * 
-     * @param meta
-     */
-    public void registerStartupClass(GeneratedPluginMeta meta) {
-        Node node = doc
-                .selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
-
-        String clazzName = meta.getPackageRoot() + ".knime.Startup";
-
-        // <startup class="de.openms.knime.Startup" />
-        Element startupExtensionPoint = (Element) node;
-        startupExtensionPoint.addElement("startup").addAttribute("class",
-                clazzName);
 
     }
 

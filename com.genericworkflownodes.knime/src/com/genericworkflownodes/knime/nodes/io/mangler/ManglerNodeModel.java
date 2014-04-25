@@ -51,6 +51,7 @@ import com.genericworkflownodes.knime.mime.demangler.IDemangler;
  */
 public class ManglerNodeModel extends NodeModel {
 
+    @SuppressWarnings("unused")
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(ManglerNodeModel.class);
 
