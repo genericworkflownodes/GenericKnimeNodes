@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.List;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
 /**
  * Create based on a {@link INodeConfiguration} and list of arguments that

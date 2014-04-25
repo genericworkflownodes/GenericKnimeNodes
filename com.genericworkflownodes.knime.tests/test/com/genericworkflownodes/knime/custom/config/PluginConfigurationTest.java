@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config.impl;
+package com.genericworkflownodes.knime.custom.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,6 +28,8 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.junit.Test;
+
+import com.genericworkflownodes.knime.custom.config.PluginConfiguration;
 
 /**
  * Test for {@link PluginConfiguration}.
@@ -56,7 +58,7 @@ public class PluginConfigurationTest {
 
     /**
      * Test method for
-     * {@link com.genericworkflownodes.knime.config.impl.PluginConfiguration#PluginConfiguration(java.lang.String, java.lang.String, java.lang.String, java.util.Properties)}
+     * {@link com.genericworkflownodes.knime.custom.config.PluginConfiguration#PluginConfiguration(java.lang.String, java.lang.String, java.lang.String, java.util.Properties)}
      * .
      */
     @Test
@@ -74,7 +76,7 @@ public class PluginConfigurationTest {
 
     /**
      * Test method for
-     * {@link com.genericworkflownodes.knime.config.impl.PluginConfiguration#updateEnvironmentVariables(java.util.Map)}
+     * {@link com.genericworkflownodes.knime.custom.config.PluginConfiguration#updateEnvironmentVariables(java.util.Map)}
      * .
      * 
      * @throws IOException

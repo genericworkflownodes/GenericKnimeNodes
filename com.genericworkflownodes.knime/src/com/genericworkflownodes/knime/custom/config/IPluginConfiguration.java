@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.config;
+package com.genericworkflownodes.knime.custom.config;
 
 import java.util.Map;
 import java.util.Properties;
 
-import com.genericworkflownodes.knime.config.impl.PluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.impl.PluginConfiguration;
+
 
 /**
  * Provides all plugin specific configuration settings.

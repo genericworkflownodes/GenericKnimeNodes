@@ -52,7 +52,7 @@ import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObjec
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutorFactory;
@@ -62,9 +62,9 @@ import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.payload.BinaryManager;
+import com.genericworkflownodes.knime.payload.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.port.Port;
-import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
-import com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator;
 import com.genericworkflownodes.util.Helper;
 
 /**
@@ -453,27 +453,12 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
     private void checkIfToolExists() throws InvalidSettingsException {
         try {
-
-            File executable = PluginPreferenceToolLocator
-                    .getToolLocatorService().getToolPath(getToolForNode());
-
-            if (executable == null) {
-                throw new InvalidSettingsException(
-                        "Neither externally configured nor shipped "
-                                + "binaries exist for this node. Aborting execution.");
-            }
-        } catch (InvalidSettingsException ex) {
-            throw ex;
-        } catch (Exception ex) {
+            (new BinaryManager(this.getClass())).findBinary(m_nodeConfig
+                    .getExecutableName());
+        } catch (NoBinaryAvailableException e) {
             throw new InvalidSettingsException(
-                    "Failed to find a matching executable in the Tool Registry. "
-                            + ex.getMessage());
+                    "Failed to find matching binary.", e);
         }
-    }
-
-    private ExternalTool getToolForNode() {
-        return new ExternalTool(m_pluginConfig.getPluginId(),
-                m_nodeConfig.getName(), m_nodeConfig.getExecutableName());
     }
 
     protected PortObjectSpec[] createOutSpec() {
