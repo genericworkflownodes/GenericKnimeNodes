@@ -58,6 +58,7 @@ import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeaturePr
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentManifestMFTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentP2InfTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeDialogTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryTemplate;
@@ -302,8 +303,13 @@ public class NodeGenerator {
                     fragmentDir, ".project"));
 
             // copy the binaries
-            fragmentDir.getBinaryResourcesDirectory().copyPayload(
-                    fragmentMeta.getPayloadFile());
+            List<String> executablePaths = fragmentDir
+                    .getBinaryResourcesDirectory().copyPayload(
+                            fragmentMeta.getPayloadFile());
+
+            new FragmentP2InfTemplate(executablePaths).write(fragmentDir
+                    .getP2Inf());
+
         }
 
         return createdFragments;

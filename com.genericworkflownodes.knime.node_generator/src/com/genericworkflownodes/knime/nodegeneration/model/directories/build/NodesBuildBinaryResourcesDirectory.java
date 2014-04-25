@@ -3,7 +3,9 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories.build;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -32,7 +34,7 @@ public class NodesBuildBinaryResourcesDirectory extends Directory {
      *             If copy operation fails.
      * @throws UnZipFailureException
      */
-    public void copyPayload(final File zipFile) throws IOException,
+    public List<String> copyPayload(final File zipFile) throws IOException,
             UnZipFailureException {
 
         // create this directory
@@ -44,6 +46,8 @@ public class NodesBuildBinaryResourcesDirectory extends Directory {
             }
         }
 
+        List<String> paths = new ArrayList<String>();
+
         if (zipFile != null && zipFile.exists()) {
             // extract content into 'this'
             FileInputStream fis = new FileInputStream(zipFile);
@@ -51,11 +55,8 @@ public class NodesBuildBinaryResourcesDirectory extends Directory {
             fis.close();
 
             // make executable
-            Iterator<File> fit = FileUtils.iterateFiles(new File(this, "bin"),
-                    FileFileFilter.FILE, DirectoryFileFilter.INSTANCE);
-            while (fit.hasNext()) {
-                fit.next().setExecutable(true, false);
-            }
+            makeExecutable(paths, "bin");
+            makeExecutable(paths, "lib");
         } else {
             // add a dummy file containing informations on how to add your own
             // payload, check resources/EMPTY_PAYLOAD_README for the text
@@ -63,6 +64,27 @@ public class NodesBuildBinaryResourcesDirectory extends Directory {
                     getClass().getResourceAsStream(
                             "resources/EMPTY_PAYLOAD_README"), new File(this,
                             "README"));
+        }
+
+        return paths;
+    }
+
+    /**
+     * @param paths
+     */
+    private void makeExecutable(List<String> paths, String subdir) {
+        File dir = new File(this, subdir);
+        if (dir.exists()) {
+            Iterator<File> fit = FileUtils.iterateFiles(new File(this, subdir),
+                    FileFileFilter.FILE, DirectoryFileFilter.INSTANCE);
+            while (fit.hasNext()) {
+                File f = fit.next();
+                f.setExecutable(true, false);
+
+                // get relative path to package root
+                String relative = toURI().relativize(f.toURI()).getPath();
+                paths.add("payload/" + relative);
+            }
         }
     }
 }

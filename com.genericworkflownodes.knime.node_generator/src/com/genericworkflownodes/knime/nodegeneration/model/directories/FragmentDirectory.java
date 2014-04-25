@@ -37,6 +37,7 @@ public class FragmentDirectory extends PluginDirectory {
     private static final long serialVersionUID = 4561247274907458731L;
 
     private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory;
+    private File p2InfFile;
 
     /**
      * Create the directory.
@@ -52,6 +53,8 @@ public class FragmentDirectory extends PluginDirectory {
         File payloadDirectory = new File(this, "payload");
         binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
                 payloadDirectory);
+        File metaInf = new File(this, "META-INF");
+        p2InfFile = new File(metaInf, "p2.inf");
     }
 
     /**
@@ -62,5 +65,14 @@ public class FragmentDirectory extends PluginDirectory {
      */
     public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
         return binaryResourcesDirectory;
+    }
+
+    /**
+     * Returns the path to the p2.inf file.
+     * 
+     * @return the path to the p2.inf file.
+     */
+    public File getP2Inf() {
+        return p2InfFile;
     }
 }
