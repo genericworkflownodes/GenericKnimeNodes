@@ -35,8 +35,8 @@ public class FragmentP2InfTemplate extends Template {
         StringBuilder instructions = new StringBuilder();
         for (String file : files) {
             instructions.append(String.format(
-                    "org.eclipse.equinox.p2.touchpoint.eclipse.chmod(targetDir:@artifact,\\\n"
-                            + "targetFile:%s,permissions:755);\n", file));
+                    "\torg.eclipse.equinox.p2.touchpoint.eclipse.chmod(targetDir:@artifact,\\\n"
+                            + "\ttargetFile:%s,permissions:755);\n", file));
         }
 
         replace("__P2_INF_INSTRUCTIONS__", instructions.toString());
