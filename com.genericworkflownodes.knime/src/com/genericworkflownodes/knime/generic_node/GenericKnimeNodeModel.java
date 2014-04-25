@@ -52,7 +52,9 @@ import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObjec
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.custom.config.BinaryManager;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutorFactory;
@@ -62,8 +64,6 @@ import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
-import com.genericworkflownodes.knime.payload.BinaryManager;
-import com.genericworkflownodes.knime.payload.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.util.Helper;
 

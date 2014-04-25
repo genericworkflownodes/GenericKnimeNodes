@@ -18,11 +18,7 @@
  */
 package com.genericworkflownodes.knime.custom.config;
 
-import java.util.Map;
 import java.util.Properties;
-
-import com.genericworkflownodes.knime.custom.config.impl.PluginConfiguration;
-
 
 /**
  * Provides all plugin specific configuration settings.
@@ -39,27 +35,12 @@ public interface IPluginConfiguration {
     String getPluginId();
 
     /**
-     * The path where all binaries are located.
-     * 
-     * @return The path where all binaries are located.
-     */
-    String getBinariesPath();
-
-    /**
      * General properties of the plugin.
      * 
      * @return A {@link Properties} object containing additional properties of
      *         the plugin.
      */
     Properties getPluginProperties();
-
-    /**
-     * Environment variables which need to be set, to execute the tools.
-     * 
-     * @return A {@link Map} of environment variables that need to be set, to
-     *         execute the tools contained in the plugin.
-     */
-    Map<String, String> getEnvironmentVariables();
 
     /**
      * The name of the plugin as it would be shown in the GUI.
@@ -69,10 +50,9 @@ public interface IPluginConfiguration {
     String getPluginName();
 
     /**
-     * Updates the environment variables of the {@link PluginConfiguration} with
-     * the given values.
+     * Gives access to the binary manager, responsible for the current plugin.
      * 
-     * @param env
+     * @return The binary manager for this plugin.
      */
-    void updateEnvironmentVariables(final Map<String, String> env);
+    BinaryManager getBinaryManager();
 }

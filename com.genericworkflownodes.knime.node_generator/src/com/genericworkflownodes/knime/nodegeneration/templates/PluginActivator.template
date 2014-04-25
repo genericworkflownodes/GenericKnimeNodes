@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.osgi.framework.BundleContext;
 
-import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
-import com.genericworkflownodes.knime.custom.config.PluginConfiguration;
 import com.genericworkflownodes.knime.custom.GenericActivator;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.impl.PluginConfiguration;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 
 public class PluginActivator extends GenericActivator {
@@ -38,9 +38,8 @@ public class PluginActivator extends GenericActivator {
     public IPluginConfiguration getPluginConfiguration() {
         if (PLUGIN_CONFIG == null) {
             // construct the plugin config
-            PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", getPreferenceStore()
-                    .getString("binaries_path"), PluginActivator.getInstance()
-                    .getProperties());
+            PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", 
+                PluginActivator.getInstance().getProperties());
         }
         return PLUGIN_CONFIG;
     }

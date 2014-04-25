@@ -349,6 +349,7 @@ public class LocalToolExecutor implements IToolExecutor {
     public void prepareExecution(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration) throws Exception {
         findExecutable(nodeConfiguration, pluginConfiguration);
+
         addEnvironmentVariables(pluginConfiguration.getEnvironmentVariables());
 
         m_commands = m_generator.generateCommands(nodeConfiguration,

@@ -322,9 +322,6 @@ public class BinariesManager implements IRunnableWithProgress {
             environmentVariables.put(k, v);
         }
 
-        // transfer the variables to the pluginconfig
-        m_genericActivator.getPluginConfiguration().updateEnvironmentVariables(
-                environmentVariables);
     }
 
     @Override
