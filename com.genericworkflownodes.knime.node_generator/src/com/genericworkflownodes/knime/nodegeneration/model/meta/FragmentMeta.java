@@ -45,14 +45,16 @@ public class FragmentMeta extends PluginMeta {
      * @param arch
      * @param os
      */
-    public FragmentMeta(GeneratedPluginMeta hostMeta, Architecture arch,
-            OperatingSystem os, File payloadFile) {
-        super(String.format("%s.%s.%s", hostMeta.getId(), os.toOsgiOs(),
-                arch.toOsgiArch()), hostMeta.getGeneratedPluginVersion());
-        this.hostMeta = hostMeta;
-        this.arch = arch;
-        this.os = os;
-        this.payloadFile = payloadFile;
+    public FragmentMeta(GeneratedPluginMeta hostPluginMeta,
+            Architecture architecture, OperatingSystem operatingSystem,
+            File pFile) {
+        super(String.format("%s.%s.%s", hostPluginMeta.getId(),
+                operatingSystem.toOsgiOs(), architecture.toOsgiArch()),
+                hostPluginMeta.getGeneratedPluginVersion());
+        hostMeta = hostPluginMeta;
+        arch = architecture;
+        os = operatingSystem;
+        payloadFile = pFile;
     }
 
     /**

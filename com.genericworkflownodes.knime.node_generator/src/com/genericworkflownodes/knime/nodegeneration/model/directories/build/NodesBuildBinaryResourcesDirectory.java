@@ -34,16 +34,35 @@ public class NodesBuildBinaryResourcesDirectory extends Directory {
      */
     public void copyPayload(final File zipFile) throws IOException,
             UnZipFailureException {
-        // extract content into 'this'
-        FileInputStream fis = new FileInputStream(zipFile);
-        ZipUtils.decompressTo(this, fis);
-        fis.close();
 
-        // make executable
-        Iterator<File> fit = FileUtils.iterateFiles(new File(this, "bin"),
-                FileFileFilter.FILE, DirectoryFileFilter.INSTANCE);
-        while (fit.hasNext()) {
-            fit.next().setExecutable(true, false);
+        // create this directory
+        if (!exists()) {
+            boolean mk = mkdirs();
+            if (!mk) {
+                throw new IOException(String.format(
+                        "failed to create payload directory %s", getName()));
+            }
+        }
+
+        if (zipFile != null && zipFile.exists()) {
+            // extract content into 'this'
+            FileInputStream fis = new FileInputStream(zipFile);
+            ZipUtils.decompressTo(this, fis);
+            fis.close();
+
+            // make executable
+            Iterator<File> fit = FileUtils.iterateFiles(new File(this, "bin"),
+                    FileFileFilter.FILE, DirectoryFileFilter.INSTANCE);
+            while (fit.hasNext()) {
+                fit.next().setExecutable(true, false);
+            }
+        } else {
+            // add a dummy file containing informations on how to add your own
+            // payload, check resources/EMPTY_PAYLOAD_README for the text
+            FileUtils.copyInputStreamToFile(
+                    getClass().getResourceAsStream(
+                            "resources/EMPTY_PAYLOAD_README"), new File(this,
+                            "README"));
         }
     }
 }
