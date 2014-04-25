@@ -19,9 +19,11 @@
 package com.genericworkflownodes.knime.nodegeneration.templates.fragment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
+import com.genericworkflownodes.util.StringUtils;
 
 /**
  * @author aiche
@@ -32,13 +34,14 @@ public class FragmentP2InfTemplate extends Template {
         super(FragmentP2InfTemplate.class.getResourceAsStream("p2inf.template"));
 
         // construct list of instructions
-        StringBuilder instructions = new StringBuilder();
+        List<String> instructionSet = new ArrayList<String>();
         for (String file : files) {
-            instructions.append(String.format(
+            instructionSet.add(String.format(
                     "\torg.eclipse.equinox.p2.touchpoint.eclipse.chmod(targetDir:@artifact,\\\n"
-                            + "\ttargetFile:%s,permissions:755);\\\n", file));
+                            + "\ttargetFile:%s,permissions:755);", file));
         }
 
-        replace("__P2_INF_INSTRUCTIONS__", instructions.toString());
+        replace("__P2_INF_INSTRUCTIONS__",
+                StringUtils.join(instructionSet, "\\\n"));
     }
 }
