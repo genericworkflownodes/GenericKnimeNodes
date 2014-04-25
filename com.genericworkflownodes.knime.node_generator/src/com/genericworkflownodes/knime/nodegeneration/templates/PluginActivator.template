@@ -39,7 +39,7 @@ public class PluginActivator extends GenericActivator {
         if (PLUGIN_CONFIG == null) {
             // construct the plugin config
             PLUGIN_CONFIG = new PluginConfiguration("__PLUGIN_ID__", "__PLUGIN_NAME__", 
-                PluginActivator.getInstance().getProperties());
+                PluginActivator.getInstance().getProperties(), getClass());
         }
         return PLUGIN_CONFIG;
     }

@@ -52,7 +52,6 @@ import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObjec
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.custom.config.BinaryManager;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
@@ -233,10 +232,9 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             throw new ExecutionFailedException(m_nodeConfig.getName(), iex);
         }
 
-        GenericNodesPlugin.log("STDOUT: " + m_executor.getToolOutput());
-        GenericNodesPlugin.log("STDERR: " + m_executor.getToolErrorOutput());
-
-        GenericNodesPlugin.log("retcode=" + retcode);
+        LOGGER.debug("STDOUT:  " + m_executor.getToolOutput());
+        LOGGER.debug("STDERR:  " + m_executor.getToolErrorOutput());
+        LOGGER.debug("RETCODE: " + retcode);
 
         if (retcode != 0) {
             LOGGER.error("Failing process stdout: "
@@ -338,16 +336,14 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             }
             if (!param.isOptional()) {
                 if (!settings.containsKey(key)) {
-                    GenericNodesPlugin
-                            .log("\t no key found for mand. parameter " + key);
+                    LOGGER.debug("\t no key found for mand. parameter " + key);
                     throw new InvalidSettingsException(
                             "no value for mandatory parameter " + key
                                     + " supplied");
                 }
                 if (settings.getString(key) == null) {
-                    GenericNodesPlugin
-                            .log("\t null value found for mand. parameter "
-                                    + key);
+                    LOGGER.debug("\t null value found for mand. parameter "
+                            + key);
                     throw new InvalidSettingsException(
                             "no value for mandatory parameter " + key
                                     + " supplied");
@@ -358,7 +354,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             try {
                 param.fillFromString(value);
             } catch (InvalidParameterValueException e) {
-                GenericNodesPlugin.log("\t invalid value for parameter " + key);
+                LOGGER.debug("\t invalid value for parameter " + key);
                 throw new InvalidSettingsException(
                         "invalid value for parameter " + key);
             }
@@ -453,8 +449,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
     private void checkIfToolExists() throws InvalidSettingsException {
         try {
-            (new BinaryManager(this.getClass())).findBinary(m_nodeConfig
-                    .getExecutableName());
+            m_pluginConfig.getBinaryManager().findBinary(
+                    m_nodeConfig.getExecutableName());
         } catch (NoBinaryAvailableException e) {
             throw new InvalidSettingsException(
                     "Failed to find matching binary.", e);
@@ -483,7 +479,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         // create job directory
         File jobdir = Helper.getTempDir(m_nodeConfig.getName(),
                 !GenericNodesPlugin.isDebug());
-        GenericNodesPlugin.log("jobdir=" + jobdir);
+        LOGGER.debug("Jobdir=" + jobdir);
 
         // transfer the incoming files into the nodeConfiguration
         transferIncomingPorts2Config(inObjects);
@@ -603,7 +599,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                             exec.createFileStore(m_nodeConfig.getName() + "_"
                                     + i), fileName);
                     ((FileParameter) p).setValue(fspup.getPrefix());
-                    GenericNodesPlugin.log("> setting param " + name + "->"
+                    LOGGER.debug("> setting param " + name + "->"
                             + fspup.getPrefix());
 
                     outPorts.add(fspup);
@@ -615,8 +611,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                     // we do not append the file extension if we have a prefix
                     File file = fsupo.registerFile(fileName);
                     ((FileParameter) p).setValue(file.getAbsolutePath());
-                    GenericNodesPlugin.log("> setting param " + name + "->"
-                            + file);
+                    LOGGER.debug("> setting param " + name + "->" + file);
 
                     // remember output file
                     outPorts.add(fsupo);

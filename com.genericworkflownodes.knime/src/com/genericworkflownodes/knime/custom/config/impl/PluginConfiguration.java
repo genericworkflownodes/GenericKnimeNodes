@@ -60,13 +60,17 @@ public class PluginConfiguration implements IPluginConfiguration {
      *            Then name of the plugin.
      * @param props
      *            Additional properties.
+     * @param classFromPlugin
+     *            A class from the specific plugin, needed to proper initialize
+     *            BinaryManager.
      */
+    @SuppressWarnings("rawtypes")
     public PluginConfiguration(final String pluginId, final String pluginName,
-            final Properties props) {
+            final Properties props, Class classFromPlugin) {
         m_pluginId = pluginId;
         m_pluginName = pluginName;
         m_props = props;
-        m_binaryManager = new BinaryManager(getClass());
+        m_binaryManager = new BinaryManager(classFromPlugin);
     }
 
     /**

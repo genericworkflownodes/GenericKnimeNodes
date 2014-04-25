@@ -63,7 +63,7 @@ public class PluginConfigurationTest {
         Properties pluginProperties = new Properties();
         pluginProperties.setProperty("test.property", "value");
         PluginConfiguration pc = new PluginConfiguration("plugin.id",
-                "plugin.name", pluginProperties);
+                "plugin.name", pluginProperties, getClass());
         assertEquals("plugin.id", pc.getPluginId());
         assertEquals("plugin.name", pc.getPluginName());
         assertEquals("value",

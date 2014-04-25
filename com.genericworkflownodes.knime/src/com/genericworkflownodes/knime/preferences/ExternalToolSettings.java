@@ -20,7 +20,6 @@ package com.genericworkflownodes.knime.preferences;
 
 import java.io.File;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocator;
 import com.genericworkflownodes.knime.toolfinderservice.IToolLocator.ToolPathType;
@@ -89,10 +88,6 @@ public class ExternalToolSettings {
                 m_localToolPath = lToolPath.getAbsolutePath();
             }
         } catch (Exception e) {
-            GenericNodesPlugin
-                    .log("Could not load user-defined tool path for tool: "
-                            + m_tool);
-            GenericNodesPlugin.log(e.getMessage());
         }
     }
 
@@ -107,10 +102,6 @@ public class ExternalToolSettings {
             PluginPreferenceToolLocator.getToolLocatorService()
                     .updateToolPathType(m_tool, m_selectedToolPathType);
         } catch (Exception e) {
-            GenericNodesPlugin
-                    .log("Could not load user-defined tool path for tool: "
-                            + m_tool);
-            GenericNodesPlugin.log(e.getMessage());
         }
     }
 

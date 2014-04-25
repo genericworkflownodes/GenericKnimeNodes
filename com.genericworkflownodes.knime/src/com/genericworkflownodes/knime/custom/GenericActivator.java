@@ -26,7 +26,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.payload.BinariesManager;
 import com.genericworkflownodes.knime.payload.IPayloadDirectory;
@@ -114,13 +113,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
      */
     private void loadPluginProperties() throws IOException {
         props.load(this.getClass().getResourceAsStream("plugin.properties"));
-        if (GenericNodesPlugin.isDebug()) {
-            GenericNodesPlugin.log(getPluginConfiguration().getPluginId()
-                    + " plugin properties are ... ");
-            for (Object key : props.keySet()) {
-                GenericNodesPlugin.log(key + " -> " + props.get(key));
-            }
-        }
     }
 
     /**
