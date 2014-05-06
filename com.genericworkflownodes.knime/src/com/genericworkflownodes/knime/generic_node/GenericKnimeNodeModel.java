@@ -568,8 +568,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
 
                 for (int f = 0; f < basenames.size(); ++f) {
                     // create basename: <base_name>_<port_nr>_<outfile_nr>
-                    String file_basename = String.format("%s_%d_%d",
-                            basenames.get(f), i, f);
+                    String file_basename = String.format("%s_%d",
+                            basenames.get(f), f);
                     File file = fsupo.registerFile(file_basename + "." + ext);
                     fileNames.add(file.getAbsolutePath());
                 }
@@ -591,9 +591,8 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                     basename = basenames.get(0);
                 }
 
-                // create basename: <base_name>_<port_nr>_<outfile_nr>
-                String file_basename = String.format("%s_%d", basename, i);
-                String fileName = file_basename + '.' + ext;
+                // create basename: <base_name>_<outfile_nr>
+                String fileName = basename + '.' + ext;
 
                 if (isPrefix) {
                     FileStorePrefixURIPortObject fspup = new FileStorePrefixURIPortObject(
