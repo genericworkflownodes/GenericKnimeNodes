@@ -29,7 +29,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -105,8 +104,8 @@ public class OutputFileNodeModel extends NodeModel {
     public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
         String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
                 .getStringValue());
-        String incomingMimeType = MIMEMap
-                .getMIMEType(((URIPortObjectSpec) inSpecs[0])
+        String incomingMimeType = MIMETypeHelper
+                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
                         .getFileExtensions().get(0));
 
         return incomingMimeType.equals(selectedMimeType);
