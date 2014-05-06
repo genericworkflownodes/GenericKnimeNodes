@@ -74,7 +74,7 @@ public class MIMETypeHelper {
             for (String ext : entry.getExtensions()) {
                 // some mimetypes are stored with spaces around them so .trim()
                 if (extension.toLowerCase().equals(ext.trim())) {
-                    type = entry.getType();
+                    return entry.getType();
                 }
             }
         }

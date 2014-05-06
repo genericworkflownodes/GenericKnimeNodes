@@ -38,6 +38,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.util.MIMETypeHelper;
+
 /**
  * This is the model implementation of OutputFiles Node.
  * 
@@ -125,20 +127,28 @@ public class OutputFilesNodeModel extends NodeModel {
                     "Please select a target file for the Output Files node.");
         }
 
-        boolean selectedExtensionIsValid = false;
-        String lcFile = m_filename.getStringValue().toLowerCase();
-        for (String ext : ((URIPortObjectSpec) inSpecs[0]).getFileExtensions()) {
-            if (lcFile.endsWith(ext.toLowerCase())) {
-                selectedExtensionIsValid = true;
-                break;
-            }
-        }
-        if (!selectedExtensionIsValid) {
+        if (!mimeTypeCompatible(inSpecs)) {
             throw new InvalidSettingsException(
-                    "The selected output files and the incoming files have different mime types.");
+                    "The selected output files and the incoming files have incompatible mime types.");
         }
 
         return new PortObjectSpec[] {};
+    }
+
+    /**
+     * Checks if incoming and outgoing mime types are compatible.
+     * 
+     * @param inSpecs
+     *            The incoming port spec.
+     * @return True if the mime types are compatible, false otherwise.
+     */
+    private boolean mimeTypeCompatible(PortObjectSpec[] inSpecs) {
+        String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
+                .getStringValue());
+        String incomingMimeType = MIMETypeHelper
+                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
+                        .getFileExtensions().get(0));
+        return incomingMimeType.equals(selectedMimeType);
     }
 
     @Override
