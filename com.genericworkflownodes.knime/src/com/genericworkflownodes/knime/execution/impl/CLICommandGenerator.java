@@ -191,8 +191,10 @@ public class CLICommandGenerator implements ICommandGenerator {
                         .getReferenceName());
                 if (!p.isNull()) {
                     if (p instanceof ListParameter) {
-                        extractedParameterValues.add(((ListParameter) p)
-                                .getStrings());
+                        ListParameter lp = (ListParameter) p;
+                        if (lp.getStrings().size() > 0) {
+                            extractedParameterValues.add(lp.getStrings());
+                        }
                     } else {
                         List<String> l = new ArrayList<String>();
                         l.add(p.getStringRep());
