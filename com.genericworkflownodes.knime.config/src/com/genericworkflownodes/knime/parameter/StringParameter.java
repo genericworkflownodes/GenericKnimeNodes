@@ -68,4 +68,14 @@ public class StringParameter extends Parameter<String> {
     public String getMnemonic() {
         return "string";
     }
+
+    @Override
+    public void setValue(String value) {
+        // we enforce empty strings to be null
+        if ("".equals(value)) {
+            super.setValue(null);
+        } else {
+            super.setValue(value);
+        }
+    }
 }
