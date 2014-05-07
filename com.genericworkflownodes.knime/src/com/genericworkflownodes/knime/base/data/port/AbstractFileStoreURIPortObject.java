@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.base.data.port;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -31,6 +32,7 @@ import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
@@ -83,7 +85,7 @@ public abstract class AbstractFileStoreURIPortObject extends
      *            The {@link FileStore} associated to this port object.
      */
     public AbstractFileStoreURIPortObject(FileStore fs) {
-        super(fs);
+        super(Collections.singletonList(fs));
         m_uriContents = new ArrayList<URIContent>();
         m_relPaths = new ArrayList<String>();
     }
@@ -104,7 +106,7 @@ public abstract class AbstractFileStoreURIPortObject extends
      * @return A folder name.
      */
     protected File getFileStoreRootDirectory() {
-        File fsf = getFileStore().getFile();
+        File fsf = getFileStore(0).getFile();
         // make sure that it is a directory as we want to store all content in
         // this directory
         if (!fsf.exists()) {
@@ -171,6 +173,8 @@ public abstract class AbstractFileStoreURIPortObject extends
      * @param model
      *            The {@link ModelContentWO} object to fill with the list of
      *            files.
+     * @param exec
+     *            The associated execution context.
      */
     void save(final ModelContentWO model, final ExecutionMonitor exec)
             throws CanceledExecutionException {
@@ -182,6 +186,20 @@ public abstract class AbstractFileStoreURIPortObject extends
         }
     }
 
+    /**
+     * Reconstruct the {@link AbstractFileStoreURIPortObject} from the given
+     * {@link ModelContentRO}.
+     * 
+     * @param model
+     *            The {@link ModelContentRO} from where the object should be
+     *            reconstructed.
+     * @param spec
+     *            The expected {@link PortObjectSpec}.
+     * @param exec
+     *            The current {@link ExecutionContext}.
+     * @throws InvalidSettingsException
+     *             Thrown if the content is invalid.
+     */
     void load(final ModelContentRO model, PortObjectSpec spec,
             ExecutionMonitor exec) throws InvalidSettingsException {
         List<URIContent> list = new ArrayList<URIContent>();
@@ -241,7 +259,16 @@ public abstract class AbstractFileStoreURIPortObject extends
      * @return The underlying file store.
      */
     FileStore getInternalFileStore() {
-        return super.getFileStore();
+        return getFileStore(0);
+    }
+
+    /**
+     * Gives access to the list of relative paths inside the file store.
+     * 
+     * @return The the list of relative paths.
+     */
+    List<String> getRelativePaths() {
+        return m_relPaths;
     }
 
     /**
