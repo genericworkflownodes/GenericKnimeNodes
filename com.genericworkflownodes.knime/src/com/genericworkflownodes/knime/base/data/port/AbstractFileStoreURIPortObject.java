@@ -39,7 +39,6 @@ import org.knime.core.node.ModelContent;
 import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.util.ConvenienceMethods;
 import org.knime.core.node.workflow.ModelContentOutPortView;
 
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -51,11 +50,6 @@ import com.genericworkflownodes.util.MIMETypeHelper;
  */
 public abstract class AbstractFileStoreURIPortObject extends
         FileStorePortObject implements IURIPortObject {
-
-    /**
-     * The number of extensions to show if string representation is generated.
-     */
-    private static final int NUMBER_OF_EXTENSIONS_TO_SHOW = 3;
 
     /**
      * The key of the rel-path setting stored while loading/saving.
@@ -144,15 +138,7 @@ public abstract class AbstractFileStoreURIPortObject extends
 
     @Override
     public String getSummary() {
-        StringBuilder b = new StringBuilder();
-        int size = m_uriContents.size();
-        b.append(size);
-        b.append(size == 1 ? " file (extension: " : " files (extensions: ");
-        b.append(ConvenienceMethods.getShortStringFrom(
-                m_uriPortObjectSpec.getFileExtensions(),
-                NUMBER_OF_EXTENSIONS_TO_SHOW));
-        b.append(")");
-        return b.toString();
+        return CustomPortObjectUtils.getSummary(this);
     }
 
     @Override
