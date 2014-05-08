@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.data.uri.IURIPortObject;
-import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -37,6 +35,9 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of FileMerger. This nodes takes two files
@@ -58,7 +59,7 @@ public class FileMergerNodeModel extends NodeModel {
      * @return The incoming {@link PortType}s of this node.
      */
     private static PortType[] getIncomingPorts() {
-        return new PortType[] { URIPortObject.TYPE, URIPortObject.TYPE };
+        return new PortType[] { IURIPortObject.TYPE, IURIPortObject.TYPE };
     }
 
     /**
@@ -67,7 +68,7 @@ public class FileMergerNodeModel extends NodeModel {
      * @return The outgoing {@link PortType}s of this node.
      */
     private static PortType[] getOutgoing() {
-        return new PortType[] { URIPortObject.TYPE };
+        return new PortType[] { IURIPortObject.TYPE };
     }
 
     /**
@@ -83,16 +84,13 @@ public class FileMergerNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
-
-        List<URIContent> outPutURIs = new ArrayList<URIContent>();
-
-        // collect all files from the input ports
-        for (PortObject inPort : inData) {
-            outPutURIs.addAll(((IURIPortObject) inPort).getURIContents());
-        }
-
-        URIPortObject outPort = new URIPortObject(outPutURIs);
-        return new PortObject[] { outPort };
+        // create list of port objects
+        List<IURIPortObject> incomingPorts = new ArrayList<IURIPortObject>(2);
+        incomingPorts.add((IURIPortObject) inData[0]);
+        incomingPorts.add((IURIPortObject) inData[1]);
+        // transform to new FileStoreReferenceURIPortObject
+        return new PortObject[] { FileStoreReferenceURIPortObject
+                .create(incomingPorts) };
     }
 
     /**
@@ -151,18 +149,19 @@ public class FileMergerNodeModel extends NodeModel {
      */
     private void checkEqualMIMETypes(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+        // get mime type from 1st port
+        String inSpec0MimeType = MIMETypeHelper
+                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
+                        .getFileExtensions().get(0));
+        // get mime type from 2nd port
+        String inSpec1MimeType = MIMETypeHelper
+                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[1])
+                        .getFileExtensions().get(0));
 
-        if (inSpecs.length != 0) {
-
-            String targetExtensions = ((URIPortObjectSpec) inSpecs[0])
-                    .getFileExtensions().get(0);
-            for (int i = 0; i < inSpecs.length; ++i) {
-                if (!targetExtensions.equals(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0))) {
-                    throw new InvalidSettingsException(
-                            "All incoming ports need to have the same MIMEType");
-                }
-            }
+        // compare and indicate mismatch
+        if (!inSpec0MimeType.equals(inSpec1MimeType)) {
+            throw new InvalidSettingsException(
+                    "All incoming ports need to have the same MIMEType");
         }
     }
 
