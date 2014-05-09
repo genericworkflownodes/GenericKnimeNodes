@@ -132,4 +132,76 @@ public class CTDConfigurationReaderTest {
         assertNull(config.getParameter("test_app.in-file-ext"));
         assertNull(config.getParameter("test_app.out-file-ext"));
     }
+
+    @Test
+    public void testSeqAnCTD() throws Exception {
+        CTDConfigurationReader reader = new CTDConfigurationReader();
+        assertNotNull(reader);
+        INodeConfiguration config = reader.read(TestDataSource.class
+                .getResourceAsStream("sam2matrix.ctd"));
+        assertEquals("Metagenomics", config.getCategory());
+        assertEquals("http://www.seqan.de", config.getDocUrl());
+
+        // <ITEM name="out" value="" type="output-file"
+        // description="Output file." supported_formats="*.tsv" required="true"
+        // advanced="false" />
+        FileParameter fp_out = (FileParameter) config
+                .getParameter("sam2matrix.out");
+        assertNotNull(fp_out);
+        assertEquals("Output file.", fp_out.getDescription());
+        assertEquals(1, fp_out.getPort().getMimeTypes().size());
+        assertEquals("tsv", fp_out.getPort().getMimeTypes().get(0));
+        assertFalse(fp_out.isOptional());
+        assertFalse(fp_out.isAdvanced());
+
+        // <ITEMLIST name="mapping" type="input-file"
+        // description="File containing the mappings." supported_formats="*.sam"
+        // required="true" advanced="false" >
+        FileListParameter flp_mapping = (FileListParameter) config
+                .getParameter("sam2matrix.mapping");
+        assertNotNull(flp_mapping);
+        assertEquals("File containing the mappings.",
+                flp_mapping.getDescription());
+        assertEquals(1, flp_mapping.getPort().getMimeTypes().size());
+        assertEquals("sam", flp_mapping.getPort().getMimeTypes().get(0));
+        assertFalse(flp_mapping.isOptional());
+        assertFalse(flp_mapping.isAdvanced());
+
+        // <ITEM name="reads" value="" type="input-file"
+        // description="File containing the reads contained in the mapping file(s)."
+        // supported_formats="*.fa,*.fasta,*.fq,*.fastq" required="true"
+        // advanced="false" />
+        FileParameter fp_reads = (FileParameter) config
+                .getParameter("sam2matrix.reads");
+        assertNotNull(fp_reads);
+        assertEquals(
+                "File containing the reads contained in the mapping file(s).",
+                fp_reads.getDescription());
+        assertEquals(4, fp_reads.getPort().getMimeTypes().size());
+        assertEquals("fa", fp_reads.getPort().getMimeTypes().get(0));
+        assertEquals("fasta", fp_reads.getPort().getMimeTypes().get(1));
+        assertEquals("fq", fp_reads.getPort().getMimeTypes().get(2));
+        assertEquals("fastq", fp_reads.getPort().getMimeTypes().get(3));
+        assertFalse(fp_reads.isOptional());
+        assertFalse(fp_reads.isAdvanced());
+
+        // <ITEMLIST name="reference" type="string"
+        // description="Name of the file used as reference of the corresponding sam file. If not specified the names of the mapping files are taken"
+        // required="false" advanced="false" >
+        StringListParameter slp_reference = (StringListParameter) config
+                .getParameter("sam2matrix.reference");
+        assertNotNull(slp_reference);
+        assertEquals(
+                "Name of the file used as reference of the corresponding sam file. If not specified the names of the mapping files are taken",
+                slp_reference.getDescription());
+        assertTrue(slp_reference.isOptional());
+        assertFalse(slp_reference.isAdvanced());
+
+        // the parameter following parameters were tagged with gkn-ignore and
+        // hence should not be parsed
+        assertNull(config.getParameter("sam2matrix.write-ctd-file-ext"));
+        assertNull(config.getParameter("sam2matrix.out-file-ext"));
+        assertNull(config.getParameter("sam2matrix.mapping-file-ext"));
+        assertNull(config.getParameter("sam2matrix.reads-file-ext"));
+    }
 }

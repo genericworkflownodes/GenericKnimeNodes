@@ -677,27 +677,30 @@ public class ParamHandler extends DefaultHandler {
             // reduce prefix
             removeSuffix();
         } else if (TAG_ITEMLIST.equals(name)) {
-            try {
-                if (m_listValues.size() > 0) {
-                    String[] values = new String[m_listValues.size()];
-                    int i = 0;
-                    for (String v : m_listValues) {
-                        values[i++] = v;
+            if (m_currentParameter != null) {
+                try {
+                    if (m_listValues.size() > 0) {
+                        String[] values = new String[m_listValues.size()];
+                        int i = 0;
+                        for (String v : m_listValues) {
+                            values[i++] = v;
+                        }
+                        ((ListParameter) m_currentParameter)
+                                .fillFromStrings(values);
                     }
-                    ((ListParameter) m_currentParameter)
-                            .fillFromStrings(values);
+                } catch (InvalidParameterValueException e) {
+                    // should not happen
+                    LOG.log(Level.SEVERE,
+                            "Got InvalidParameterValueException: "
+                                    + e.getMessage());
                 }
-            } catch (InvalidParameterValueException e) {
-                // should not happen
-                LOG.log(Level.SEVERE, "Got InvalidParameterValueException: "
-                        + e.getMessage());
-            }
-            m_extractedParameters.put(
-                    m_currentPath + m_currentParameter.getKey(),
-                    m_currentParameter);
+                m_extractedParameters.put(
+                        m_currentPath + m_currentParameter.getKey(),
+                        m_currentParameter);
 
-            // reset for the next iteration
-            m_currentParameter = null;
+                // reset for the next iteration
+                m_currentParameter = null;
+            }
         } else if (TAG_PARAMETERS.equals(name)) {
             transferValuesToConfig();
             m_xmlReader.setContentHandler(m_parentHandler);
