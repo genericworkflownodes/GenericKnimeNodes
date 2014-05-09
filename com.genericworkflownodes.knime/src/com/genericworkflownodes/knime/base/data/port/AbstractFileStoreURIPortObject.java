@@ -243,4 +243,14 @@ public abstract class AbstractFileStoreURIPortObject extends
     FileStore getInternalFileStore() {
         return super.getFileStore();
     }
+
+    /**
+     * Gives access to the list of relative paths inside the file store.
+     * 
+     * @return The the list of relative paths.
+     */
+    List<String> getRelativePaths() {
+        return m_relPaths;
+    }
+
 }
