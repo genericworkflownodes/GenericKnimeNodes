@@ -640,6 +640,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         // elements).
         // 3. we prefer files over prefixes since we assume that prefixes are
         // often indices or reference data
+        // 4. ignore optional parameters
 
         List<String> basenames = new ArrayList<String>();
 
@@ -647,16 +648,21 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         int naming_port = 0;
         int max_size = -1;
         boolean seen_prefix = false;
-        boolean is_fileParameter = false;
+        boolean isFileParameter = false;
         for (int i = 0; i < m_nodeConfig.getInputPorts().size(); ++i) {
             Port port = m_nodeConfig.getInputPorts().get(i);
             String name = port.getName();
             Parameter<?> p = m_nodeConfig.getParameter(name);
 
+            // we don't assume that optional ports are naming relevant
+            if (p.isOptional()) {
+                continue;
+            }
+
             if (p instanceof FileListParameter) {
                 FileListParameter flp = (FileListParameter) p;
                 if (max_size == -1
-                        || (is_fileParameter && (max_size <= flp.getValue()
+                        || (isFileParameter && (max_size <= flp.getValue()
                                 .size()))) {
                     max_size = flp.getValue().size();
                     naming_port = i;
@@ -671,7 +677,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                 naming_port = i;
                 // indicating that we have (for now) selected a file parameter
                 // which will be overruled by any FileListParameter
-                is_fileParameter = true;
+                isFileParameter = true;
                 seen_prefix = port.isPrefix();
             }
         }
