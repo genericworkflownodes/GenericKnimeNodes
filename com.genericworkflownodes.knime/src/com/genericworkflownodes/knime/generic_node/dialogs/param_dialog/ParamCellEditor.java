@@ -134,9 +134,12 @@ public class ParamCellEditor extends AbstractCellEditor implements
                 if ((new ParameterVerifier(param)).verify(field)) {
                     param.fillFromString(field.getText());
                 } else {
-                    JOptionPane.showMessageDialog(null, String.format(
-                            "Value restrictions not met: %s",
-                            param.getMnemonic()));
+                    JOptionPane
+                            .showMessageDialog(
+                                    null,
+                                    String.format(
+                                            "Invalid parameter value. Please provide a valid value for: %s",
+                                            param.getMnemonic()));
                 }
             } catch (InvalidParameterValueException e) {
                 LOGGER.error(e.getMessage(), e);
