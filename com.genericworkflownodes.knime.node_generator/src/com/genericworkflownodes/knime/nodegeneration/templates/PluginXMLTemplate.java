@@ -87,7 +87,7 @@ public class PluginXMLTemplate {
      * 
      * @param path
      */
-    public void registerPath(String path) {
+    private void registerPath(String path) {
         List<String> prefixes = Utils.getPathPrefixes(path);
         for (String prefix : prefixes) {
             registerPathPrefix(prefix);
