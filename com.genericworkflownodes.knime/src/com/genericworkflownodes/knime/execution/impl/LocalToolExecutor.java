@@ -18,11 +18,9 @@
  */
 package com.genericworkflownodes.knime.execution.impl;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,15 +59,12 @@ public class LocalToolExecutor implements IToolExecutor {
         /**
          * The stream that is gobbled.
          */
-        InputStream m_is;
+        volatile InputStream m_is;
 
         /**
          * The string where the extracted messages are stored.
          */
         StringBuffer target;
-
-        private static final String LINE_SEPARATOR = System
-                .getProperty("line.separator");
 
         StreamGobbler(InputStream is) {
             m_is = is;
@@ -79,11 +74,9 @@ public class LocalToolExecutor implements IToolExecutor {
         @Override
         public void run() {
             try {
-                InputStreamReader isr = new InputStreamReader(m_is);
-                BufferedReader br = new BufferedReader(isr);
-                String line = null;
-                while ((line = br.readLine()) != null) {
-                    target.append(line + LINE_SEPARATOR);
+                int nextChar;
+                while ((nextChar = m_is.read()) != -1) {
+                    target.append((char) nextChar);
                 }
             } catch (IOException ioe) {
                 LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);

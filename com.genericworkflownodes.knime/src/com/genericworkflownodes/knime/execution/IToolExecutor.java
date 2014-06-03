@@ -82,7 +82,7 @@ public interface IToolExecutor {
      * 
      * @param directory
      *            The new working directory.
-     * @throws Exception
+     * @throws IOException
      *             If the path does not exist or points to a file (and not a
      *             directory).
      */

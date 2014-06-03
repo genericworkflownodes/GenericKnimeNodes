@@ -37,22 +37,30 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 public class ParameterVerifier extends InputVerifier {
 
     /**
-     * The parameter that needs to be verified.
+     * The m_parameter that needs to be verified.
      */
-    private final Parameter<?> parameter;
+    private final Parameter<?> m_parameter;
 
     public ParameterVerifier(Parameter<?> parameter) {
-        this.parameter = parameter;
+        m_parameter = parameter;
     }
 
     private boolean verifyDouble(String toVerify, Double lb, Double ub) {
-        Double d = new Double(toVerify);
-        return d <= ub && d >= lb;
+        try {
+            Double d = Double.valueOf(toVerify);
+            return d != null && d <= ub && d >= lb;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
     }
 
     private boolean verifyInteger(String toVerify, Integer lb, Integer ub) {
-        Integer i = new Integer(toVerify);
-        return i <= ub && i >= lb;
+        try {
+            Integer i = Integer.valueOf(toVerify);
+            return i != null && i <= ub && i >= lb;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
     }
 
     /*
@@ -66,20 +74,20 @@ public class ParameterVerifier extends InputVerifier {
 
             String inputValue = ((JTextField) input).getText();
 
-            if (parameter instanceof DoubleParameter) {
-                DoubleParameter dp = (DoubleParameter) parameter;
+            if (m_parameter instanceof DoubleParameter) {
+                DoubleParameter dp = (DoubleParameter) m_parameter;
                 return verifyDouble(inputValue, dp.getLowerBound(),
                         dp.getUpperBound());
-            } else if (parameter instanceof DoubleListParameter) {
-                DoubleListParameter dlp = (DoubleListParameter) parameter;
+            } else if (m_parameter instanceof DoubleListParameter) {
+                DoubleListParameter dlp = (DoubleListParameter) m_parameter;
                 return verifyDouble(inputValue, dlp.getLowerBound(),
                         dlp.getUpperBound());
-            } else if (parameter instanceof IntegerParameter) {
-                IntegerParameter ip = (IntegerParameter) parameter;
+            } else if (m_parameter instanceof IntegerParameter) {
+                IntegerParameter ip = (IntegerParameter) m_parameter;
                 return verifyInteger(inputValue, ip.getLowerBound(),
                         ip.getUpperBound());
-            } else if (parameter instanceof IntegerListParameter) {
-                IntegerListParameter ilp = (IntegerListParameter) parameter;
+            } else if (m_parameter instanceof IntegerListParameter) {
+                IntegerListParameter ilp = (IntegerListParameter) m_parameter;
                 return verifyInteger(inputValue, ilp.getLowerBound(),
                         ilp.getUpperBound());
             } else {

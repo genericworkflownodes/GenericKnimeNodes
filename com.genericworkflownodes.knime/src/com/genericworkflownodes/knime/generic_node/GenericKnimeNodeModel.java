@@ -55,8 +55,11 @@ import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.AsynchronousToolExecutor;
+import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutorFactory;
+import com.genericworkflownodes.knime.execution.UnknownCommandGeneratorException;
+import com.genericworkflownodes.knime.execution.UnknownToolExecutorException;
 import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
@@ -196,15 +199,19 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
     /**
      * Executes the tool underlying this node.
      * 
-     * @param exec
+     * @param executor
+     *            The fully configured {@link IToolExecutor}.
+     * 
+     * @param execContext
      *            The {@link ExecutionContext} of the node.
+     * 
      * @throws Exception
      */
-    private void executeTool(final ExecutionContext exec)
-            throws ExecutionFailedException {
+    private void executeTool(IToolExecutor executor,
+            final ExecutionContext execContext) throws ExecutionFailedException {
 
         final AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
-                m_executor);
+                executor);
 
         asyncExecutor.invoke();
 
@@ -214,7 +221,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         // will invoke the kill method
         // of the asyncExecutor
         final CancelMonitorThread monitorThread = new CancelMonitorThread(
-                asyncExecutor, exec);
+                asyncExecutor, execContext);
         monitorThread.start();
 
         // wait until the execution completes
@@ -232,15 +239,14 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             throw new ExecutionFailedException(m_nodeConfig.getName(), iex);
         }
 
-        LOGGER.debug("STDOUT:  " + m_executor.getToolOutput());
-        LOGGER.debug("STDERR:  " + m_executor.getToolErrorOutput());
+        LOGGER.debug("STDOUT:  " + executor.getToolOutput());
+        LOGGER.debug("STDERR:  " + executor.getToolErrorOutput());
         LOGGER.debug("RETCODE: " + retcode);
 
         if (retcode != 0) {
-            LOGGER.error("Failing process stdout: "
-                    + m_executor.getToolOutput());
+            LOGGER.error("Failing process stdout: " + executor.getToolOutput());
             LOGGER.error("Failing process stderr: "
-                    + m_executor.getToolErrorOutput());
+                    + executor.getToolErrorOutput());
             throw new ExecutionFailedException(m_nodeConfig.getName());
         }
 
@@ -475,30 +481,24 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
     }
 
     @Override
-    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-            throws Exception {
+    protected PortObject[] execute(PortObject[] inObjects,
+            ExecutionContext execContext) throws Exception {
         // create job directory
         File jobdir = Helper.getTempDir(m_nodeConfig.getName(),
                 !GenericNodesPlugin.isDebug());
-        LOGGER.debug("Jobdir=" + jobdir);
 
         // transfer the incoming files into the nodeConfiguration
         transferIncomingPorts2Config(inObjects);
 
         // prepare input data and parameter values
         List<PortObject> outPorts = transferOutgoingPorts2Config(jobdir,
-                inObjects, exec);
+                inObjects, execContext);
 
         // prepare the executor
-        m_executor = ToolExecutorFactory.createToolExecutor(m_pluginConfig
-                .getPluginProperties().getProperty("executor"), m_pluginConfig
-                .getPluginProperties().getProperty("commandGenerator"));
-
-        m_executor.setWorkingDirectory(jobdir);
-        m_executor.prepareExecution(m_nodeConfig, m_pluginConfig);
+        m_executor = prepareExecutor(jobdir);
 
         // launch executable
-        executeTool(exec);
+        executeTool(m_executor, execContext);
 
         // process result files
         // PortObject[] outports = processOutput(outputFiles, exec);
@@ -517,6 +517,34 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         }
 
         return outports;
+    }
+
+    /**
+     * Instantiates a new {@link IToolExecutor} for this tool according to the
+     * plug-in settings.
+     * 
+     * @param jobdir
+     *            The directory assigned to the node by the
+     *            {@link ExecutionContext}.
+     * @throws UnknownToolExecutorException
+     *             Thrown if the requested {@link IToolExecutor} is unknown.
+     * @throws UnknownCommandGeneratorException
+     *             Thrown if the requested {@link ICommandGenerator} is unknown.
+     * @throws IOException
+     * @throws Exception
+     */
+    private IToolExecutor prepareExecutor(File jobdir)
+            throws UnknownToolExecutorException,
+            UnknownCommandGeneratorException, IOException, Exception {
+        IToolExecutor executor = ToolExecutorFactory.createToolExecutor(
+                m_pluginConfig.getPluginProperties().getProperty("executor"),
+                m_pluginConfig.getPluginProperties().getProperty(
+                        "commandGenerator"));
+
+        executor.setWorkingDirectory(jobdir);
+        executor.prepareExecution(m_nodeConfig, m_pluginConfig);
+
+        return executor;
     }
 
     /**
@@ -640,6 +668,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         // elements).
         // 3. we prefer files over prefixes since we assume that prefixes are
         // often indices or reference data
+        // 4. ignore optional parameters
 
         List<String> basenames = new ArrayList<String>();
 
@@ -647,16 +676,21 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
         int naming_port = 0;
         int max_size = -1;
         boolean seen_prefix = false;
-        boolean is_fileParameter = false;
+        boolean isFileParameter = false;
         for (int i = 0; i < m_nodeConfig.getInputPorts().size(); ++i) {
             Port port = m_nodeConfig.getInputPorts().get(i);
             String name = port.getName();
             Parameter<?> p = m_nodeConfig.getParameter(name);
 
+            // we don't assume that optional ports are naming relevant
+            if (p.isOptional()) {
+                continue;
+            }
+
             if (p instanceof FileListParameter) {
                 FileListParameter flp = (FileListParameter) p;
                 if (max_size == -1
-                        || (is_fileParameter && (max_size <= flp.getValue()
+                        || (isFileParameter && (max_size <= flp.getValue()
                                 .size()))) {
                     max_size = flp.getValue().size();
                     naming_port = i;
@@ -671,7 +705,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                 naming_port = i;
                 // indicating that we have (for now) selected a file parameter
                 // which will be overruled by any FileListParameter
-                is_fileParameter = true;
+                isFileParameter = true;
                 seen_prefix = port.isPrefix();
             }
         }
