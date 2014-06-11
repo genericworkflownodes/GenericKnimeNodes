@@ -65,6 +65,9 @@ import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFa
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeModelTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeViewTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureBuildPropertiesTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureProjectTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.util.UnZipFailureException;
 import com.genericworkflownodes.knime.nodegeneration.util.Utils;
 import com.genericworkflownodes.knime.nodegeneration.writer.PropertiesWriter;
@@ -239,6 +242,9 @@ public class NodeGenerator {
             // create feature
             generateFeature();
 
+            // create testing feature
+            generateTestingFeature();
+
             LOGGER.info("KNIME plugin sources successfully created in:\n\t"
                     + pluginBuildDir);
         } catch (Exception e) {
@@ -313,6 +319,25 @@ public class NodeGenerator {
         }
 
         return createdFragments;
+    }
+
+    private void generateTestingFeature()
+            throws PathnameIsNoDirectoryException, IOException {
+        // create feature directory
+        Directory featureDir = new Directory(new File(baseBinaryDirectory,
+                generatedPluginMeta.getPackageRoot() + ".testing.feature"));
+        featureDir.mkdir();
+
+        // find all packages in the current directory
+        new TestingFeatureBuildPropertiesTemplate().write(new File(featureDir,
+                "build.properties"));
+
+        new TestingFeatureXMLTemplate(generatedPluginMeta, featureMeta,
+                fragmentMetas, contributingPluginMetas).write(new File(
+                featureDir, "feature.xml"));
+
+        new TestingFeatureProjectTemplate(generatedPluginMeta.getPackageRoot())
+                .write(new File(featureDir, ".project"));
     }
 
     private void generateFeature() throws PathnameIsNoDirectoryException,

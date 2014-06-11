@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="@@packageName@@.feature"
-      label="@@pluginName@@"
+      id="@@packageName@@.testing.feature"
+      label="@@pluginName@@ - Testing"
       version="@@pluginVersion@@">
 
     <description>
@@ -16,7 +16,8 @@
     @@license@@
     </license>
 
-@@PLUGIN@@
-@@FRAGMENTS@@
-@@CONTRIBUTING_PLUGINS@@
+    <requires>
+        <import feature="org.knime.features.testingapplication" version="2.9.0" match="greaterOrEqual"/>
+    </requires>
+
 </feature>

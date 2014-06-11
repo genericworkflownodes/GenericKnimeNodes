@@ -1,4 +1,22 @@
-package com.genericworkflownodes.knime.nodegeneration.templates.feature;
+/**
+ * Copyright (c) 2014, Stephan Aiche.
+ *
+ * This file is part of GenericKnimeNodes.
+ * 
+ * GenericKnimeNodes is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.genericworkflownodes.knime.nodegeneration.templates.testingfeature;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,11 +33,11 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginM
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
 /**
- * Template file for the feature.xml file of the feature.
+ * Template file for the feature.xml file of the testing feature.
  * 
  * @author aiche
  */
-public class FeatureXMLTemplate extends Template {
+public class TestingFeatureXMLTemplate extends Template {
 
     private final static Pattern VERSION_PATTERN = Pattern
             .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
@@ -52,12 +70,13 @@ public class FeatureXMLTemplate extends Template {
         return highestQualifier;
     }
 
-    public FeatureXMLTemplate(GeneratedPluginMeta pluginMeta,
+    public TestingFeatureXMLTemplate(GeneratedPluginMeta pluginMeta,
             FeatureMeta featureMeta, List<FragmentMeta> fragmentMetas,
             List<ContributingPluginMeta> contributingPluginMetas)
             throws IOException {
-        super(NodeGenerator.class
-                .getResourceAsStream("templates/feature/feature.xml.template"));
+        super(
+                NodeGenerator.class
+                        .getResourceAsStream("templates/testingfeature/testingfeature.xml.template"));
 
         replace("@@pluginName@@", pluginMeta.getName());
 
@@ -81,10 +100,6 @@ public class FeatureXMLTemplate extends Template {
                 StringEscapeUtils.escapeXml(featureMeta.getCopyright()));
         replace("@@license@@",
                 StringEscapeUtils.escapeXml(featureMeta.getLicense()));
-
-        registerGeneratedPlugin(pluginMeta);
-        registerFragments(fragmentMetas);
-        registerContributingPlugins(contributingPluginMetas);
     }
 
     private Matcher matchVersion(final String version) {
@@ -96,44 +111,5 @@ public class FeatureXMLTemplate extends Template {
         assert m.groupCount() == 4 : "Something went wrong when matching the version.";
 
         return m;
-    }
-
-    private void registerGeneratedPlugin(GeneratedPluginMeta pluginMeta) {
-        String pluginList = String.format("\t<plugin\n" + "\t\tid=\"%s\"\n"
-                + "\t\tdownload-size=\"0\"\n" + "\t\tinstall-size=\"0\"\n"
-                + "\t\tversion=\"0.0.0\"\n" + "\t\tunpack=\"false\"/>\n\n",
-                pluginMeta.getId());
-
-        replace("@@PLUGIN@@", pluginList);
-    }
-
-    private void registerFragments(List<FragmentMeta> fragmentMetas) {
-        String fragmentList = "";
-        for (FragmentMeta fragmentMeta : fragmentMetas) {
-            fragmentList += String.format(
-                    "\t<plugin id=\"%s\"\n" + "\t\tos=\"%s\"\n"
-                            + "\t\tarch=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
-                            + "\t\tinstall-size=\"0\"\n"
-                            + "\t\tversion=\"0.0.0\"\n"
-                            + "\t\tfragment=\"true\"/>\n\n",
-                    fragmentMeta.getId(), fragmentMeta.getOs().toOsgiOs(),
-                    fragmentMeta.getArch().toOsgiArch());
-        }
-
-        replace("@@FRAGMENTS@@", fragmentList);
-    }
-
-    private void registerContributingPlugins(
-            List<ContributingPluginMeta> contributingPluginMetas) {
-        String contributingPluginList = "";
-        for (ContributingPluginMeta contributingPluginMeta : contributingPluginMetas) {
-            contributingPluginList += String.format("\t<plugin\n"
-                    + "\t\tid=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
-                    + "\t\tinstall-size=\"0\"\n" + "\t\tversion=\"0.0.0\"\n"
-                    + "\t\tunpack=\"false\"/>\n\n",
-                    contributingPluginMeta.getId());
-        }
-
-        replace("@@CONTRIBUTING_PLUGINS@@", contributingPluginList);
     }
 }
