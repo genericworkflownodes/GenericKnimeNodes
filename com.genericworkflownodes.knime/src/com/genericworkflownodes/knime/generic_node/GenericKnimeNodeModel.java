@@ -26,7 +26,6 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -249,25 +248,15 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
 
             // process failed, so we will send the stdout/stderr messages into
             // the dialogs
-            LinkedList<String> stdOut = new LinkedList<String>(
-                    Arrays.asList(executor.getToolOutput().split("\\n")));
-            setFailedExternalOutput(stdOut);
-
-            LinkedList<String> stdErr = new LinkedList<String>(
-                    Arrays.asList(executor.getToolErrorOutput().split("\\n")));
-            setFailedExternalErrorOutput(stdErr);
+            setFailedExternalOutput(executor.getToolOutput());
+            setFailedExternalErrorOutput(executor.getToolErrorOutput());
 
             throw new ExecutionFailedException(m_nodeConfig.getName());
         }
 
         // finally fill the stdout/stderr messages into the dialogs
-        LinkedList<String> stdOut = new LinkedList<String>(
-                Arrays.asList(executor.getToolOutput().split("\\n")));
-        setExternalOutput(stdOut);
-
-        LinkedList<String> stdErr = new LinkedList<String>(
-                Arrays.asList(executor.getToolErrorOutput().split("\\n")));
-        setExternalErrorOutput(stdErr);
+        setExternalOutput(executor.getToolOutput());
+        setExternalErrorOutput(executor.getToolErrorOutput());
 
     }
 

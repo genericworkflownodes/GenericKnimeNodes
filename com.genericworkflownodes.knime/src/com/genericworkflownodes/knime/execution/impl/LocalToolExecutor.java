@@ -18,10 +18,13 @@
  */
 package com.genericworkflownodes.knime.execution.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -64,21 +67,22 @@ public class LocalToolExecutor implements IToolExecutor {
         /**
          * The string where the extracted messages are stored.
          */
-        StringBuffer target;
+        LinkedList<String> target;
 
         StreamGobbler(InputStream is) {
             m_is = is;
-            target = new StringBuffer();
+            target = new LinkedList<String>();
         }
 
         @Override
         public void run() {
             try {
-                int nextChar;
-                while ((nextChar = m_is.read()) != -1) {
-                    synchronized (target) {
-                        target.append((char) nextChar);
-                    }
+                InputStreamReader isr = new InputStreamReader(m_is);
+                BufferedReader br = new BufferedReader(isr);
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    target.add(line);
+
                 }
             } catch (IOException ioe) {
                 LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);
@@ -90,8 +94,8 @@ public class LocalToolExecutor implements IToolExecutor {
          * 
          * @return
          */
-        public String getContent() {
-            return target.toString();
+        public LinkedList<String> getContent() {
+            return target;
         }
     }
 
@@ -119,12 +123,12 @@ public class LocalToolExecutor implements IToolExecutor {
     /**
      * The std-out of the executed process.
      */
-    private String m_stdOut;
+    private LinkedList<String> m_stdOut;
 
     /**
      * The std-err of the executed process.
      */
-    private String m_stdErr;
+    private LinkedList<String> m_stdErr;
 
     private Process m_process;
 
@@ -143,8 +147,8 @@ public class LocalToolExecutor implements IToolExecutor {
     public LocalToolExecutor() {
         m_environmentVariables = new TreeMap<String, String>();
         m_returnCode = -1;
-        m_stdErr = "";
-        m_stdOut = "";
+        m_stdErr = new LinkedList<String>();
+        m_stdOut = new LinkedList<String>();
     }
 
     /**
@@ -202,7 +206,7 @@ public class LocalToolExecutor implements IToolExecutor {
      * @return The ouput of the tool.
      */
     @Override
-    public String getToolOutput() {
+    public LinkedList<String> getToolOutput() {
         return m_stdOut;
     }
 
@@ -360,7 +364,7 @@ public class LocalToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public String getToolErrorOutput() {
+    public LinkedList<String> getToolErrorOutput() {
         return m_stdErr;
     }
 }
