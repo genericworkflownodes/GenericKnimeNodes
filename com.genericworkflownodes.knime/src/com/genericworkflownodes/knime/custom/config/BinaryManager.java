@@ -76,12 +76,20 @@ public final class BinaryManager {
 
     public File findBinary(final String executableName)
             throws NoBinaryAvailableException {
-        // first try to find the shipped binary
+        // try to find the shipped binary
         File shippedBinary = findShippedBinary(executableName);
         if (shippedBinary != null) {
             return shippedBinary;
         } else {
-            throw new NoBinaryAvailableException(executableName);
+            // try to find the shipped binary again, but this time with the
+            // addition of ".exe" for windows platform
+            shippedBinary = findShippedBinary(String.format("%s.exe",
+                    executableName));
+            if (shippedBinary != null) {
+                return shippedBinary;
+            } else {
+                throw new NoBinaryAvailableException(executableName);
+            }
         }
     }
 
@@ -163,7 +171,7 @@ public final class BinaryManager {
             return null;
         } else {
             try {
-                // we found the binaries.ini
+                // we found the requested file
                 URL url = e.nextElement();
                 return new File(FileLocator.toFileURL(url).getFile());
             } catch (IOException ex) {
