@@ -56,36 +56,48 @@ public class LocalToolExecutor implements IToolExecutor {
      * Inspired by
      * http://www.javaworld.com/jw-12-2000/jw-1229-traps.html?page=4.
      * 
+     * and
+     * 
+     * org.knime.base.node.util.exttool.CommandExecution#StdErrCatchRunnable
+     * 
      * @author aiche
      */
     private static class StreamGobbler extends Thread {
         /**
          * The stream that is gobbled.
          */
-        volatile InputStream m_is;
+        final InputStream m_is;
 
         /**
          * The string where the extracted messages are stored.
          */
-        LinkedList<String> target;
+        final LinkedList<String> m_buffer;
 
         StreamGobbler(InputStream is) {
             m_is = is;
-            target = new LinkedList<String>();
+            m_buffer = new LinkedList<String>();
         }
 
         @Override
         public void run() {
+            InputStreamReader isr = new InputStreamReader(m_is);
+            BufferedReader br = new BufferedReader(isr);
+
             try {
-                InputStreamReader isr = new InputStreamReader(m_is);
-                BufferedReader br = new BufferedReader(isr);
                 String line = null;
                 while ((line = br.readLine()) != null) {
-                    target.add(line);
-
+                    synchronized (m_buffer) {
+                        m_buffer.add(line);
+                    }
                 }
             } catch (IOException ioe) {
                 LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException ioe) {
+                    // then don't close it..
+                }
             }
         }
 
@@ -95,7 +107,7 @@ public class LocalToolExecutor implements IToolExecutor {
          * @return
          */
         public LinkedList<String> getContent() {
-            return target;
+            return m_buffer;
         }
     }
 
