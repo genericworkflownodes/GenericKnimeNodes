@@ -26,21 +26,20 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.knime.base.filehandling.mime.MIMEMap;
+import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
-import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
@@ -82,7 +81,7 @@ import com.genericworkflownodes.util.Helper;
  * 
  * @author
  */
-public abstract class GenericKnimeNodeModel extends NodeModel {
+public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     static final String GENERIC_KNIME_NODES_OUTTYPE_PREFIX = "GENERIC_KNIME_NODES_outtype#";
 
     private static final NodeLogger LOGGER = NodeLogger
@@ -247,8 +246,28 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
             LOGGER.error("Failing process stdout: " + executor.getToolOutput());
             LOGGER.error("Failing process stderr: "
                     + executor.getToolErrorOutput());
+
+            // process failed, so we will send the stdout/stderr messages into
+            // the dialogs
+            LinkedList<String> stdOut = new LinkedList<String>(
+                    Arrays.asList(executor.getToolOutput().split("\\n")));
+            setFailedExternalOutput(stdOut);
+
+            LinkedList<String> stdErr = new LinkedList<String>(
+                    Arrays.asList(executor.getToolErrorOutput().split("\\n")));
+            setFailedExternalErrorOutput(stdErr);
+
             throw new ExecutionFailedException(m_nodeConfig.getName());
         }
+
+        // finally fill the stdout/stderr messages into the dialogs
+        LinkedList<String> stdOut = new LinkedList<String>(
+                Arrays.asList(executor.getToolOutput().split("\\n")));
+        setExternalOutput(stdOut);
+
+        LinkedList<String> stdErr = new LinkedList<String>(
+                Arrays.asList(executor.getToolErrorOutput().split("\\n")));
+        setExternalErrorOutput(stdErr);
 
     }
 
@@ -257,13 +276,7 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // TODO Reset all parameters to its defaults .. how
-        // Models build during execute are cleared here.
-        // Also data handled in load/saveInternals will be erased here.
-        /*
-         * for(Parameter<?> param: config.getParameters()) {
-         * param.setValue(null); }
-         */
+        super.reset();
     }
 
     /**
@@ -365,24 +378,6 @@ public abstract class GenericKnimeNodeModel extends NodeModel {
                         "invalid value for parameter " + key);
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
     }
 
     /**

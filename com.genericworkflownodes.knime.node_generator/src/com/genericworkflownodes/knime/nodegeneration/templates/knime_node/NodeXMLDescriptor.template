@@ -17,6 +17,7 @@ __OPTIONS__
     <ports>
 __INPORTS____OUTPORTS__ </ports>
     <views>
-        <view index="0" name="Logview">Shows the stdout/stderr output of the tool.</view>
+        <view index="0" name="Tool Std Output">The text sent to standard out during the execution of __NODENAME__.</view>
+        <view index="1" name="Tool Error Output">The text sent to standard error during the execution of __NODENAME__. (If it appears in gray, it's the output of a previously failing run which is preserved for your trouble shooting.)</view>
     </views>    
 </knimeNode>

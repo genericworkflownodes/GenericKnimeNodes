@@ -76,7 +76,9 @@ public class LocalToolExecutor implements IToolExecutor {
             try {
                 int nextChar;
                 while ((nextChar = m_is.read()) != -1) {
-                    target.append((char) nextChar);
+                    synchronized (target) {
+                        target.append((char) nextChar);
+                    }
                 }
             } catch (IOException ioe) {
                 LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);
