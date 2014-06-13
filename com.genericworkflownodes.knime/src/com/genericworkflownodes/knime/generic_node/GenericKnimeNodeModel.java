@@ -21,8 +21,6 @@ package com.genericworkflownodes.knime.generic_node;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -308,15 +306,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             try {
                 m_nodeConfig.getParameter(key).fillFromString(value);
             } catch (InvalidParameterValueException e) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                LOGGER.warn(sw.toString());
-                try {
-                    sw.close();
-                    pw.close();
-                } catch (IOException e1) {
-                }
+                LOGGER.warn(
+                        "Caught InvalidParameterValueException in loadValidatedSettingsFrom()",
+                        e);
             }
         }
 
