@@ -81,20 +81,8 @@ public final class BinaryManager {
         if (shippedBinary != null) {
             return shippedBinary;
         } else {
-            // try to find the shipped binary again, but this time with the
-            // addition of ".exe" for windows platform
-            shippedBinary = findShippedBinary(String.format("%s.exe",
-                    executableName));
-            if (shippedBinary != null) {
-                return shippedBinary;
-            } else {
-                throw new NoBinaryAvailableException(executableName);
-            }
+            throw new NoBinaryAvailableException(executableName);
         }
-    }
-
-    public boolean isShippedBinary(final String executableName) {
-        return findShippedBinary(executableName) != null;
     }
 
     /**
@@ -152,7 +140,20 @@ public final class BinaryManager {
     }
 
     private File findShippedBinary(final String executableName) {
-        return findFileInBundle(executableName);
+        File shippedBinary = findFileInBundle(executableName);
+        if (shippedBinary != null) {
+            return shippedBinary;
+        } else {
+            // try to find the shipped binary again, but this time with the
+            // addition of ".exe" for windows platform
+            shippedBinary = findFileInBundle(String.format("%s.exe",
+                    executableName));
+            if (shippedBinary != null) {
+                return shippedBinary;
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
