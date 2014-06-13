@@ -18,10 +18,13 @@
  */
 package com.genericworkflownodes.knime.execution.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,33 +56,48 @@ public class LocalToolExecutor implements IToolExecutor {
      * Inspired by
      * http://www.javaworld.com/jw-12-2000/jw-1229-traps.html?page=4.
      * 
+     * and
+     * 
+     * org.knime.base.node.util.exttool.CommandExecution#StdErrCatchRunnable
+     * 
      * @author aiche
      */
     private static class StreamGobbler extends Thread {
         /**
          * The stream that is gobbled.
          */
-        volatile InputStream m_is;
+        final InputStream m_is;
 
         /**
          * The string where the extracted messages are stored.
          */
-        StringBuffer target;
+        final LinkedList<String> m_buffer;
 
         StreamGobbler(InputStream is) {
             m_is = is;
-            target = new StringBuffer();
+            m_buffer = new LinkedList<String>();
         }
 
         @Override
         public void run() {
+            InputStreamReader isr = new InputStreamReader(m_is);
+            BufferedReader br = new BufferedReader(isr);
+
             try {
-                int nextChar;
-                while ((nextChar = m_is.read()) != -1) {
-                    target.append((char) nextChar);
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    synchronized (m_buffer) {
+                        m_buffer.add(line);
+                    }
                 }
             } catch (IOException ioe) {
                 LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException ioe) {
+                    // then don't close it..
+                }
             }
         }
 
@@ -88,8 +106,8 @@ public class LocalToolExecutor implements IToolExecutor {
          * 
          * @return
          */
-        public String getContent() {
-            return target.toString();
+        public LinkedList<String> getContent() {
+            return m_buffer;
         }
     }
 
@@ -117,12 +135,12 @@ public class LocalToolExecutor implements IToolExecutor {
     /**
      * The std-out of the executed process.
      */
-    private String m_stdOut;
+    private LinkedList<String> m_stdOut;
 
     /**
      * The std-err of the executed process.
      */
-    private String m_stdErr;
+    private LinkedList<String> m_stdErr;
 
     private Process m_process;
 
@@ -141,8 +159,8 @@ public class LocalToolExecutor implements IToolExecutor {
     public LocalToolExecutor() {
         m_environmentVariables = new TreeMap<String, String>();
         m_returnCode = -1;
-        m_stdErr = "";
-        m_stdOut = "";
+        m_stdErr = new LinkedList<String>();
+        m_stdOut = new LinkedList<String>();
     }
 
     /**
@@ -200,7 +218,7 @@ public class LocalToolExecutor implements IToolExecutor {
      * @return The ouput of the tool.
      */
     @Override
-    public String getToolOutput() {
+    public LinkedList<String> getToolOutput() {
         return m_stdOut;
     }
 
@@ -358,7 +376,7 @@ public class LocalToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public String getToolErrorOutput() {
+    public LinkedList<String> getToolErrorOutput() {
         return m_stdErr;
     }
 }
