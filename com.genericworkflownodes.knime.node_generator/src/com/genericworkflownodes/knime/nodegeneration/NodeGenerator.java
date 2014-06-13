@@ -64,7 +64,6 @@ import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeDi
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeModelTemplate;
-import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeViewTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureXMLTemplate;
@@ -457,8 +456,6 @@ public class NodeGenerator {
          */
         new NodeDialogTemplate(generatedPluginMeta.getPackageRoot(), nodeName)
                 .write(new File(nodeSourceDir, nodeName + "NodeDialog.java"));
-        new NodeViewTemplate(generatedPluginMeta.getPackageRoot(), nodeName)
-                .write(new File(nodeSourceDir, nodeName + "NodeView.java"));
         new NodeModelTemplate(generatedPluginMeta.getPackageRoot(), nodeName,
                 nodeConfiguration).write(new File(nodeSourceDir, nodeName
                 + "NodeModel.java"));
