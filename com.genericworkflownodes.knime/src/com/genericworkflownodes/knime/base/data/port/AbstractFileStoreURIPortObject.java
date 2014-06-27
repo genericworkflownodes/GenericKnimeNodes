@@ -2,7 +2,7 @@
  * Copyright (c) 2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -45,7 +45,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * PortObject behaving like a URIPortObject but with managed file storage.
- * 
+ *
  * @author aiche
  */
 public abstract class AbstractFileStoreURIPortObject extends
@@ -74,7 +74,7 @@ public abstract class AbstractFileStoreURIPortObject extends
 
     /**
      * Creates {@link FileStoreURIPortObject} with the given {@link FileStore}.
-     * 
+     *
      * @param fs
      *            The {@link FileStore} associated to this port object.
      */
@@ -96,7 +96,7 @@ public abstract class AbstractFileStoreURIPortObject extends
     /**
      * Returns the folder where all content related to this port object should
      * be stored.
-     * 
+     *
      * @return A folder name.
      */
     protected File getFileStoreRootDirectory() {
@@ -115,7 +115,7 @@ public abstract class AbstractFileStoreURIPortObject extends
 
     /**
      * Adds the given file to the {@link FileStoreURIPortObject}.
-     * 
+     *
      * @param filename
      *            The relative path that should be stored inside the file-store,
      *            e.g., outfile.txt or subfolder/outfile.txt.
@@ -155,7 +155,7 @@ public abstract class AbstractFileStoreURIPortObject extends
 
     /**
      * Save the currently managed files as model content.
-     * 
+     *
      * @param model
      *            The {@link ModelContentWO} object to fill with the list of
      *            files.
@@ -175,7 +175,7 @@ public abstract class AbstractFileStoreURIPortObject extends
     /**
      * Reconstruct the {@link AbstractFileStoreURIPortObject} from the given
      * {@link ModelContentRO}.
-     * 
+     *
      * @param model
      *            The {@link ModelContentRO} from where the object should be
      *            reconstructed.
@@ -241,7 +241,7 @@ public abstract class AbstractFileStoreURIPortObject extends
 
     /**
      * Gives access to the underlying file store.
-     * 
+     *
      * @return The underlying file store.
      */
     FileStore getInternalFileStore() {
@@ -250,16 +250,7 @@ public abstract class AbstractFileStoreURIPortObject extends
 
     /**
      * Gives access to the list of relative paths inside the file store.
-     * 
-     * @return The the list of relative paths.
-     */
-    List<String> getRelativePaths() {
-        return m_relPaths;
-    }
-
-    /**
-     * Gives access to the list of relative paths inside the file store.
-     * 
+     *
      * @return The the list of relative paths.
      */
     List<String> getRelativePaths() {
