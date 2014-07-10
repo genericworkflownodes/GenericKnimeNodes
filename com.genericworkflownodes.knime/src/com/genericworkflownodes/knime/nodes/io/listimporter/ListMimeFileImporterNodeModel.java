@@ -20,9 +20,12 @@ package com.genericworkflownodes.knime.nodes.io.listimporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -44,7 +47,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * This is the model implementation of ListMimeFileImporter.
  * 
- * @author roettig
+ * @author roettig, aiche
  */
 public class ListMimeFileImporterNodeModel extends NodeModel {
 
@@ -62,6 +65,9 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      */
     private SettingsModelStringArray m_filenames = new SettingsModelStringArray(
             ListMimeFileImporterNodeModel.CFG_FILENAME, new String[] {});
+    /**
+     * SettingsModel for potential file extension override.
+     */
     private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
             CFG_FILE_EXTENSION, "", false);
 
@@ -69,8 +75,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected ListMimeFileImporterNodeModel() {
-        super(new PortType[] {}, new PortType[] { new PortType(
-                URIPortObject.class) });
+        super(new PortType[] {}, new PortType[] { IURIPortObject.TYPE });
     }
 
     /**
@@ -78,9 +83,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // TODO Code executed on reset.
-        // Models build during execute are cleared here.
-        // Also data handled in load/saveInternals will be erased here.
     }
 
     /**
@@ -202,19 +204,51 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 
         List<URIContent> uris = new ArrayList<URIContent>();
         for (String filename : filenames) {
-            File in = new File(filename);
+            File in = new File(convertToURL(filename).toURI());
 
             if (!in.canRead()) {
-                throw new Exception("cannot read from input file: "
+                throw new Exception("Cannot read from input file: "
                         + in.getAbsolutePath());
             }
 
-            uris.add(new URIContent(new File(filename).toURI(),
+            uris.add(new URIContent(in.toURI(),
                     (m_file_extension.isActive() ? m_file_extension
                             .getStringValue() : MIMETypeHelper
                             .getMIMEtypeExtension(filename))));
         }
 
         return new PortObject[] { new URIPortObject(uris) };
+    }
+
+    /**
+     * Extract a URL from the given String, trying different conversion
+     * approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
+     * 
+     * @param urlS
+     *            The string containing the URL.
+     * @return A URL object.
+     * @throws InvalidSettingsException
+     *             If the given string cannot be converted properly.
+     */
+    private URL convertToURL(String urlS) throws InvalidSettingsException {
+        URL url;
+
+        if (urlS == null) {
+            throw new InvalidSettingsException("URL must not be null");
+        }
+        try {
+            url = new URL(urlS);
+        } catch (MalformedURLException e) {
+            // might be a file, bug fix 3477
+            File file = new File(urlS);
+            try {
+                url = file.toURI().toURL();
+            } catch (Exception fileURLEx) {
+                throw new InvalidSettingsException("Invalid URL: "
+                        + e.getMessage(), e);
+            }
+        }
+
+        return url;
     }
 }

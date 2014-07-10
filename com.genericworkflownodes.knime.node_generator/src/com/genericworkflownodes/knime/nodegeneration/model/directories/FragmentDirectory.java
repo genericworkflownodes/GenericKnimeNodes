@@ -36,7 +36,8 @@ public class FragmentDirectory extends PluginDirectory {
      */
     private static final long serialVersionUID = 4561247274907458731L;
 
-    private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
+    private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory;
+    private File p2InfFile;
 
     /**
      * Create the directory.
@@ -49,17 +50,11 @@ public class FragmentDirectory extends PluginDirectory {
     public FragmentDirectory(Directory directory, FragmentMeta fragmentMeta)
             throws PathnameIsNoDirectoryException {
         super(new File(directory, fragmentMeta.getId()));
-
-        String packageRootPath = fragmentMeta.getHostMeta().getPackageRoot()
-                .replace('.', File.separatorChar);
-
-        File srcDirectory = new File(this, "src");
-        File packageRootDirectory = new File(srcDirectory, packageRootPath);
-        File knimeDirectory = new File(packageRootDirectory, "knime");
-
+        File payloadDirectory = new File(this, "payload");
         binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
-                new File(knimeDirectory, "binres"));
-
+                payloadDirectory);
+        File metaInf = new File(this, "META-INF");
+        p2InfFile = new File(metaInf, "p2.inf");
     }
 
     /**
@@ -70,5 +65,14 @@ public class FragmentDirectory extends PluginDirectory {
      */
     public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
         return binaryResourcesDirectory;
+    }
+
+    /**
+     * Returns the path to the p2.inf file.
+     * 
+     * @return the path to the p2.inf file.
+     */
+    public File getP2Inf() {
+        return p2InfFile;
     }
 }

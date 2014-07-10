@@ -41,6 +41,16 @@ public final class ExternalTool {
      */
     private String m_executableName;
 
+    /**
+     * C'tor.
+     * 
+     * @param pluginName
+     *            Name of the plugin.
+     * @param toolName
+     *            Name of the tool.
+     * @param executableName
+     *            Name of the executable.
+     */
     public ExternalTool(String pluginName, String toolName,
             String executableName) {
         m_pluginName = pluginName;
@@ -89,7 +99,9 @@ public final class ExternalTool {
         if (obj == this) {
             return true;
         }
-        if (obj == null || !(obj instanceof ExternalTool)) {
+        if (obj == null) {
+            return false;
+        } else if (!(obj instanceof ExternalTool)) {
             return false;
         }
         ExternalTool eTool = (ExternalTool) obj;

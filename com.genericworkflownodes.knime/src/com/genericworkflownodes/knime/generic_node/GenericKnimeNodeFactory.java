@@ -20,6 +20,8 @@ package com.genericworkflownodes.knime.generic_node;
 
 import java.io.InputStream;
 
+import org.knime.base.node.util.exttool.ExtToolStderrNodeView;
+import org.knime.base.node.util.exttool.ExtToolStdoutNodeView;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
@@ -62,7 +64,7 @@ public abstract class GenericKnimeNodeFactory extends
      */
     @Override
     public int getNrNodeViews() {
-        return 1;
+        return 2;
     }
 
     /**
@@ -71,7 +73,12 @@ public abstract class GenericKnimeNodeFactory extends
     @Override
     public NodeView<GenericKnimeNodeModel> createNodeView(final int viewIndex,
             final GenericKnimeNodeModel nodeModel) {
-        return new GenericKnimeNodeView(nodeModel);
+        if (viewIndex == 0) {
+            return new ExtToolStdoutNodeView<GenericKnimeNodeModel>(nodeModel);
+        } else if (viewIndex == 1) {
+            return new ExtToolStderrNodeView<GenericKnimeNodeModel>(nodeModel);
+        }
+        return null;
     }
 
     /**

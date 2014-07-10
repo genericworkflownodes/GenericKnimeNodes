@@ -1,5 +1,6 @@
-/*
+/**
  * Copyright (c) 2011, Marc Röttig.
+ * Copyright (c) 2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -16,7 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.genericworkflownodes.knime.generic_node;
 
 import java.awt.Font;
@@ -27,13 +27,19 @@ import javax.swing.JTextArea;
 
 import org.knime.core.node.NodeView;
 
+import com.genericworkflownodes.util.StringUtils;
+
 /**
- * <code>NodeView</code> for the "GenericKnimeNode" Node.
+ * NodeView for the GenericKnimeNode.
  * 
- * 
- * @author
+ * @author roettig, aiche
  */
+@Deprecated
 public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
+
+    private static final int TEXT_AREA_FONT_SIZE = 12;
+    private static final int TEXT_AREA_COLUMNS = 80;
+    private static final int TEXT_AREA_ROWS = 40;
 
     /**
      * Creates a new view.
@@ -49,10 +55,11 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
         String stdout = "", stderr = "";
 
         if (nodeModel.m_executor != null) {
-            stdout = nodeModel.m_executor.getToolOutput() != null ? nodeModel.m_executor
-                    .getToolOutput() : "";
-            stderr = nodeModel.m_executor.getToolErrorOutput() != null ? nodeModel.m_executor
-                    .getToolErrorOutput() : "";
+            stdout = nodeModel.m_executor.getToolOutput() != null ? StringUtils
+                    .join(nodeModel.m_executor.getToolOutput(), "\\n") : "";
+            stderr = nodeModel.m_executor.getToolErrorOutput() != null ? StringUtils
+                    .join(nodeModel.m_executor.getToolErrorOutput(), "\\n")
+                    : "";
         }
 
         tabs.add("stdout", createScrollableOutputArea(stdout));
@@ -61,7 +68,7 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
         // we generally prefer stderr (if available), since it should be more
         // important
         if (nodeModel.m_executor != null
-                && nodeModel.m_executor.getToolErrorOutput().length() > 0) {
+                && nodeModel.m_executor.getToolErrorOutput().size() > 0) {
             tabs.setSelectedIndex(1);
         }
 
@@ -69,14 +76,14 @@ public class GenericKnimeNodeView extends NodeView<GenericKnimeNodeModel> {
     }
 
     private JScrollPane createScrollableOutputArea(final String content) {
-        JTextArea text = new JTextArea(content, 40, 80);
-        text.setFont(new Font("Monospaced", Font.BOLD, 12));
+        JTextArea text = new JTextArea(content, TEXT_AREA_ROWS,
+                TEXT_AREA_COLUMNS);
+        text.setFont(new Font("Monospaced", Font.BOLD, TEXT_AREA_FONT_SIZE));
         text.setEditable(false);
         if (content.length() == 0) {
             text.setEnabled(false);
         }
-        JScrollPane scrollpane = new JScrollPane(text);
-        return scrollpane;
+        return new JScrollPane(text);
     }
 
     /**

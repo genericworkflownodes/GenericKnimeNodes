@@ -42,7 +42,8 @@ public class PluginDirectory extends Directory {
 
         buildProperties = new File(this, "build.properties");
         pluginXml = new File(this, "plugin.xml");
-        manifestMf = new File(this, "META-INF" + File.separator + "MANIFEST.MF");
+        File metaInf = new File(this, "META-INF");
+        manifestMf = new File(metaInf, "MANIFEST.MF");
         projectFile = new File(this, ".project");
     }
 

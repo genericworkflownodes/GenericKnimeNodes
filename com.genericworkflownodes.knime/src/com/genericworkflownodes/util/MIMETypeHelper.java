@@ -74,7 +74,7 @@ public class MIMETypeHelper {
             for (String ext : entry.getExtensions()) {
                 // some mimetypes are stored with spaces around them so .trim()
                 if (extension.toLowerCase().equals(ext.trim())) {
-                    type = entry.getType();
+                    return entry.getType();
                 }
             }
         }
@@ -105,5 +105,20 @@ public class MIMETypeHelper {
             }
         }
         return (type != null ? foundExtension : null);
+    }
+
+    /**
+     * Extracts the extension from the given path.
+     * 
+     * @param path
+     *            The path from which the extension should be extracted.
+     * @return The file extension of the given path.
+     */
+    public static String getExtension(String path) {
+        if (path.lastIndexOf('.') == -1) {
+            return "";
+        } else {
+            return path.substring(path.lastIndexOf('.') + 1);
+        }
     }
 }

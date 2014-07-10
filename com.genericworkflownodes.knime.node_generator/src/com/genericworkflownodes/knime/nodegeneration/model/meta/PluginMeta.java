@@ -18,6 +18,7 @@
  */
 package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
+
 /**
  * 
  * Meta information of a eclipse plugin.
@@ -27,7 +28,7 @@ package com.genericworkflownodes.knime.nodegeneration.model.meta;
 public class PluginMeta {
 
     private final String id;
-    private final String version;
+    private String version;
 
     /**
      * @param id

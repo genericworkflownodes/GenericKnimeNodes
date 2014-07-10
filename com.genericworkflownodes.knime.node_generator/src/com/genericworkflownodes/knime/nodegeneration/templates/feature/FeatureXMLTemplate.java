@@ -14,6 +14,11 @@ import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
+/**
+ * Template file for the feature.xml file of the feature.
+ * 
+ * @author aiche
+ */
 public class FeatureXMLTemplate extends Template {
 
     private final static Pattern VERSION_PATTERN = Pattern
@@ -54,7 +59,7 @@ public class FeatureXMLTemplate extends Template {
         super(NodeGenerator.class
                 .getResourceAsStream("templates/feature/feature.xml.template"));
 
-        this.replace("@@pluginName@@", pluginMeta.getName());
+        replace("@@pluginName@@", pluginMeta.getName());
 
         // we will ensure that the version ends with a qualifier to make sure
         // that the qualifier is properly updated when something changes
@@ -67,19 +72,19 @@ public class FeatureXMLTemplate extends Template {
                 + findLatestQualifier(m.group(4), fragmentMetas,
                         contributingPluginMetas);
 
-        this.replace("@@pluginVersion@@", newVersion);
-        this.replace("@@packageName@@", pluginMeta.getPackageRoot());
+        replace("@@pluginVersion@@", newVersion);
+        replace("@@packageName@@", pluginMeta.getPackageRoot());
 
-        this.replace("@@description@@",
+        replace("@@description@@",
                 StringEscapeUtils.escapeXml(featureMeta.getDescription()));
-        this.replace("@@copyright@@",
+        replace("@@copyright@@",
                 StringEscapeUtils.escapeXml(featureMeta.getCopyright()));
-        this.replace("@@license@@",
+        replace("@@license@@",
                 StringEscapeUtils.escapeXml(featureMeta.getLicense()));
 
-        this.registerGeneratedPlugin(pluginMeta);
-        this.registerFragments(fragmentMetas);
-        this.registerContributingPlugins(contributingPluginMetas);
+        registerGeneratedPlugin(pluginMeta);
+        registerFragments(fragmentMetas);
+        registerContributingPlugins(contributingPluginMetas);
     }
 
     private Matcher matchVersion(final String version) {
@@ -99,7 +104,7 @@ public class FeatureXMLTemplate extends Template {
                 + "\t\tversion=\"0.0.0\"\n" + "\t\tunpack=\"false\"/>\n\n",
                 pluginMeta.getId());
 
-        this.replace("@@PLUGIN@@", pluginList);
+        replace("@@PLUGIN@@", pluginList);
     }
 
     private void registerFragments(List<FragmentMeta> fragmentMetas) {
@@ -115,7 +120,7 @@ public class FeatureXMLTemplate extends Template {
                     fragmentMeta.getArch().toOsgiArch());
         }
 
-        this.replace("@@FRAGMENTS@@", fragmentList);
+        replace("@@FRAGMENTS@@", fragmentList);
     }
 
     private void registerContributingPlugins(
@@ -129,6 +134,6 @@ public class FeatureXMLTemplate extends Template {
                     contributingPluginMeta.getId());
         }
 
-        this.replace("@@CONTRIBUTING_PLUGINS@@", contributingPluginList);
+        replace("@@CONTRIBUTING_PLUGINS@@", contributingPluginList);
     }
 }

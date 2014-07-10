@@ -44,18 +44,24 @@ public class AsynchronousToolExecutor implements IWaitable {
     // using a cached thread pool has the following advantages:
     // 1. if after some time no threads are used, the pool will shrink
     // 2. the pool grows as needed
-    private final static ExecutorService EXECUTOR_SERVICE = Executors
+    private static final ExecutorService EXECUTOR_SERVICE = Executors
             .newCachedThreadPool();
 
     /**
      * The executor which should be handled asynchronously.
      */
-    private final IToolExecutor executor;
-    // determines if the invoke method has already been called
+    private final IToolExecutor m_executor;
+    /**
+     * Determines if the invoke method has already been called.
+     */
     private final AtomicBoolean invokeAlreadyCalled;
-    // useful when other threads call the waitUntilFinished method
+    /**
+     * Useful when other threads call the waitUntilFinished method.
+     */
     private final CountDownLatch countdownLatch;
-    // the future that wraps around the callable
+    /**
+     * The future that wraps around the callable.
+     */
     private FutureTask<Integer> futureTask;
 
     /**
@@ -65,7 +71,7 @@ public class AsynchronousToolExecutor implements IWaitable {
      *            The executor which should be handled asynchronously.
      */
     public AsynchronousToolExecutor(final IToolExecutor executor) {
-        this.executor = executor;
+        m_executor = executor;
         countdownLatch = new CountDownLatch(1);
         invokeAlreadyCalled = new AtomicBoolean(false);
         futureTask = new FutureTask<Integer>(new Callable<Integer>() {
@@ -80,7 +86,7 @@ public class AsynchronousToolExecutor implements IWaitable {
      * Returns whether the underlying task has completed, regardless of its
      * status.
      * 
-     * @return
+     * @return true if process is finished, false otherwise.
      */
     public boolean isDone() {
         return futureTask.isDone();
@@ -100,7 +106,7 @@ public class AsynchronousToolExecutor implements IWaitable {
 
     private int doCall() throws Exception {
         try {
-            return executor.execute();
+            return m_executor.execute();
         } finally {
             // regardless of what hapenned, make sure to decrease the count in
             // the latch
@@ -114,10 +120,8 @@ public class AsynchronousToolExecutor implements IWaitable {
      * {@link IToolExecutor} performs its tasks.
      * 
      * @return The return code of the underlying executor.
-     * 
-     * @throws Exception
      */
-    public void invoke() throws Exception {
+    public void invoke() {
         // set the atomic value to true and check, atomically, the previous
         // value. for more information, check out getAndSet javadoc
         if (invokeAlreadyCalled.getAndSet(true)) {
@@ -132,7 +136,7 @@ public class AsynchronousToolExecutor implements IWaitable {
      */
     public void kill() {
         try {
-            executor.kill();
+            m_executor.kill();
             futureTask.cancel(true);
         } finally {
             // make sure to wake up any thread that is waiting

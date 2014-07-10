@@ -5,6 +5,11 @@ import java.io.IOException;
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 
+/**
+ * Template file for the .project file of the feature.
+ * 
+ * @author aiche
+ */
 public class FeatureProjectTemplate extends Template {
 
     public FeatureProjectTemplate(String packageName) throws IOException {
@@ -12,7 +17,7 @@ public class FeatureProjectTemplate extends Template {
                 NodeGenerator.class
                         .getResourceAsStream("templates/feature/feature.project.template"));
 
-        this.replace("%PACKAGE_NAME%", packageName);
+        replace("%PACKAGE_NAME%", packageName);
     }
 
 }

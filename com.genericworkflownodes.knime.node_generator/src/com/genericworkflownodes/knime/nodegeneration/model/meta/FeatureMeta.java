@@ -46,7 +46,7 @@ public class FeatureMeta extends PluginMeta {
      */
     public FeatureMeta(NodesSourceDirectory sourceDirectory,
             GeneratedPluginMeta pluginMeta) {
-        super(pluginMeta.getId(), pluginMeta.getVersion());
+        super(pluginMeta.getId(), pluginMeta.getGeneratedPluginVersion());
         try {
             name = pluginMeta.getName();
 

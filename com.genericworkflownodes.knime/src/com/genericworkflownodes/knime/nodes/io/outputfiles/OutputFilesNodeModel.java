@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -37,6 +37,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of OutputFiles Node.
@@ -54,7 +56,7 @@ public class OutputFilesNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected OutputFilesNodeModel() {
-        super(new PortType[] { new PortType(URIPortObject.class) },
+        super(new PortType[] { new PortType(IURIPortObject.class) },
                 new PortType[] {});
     }
 
@@ -125,31 +127,39 @@ public class OutputFilesNodeModel extends NodeModel {
                     "Please select a target file for the Output Files node.");
         }
 
-        boolean selectedExtensionIsValid = false;
-        String lcFile = m_filename.getStringValue().toLowerCase();
-        for (String ext : ((URIPortObjectSpec) inSpecs[0]).getFileExtensions()) {
-            if (lcFile.endsWith(ext.toLowerCase())) {
-                selectedExtensionIsValid = true;
-                break;
-            }
-        }
-        if (!selectedExtensionIsValid) {
+        if (!mimeTypeCompatible(inSpecs)) {
             throw new InvalidSettingsException(
-                    "The selected output files and the incoming files have different mime types.");
+                    "The selected output files and the incoming files have incompatible mime types.");
         }
 
         return new PortObjectSpec[] {};
     }
 
+    /**
+     * Checks if incoming and outgoing mime types are compatible.
+     * 
+     * @param inSpecs
+     *            The incoming port spec.
+     * @return True if the mime types are compatible, false otherwise.
+     */
+    private boolean mimeTypeCompatible(PortObjectSpec[] inSpecs) {
+        String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
+                .getStringValue());
+        String incomingMimeType = MIMETypeHelper
+                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
+                        .getFileExtensions().get(0));
+        return incomingMimeType.equals(selectedMimeType);
+    }
+
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        URIPortObject obj = (URIPortObject) inObjects[0];
+        IURIPortObject obj = (IURIPortObject) inObjects[0];
         List<URIContent> uris = obj.getURIContents();
 
         if (uris.size() == 0) {
             throw new Exception(
-                    "There were no URIs in the supplied URIPortObject");
+                    "There were no URIs in the supplied IURIPortObject");
         }
 
         int idx = 1;

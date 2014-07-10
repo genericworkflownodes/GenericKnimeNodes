@@ -28,8 +28,8 @@ import org.knime.core.node.NodeLogger;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.config.PlainNodeConfigurationWriter;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
@@ -191,8 +191,10 @@ public class CLICommandGenerator implements ICommandGenerator {
                         .getReferenceName());
                 if (!p.isNull()) {
                     if (p instanceof ListParameter) {
-                        extractedParameterValues.add(((ListParameter) p)
-                                .getStrings());
+                        ListParameter lp = (ListParameter) p;
+                        if (lp.getStrings().size() > 0) {
+                            extractedParameterValues.add(lp.getStrings());
+                        }
                     } else {
                         List<String> l = new ArrayList<String>();
                         l.add(p.getStringRep());

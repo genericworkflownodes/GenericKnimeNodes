@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GenericKnimeNodes-Config
+Bundle-SymbolicName: com.genericworkflownodes.knime.config;singleton:=true
+Bundle-Version: 0.8.0.qualifier
+Bundle-ClassPath: genericnodes.config.jar,
+ lib/dom4j-1.6.1.jar,
+ lib/jaxen-1.1-beta-6.jar
+Require-Bundle: org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)"
+Export-Package: com.genericworkflownodes.knime.cliwrapper,
+ com.genericworkflownodes.knime.config;uses:="com.genericworkflownodes.knime.parameter,com.genericworkflownodes.knime.port,com.genericworkflownodes.knime.cliwrapper",
+ com.genericworkflownodes.knime.config.impl,
+ com.genericworkflownodes.knime.config.reader;uses:="com.genericworkflownodes.knime.config",
+ com.genericworkflownodes.knime.config.writer;uses:="com.genericworkflownodes.knime.config",
+ com.genericworkflownodes.knime.os,
+ com.genericworkflownodes.knime.parameter;uses:="com.genericworkflownodes.knime.port",
+ com.genericworkflownodes.knime.port,
+ com.genericworkflownodes.knime.schemas;uses:="org.xml.sax",
+ com.genericworkflownodes.util
+Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

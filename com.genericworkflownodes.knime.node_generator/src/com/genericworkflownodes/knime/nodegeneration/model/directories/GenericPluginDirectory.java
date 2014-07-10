@@ -21,7 +21,6 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildBinaryResourcesDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildIconsDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildKnimeDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
@@ -46,7 +45,6 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
     private NodesBuildPackageRootDirectory packageRootDirectory = null;
     private NodesBuildKnimeDirectory knimeDirectory = null;
     private NodesBuildKnimeNodesDirectory knimeNodesDirectory = null;
-    private NodesBuildBinaryResourcesDirectory binaryResourcesDirectory = null;
 
     /**
      * Constructor with the path to the location where the plugin should be
@@ -70,9 +68,6 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
         new File(this, "icons").mkdirs();
         new File(this, "src" + File.separator + packageRootPath
                 + File.separator + "knime" + File.separator + "nodes").mkdirs();
-        new File(this, "src" + File.separator + packageRootPath
-                + File.separator + "knime" + File.separator + "binres")
-                .mkdirs();
         new File(this, "META-INF").mkdirs();
 
         iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
@@ -87,9 +82,6 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
 
         knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
                 knimeDirectory, "nodes"));
-
-        binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(
-                new File(knimeDirectory, "binres"));
 
     }
 
@@ -146,20 +138,6 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
      */
     public NodesBuildKnimeNodesDirectory getKnimeNodesDirectory() {
         return knimeNodesDirectory;
-    }
-
-    /**
-     * Returns the source directory where the BinaryResources class is located.
-     * The BinaryResouces class is used to access the platform specific binaries
-     * stored in separate fragments.
-     * 
-     * <p>
-     * e.g. /tmp/372/src/de/fu_berlin/imp/seqan/knime/nodes/binres
-     * 
-     * @return
-     */
-    public NodesBuildBinaryResourcesDirectory getBinaryResourcesDirectory() {
-        return binaryResourcesDirectory;
     }
 
 }

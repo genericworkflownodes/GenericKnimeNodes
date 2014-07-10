@@ -64,7 +64,6 @@ public class ContributingPluginMeta extends PluginMeta {
             PluginDirectory pluginDirectory = new PluginDirectory(
                     contributingPluginDirectory);
 
-            @SuppressWarnings("unchecked")
             List<String> lines = FileUtils.readLines(pluginDirectory
                     .getManifestMf());
 

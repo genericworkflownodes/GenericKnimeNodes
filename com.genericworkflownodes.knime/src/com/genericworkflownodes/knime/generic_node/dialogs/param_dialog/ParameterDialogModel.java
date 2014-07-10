@@ -19,8 +19,6 @@
 
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
-import java.io.FileNotFoundException;
-
 import javax.swing.table.TableCellEditor;
 
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
@@ -54,6 +52,10 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
      * The node configuration represented by this dialog model.
      */
     private NodeConfigurationTree wrapper;
+
+    /**
+     * Should advanced parameters be visible.
+     */
     private boolean showAdvanced = false;
 
     /**
@@ -61,22 +63,36 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
      */
     private final ParamCellEditor paramCellEditor;
 
-    public ParameterDialogModel(INodeConfiguration config)
-            throws FileNotFoundException, Exception {
-        NodeConfigurationTree wrapper = new NodeConfigurationTree(config, false);
+    /**
+     * Create ParameterDialogModel from a given NodeConfiguration.
+     * 
+     * @param config
+     *            The configuration that should be represented by the
+     *            ParameterDialogModel.
+     */
+    public ParameterDialogModel(INodeConfiguration config) {
+        wrapper = new NodeConfigurationTree(config, false);
         root = wrapper.getRoot();
-        this.wrapper = wrapper;
         paramCellEditor = new ParamCellEditor();
     }
 
+    /**
+     * Triggers a refresh of the gui.
+     */
     public void refresh() {
         wrapper.setShowAdvanced(showAdvanced);
         wrapper.update();
         modelSupport.fireNewRoot();
     }
 
-    public void setShowAdvanced(boolean showAdvanced) {
-        this.showAdvanced = showAdvanced;
+    /**
+     * Set if advanced parameters should be shown or not.
+     * 
+     * @param newShowAdvanced
+     *            The new state of showAdvanced.
+     */
+    public void setShowAdvanced(boolean newShowAdvanced) {
+        showAdvanced = newShowAdvanced;
     }
 
     @Override
@@ -92,16 +108,16 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
     }
 
     @Override
-    public int getIndexOfChild(Object parent, Object child_) {
-        ParameterNode par = (ParameterNode) parent;
-        ParameterNode child = (ParameterNode) child_;
-        return par.getChildIndex(child);
+    public int getIndexOfChild(Object oParent, Object oChild) {
+        ParameterNode parent = (ParameterNode) oParent;
+        ParameterNode child = (ParameterNode) oChild;
+        return parent.getChildIndex(child);
     }
 
     @Override
-    public boolean isLeaf(Object parent) {
-        ParameterNode par = (ParameterNode) parent;
-        return par.isLeaf();
+    public boolean isLeaf(Object oParent) {
+        ParameterNode parent = (ParameterNode) oParent;
+        return parent.isLeaf();
     }
 
     @Override
@@ -157,12 +173,7 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
     @Override
     public boolean isCellEditable(Object value, int column) {
         ParameterNode n = (ParameterNode) value;
-        if (column == 1) {
-            if (n.isLeaf()) {
-                return true;
-            }
-        }
-        return false;
+        return (column == 1 && n.isLeaf());
     }
 
     @Override
@@ -171,6 +182,11 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
         n.setPayload((Parameter<?>) value);
     }
 
+    /**
+     * Gives access to the underlying table cell editor.
+     * 
+     * @return The TableCellEditor.
+     */
     public TableCellEditor getCellEditor() {
         return paramCellEditor;
     }

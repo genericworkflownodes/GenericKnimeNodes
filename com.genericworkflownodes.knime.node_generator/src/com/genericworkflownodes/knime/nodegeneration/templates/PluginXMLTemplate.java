@@ -87,10 +87,10 @@ public class PluginXMLTemplate {
      * 
      * @param path
      */
-    public void registerPath(String path) {
+    private void registerPath(String path) {
         List<String> prefixes = Utils.getPathPrefixes(path);
         for (String prefix : prefixes) {
-            this.registerPathPrefix(prefix);
+            registerPathPrefix(prefix);
         }
     }
 
@@ -138,7 +138,7 @@ public class PluginXMLTemplate {
      */
     public void registerNode(String clazz, String path) {
         LOGGER.info("registering Node " + clazz);
-        this.registerPath(path);
+        registerPath(path);
 
         Node node = doc
                 .selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
@@ -146,47 +146,6 @@ public class PluginXMLTemplate {
 
         elem.addElement("node").addAttribute("factory-class", clazz)
                 .addAttribute("id", clazz).addAttribute("category-path", path);
-    }
-
-    /**
-     * Adds the preference page to the plugin.xml file.
-     * 
-     * @param meta
-     */
-    public void registerPreferencePage(GeneratedPluginMeta meta) {
-        Node node = doc
-                .selectSingleNode("/plugin/extension[@point='org.eclipse.ui.preferencePages']");
-
-        String category = "com.genericworkflownodes.knime.preferences.PreferencePage";
-        String clazz = meta.getPackageRoot()
-                + ".knime.preferences.PluginPreferencePage";
-        String id = clazz;
-        String name = meta.getName();
-
-        Element preferencePageExtensionPoint = (Element) node;
-        preferencePageExtensionPoint.addElement("page")
-                .addAttribute("category", category)
-                .addAttribute("class", clazz).addAttribute("id", id)
-                .addAttribute("name", name);
-
-    }
-
-    /**
-     * Adds the startup class to the plugin.xml file.
-     * 
-     * @param meta
-     */
-    public void registerStartupClass(GeneratedPluginMeta meta) {
-        Node node = doc
-                .selectSingleNode("/plugin/extension[@point='org.eclipse.ui.startup']");
-
-        String clazzName = meta.getPackageRoot() + ".knime.Startup";
-
-        // <startup class="de.openms.knime.Startup" />
-        Element startupExtensionPoint = (Element) node;
-        startupExtensionPoint.addElement("startup").addAttribute("class",
-                clazzName);
-
     }
 
     public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {

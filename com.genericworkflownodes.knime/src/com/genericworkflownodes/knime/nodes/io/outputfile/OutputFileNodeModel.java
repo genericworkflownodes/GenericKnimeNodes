@@ -29,9 +29,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.knime.base.filehandling.mime.MIMEMap;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -71,7 +70,7 @@ public class OutputFileNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected OutputFileNodeModel() {
-        super(new PortType[] { new PortType(URIPortObject.class) },
+        super(new PortType[] { new PortType(IURIPortObject.class) },
                 new PortType[] {});
     }
 
@@ -105,8 +104,8 @@ public class OutputFileNodeModel extends NodeModel {
     public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
         String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
                 .getStringValue());
-        String incomingMimeType = MIMEMap
-                .getMIMEType(((URIPortObjectSpec) inSpecs[0])
+        String incomingMimeType = MIMETypeHelper
+                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
                         .getFileExtensions().get(0));
 
         return incomingMimeType.equals(selectedMimeType);
@@ -115,12 +114,12 @@ public class OutputFileNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        URIPortObject obj = (URIPortObject) inObjects[0];
+        IURIPortObject obj = (IURIPortObject) inObjects[0];
         List<URIContent> uris = obj.getURIContents();
 
         if (uris.size() == 0) {
             throw new Exception(
-                    "There were no URIs in the supplied MIMEURIPortObject at port 0");
+                    "There were no URIs in the supplied IURIPortObject at port 0");
         }
 
         String filename = m_filename.getStringValue();

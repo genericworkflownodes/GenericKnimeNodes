@@ -19,17 +19,13 @@
 package com.genericworkflownodes.knime.nodes.flow.image2file;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.image.ImageContent;
 import org.knime.core.data.image.ImageValue;
-import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -44,9 +40,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.image.ImagePortObject;
 
-import com.genericworkflownodes.util.FileStashFactory;
-import com.genericworkflownodes.util.FileStashProperties;
-import com.genericworkflownodes.util.IFileStash;
+import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 
 /**
  * This is the model implementation of Image2FilePort. Converts an Image Port to
@@ -56,6 +50,7 @@ import com.genericworkflownodes.util.IFileStash;
  */
 public class Image2FilePortNodeModel extends NodeModel {
 
+    @SuppressWarnings("unused")
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(Image2FilePortNodeModel.class);
 
@@ -84,17 +79,14 @@ public class Image2FilePortNodeModel extends NodeModel {
      * @return The outgoing {@link PortType}s of this node.
      */
     private static PortType[] getOutgoingPorts() {
-        return new PortType[] { URIPortObject.TYPE };
+        return new PortType[] { IURIPortObject.TYPE };
     }
-
-    private IFileStash fileStash;
 
     /**
      * Constructor for the node model.
      */
     protected Image2FilePortNodeModel() {
         super(getIncomingPorts(), getOutgoingPorts());
-        fileStash = FileStashFactory.createTemporary();
     }
 
     /**
@@ -119,19 +111,16 @@ public class Image2FilePortNodeModel extends NodeModel {
         // check if the extension matches our PNG assumption
         checkExtension(v);
         // write the file to stash
-        File outFile = writeImageFile(content);
-
-        List<URIContent> outUri = new ArrayList<URIContent>();
-        outUri.add(new URIContent(outFile.toURI(), IMAGE_FILE_EXTENSION));
-        URIPortObject outPort = new URIPortObject(outUri);
+        FileStoreURIPortObject outPort = writeImageFile(content, exec);
         return new PortObject[] { outPort };
     }
 
-    private File writeImageFile(ImageContent content) throws IOException,
-            FileNotFoundException {
-        File outFile = fileStash.getFile(
-                Image2FilePortNodeModel.class.getSimpleName(),
-                IMAGE_FILE_EXTENSION);
+    private FileStoreURIPortObject writeImageFile(ImageContent content,
+            final ExecutionContext exec) throws IOException {
+        FileStoreURIPortObject fsPortObject = new FileStoreURIPortObject(
+                exec.createFileStore("Image2FilePort"));
+        File outFile = fsPortObject.registerFile(Image2FilePortNodeModel.class
+                .getSimpleName() + "." + IMAGE_FILE_EXTENSION);
         logger.debug("Created output file " + outFile.getAbsolutePath());
 
         final FileOutputStream out = new FileOutputStream(outFile);
@@ -140,7 +129,7 @@ public class Image2FilePortNodeModel extends NodeModel {
         } finally {
             out.close();
         }
-        return outFile;
+        return fsPortObject;
     }
 
     private void checkExtension(ImageValue v) throws InvalidSettingsException {
@@ -156,12 +145,6 @@ public class Image2FilePortNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        try {
-            fileStash.deleteAllFiles();
-        } catch (IOException e) {
-            LOGGER.error("Error cleaning " + IFileStash.class.getSimpleName(),
-                    e);
-        }
     }
 
     /**
@@ -208,10 +191,6 @@ public class Image2FilePortNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        File file = FileStashProperties.readLocation(internDir);
-        if (file != null) {
-            fileStash = FileStashFactory.createPersistent(file);
-        } // else leave temporary file stash
     }
 
     /**
@@ -221,7 +200,6 @@ public class Image2FilePortNodeModel extends NodeModel {
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        FileStashProperties.saveLocation(fileStash, internDir);
     }
 
 }

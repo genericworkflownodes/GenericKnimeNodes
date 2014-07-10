@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool name="Sam2matrix" version="0.1" docurl="http://www.seqan.de" category="Metagenomics" >
+	<executableName>sam2matrix</executableName>
+	<description>This program outputs for each read the ids of references it maps to.</description>
+	<manual>This program determines for each read in the reference file if it has an entry in the provided sam files stating that it mapped. Afterwards a file is generated containing a row for each read which contains the read ID and the index of the mapped references.
+</manual>
+	<cli>
+		<clielement optionIdentifier="--write-ctd-file-ext" isList="false">
+			<mapping referenceName="sam2matrix.write-ctd-file-ext" />
+		</clielement>
+		<clielement optionIdentifier="--mapping" isList="true">
+			<mapping referenceName="sam2matrix.mapping" />
+		</clielement>
+		<clielement optionIdentifier="--mapping-file-ext" isList="true">
+			<mapping referenceName="sam2matrix.mapping-file-ext" />
+		</clielement>
+		<clielement optionIdentifier="--reads" isList="false">
+			<mapping referenceName="sam2matrix.reads" />
+		</clielement>
+		<clielement optionIdentifier="--reads-file-ext" isList="false">
+			<mapping referenceName="sam2matrix.reads-file-ext" />
+		</clielement>
+		<clielement optionIdentifier="--reference" isList="true">
+			<mapping referenceName="sam2matrix.reference" />
+		</clielement>
+		<clielement optionIdentifier="--out" isList="false">
+			<mapping referenceName="sam2matrix.out" />
+		</clielement>
+		<clielement optionIdentifier="--out-file-ext" isList="false">
+			<mapping referenceName="sam2matrix.out-file-ext" />
+		</clielement>
+	</cli>
+	<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<NODE name="sam2matrix" description="This program outputs for each read the ids of references it maps to.">
+			<ITEM name="write-ctd-file-ext" value="" type="string" description="Override file extension for --write-ctd" required="false" advanced="true" tags="file-ext-override,gkn-ignore" />
+			<ITEMLIST name="mapping" type="input-file" description="File containing the mappings." supported_formats="*.sam" required="true" advanced="false" >
+			</ITEMLIST>
+			<ITEMLIST name="mapping-file-ext" type="string" description="Override file extension for --mapping" restrictions="sam" required="false" advanced="true" tags="file-ext-override,gkn-ignore" >
+			</ITEMLIST>
+			<ITEM name="reads" value="" type="input-file" description="File containing the reads contained in the mapping file(s)." supported_formats="*.fa,*.fasta,*.fq,*.fastq" required="true" advanced="false" />
+			<ITEM name="reads-file-ext" value="" type="string" description="Override file extension for --reads" restrictions="fa,fasta,fq,fastq" required="false" advanced="true" tags="file-ext-override,gkn-ignore" />
+			<ITEMLIST name="reference" type="string" description="Name of the file used as reference of the corresponding sam file. If not specified the names of the mapping files are taken" required="false" advanced="false" >
+			</ITEMLIST>
+			<ITEM name="out" value="" type="output-file" description="Output file." supported_formats="*.tsv" required="true" advanced="false" />
+			<ITEM name="out-file-ext" value="" type="string" description="Override file extension for --out" restrictions="tsv" required="false" advanced="true" tags="file-ext-override,gkn-ignore" />
+		</NODE>
+	</PARAMETERS>
+</tool>

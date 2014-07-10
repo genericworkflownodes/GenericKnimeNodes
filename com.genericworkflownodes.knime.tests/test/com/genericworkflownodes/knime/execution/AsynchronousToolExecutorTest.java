@@ -151,7 +151,7 @@ public class AsynchronousToolExecutorTest {
 
     @Test
     public void testKill() throws Exception {
-        dummyTask.setSleepTime(50000);
+        dummyTask.setSleepTime(500000);
         asyncExecutor.invoke();
         asyncExecutor.kill();
         assertTrue("The underlying task should have been killed",

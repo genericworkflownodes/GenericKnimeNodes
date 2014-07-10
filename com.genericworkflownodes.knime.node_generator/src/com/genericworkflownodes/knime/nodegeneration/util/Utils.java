@@ -1,15 +1,11 @@
 package com.genericworkflownodes.knime.nodegeneration.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
@@ -52,6 +48,10 @@ public final class Utils {
 
         List<String> prefixList = new ArrayList<String>();
 
+        // remove trailing '/' as it would lead to an incorrect prefix
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
         String prefix = path;
         // will abort as soon as prefix == "/"
         while (prefix.length() > 1) {
@@ -100,42 +100,16 @@ public final class Utils {
         return path.substring(path.lastIndexOf("/") + 1);
     }
 
-    public static void zipDirectory(File directory, File zipFile)
-            throws IOException {
-        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-        addDir(directory, directory, out);
-        out.close();
-    }
-
-    private static void addDir(File root, File directory, ZipOutputStream out)
-            throws IOException {
-        File[] files = directory.listFiles();
-        byte[] tmpBuf = new byte[1024];
-
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                addDir(root, files[i], out);
-                continue;
-            }
-            FileInputStream in = new FileInputStream(files[i].getAbsolutePath());
-            out.putNextEntry(new ZipEntry(files[i].getAbsolutePath().substring(
-                    root.getAbsolutePath().length())));
-            int len;
-            while ((len = in.read(tmpBuf)) > 0) {
-                out.write(tmpBuf, 0, len);
-            }
-            out.closeEntry();
-            in.close();
-        }
-    }
-
     /**
      * Formats a {@link Document} as XML and writes it to the given {@link File}
      * .
      * 
      * @param doc
+     *            The XML document to store.
      * @param dest
+     *            The file where it should be stored.
      * @throws IOException
+     *             In case of IO errors.
      */
     public static void writeDocumentTo(Document doc, File dest)
             throws IOException {
@@ -161,6 +135,7 @@ public final class Utils {
         name = name.replace("+", "");
         name = name.replace("$", "");
         name = name.replace(":", "");
+        name = name.replace(";", "");
         return name;
     }
 }
