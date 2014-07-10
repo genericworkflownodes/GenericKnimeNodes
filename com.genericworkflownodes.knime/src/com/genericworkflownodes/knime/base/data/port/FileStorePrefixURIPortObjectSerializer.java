@@ -57,8 +57,7 @@ public class FileStorePrefixURIPortObjectSerializer extends
     }
 
     /**
-     * Initialization-on-demand holder idiom holder for the DemanglerRegistry
-     * instance.
+     * Initialization-on-demand holder idiom holder for the serializer instance.
      * 
      * @author aiche
      */

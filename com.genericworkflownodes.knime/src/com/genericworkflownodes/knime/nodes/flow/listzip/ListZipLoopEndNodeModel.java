@@ -30,8 +30,6 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.uri.IURIPortObject;
-import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.BufferedDataTableHolder;
@@ -50,6 +48,7 @@ import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.LoopStartNodeTerminator;
 
 import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
 
 /**
@@ -76,10 +75,9 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
     private BufferedDataContainer[] m_bufferedContainers;
 
     /**
-     * List of URIContents collected during execution. Used later on to create
-     * the outgoing port objects.
+     * Collect incoming port objects over the iterations.
      */
-    private List<List<URIContent>> m_uris;
+    private List<List<IURIPortObject>> m_incomingPortObjects;
 
     /**
      * Indicating if the loop is already running.
@@ -144,7 +142,8 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
 
         if (!m_loopStarted) {
             // first time we are getting to this: create container
-            m_uris = new ArrayList<List<URIContent>>(PORT_COUNT);
+            m_incomingPortObjects = new ArrayList<List<IURIPortObject>>(
+                    PORT_COUNT);
             m_bufferedContainers = new BufferedDataContainer[PORT_COUNT];
 
             for (int i = 0; i < PORT_COUNT; ++i) {
@@ -152,8 +151,8 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
                 m_bufferedContainers[i] = exec
                         .createDataContainer(createPseudoSpec());
 
-                // create container to collect the incoming uris
-                m_uris.add(new ArrayList<URIContent>());
+                // create container to collect the incoming port objects
+                m_incomingPortObjects.add(new ArrayList<IURIPortObject>());
             }
             m_loopStarted = true;
         }
@@ -174,8 +173,8 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
                         .format("More then one incoming object at port %d. The outgoing port will only hold the first one.",
                                 i));
             }
-            // register file uri
-            m_uris.get(i).add(po.getURIContents().get(0));
+            // collect port object for later use
+            m_incomingPortObjects.get(i).add(po);
 
             // if we have a filestore port object, add it to the container
             // .. all our filestore port objects are derived from
@@ -191,11 +190,12 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
 
         // check if this is the last iteration
         if (((LoopStartNodeTerminator) getLoopStartNode()).terminateLoop()) {
-            URIPortObject[] portObjects = new URIPortObject[PORT_COUNT];
+            FileStoreReferenceURIPortObject[] portObjects = new FileStoreReferenceURIPortObject[PORT_COUNT];
 
             for (int i = 0; i < PORT_COUNT; i++) {
                 // assign collected uris to new portobject
-                portObjects[i] = new URIPortObject(m_uris.get(i));
+                portObjects[i] = FileStoreReferenceURIPortObject
+                        .create(m_incomingPortObjects.get(i));
                 // close the container
                 m_bufferedContainers[i].close();
             }
@@ -240,17 +240,22 @@ public class ListZipLoopEndNodeModel extends NodeModel implements LoopEndNode,
 
     @Override
     public BufferedDataTable[] getInternalTables() {
-        /*
-         * BufferedDataTable[] tables = new BufferedDataTable[PORT_COUNT]; for
-         * (int i = 0; i < PORT_COUNT; ++i) { tables[i] =
-         * m_bufferedContainers[i].getTable(); } return tables;
-         */
+        // is only valid after the last loop iteration, otherwise we cannot
+        // access the underlying tables
+        // if (m_bufferedContainers[0].isClosed() && !m_loopStarted) {
+        // BufferedDataTable[] tables = new BufferedDataTable[PORT_COUNT];
+        // for (int i = 0; i < PORT_COUNT; ++i) {
+        // tables[i] = m_bufferedContainers[i].getTable();
+        // }
+        // return tables;
+        // } else {
+        // return null;
+        // }
         return null;
     }
 
     @Override
     public void setInternalTables(BufferedDataTable[] tables) {
-        assert tables.length == PORT_COUNT;
     }
 
 }
