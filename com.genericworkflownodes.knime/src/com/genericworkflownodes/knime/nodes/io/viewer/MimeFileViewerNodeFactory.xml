@@ -4,17 +4,17 @@
     <name>File Viewer</name>
     
     <shortDescription>
-        Plain text view on any MIME file.
+        Plain text view of any file.
     </shortDescription>
     
     <fullDescription>
-        <intro>Plain text view on any MIME file.</intro>
+        <intro>Plain text view of any file.</intro>
     </fullDescription>
     
     <ports>
-     <outPort index="0" name="MimeFile "> MimeFile </outPort>   
+        <inPort index="0" name="File to show.">The file that should be shown.</inPort>
     </ports>    
     <views>
-        <view index="0" name="data view">View data in MIME File</view>
+        <view index="0" name="data view">View data from given file</view>
     </views>
 </knimeNode>
