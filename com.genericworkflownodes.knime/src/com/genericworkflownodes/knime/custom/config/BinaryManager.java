@@ -143,16 +143,23 @@ public final class BinaryManager {
         File shippedBinary = findFileInBundle(executableName);
         if (shippedBinary != null) {
             return shippedBinary;
+        }
+
+        // try to find the shipped binary again, but this time with the
+        // addition of ".exe" for windows platform
+        shippedBinary = findFileInBundle(String
+                .format("%s.exe", executableName));
+        if (shippedBinary != null) {
+            return shippedBinary;
+        }
+
+        // and another attempt using ".bat" as extension
+        shippedBinary = findFileInBundle(String
+                .format("%s.bat", executableName));
+        if (shippedBinary != null) {
+            return shippedBinary;
         } else {
-            // try to find the shipped binary again, but this time with the
-            // addition of ".exe" for windows platform
-            shippedBinary = findFileInBundle(String.format("%s.exe",
-                    executableName));
-            if (shippedBinary != null) {
-                return shippedBinary;
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
