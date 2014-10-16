@@ -27,7 +27,4 @@
     <ports>
      <outPort index="0" name="loaded Files">The list of selected files</outPort>
     </ports>    
-    <views>
-        <view index="0" name=""></view>
-    </views>
 </knimeNode>

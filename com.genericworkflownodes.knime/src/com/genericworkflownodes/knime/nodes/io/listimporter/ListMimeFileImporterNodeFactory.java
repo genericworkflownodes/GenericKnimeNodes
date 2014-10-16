@@ -53,7 +53,7 @@ public class ListMimeFileImporterNodeFactory extends
     @Override
     public NodeView<ListMimeFileImporterNodeModel> createNodeView(
             final int viewIndex, final ListMimeFileImporterNodeModel nodeModel) {
-        return new ListMimeFileImporterNodeView(nodeModel);
+        return null;
     }
 
     /**
