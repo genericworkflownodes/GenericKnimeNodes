@@ -195,12 +195,12 @@ Library.
          id="com.genericworkflownodes.knime"
          download-size="0"
          install-size="0"
-         version="0.8.0.qualifier"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.genericworkflownodes.knime.config"
          download-size="0"
          install-size="0"
-         version="0.8.0.qualifier"/>
+         version="0.0.0"/>
 
 </feature>
