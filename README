@@ -5,10 +5,6 @@ This package provides the source code for the KNIME plugin
 providing basic functionality for further plugins depending 
 on the Generic Workflow Nodes for KNIME mechanism.
 
-Please adjust the file build.properties and make the property
-knimeSDKpath point to the path of the KNIME SDK root. You can
-download the KNIME SDK at http://knime.org/downloads/overview.
-
 NOTE: At least KNIME 2.7.2 is required and you need to install 
 the "KNIME File Handling Nodes".
 
