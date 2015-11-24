@@ -43,6 +43,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -70,7 +71,7 @@ public class OutputFileNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected OutputFileNodeModel() {
-        super(new PortType[] { new PortType(IURIPortObject.class) },
+        super(new PortType[] { PortTypeRegistry.getInstance().getPortType(IURIPortObject.class) },
                 new PortType[] {});
     }
 
