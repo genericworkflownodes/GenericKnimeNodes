@@ -92,15 +92,6 @@ public class FileStoreReferenceURIPortObject extends FileStorePortObject
     FileStoreReferenceURIPortObject() {
     }
 
-    /**
-     * Access to the PortObjectSerializer.
-     * 
-     * @return The PortObjectSerializer.
-     */
-    public static final PortObjectSerializer<FileStoreReferenceURIPortObject> getPortObjectSerializer() {
-        return FileStoreReferenceURIPortObjectSerializer.getSerializer();
-    }
-
     private FileStoreReferenceURIPortObject(List<URIContent> uriContents,
             List<String> relPaths, List<Integer> fsIndices,
             List<FileStore> fileStores) {

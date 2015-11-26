@@ -62,15 +62,6 @@ public class FileStorePrefixURIPortObject extends
     }
 
     /**
-     * Access to the PortObjectSerializer.
-     * 
-     * @return The PortObjectSerializer.
-     */
-    public static final PortObjectSerializer<FileStorePrefixURIPortObject> getPortObjectSerializer() {
-        return FileStorePrefixURIPortObjectSerializer.getSerializer();
-    }
-
-    /**
      * Create a new {@link FileStorePrefixURIPortObject} given an associated
      * file store and the prefix for the files that should be represented.
      * 

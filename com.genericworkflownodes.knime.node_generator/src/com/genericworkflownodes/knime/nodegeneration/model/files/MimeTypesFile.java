@@ -68,7 +68,7 @@ public class MimeTypesFile extends File {
     public List<MIMETypeEntry> getMIMETypeEntries() {
         List<MIMETypeEntry> mimetypes = new LinkedList<MIMETypeEntry>();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(this));
+            final BufferedReader reader = new BufferedReader(new FileReader(this));
             String line;
             // Every line is a new MIME-Type
             while ((line = reader.readLine()) != null) {
@@ -87,6 +87,7 @@ public class MimeTypesFile extends File {
                     }
                 }
             }
+            reader.close();
         } catch (Exception e) {
             // If file is not readable return nothing
         }
