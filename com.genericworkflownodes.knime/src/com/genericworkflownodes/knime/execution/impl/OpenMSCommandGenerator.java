@@ -22,6 +22,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineCTDFile;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.config.writer.CTDConfigurationWriter;
@@ -45,15 +48,16 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
     private static final String INI_FILE_NAME = "params.ini";
 
     @Override
-    public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+    public List<CommandLineElement> extractParameters(
+            INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception {
 
         File iniFile = createINIFile(nodeConfiguration, workingDirectory);
 
-        List<String> commands = new ArrayList<String>();
-        commands.add(INI_SWITCH);
-        commands.add(iniFile.getCanonicalPath());
+        List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
+        commands.add(new CommandLineOptionIdentifier(INI_SWITCH));
+        commands.add(new CommandLineCTDFile(iniFile));
 
         return commands;
     }
