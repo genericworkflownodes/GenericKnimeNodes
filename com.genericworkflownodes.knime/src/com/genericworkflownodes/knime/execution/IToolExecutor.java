@@ -43,6 +43,13 @@ public interface IToolExecutor {
     void setCommandGenerator(ICommandGenerator generator);
 
     /**
+     * Retrieves the command generator used by this executor.
+     * 
+     * @return The command generator.
+     */
+    ICommandGenerator getCommandGenerator();
+
+    /**
      * The execute method used by derived classes to execute their command.
      * 
      * @return The return value of the executed process.

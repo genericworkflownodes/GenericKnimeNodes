@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.execution;
 import java.io.File;
 import java.util.List;
 
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
@@ -33,8 +34,7 @@ import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 public interface ICommandGenerator {
 
     /**
-     * Create a list of command line arguments needed to execute the associated
-     * node.
+     * Create a list of parameters needed to execute the associated node.
      * 
      * @param nodeConfiguration
      * @param pluginConfiguration
@@ -46,7 +46,8 @@ public interface ICommandGenerator {
      * @throws Exception
      *             An exception is thrown if the construction fails.
      */
-    List<String> generateCommands(INodeConfiguration nodeConfiguration,
+    List<CommandLineElement> extractParameters(
+            INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception;
 

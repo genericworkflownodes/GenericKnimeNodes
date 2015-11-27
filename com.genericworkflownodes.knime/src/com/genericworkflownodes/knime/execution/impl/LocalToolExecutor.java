@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
 
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
@@ -151,7 +152,7 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     private File m_executable;
 
-    private List<String> m_commands;
+    private List<CommandLineElement> m_commands;
 
     /**
      * C'tor.
@@ -243,15 +244,20 @@ public class LocalToolExecutor implements IToolExecutor {
     public int execute() throws ToolExecutionFailedException {
 
         try {
-            List<String> command = new ArrayList<String>();
-            command.add(m_executable.getCanonicalPath());
-            command.addAll(m_commands);
+            List<String> commands = new ArrayList<String>();
+            commands.add(m_executable.getCanonicalPath());
+            // this is a local execution, we need the values of all of the
+            // command line elements
+            // so we need the string representation of each element
+            for (final CommandLineElement command : m_commands) {
+                commands.add(command.getStringRepresentation());
+            }
 
             // emit command
-            LOGGER.debug("Executing: " + StringUtils.join(command, " "));
+            LOGGER.debug("Executing: " + StringUtils.join(commands, " "));
 
             // build process
-            ProcessBuilder builder = new ProcessBuilder(command);
+            ProcessBuilder builder = new ProcessBuilder(commands);
             setupProcessEnvironment(builder);
 
             if (m_workingDirectory != null) {
@@ -352,7 +358,7 @@ public class LocalToolExecutor implements IToolExecutor {
 
         addEnvironmentVariables(pluginConfiguration.getBinaryManager()
                 .getProcessEnvironment(nodeConfiguration.getExecutableName()));
-        m_commands = m_generator.generateCommands(nodeConfiguration,
+        m_commands = m_generator.extractParameters(nodeConfiguration,
                 pluginConfiguration, m_workingDirectory);
     }
 
@@ -373,6 +379,11 @@ public class LocalToolExecutor implements IToolExecutor {
     @Override
     public void setCommandGenerator(ICommandGenerator generator) {
         m_generator = generator;
+    }
+
+    @Override
+    public ICommandGenerator getCommandGenerator() {
+        return m_generator;
     }
 
     @Override

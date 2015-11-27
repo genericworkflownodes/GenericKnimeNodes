@@ -27,11 +27,17 @@ import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineFile;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineParameter;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.PlainNodeConfigurationWriter;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.parameter.BoolParameter;
+import com.genericworkflownodes.knime.parameter.FileListParameter;
+import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
 
@@ -49,7 +55,8 @@ public class CLICommandGenerator implements ICommandGenerator {
     private INodeConfiguration nodeConfig;
 
     @Override
-    public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+    public List<CommandLineElement> extractParameters(
+            INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception {
 
@@ -60,17 +67,17 @@ public class CLICommandGenerator implements ICommandGenerator {
         // logging
         exportPlainConfiguration(workingDirectory);
 
-        List<String> commands;
+        List<CommandLineElement> parameters;
 
         try {
-            commands = processCLI();
+            parameters = processCLI();
         } catch (Exception e) {
             throw e;
         } finally {
             nodeConfig = null;
         }
 
-        return commands;
+        return parameters;
     }
 
     /**
@@ -81,8 +88,8 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @throws Exception
      *             Is thrown if the configuration values are invalid.
      */
-    private List<String> processCLI() throws Exception {
-        List<String> commands = new ArrayList<String>();
+    private List<CommandLineElement> processCLI() throws Exception {
+        List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
 
         for (CLIElement cliElement : nodeConfig.getCLI().getCLIElement()) {
             logger.info("CLIElement: " + cliElement.getOptionIdentifier());
@@ -97,14 +104,15 @@ public class CLICommandGenerator implements ICommandGenerator {
                 String[] splitResult = cliElement.getOptionIdentifier().split(
                         " ");
                 for (String splittedCommand : splitResult) {
-                    commands.add(splittedCommand);
+                    commands.add(new CommandLineOptionIdentifier(
+                            splittedCommand));
                 }
             } else if (isMappedToBooleanParameter(cliElement)) {
                 // it is mapped to bool
                 handleBooleanParameter(commands, cliElement);
             } else {
 
-                List<List<String>> extractedParameterValues = extractParamterValues(cliElement);
+                List<List<CommandLineElement>> extractedParameterValues = extractParameterValues(cliElement);
                 validateExtractedParameters(extractedParameterValues);
 
                 // we only add those parameters to the command line if they
@@ -128,8 +136,9 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @param cliElement
      * @param commands
      */
-    private void expandParameters(List<List<String>> extractedParameterValues,
-            CLIElement cliElement, List<String> commands) {
+    private void expandParameters(
+            List<List<CommandLineElement>> extractedParameterValues,
+            CLIElement cliElement, List<CommandLineElement> commands) {
         // since we assume that the outer list is not empty this will always
         // work
         int listSize = extractedParameterValues.get(0).size();
@@ -140,11 +149,12 @@ public class CLICommandGenerator implements ICommandGenerator {
         for (int i = 0; i < listSize; ++i) {
             // add the command prefix in each iteration
             if (!"".equals(cliElement.getOptionIdentifier())) {
-                commands.add(cliElement.getOptionIdentifier());
+                commands.add(new CommandLineOptionIdentifier(cliElement
+                        .getOptionIdentifier()));
             }
 
             // add the actual values
-            for (List<String> innerList : extractedParameterValues) {
+            for (List<CommandLineElement> innerList : extractedParameterValues) {
                 commands.add(innerList.get(i));
             }
         }
@@ -159,10 +169,11 @@ public class CLICommandGenerator implements ICommandGenerator {
      *             If not all contained lists have the same size.
      */
     private void validateExtractedParameters(
-            List<List<String>> extractedParameterValues) throws Exception {
+            List<List<CommandLineElement>> extractedParameterValues)
+            throws Exception {
 
         int currentSize = -1;
-        for (List<String> currentList : extractedParameterValues) {
+        for (List<CommandLineElement> currentList : extractedParameterValues) {
             if (currentSize != -1 && currentSize != currentList.size()) {
                 throw new Exception(
                         "All mapped value lists must have the same size.");
@@ -179,9 +190,10 @@ public class CLICommandGenerator implements ICommandGenerator {
      *            The current cliElement.
      * @return
      */
-    private List<List<String>> extractParamterValues(CLIElement cliElement) {
+    private List<List<CommandLineElement>> extractParameterValues(
+            CLIElement cliElement) {
 
-        List<List<String>> extractedParameterValues = new ArrayList<List<String>>();
+        List<List<CommandLineElement>> extractedParameterValues = new ArrayList<List<CommandLineElement>>();
 
         for (CLIMapping cliMapping : cliElement.getMapping()) {
             if (nodeConfig.getParameterKeys().contains(
@@ -193,11 +205,32 @@ public class CLICommandGenerator implements ICommandGenerator {
                     if (p instanceof ListParameter) {
                         ListParameter lp = (ListParameter) p;
                         if (lp.getStrings().size() > 0) {
-                            extractedParameterValues.add(lp.getStrings());
+                            final List<CommandLineElement> tempExtractedParameterValues = new ArrayList<CommandLineElement>();
+                            for (final String value : lp.getStrings()) {
+                                final CommandLineElement commandLineElement;
+                                if (p instanceof FileListParameter) {
+                                    commandLineElement = new CommandLineFile(
+                                            new FileParameter(p.getKey(), value));
+                                } else {
+                                    commandLineElement = new CommandLineParameter(
+                                            p);
+                                }
+                                tempExtractedParameterValues
+                                        .add(commandLineElement);
+                            }
+                            extractedParameterValues
+                                    .add(tempExtractedParameterValues);
                         }
                     } else {
-                        List<String> l = new ArrayList<String>();
-                        l.add(p.getStringRep());
+                        List<CommandLineElement> l = new ArrayList<CommandLineElement>();
+                        final CommandLineElement commandLineElement;
+                        if (p instanceof FileParameter) {
+                            commandLineElement = new CommandLineFile(
+                                    (FileParameter) p);
+                        } else {
+                            commandLineElement = new CommandLineParameter(p);
+                        }
+                        l.add(commandLineElement);
                         extractedParameterValues.add(l);
                     }
                 }
@@ -228,11 +261,12 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @param cliElement
      *            The currently interpreted clielement.
      */
-    private void handleBooleanParameter(List<String> commands,
+    private void handleBooleanParameter(List<CommandLineElement> commands,
             CLIElement cliElement) {
         if (((BoolParameter) nodeConfig.getParameter(cliElement.getMapping()
                 .get(0).getReferenceName())).getValue()) {
-            commands.add(cliElement.getOptionIdentifier());
+            commands.add(new CommandLineOptionIdentifier(cliElement
+                    .getOptionIdentifier()));
         }
     }
 

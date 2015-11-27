@@ -17,11 +17,15 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
  org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)",
  org.knime.base.filehandling;bundle-version="[3.0.0,4.0.0)",
  com.genericworkflownodes.knime.config;bundle-version="0.8.0"
-Export-Package: com.genericworkflownodes.knime.custom,
+Export-Package: com.genericworkflownodes.knime.commandline,
+ com.genericworkflownodes.knime.commandline.impl,
+ com.genericworkflownodes.knime.custom,
  com.genericworkflownodes.knime.custom.config,
  com.genericworkflownodes.knime.custom.config.impl,
  com.genericworkflownodes.knime.generic_node,
  com.genericworkflownodes.knime.mime.demangler,
+ com.genericworkflownodes.knime.nodes.io.importer,
+ com.genericworkflownodes.knime.nodes.io.outputfile,
  com.genericworkflownodes.knime.preferences,
  com.genericworkflownodes.knime.toolfinderservice
 Bundle-ActivationPolicy: lazy
