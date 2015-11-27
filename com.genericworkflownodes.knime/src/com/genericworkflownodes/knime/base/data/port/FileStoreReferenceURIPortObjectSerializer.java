@@ -51,27 +51,9 @@ public class FileStoreReferenceURIPortObjectSerializer extends
     private static final String CONTENT_XML = "content.xml";
 
     /**
-     * Private c'tor to ensure singleton pattern.
+     * As of KNIME 3.0, serializers are defined as extension points, so we need a public constructor.
      */
-    private FileStoreReferenceURIPortObjectSerializer() {
-    }
-
-    /**
-     * Initialization-on-demand holder idiom holder for the serializer instance.
-     * 
-     * @author aiche
-     */
-    private static class LazyHolder {
-        private static final FileStoreReferenceURIPortObjectSerializer INSTANCE = new FileStoreReferenceURIPortObjectSerializer();
-    }
-
-    /**
-     * Returns the singleton FileStoreReferenceURIPortObjectSerializer.
-     * 
-     * @return The FileStoreReferenceURIPortObjectSerializer.
-     */
-    public static FileStoreReferenceURIPortObjectSerializer getSerializer() {
-        return LazyHolder.INSTANCE;
+    public FileStoreReferenceURIPortObjectSerializer() {
     }
 
     @Override
@@ -118,5 +100,4 @@ public class FileStoreReferenceURIPortObjectSerializer extends
                             + e.getMessage(), e);
         }
     }
-
 }

@@ -42,6 +42,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
@@ -87,8 +88,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     /**
      * Short-cut for optional ports.
      */
-    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-            IURIPortObject.class, true);
+//    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
+//            IURIPortObject.class, true);
+    public static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
 
     /**
      * Contains information on which of the available output types is selected

@@ -48,6 +48,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -97,7 +98,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected MimeFileImporterNodeModel() {
-        super(new PortType[] {}, new PortType[] { new PortType(
+        super(new PortType[] {}, new PortType[] { PortTypeRegistry.getInstance().getPortType(
                 IURIPortObject.class) });
     }
 
