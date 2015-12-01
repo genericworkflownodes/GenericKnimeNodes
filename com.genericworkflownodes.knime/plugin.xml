@@ -118,7 +118,7 @@
             cellClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell">
          <serializer
                cellClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell"
-               serializerClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCellSerilizer">
+               serializerClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCellSerializer">
          </serializer>
       </DataType>
    </extension>
