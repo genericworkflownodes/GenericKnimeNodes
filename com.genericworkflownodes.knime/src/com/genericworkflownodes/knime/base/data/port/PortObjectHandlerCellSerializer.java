@@ -11,7 +11,7 @@ import org.knime.core.data.DataCellSerializer;
  * 
  * @author aiche
  */
-public class PortObjectHandlerCellSerilizer implements
+public class PortObjectHandlerCellSerializer implements
         DataCellSerializer<PortObjectHandlerCell> {
 
     @Override
