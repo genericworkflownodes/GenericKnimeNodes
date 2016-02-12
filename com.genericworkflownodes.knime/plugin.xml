@@ -92,7 +92,7 @@
             name="OpenMSCommandGenerator">
       </commandgenerator>
       <commandgenerator
-            class="com.genericworkflownodes.knime.execution.impl.DockerCommandGenerator"
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator"
             name="DockerCommandGenerator">
       </commandgenerator>
    </extension>
