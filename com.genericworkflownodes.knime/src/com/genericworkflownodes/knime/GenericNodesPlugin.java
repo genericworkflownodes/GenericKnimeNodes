@@ -22,6 +22,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleContext;
 
+import com.genericworkflownodes.util.Helper;
+
 /**
  * This is the OSGI bundle activator.
  * 
@@ -45,6 +47,16 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      */
     private static boolean isDebugModeEnabled = false;
 
+    /**
+     * The Docker installation directory
+     */
+    private static String dockerInstallationDir = "";
+    
+    /**
+     * The VM installation directory used by docker-machine
+     */
+    private static String vmInstllationDir = "";
+    
     /**
      * Check if the plug-in is in isDebugModeEnabled mode.
      * 
@@ -76,6 +88,16 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
+        if (Helper.isWin()) {
+            GenericNodesPlugin.setDockerInstallationDir("C:\\Program Files\\Docker Toolbox");
+            GenericNodesPlugin.setVmInstllationDir("C:\\Program Files\\Oracle\\VirtualBox");
+        } else if (Helper.isMac()) {
+            GenericNodesPlugin.setDockerInstallationDir( "/usr/local/bin");
+            GenericNodesPlugin.setVmInstllationDir("/usr/local/bin");
+        } else{
+            GenericNodesPlugin.setDockerInstallationDir( "/usr/bin");
+            GenericNodesPlugin.setVmInstllationDir("/usr/bin");
+        }
         gknPLugin = this;
     }
 
@@ -102,4 +124,33 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
         return gknPLugin;
     }
 
+    /**
+     * @return the dockerInstallationDir
+     */
+    public static String getDockerInstallationDir() {
+        return dockerInstallationDir;
+    }
+
+    /**
+     * @param dockerInstallationDir the dockerInstallationDir to set
+     */
+    public static void setDockerInstallationDir(String dockerInstallationDir) {
+        LOGGER.debug("Setting GKN dockerInstallationDir: " + dockerInstallationDir);
+        GenericNodesPlugin.dockerInstallationDir = dockerInstallationDir;
+    }
+
+    /**
+     * @return the vmInstllationDir
+     */
+    public static String getVmInstllationDir() {
+        return vmInstllationDir;
+    }
+
+    /**
+     * @param vmInstllationDir the vmInstllationDir to set
+     */
+    public static void setVmInstllationDir(String vmInstllationDir) {
+        LOGGER.debug("Setting GKN vmInstllationDir: " + vmInstllationDir);
+        GenericNodesPlugin.vmInstllationDir = vmInstllationDir;
+    }
 }
