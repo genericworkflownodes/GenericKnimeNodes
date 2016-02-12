@@ -136,6 +136,16 @@ public class NodesSourceDirectory extends Directory {
         return properties.getProperty(key, defaultValue);
     }
 
+    public Properties getToolProperites(){
+    	Properties p = new Properties();
+    	for(String key : properties.stringPropertyNames()) {
+    		if(key.startsWith("tool.")){
+    			p.put(key, properties.get(key));
+    		}
+    	}
+    	return p;
+    }
+    
     public List<CTDFile> getCtdFiles() {
         return descriptorsDirectory.getCTDFiles();
     }
