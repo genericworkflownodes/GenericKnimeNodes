@@ -42,9 +42,9 @@ public class FileStoreURIPortObjectSerializer extends
         PortObjectSerializer<FileStoreURIPortObject> {
 
     /**
-     * Private c'tor to ensure singleton pattern.
+     * As of KNIME 3.0, serializers are defined as extension points, so we need a public constructor.
      */
-    private FileStoreURIPortObjectSerializer() {
+    public FileStoreURIPortObjectSerializer() {
     }
 
     /**

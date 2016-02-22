@@ -28,15 +28,6 @@ import org.knime.core.data.filestore.FileStore;
 public class FileStoreURIPortObject extends AbstractFileStoreURIPortObject {
 
     /**
-     * Access to the PortObjectSerializer.
-     * 
-     * @return The PortObjectSerializer.
-     */
-    public static final PortObjectSerializer<FileStoreURIPortObject> getPortObjectSerializer() {
-        return FileStoreURIPortObjectSerializer.getSerializer();
-    }
-
-    /**
      * Creates {@link FileStoreURIPortObject} with the given {@link FileStore}.
      * 
      * @param fs

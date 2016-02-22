@@ -41,6 +41,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
@@ -77,8 +78,8 @@ public class DemanglerNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected DemanglerNodeModel() {
-        super(new PortType[] { new PortType(IURIPortObject.class) },
-                new PortType[] { new PortType(BufferedDataTable.class) });
+        super(new PortType[] { PortTypeRegistry.getInstance().getPortType(IURIPortObject.class) },
+                new PortType[] { PortTypeRegistry.getInstance().getPortType(BufferedDataTable.class) });
     }
 
     /**

@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.knime.core.data.DataCellDataInput;
 import org.knime.core.data.DataCellDataOutput;
-import org.knime.core.data.DataCellSerializer;
 import org.knime.core.data.DataType;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.filestore.FileStoreCell;
@@ -40,30 +39,6 @@ public class PortObjectHandlerCell extends FileStoreCell implements
 
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(PortObjectHandlerCell.class);
-
-    private static final PortObjectHandlerCellSerializer SERIALIZER = new PortObjectHandlerCellSerializer();
-
-    /**
-     * DataCellSerializer for PortObjectHandlerCell.
-     * 
-     * @author aiche
-     */
-    private static final class PortObjectHandlerCellSerializer implements
-            DataCellSerializer<PortObjectHandlerCell> {
-        @Override
-        public void serialize(PortObjectHandlerCell cell,
-                DataCellDataOutput output) throws IOException {
-            cell.save(output);
-        }
-
-        @Override
-        public PortObjectHandlerCell deserialize(DataCellDataInput input)
-                throws IOException {
-            PortObjectHandlerCell cell = new PortObjectHandlerCell();
-            cell.load(input);
-            return cell;
-        }
-    }
 
     /**
      * 
@@ -83,8 +58,7 @@ public class PortObjectHandlerCell extends FileStoreCell implements
     /**
      * The TYPE.
      */
-    public static final DataType TYPE = DataType
-            .getType(PortObjectHandlerCell.class);
+    public static final DataType TYPE =  DataType.getType(PortObjectHandlerCell.class);
 
     /**
      * C'tor to wrap an exisitng file store port object.
@@ -156,15 +130,6 @@ public class PortObjectHandlerCell extends FileStoreCell implements
         m_uriContent = URIContent.load(input);
         // load rel-path
         m_relativePath = input.readUTF();
-    }
-
-    /**
-     * Access the matching DataCellSerializer.
-     * 
-     * @return The DataCellSerializer.
-     */
-    public static final DataCellSerializer<PortObjectHandlerCell> getCellSerializer() {
-        return SERIALIZER;
     }
 
     @Override

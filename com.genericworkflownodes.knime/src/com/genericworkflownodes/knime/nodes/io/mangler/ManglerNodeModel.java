@@ -39,6 +39,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
@@ -84,8 +85,8 @@ public class ManglerNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected ManglerNodeModel() {
-        super(new PortType[] { new PortType(BufferedDataTable.class) },
-                new PortType[] { new PortType(IURIPortObject.class) });
+        super(new PortType[] { PortTypeRegistry.getInstance().getPortType(BufferedDataTable.class) },
+                new PortType[] { PortTypeRegistry.getInstance().getPortType(IURIPortObject.class) });
     }
 
     /**

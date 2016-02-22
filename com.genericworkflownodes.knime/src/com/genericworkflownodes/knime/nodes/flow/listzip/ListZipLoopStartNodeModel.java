@@ -40,6 +40,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.LoopStartNodeTerminator;
 
 /**
@@ -82,8 +83,7 @@ public class ListZipLoopStartNodeModel extends NodeModel implements
         super(createIncomingPortObjects(), createOutgoingPortObjects());
     }
 
-    private static final PortType OPTIONAL_PORT_TYPE = new PortType(
-            IURIPortObject.class, true);
+    private static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
 
     private static PortType[] createIncomingPortObjects() {
         PortType[] portTypes = new PortType[PORT_COUNT];

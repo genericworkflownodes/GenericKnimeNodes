@@ -42,6 +42,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
@@ -87,8 +88,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     /**
      * Short-cut for optional ports.
      */
-    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-            IURIPortObject.class, true);
+//    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
+//            IURIPortObject.class, true);
+    public static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
 
     /**
      * Contains information on which of the available output types is selected
@@ -544,9 +546,11 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < nOut; i++) {
             Port port = m_nodeConfig.getOutputPorts().get(i);
             String name = port.getName();
-            String ext = getOutputType(i);
+            String ext = "";
             boolean isPrefix = port.isPrefix();
-
+            if (!isPrefix){
+                ext = getOutputType(i);
+            }
             Parameter<?> p = m_nodeConfig.getParameter(name);
 
             // basenames and number of output files guessed from input
@@ -596,8 +600,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 }
 
                 // create basename: <base_name>_<outfile_nr>
-                String fileName = basename + '.' + ext;
-
+                String fileName = basename;
+                if (!isPrefix){
+                    fileName += '.' + ext;
+                }
                 if (isPrefix) {
                     FileStorePrefixURIPortObject fspup = new FileStorePrefixURIPortObject(
                             exec.createFileStore(m_nodeConfig.getName() + "_"

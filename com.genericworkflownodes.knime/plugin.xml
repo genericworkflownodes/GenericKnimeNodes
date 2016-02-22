@@ -79,4 +79,47 @@
             name="OpenMSCommandGenerator">
       </commandgenerator>
    </extension>
+   <extension
+         point="org.knime.core.PortType">
+      <portType
+            hidden="false"
+            name="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject"
+            objectClass="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject"
+            objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObjectSerializer"
+            specClass="org.knime.core.data.uri.URIPortObjectSpec"
+            specSerializer="org.knime.core.data.uri.URIPortObjectSpec$Serializer">
+      </portType>
+   </extension>
+   <extension
+         point="org.knime.core.PortType">
+      <portType
+            hidden="false"
+            name="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject"
+            objectClass="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject"
+            objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObjectSerializer"
+            specClass="org.knime.core.data.uri.URIPortObjectSpec"
+            specSerializer="org.knime.core.data.uri.URIPortObjectSpec$Serializer">
+      </portType>
+   </extension>
+   <extension
+         point="org.knime.core.PortType">
+      <portType
+            hidden="false"
+            name="com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject"
+            objectClass="com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject"
+            objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObjectSerializer"
+            specClass="org.knime.core.data.uri.URIPortObjectSpec"
+            specSerializer="org.knime.core.data.uri.URIPortObjectSpec$Serializer">
+      </portType>
+   </extension>
+   <extension
+         point="org.knime.core.DataType">
+      <DataType
+            cellClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell">
+         <serializer
+               cellClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell"
+               serializerClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCellSerializer">
+         </serializer>
+      </DataType>
+   </extension>
 </plugin>
