@@ -546,9 +546,11 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < nOut; i++) {
             Port port = m_nodeConfig.getOutputPorts().get(i);
             String name = port.getName();
-            String ext = getOutputType(i);
+            String ext = "";
             boolean isPrefix = port.isPrefix();
-
+            if (!isPrefix){
+                ext = getOutputType(i);
+            }
             Parameter<?> p = m_nodeConfig.getParameter(name);
 
             // basenames and number of output files guessed from input
@@ -598,8 +600,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 }
 
                 // create basename: <base_name>_<outfile_nr>
-                String fileName = basename + '.' + ext;
-
+                String fileName = basename;
+                if (!isPrefix){
+                    fileName += '.' + ext;
+                }
                 if (isPrefix) {
                     FileStorePrefixURIPortObject fspup = new FileStorePrefixURIPortObject(
                             exec.createFileStore(m_nodeConfig.getName() + "_"
