@@ -128,9 +128,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
         // Create connection monitor
         final ConnectionMonitor<? extends Connection> monitor = new ConnectionMonitor<>();
-        // Create output spec and container
-        //final DataTableSpec outSpec = createOutSpec();
-        //final BufferedDataContainer outContainer = exec.createDataContainer(outSpec);
+        // Create output URI container
         final List<URIContent> uris = new ArrayList<URIContent>();
         try {
             URI directoryUri;
@@ -151,7 +149,6 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             exec.setProgress("Retrieving list of files");
             
             listDirectory(file, uris, true, exec, new MutableInteger(0), new MutableInteger(0));
-            //outContainer.close();
         } finally {
             // Close connections
             monitor.closeAll();
@@ -182,8 +179,6 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             // URI to the file
             final String extension = FilenameUtils.getExtension(fileUri.getPath());
             final URIContent content = new URIContent(fileUri, extension);
-            //final URIDataCell uriCell = new URIDataCell(content);
-            //final BooleanCell boolCell = BooleanCell.get(file.isDirectory());
             // Add file information to the output
             if (!file.isDirectory()) {
                 uris.add(content);
@@ -291,12 +286,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
      *
      * @return Output table spec
      */
-    private URIPortObjectSpec createOutSpec() {
-//        final DataColumnSpec[] columnSpecs = new DataColumnSpec[2];
-//        columnSpecs[0] = new DataColumnSpecCreator("URI", URIDataCell.TYPE).createSpec();
-//        columnSpecs[1] = new DataColumnSpecCreator("Directory", BooleanCell.TYPE).createSpec();
-//        return new DataTableSpec(columnSpecs);
-        
+    private URIPortObjectSpec createOutSpec() {        
         URIPortObjectSpec outSpec = new URIPortObjectSpec(
                 m_extension);
         return outSpec;

@@ -236,7 +236,6 @@ public class MimeDirectoryImporterNodeDialog extends NodeDialogPane {
 
         JPanel filterBox = new JPanel(new GridLayout(2, 3));
         filterBox.add(m_filterALLRadio);
-        //filterBox.add(m_filterExtensionsRadio);
         filterBox.add(m_caseSensitive);
         filterBox.add(m_filterRegExpRadio);
         filterBox.add(m_filterWildCardsRadio);
@@ -266,14 +265,6 @@ public class MimeDirectoryImporterNodeDialog extends NodeDialogPane {
                 m_expressionField.setEnabled(false);
             }
         });
-        //m_filterExtensionsRadio = new JRadioButton();
-        //m_filterExtensionsRadio.setText("file extension(s)");
-//        m_filterExtensionsRadio.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(final ActionEvent arg0) {
-//                m_extensionField.setEnabled(true);
-//            }
-//        });
 
         m_filterRegExpRadio = new JRadioButton();
         m_filterRegExpRadio.setText("regular expression");
@@ -380,10 +371,6 @@ public class MimeDirectoryImporterNodeDialog extends NodeDialogPane {
         config.setExtensionsString(extension);
         String expression = m_expressionField.getEditor().getItem().toString();
         config.setExpressionsString(expression);
-
-        //Filter extfilter;
-        //extfilter = Filter.Extensions;
-        //config.setExtFilter(extfilter);
         
         // save the selected radio-Button
         Filter filter;
