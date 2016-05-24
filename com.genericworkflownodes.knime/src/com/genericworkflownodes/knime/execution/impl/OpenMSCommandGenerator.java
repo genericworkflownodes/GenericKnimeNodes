@@ -48,7 +48,7 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
     private static final String INI_FILE_NAME = "params.ini";
 
     @Override
-    public List<CommandLineElement> extractParameters(
+    public List<CommandLineElement> generateCommands(
             INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception {

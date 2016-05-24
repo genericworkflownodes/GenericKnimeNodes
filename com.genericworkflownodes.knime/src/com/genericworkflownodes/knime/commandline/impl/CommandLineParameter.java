@@ -14,14 +14,15 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * @author delagarza
  * 
  */
-public class CommandLineParameter extends AbstractCommandLineElement {
+public class CommandLineParameter
+        extends AbstractParametrizedCommandLineElement {
 
-    protected final Parameter<?> associatedParameter;
     protected final String prefix;
     protected final String suffix;
 
     /**
-     * Constructor, prefix and suffix will be set to an empty string.
+     * Constructor, prefix and suffix will be set to an empty string, and
+     * sequence will be set to {@link #NO_SEQUENCE}.
      * 
      * @param associatedParameter
      *            The associated parameter.
@@ -42,25 +43,14 @@ public class CommandLineParameter extends AbstractCommandLineElement {
      */
     public CommandLineParameter(final Parameter<?> associatedParameter,
             final String prefix, final String suffix) {
-        super(associatedParameter.getKey(), associatedParameter.getValue());
+        super(associatedParameter.getKey(), associatedParameter);
         this.prefix = prefix;
         this.suffix = suffix;
-        this.associatedParameter = associatedParameter;
     }
 
     @Override
     public String getStringRepresentation() {
-        return this.prefix + this.associatedParameter.getStringRep()
+        return this.prefix + ((Parameter<?>) this.getValue()).getStringRep()
                 + this.suffix;
     }
-
-    /**
-     * Returns the associated parameter.
-     * 
-     * @return the associated parameter.
-     */
-    public Parameter<?> getAssociatedParameter() {
-        return this.associatedParameter;
-    }
-
 }

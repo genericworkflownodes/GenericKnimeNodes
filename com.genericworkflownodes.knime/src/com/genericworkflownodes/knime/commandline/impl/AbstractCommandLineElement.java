@@ -6,6 +6,7 @@ public abstract class AbstractCommandLineElement implements CommandLineElement {
 
     protected final String key;
     protected Object value;
+    protected int sequenceNumber = CommandLineElement.NO_SEQUENCE;
 
     /**
      * Builds a new command line element using the same string for key and
@@ -37,13 +38,47 @@ public abstract class AbstractCommandLineElement implements CommandLineElement {
     }
 
     @Override
-    public final Object getValue() {
+    public Object getValue() {
         return value;
     }
 
     @Override
     public final void setValue(final Object value) {
         this.value = value;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.genericworkflownodes.knime.commandline.CommandLineElement#isSequenced
+     * ()
+     */
+    @Override
+    public boolean isSequenced() {
+        return this.sequenceNumber == CommandLineElement.NO_SEQUENCE;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.genericworkflownodes.knime.commandline.CommandLineElement#
+     * getSequenceNumber()
+     */
+    @Override
+    public int getSequenceNumber() {
+        return this.sequenceNumber;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.genericworkflownodes.knime.commandline.CommandLineElement#
+     * setSequenceNumber(int)
+     */
+    @Override
+    public void setSequenceNumber(final int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 
 }

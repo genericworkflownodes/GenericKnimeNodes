@@ -804,7 +804,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         final IToolExecutor executor = prepareExecutor(workingDirectory);
         final ICommandGenerator commandGenerator = executor
                 .getCommandGenerator();
-        return commandGenerator.extractParameters(m_nodeConfig, m_pluginConfig,
+        return commandGenerator.generateCommands(m_nodeConfig, m_pluginConfig,
                 workingDirectory);
     }
 }

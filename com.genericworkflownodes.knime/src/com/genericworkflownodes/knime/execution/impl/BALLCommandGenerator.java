@@ -41,7 +41,7 @@ public class BALLCommandGenerator implements ICommandGenerator {
     private static final String PAR_FILE_NAME = "params.xml";
 
     @Override
-    public List<CommandLineElement> extractParameters(
+    public List<CommandLineElement> generateCommands(
             INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception {
