@@ -46,7 +46,7 @@ public interface ICommandGenerator {
      * @throws Exception
      *             An exception is thrown if the construction fails.
      */
-    List<CommandLineElement> extractParameters(
+    List<CommandLineElement> generateCommands(
             INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception;
