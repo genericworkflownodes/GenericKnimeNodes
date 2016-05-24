@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2011, Marc Röttig, Stephan Aiche.
+ * Copyright (c) 2016, Benjamin Schubert.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -34,7 +35,7 @@ import java.util.Random;
 /**
  * Collection of Helper methods.
  * 
- * @author roettig, aiche
+ * @author roettig, aiche, schubert
  */
 public final class Helper {
 
@@ -42,6 +43,8 @@ public final class Helper {
      * Size of the buffer when copying streams to files.
      */
     private static final int BUFFER_SIZE = 2048;
+	private static final String OS_WIN = "Windows";
+	private static final String OS_MAC = "Mac";
 
     /**
      * Private c'tor to avoid instantiation of Util class.
@@ -197,8 +200,8 @@ public final class Helper {
      */
     public static synchronized File getTempDir(final String prefix,
             boolean autodelete) throws IOException {
-        return getTempDir(System.getProperty("java.io.tmpdir"), prefix,
-                autodelete);
+    	return getTempDir(System.getProperty("java.io.tmpdir"), prefix,
+    				autodelete);
     }
 
     /**
@@ -279,5 +282,29 @@ public final class Helper {
             target[i] = new String[src[i].length];
             System.arraycopy(src[i], 0, target[i], 0, array_length);
         }
+    }
+    
+    /***
+     * Checks if OS is specific OS family
+     * @return
+     */
+    private static boolean isOS(final String osName) {
+        return System.getProperty("os.name").startsWith(osName);
+    }
+    
+    /**
+     * Checks if OS is part of the Windows-Family
+     * @return
+     */
+    public static boolean isWin(){
+    	return isOS(OS_WIN);
+    }
+    
+    /**
+     * Checks if OS is part of the Mac-Family
+     * @return
+     */
+     public static boolean isMac(){
+    	return isOS(OS_MAC);
     }
 }

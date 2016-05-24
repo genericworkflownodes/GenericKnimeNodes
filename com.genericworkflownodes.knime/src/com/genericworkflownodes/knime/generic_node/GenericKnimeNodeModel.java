@@ -88,8 +88,6 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     /**
      * Short-cut for optional ports.
      */
-//    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-//            IURIPortObject.class, true);
     public static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
 
     /**
@@ -431,7 +429,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         return createOutSpec();
     }
 
-    private void checkIfToolExists() throws InvalidSettingsException {
+    protected void checkIfToolExists() throws InvalidSettingsException {
         try {
             m_pluginConfig.getBinaryManager().findBinary(
                     m_nodeConfig.getExecutableName());

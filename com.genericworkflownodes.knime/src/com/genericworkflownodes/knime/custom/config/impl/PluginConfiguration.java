@@ -18,6 +18,8 @@
  */
 package com.genericworkflownodes.knime.custom.config.impl;
 
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 
 import com.genericworkflownodes.knime.custom.config.BinaryManager;
@@ -52,6 +54,21 @@ public class PluginConfiguration implements IPluginConfiguration {
     private final BinaryManager m_binaryManager;
 
     /**
+     * The tool properties
+     */
+    private final Properties m_toolProps;
+    
+    /**
+     * The tool specific properties
+     */
+    private final Map<String, Properties> m_specifcToolProps;
+    
+   /**
+    * The docker machine if specified, else 'default'
+    */
+    private final String m_dockerMachine;
+    
+    /**
      * C'tor for {@link PluginConfiguration}.
      * 
      * @param pluginId
@@ -71,6 +88,31 @@ public class PluginConfiguration implements IPluginConfiguration {
         m_pluginName = pluginName;
         m_props = props;
         m_binaryManager = new BinaryManager(classFromPlugin);
+        Properties p = new Properties();
+        Map<String,Properties> toolMap = new Hashtable<String,Properties>(); 
+        for(String key: m_props.stringPropertyNames()){
+            if(key.startsWith("tool.")){
+                String value = m_props.getProperty(key);
+                p.put(key, value);
+                String[] keyElements = key.split("\\.");
+                if(keyElements.length > 2){
+                    String tool_key = "";
+                    for(int i=2;i<keyElements.length;i++){
+                        tool_key+=keyElements[i];
+                    }
+                    if(toolMap.containsKey(keyElements[1])){
+                        toolMap.get(keyElements[1]).put(tool_key, value);
+                    }else{
+                        Properties p_tool = new Properties();
+                        p_tool.put(tool_key, value);
+                        toolMap.put(keyElements[1], p_tool);
+                    }
+                }
+            }
+        }
+        m_toolProps = p;
+        m_specifcToolProps = toolMap;
+        m_dockerMachine = props.getProperty("dockerMachine","default");
     }
 
     /**
@@ -100,6 +142,21 @@ public class PluginConfiguration implements IPluginConfiguration {
     @Override
     public BinaryManager getBinaryManager() {
         return m_binaryManager;
+    }
+
+    @Override
+    public Properties getToolProperties() {
+        return m_toolProps;
+    }
+
+    @Override
+    public Properties getToolProperty(String toolName) {
+        return m_specifcToolProps.get(toolName);
+    }
+
+    @Override
+    public String getDockerMachine() {
+        return m_dockerMachine;
     }
 
 }

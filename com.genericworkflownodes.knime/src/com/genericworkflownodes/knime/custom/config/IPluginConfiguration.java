@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2012, Stephan Aiche.
+ * Copyright (c) 2016, Benjamin Schubert.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -23,7 +24,7 @@ import java.util.Properties;
 /**
  * Provides all plugin specific configuration settings.
  * 
- * @author aiche
+ * @author aiche, schubert
  */
 public interface IPluginConfiguration {
 
@@ -55,4 +56,26 @@ public interface IPluginConfiguration {
      * @return The binary manager for this plugin.
      */
     BinaryManager getBinaryManager();
+    
+    /**
+     *  The tool specific properties
+     *  
+     *  @return
+     */
+    Properties getToolProperties(); 
+    
+    /**
+     * Specific tool properties
+     * 
+     * @param toolName - The name of the tool
+     * @return 
+     */
+    Properties getToolProperty(String toolName);
+    
+    /**
+     *  The name of the docker-machine to use
+     *  
+     * @return
+     */
+    String getDockerMachine();
 }
