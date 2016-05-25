@@ -8,21 +8,32 @@
     </shortDescription>
     
     <fullDescription>
-        <intro>With this node you can locate a file on your file system that can serve as input
-         for another Generic Knime Node. This is different from "File Reader", in the sense that
-          the file is not read into an internal KNIME Table, but stays on your file system.</intro>
+        <intro>
+            With this node you can locate files in a folder (and optionally in all of its subfolders)
+            on your file system that can serve as input for other Generic Knime Nodes. This is different
+            from "Remote Folder", in the sense that it only supports import of files of the same MIME-type
+            and writes them directly to URI Ports. You can also specify regular expressions or wildcards
+            that filter the found files by their filename (without extension).
+        </intro>
     
-    
-    <option name="Selected Directory">
-             Specifies the full name (including its directory) of the file.
-         </option>
-       <option name="File extension (override)">
-		By default, Input File will determine the file type by the extension of the file, but 
-		this behavior can be overridden (e.g. in case of a custom file extension but known file type).
-		In that case, you can provide the extension for the file type you want the file to be interpreted as.
-      </option>
+        <option name="Directory">
+            Specifies the path to the directory to list. Can read KNIME relative paths and use
+            flow variables (button on the right).
+        </option>
+        <option name="Recursive">
+            Additionally traverses subfolders and lists all matching files. Folders never match.
+        </option>
+        <option name="Extension">
+		  Required. To unify the MIME-type of the output URIs, a file extension has to be provided
+          that enables a first filtering step by file extension.
+        </option>
+        <option name="Filter Expression">
+          An optional filter expression to filter the found files of the specified type before
+          listing them. Can be disabled (none), a wildcard or a regular expression.
+        </option>
     </fullDescription>
     <ports>
-     <outPort index="0" name="loaded files ">Loaded files in (sub-)directory </outPort>   
+     <inPort index="0" name="remote connection">Optional remote connection, (e.g. established with "FTP Connection") </inPort> 
+     <outPort index="0" name="loaded files">Loaded files in (sub-)directory </outPort>   
     </ports>
 </knimeNode>
