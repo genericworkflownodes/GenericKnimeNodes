@@ -43,11 +43,11 @@
 			<xs:attribute name="version" type="xs:string" use="required" />
 			<xs:attribute name="name" use="required">
 				<xs:annotation>
-					<xs:documentation>Name of the tool. Needs to pass following regular expression [A-Za-z0-9]+</xs:documentation>
+					<xs:documentation>Name of the tool. Needs to pass following regular expression [A-Za-z0-9_\-]+</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:pattern value="[A-Za-z0-9]+" />
+						<xs:pattern value="[A-Za-z0-9_\-]+" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
