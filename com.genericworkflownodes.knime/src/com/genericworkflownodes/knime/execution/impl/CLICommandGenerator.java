@@ -162,7 +162,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      *             If not all contained lists have the same size.
      */
     protected void validateExtractedParameters(
-            final List<List<? extends CommandLineElement>> extractedParameterValues)
+        final List<List<? extends CommandLineElement>> extractedParameterValues)
                     throws Exception {
 
         int currentSize = -1;

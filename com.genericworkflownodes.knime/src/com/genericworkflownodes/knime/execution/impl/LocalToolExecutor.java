@@ -161,7 +161,7 @@ public class LocalToolExecutor implements IToolExecutor {
     public Map<String, String> getEnvironmentVariables() {
         return m_environmentVariables;
     }    
-
+    
     /**
      * C'tor.
      */
