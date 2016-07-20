@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +248,12 @@ public class LocalToolExecutor implements IToolExecutor {
     public File getWorkingDirectory() {
         return m_workingDirectory;
     }
+    
+    protected void extractFromCommandLineElements(final Collection<CommandLineElement> elements, final Collection<String> commands) {
+        for (final CommandLineElement element : elements) {
+            commands.add(element.getStringRepresentation());
+        }
+    }
 
     @Override
     public int execute() throws ToolExecutionFailedException {
@@ -257,9 +264,7 @@ public class LocalToolExecutor implements IToolExecutor {
             // this is a local execution, we need the values of all of the
             // command line elements
             // so we need the string representation of each element
-            for (final CommandLineElement command : m_commands) {
-                commands.add(command.getStringRepresentation());
-            }
+            extractFromCommandLineElements(m_commands, commands);
 
             // emit command
             LOGGER.debug("Executing: " + StringUtils.join(commands, " "));

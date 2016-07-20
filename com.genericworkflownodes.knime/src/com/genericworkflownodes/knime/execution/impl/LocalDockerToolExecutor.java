@@ -29,7 +29,6 @@ import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
-import com.genericworkflownodes.knime.execution.impl.LocalToolExecutor.StreamGobbler;
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.StringUtils;
 import com.genericworkflownodes.knime.GenericNodesPlugin;
@@ -46,7 +45,7 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
     public int execute() throws ToolExecutionFailedException {
         try {
             List<String> command = new ArrayList<String>();
-            command.addAll(m_commands);
+            extractFromCommandLineElements(m_commands, command);
     
             // emit command
             LOGGER.debug("Executing: " + StringUtils.join(command, " "));
