@@ -116,7 +116,7 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
     private void activateDockerMachine(IPluginConfiguration pluginConfiguration) 
             throws ToolExecutionFailedException {
         String dockerPath = GenericNodesPlugin.getDockerInstallationDir()+File.separator;
-        if(Helper.isMac()|| Helper.isWin()){
+        if((Helper.isMac()|| Helper.isWin()) && GenericNodesPlugin.isDockerToolBox()){
             if(executeDockerCommand(dockerPath+DOCKER_CHECK+pluginConfiguration.getDockerMachine()).equals(DOCKER_STOPPED)){
                 executeDockerCommand(dockerPath+DOCKER_START+pluginConfiguration.getDockerMachine());
                 }
@@ -180,11 +180,13 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
      */
     private String executeDockerCommand(String command) 
             throws ToolExecutionFailedException {
+        
+        String name = (getExecutable() == null) ? "docker-machine default" : getExecutable().getName();
         try{
             final ProcessBuilder pb = new ProcessBuilder(command.split("\\s+"));
             super.setupProcessEnvironment(pb);
             final Process p = pb.start();
-
+            
             // prepare capture of cerr/cout streams
             StreamGobbler stdOutGobbler = new StreamGobbler(
                             p.getInputStream());
@@ -207,9 +209,9 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
                 for(String s: stdErr){
                     builder.append(s+ System.getProperty("line.separator"));
                 }
-                LOGGER.warn("Failed to execute tool " + getExecutable().getName()+" "+builder.toString(), null);
+                LOGGER.warn("Failed to execute tool " + name +" "+builder.toString(), null);
                 throw new ToolExecutionFailedException("Failed to execute tool "
-                            + getExecutable().getName()+" "+builder.toString(), null);
+                            + name +" "+builder.toString(), null);
             }
             
             StringBuilder builder = new StringBuilder();
@@ -219,9 +221,9 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
             return builder.toString().trim();
             
         } catch (Exception e) {
-            LOGGER.warn("Failed to execute tool " + getExecutable().getName(), e);
+            LOGGER.warn("Failed to execute tool " + name, e);
             throw new ToolExecutionFailedException("Failed to execute tool "
-                        + getExecutable().getName(), e);
+                        + name, e);
         }
     }
     

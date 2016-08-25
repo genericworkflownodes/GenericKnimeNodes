@@ -45,6 +45,11 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     public static final String DOCKER_MACHINE_INSTALLATION_DIRECTORY = "knime.gkn.dockerMachineInstallationDir";
     
     /**
+     * Preferences key for the Docker-Machine usage.
+     */
+    public static final String DOCKER_MACHINE_USAGE = "knime.gkn.dockerMachineUsage";
+    
+    /**
      * Preferences key for the VM installation directory.
      */
     public static final String VM_INSTALLATION_DIRECTORY = "knime.gkn.vmInstallationDir";
@@ -57,11 +62,13 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
         // set default values
         store.setDefault(PREF_DEBUG_MODE, GenericNodesPlugin.isDebug());
-
+        store.setDefault(DOCKER_MACHINE_USAGE, GenericNodesPlugin.isDebug());
+        
         store.setDefault(DOCKER_MACHINE_INSTALLATION_DIRECTORY,
                     GenericNodesPlugin.getDockerInstallationDir()); //$NON-NLS-1$
         store.setDefault(VM_INSTALLATION_DIRECTORY,
                     GenericNodesPlugin.getVmInstllationDir()); //$NON-NLS-1$
+
 
     }
 }

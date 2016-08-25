@@ -56,6 +56,11 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
      * The VM installation directory used by docker-machine
      */
     private static String vmInstllationDir = "";
+
+    /**
+     * State of Docker-Toolbox usage
+     */
+    private static Boolean isDockerToolBoxEnabled = false;
     
     /**
      * Check if the plug-in is in isDebugModeEnabled mode.
@@ -66,6 +71,16 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
         return GenericNodesPlugin.isDebugModeEnabled;
     }
 
+    /**
+     * Checks if Docker-Toolbox should be used instead of native 
+     * Docker implementation
+     * 
+     * @return True if Docker-Toolbox should be used, false otherwise
+     */
+    public static boolean isDockerToolBox() {
+        return GenericNodesPlugin.isDockerToolBoxEnabled;
+    }
+    
     /**
      * Sets the isDebugModeEnabled status of the plug-in.
      * 
@@ -152,5 +167,10 @@ public class GenericNodesPlugin extends AbstractUIPlugin {
     public static void setVmInstllationDir(String vmInstllationDir) {
         LOGGER.debug("Setting GKN vmInstllationDir: " + vmInstllationDir);
         GenericNodesPlugin.vmInstllationDir = vmInstllationDir;
+    }
+
+    public static void setDockerToolBoxUsage(Boolean dockerToolboxUsage) {
+        LOGGER.debug("Setting GKN Docker-Toolbox usage: " + String.valueOf(dockerToolboxUsage));
+        GenericNodesPlugin.isDockerToolBoxEnabled  = dockerToolboxUsage;
     }
 }

@@ -31,6 +31,15 @@ public class DockerMachinePreferencePage extends FieldEditorPreferencePage
      * Docker container
      */
     private BooleanFieldEditor homeTMPFieldEditor;
+
+    /**
+     * The {@link BiikeanFieldEditor} to specify whether Docker Toolbox is used as 
+     * instead of the native Docker implementations, which requires a docker-machine
+     * is constantly running.
+     * Docker container
+     */
+    private BooleanFieldEditor dockerToolBoxFieldEditor;
+    
     
     public DockerMachinePreferencePage() {
         super(GRID);
@@ -49,6 +58,8 @@ public class DockerMachinePreferencePage extends FieldEditorPreferencePage
                 store.getString(PreferenceInitializer.DOCKER_MACHINE_INSTALLATION_DIRECTORY));
         GenericNodesPlugin.setVmInstllationDir(
                 store.getString(PreferenceInitializer.VM_INSTALLATION_DIRECTORY));
+        GenericNodesPlugin.setDockerToolBoxUsage(
+                store.getBoolean(PreferenceInitializer.VM_INSTALLATION_DIRECTORY));
     }
 
     @Override
@@ -86,6 +97,10 @@ public class DockerMachinePreferencePage extends FieldEditorPreferencePage
                 .setValidateStrategy(StringFieldEditor.VALIDATE_ON_KEY_STROKE);
         vmDriverInstallDir.load();
 
+        dockerToolBoxFieldEditor = new BooleanFieldEditor(
+                PreferenceInitializer.DOCKER_MACHINE_USAGE, 
+                "Docker-Toolbox usage", getFieldEditorParent());
+        addField(dockerToolBoxFieldEditor);
     }
 
     
@@ -95,9 +110,12 @@ public class DockerMachinePreferencePage extends FieldEditorPreferencePage
                 .getPreferenceStore();
         String  dockerInstallDir = dockerMachineInstallDir.getStringValue();
         String vmInstallDir = vmDriverInstallDir.getStringValue();
+        boolean flag = dockerToolBoxFieldEditor.getBooleanValue();
         store.setValue(PreferenceInitializer.DOCKER_MACHINE_INSTALLATION_DIRECTORY, dockerInstallDir);
         store.setValue(PreferenceInitializer.VM_INSTALLATION_DIRECTORY, vmInstallDir);
-
+        store.setValue(PreferenceInitializer.DOCKER_MACHINE_USAGE, flag);
+        
+        GenericNodesPlugin.setDockerToolBoxUsage(flag);
         GenericNodesPlugin.setDockerInstallationDir(dockerInstallDir);
         GenericNodesPlugin.setVmInstllationDir(vmInstallDir);
         return true;
