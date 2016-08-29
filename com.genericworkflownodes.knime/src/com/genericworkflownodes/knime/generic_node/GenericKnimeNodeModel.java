@@ -29,10 +29,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.EmptyFileFilter;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -43,6 +45,8 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.inactive.InactiveBranchPortObject;
+import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
@@ -88,8 +92,6 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     /**
      * Short-cut for optional ports.
      */
-//    public static final PortType OPTIONAL_PORT_TYPE = new PortType(
-//            IURIPortObject.class, true);
     public static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
 
     /**
@@ -147,7 +149,20 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         Helper.array2dcopy(fileEndingsInPorts, m_fileEndingsInPorts);
 
         m_fileEndingsOutPorts = new String[fileEndingsOutPorts.length][];
-        Helper.array2dcopy(fileEndingsOutPorts, m_fileEndingsOutPorts);
+        //Special treatment of outports. If they are optional, an inactive mimetype is allowed.
+        for (int i = 0; i < fileEndingsOutPorts.length; ++i) {
+            int array_length = fileEndingsOutPorts[i].length;
+            if (nodeConfig.getOutputPorts().get(i).isOptional()) {
+                array_length++;
+            }
+            
+            m_fileEndingsOutPorts[i] = new String[array_length];
+            System.arraycopy(fileEndingsOutPorts[i], 0, m_fileEndingsOutPorts[i], 0, fileEndingsOutPorts[i].length);
+            if (nodeConfig.getOutputPorts().get(i).isOptional()) {
+                m_fileEndingsOutPorts[i][array_length-1] = "Inactive";
+            }
+            
+        }
 
         m_selectedOutputType = new int[m_nodeConfig.getNumberOfOutputPorts()];
     }
@@ -175,6 +190,17 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     protected int getOutputTypeIndex(int idx) {
         return m_selectedOutputType[idx];
     }
+    
+    /**
+     * Returns if the port with the given index has its selected MimeType set to the "inactive" type.
+     * 
+     * @param idx
+     *            The port number for which the activeness should be checked.
+     * @return If the port is inactive.
+     */
+    protected boolean isInactive(int idx) {
+        return this.getOutputType(idx).equals("Inactive");
+    }
 
     /**
      * Creates a list of output port types for the nodes.
@@ -189,6 +215,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < ports.size(); i++) {
             if (ports.get(i).isOptional()) {
                 portTypes[i] = OPTIONAL_PORT_TYPE;
+                if (!ports.get(i).isActive()) {
+                    portTypes[i] = InactiveBranchPortObject.TYPE;
+                }
             }
         }
         return portTypes;
@@ -237,6 +266,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             throw new ExecutionFailedException(m_nodeConfig.getName(), iex);
         }
 
+        LOGGER.debug("COMMAND:  " + executor.getCommand());
         LOGGER.debug("STDOUT:  " + executor.getToolOutput());
         LOGGER.debug("STDERR:  " + executor.getToolErrorOutput());
         LOGGER.debug("RETCODE: " + retcode);
@@ -451,8 +481,12 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             // selected output MIMEType
             int selectedMIMETypeIndex = getOutputTypeIndex(i);
             // TODO: check
-            out_spec[i] = new URIPortObjectSpec(
-                    m_fileEndingsOutPorts[i][selectedMIMETypeIndex]);
+            String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
+            if (!mt.equals("Inactive")) {
+                out_spec[i] = new URIPortObjectSpec(mt);
+            } else {
+                out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
+            }
         }
 
         return out_spec;
@@ -570,16 +604,23 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                     throw new Exception(
                             "Cannot determine number of output files if no input file is given.");
                 }
+                
+                //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
+                PortObject fsupo;
+                if (!ext.equals("Inactive")) {
 
-                FileStoreURIPortObject fsupo = new FileStoreURIPortObject(
-                        exec.createFileStore(m_nodeConfig.getName() + "_" + i));
-
-                for (int f = 0; f < basenames.size(); ++f) {
-                    // create basename: <base_name>_<port_nr>_<outfile_nr>
-                    String file_basename = String.format("%s_%d",
-                            basenames.get(f), f);
-                    File file = fsupo.registerFile(file_basename + "." + ext);
-                    fileNames.add(file.getAbsolutePath());
+                    fsupo = new FileStoreURIPortObject(
+                            exec.createFileStore(m_nodeConfig.getName() + "_" + i));
+    
+                    for (int f = 0; f < basenames.size(); ++f) {
+                        // create basename: <base_name>_<port_nr>_<outfile_nr>
+                        String file_basename = String.format("%s_%d",
+                                basenames.get(f), f);
+                        File file = ((FileStoreURIPortObject) fsupo).registerFile(file_basename + "." + ext);
+                        fileNames.add(file.getAbsolutePath());
+                    }
+                } else {
+                    fsupo = InactiveBranchPortObject.INSTANCE;
                 }
 
                 // add filled portobject
@@ -590,42 +631,48 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 flp.setValue(fileNames);
 
             } else if (p instanceof FileParameter && !port.isMultiFile()) {
-                // if we have no basename to use (e.g., Node without input-file)
-                // we use the nodename
-                String basename;
-                if (basenames.isEmpty()) {
-                    basename = m_nodeConfig.getName();
+                //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
+                PortObject po;
+                if (!ext.equals("Inactive")) {
+                    // if we have no basename to use (e.g., Node without input-file)
+                    // we use the nodename
+                    String basename;
+                    if (basenames.isEmpty()) {
+                        basename = m_nodeConfig.getName();
+                    } else {
+                        basename = basenames.get(0);
+                    }
+    
+                    // create basename: <base_name>_<outfile_nr>
+                    String fileName = basename;
+                    if (!isPrefix){
+                        fileName += '.' + ext;
+                    }
+                    if (isPrefix) {
+                        po = new FileStorePrefixURIPortObject(
+                                exec.createFileStore(m_nodeConfig.getName() + "_"
+                                        + i), fileName);
+                        ((FileParameter) p).setValue(((FileStorePrefixURIPortObject) po).getPrefix());
+                        LOGGER.debug("> setting param " + name + "->"
+                                + ((FileStorePrefixURIPortObject) po).getPrefix());
+    
+                        
+                    } else {
+                        po = new FileStoreURIPortObject(
+                                exec.createFileStore(m_nodeConfig.getName() + "_"
+                                        + i));
+    
+                        // we do not append the file extension if we have a prefix
+                        File file = ((FileStoreURIPortObject)po).registerFile(fileName);
+                        ((FileParameter) p).setValue(file.getAbsolutePath());
+                        LOGGER.debug("> setting param " + name + "->" + file);
+                    }
+                    
                 } else {
-                    basename = basenames.get(0);
+                    po = InactiveBranchPortObject.INSTANCE;
                 }
-
-                // create basename: <base_name>_<outfile_nr>
-                String fileName = basename;
-                if (!isPrefix){
-                    fileName += '.' + ext;
-                }
-                if (isPrefix) {
-                    FileStorePrefixURIPortObject fspup = new FileStorePrefixURIPortObject(
-                            exec.createFileStore(m_nodeConfig.getName() + "_"
-                                    + i), fileName);
-                    ((FileParameter) p).setValue(fspup.getPrefix());
-                    LOGGER.debug("> setting param " + name + "->"
-                            + fspup.getPrefix());
-
-                    outPorts.add(fspup);
-                } else {
-                    FileStoreURIPortObject fsupo = new FileStoreURIPortObject(
-                            exec.createFileStore(m_nodeConfig.getName() + "_"
-                                    + i));
-
-                    // we do not append the file extension if we have a prefix
-                    File file = fsupo.registerFile(fileName);
-                    ((FileParameter) p).setValue(file.getAbsolutePath());
-                    LOGGER.debug("> setting param " + name + "->" + file);
-
-                    // remember output file
-                    outPorts.add(fsupo);
-                }
+                // remember output file
+                outPorts.add(po);
             } else {
                 throw new Exception(
                         "Invalid connection between ports and parameters.");

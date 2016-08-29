@@ -47,6 +47,11 @@ public class Port implements Serializable {
      * Flag to show if the port is optional for the tool.
      */
     private boolean m_isOptional;
+    
+    /**
+     * Flag to show if the port is active for the tool (can only be false if optional and output port).
+     */
+    private boolean m_isActive;
 
     /**
      * The name of the port.
@@ -112,6 +117,26 @@ public class Port implements Serializable {
      */
     public void setOptional(boolean isOptional) {
         m_isOptional = isOptional;
+    }
+    
+    /**
+     * Returns whether this port is active or not.
+     * 
+     * @return True if the port is active, false otherwise.
+     */
+    public boolean isActive() {
+        return m_isActive;
+    }
+    
+    /**
+     * Sets whether this port is active or not.
+     * 
+     * @param m_isActive
+     *            New indicator if the given port is active or not.
+     * 
+     */
+    public void setActive(boolean isActive) {
+        m_isActive = isActive;
     }
 
     /**

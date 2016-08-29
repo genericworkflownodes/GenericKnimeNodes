@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.execution.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
@@ -132,6 +133,13 @@ public class DummyToolExecutor implements IToolExecutor {
     }
 
     @Override
+    public List<String> getCommand() {
+        LinkedList<String> ret = new LinkedList<String>();
+        ret.add("wait " + sleepTime + "ms");
+        return ret;
+    }
+
+    @Override
     public LinkedList<String> getToolOutput() {
         LinkedList<String> ret = new LinkedList<String>();
         ret.add("Slept " + sleepTime + "ms, got killed=" + killed);
@@ -162,5 +170,6 @@ public class DummyToolExecutor implements IToolExecutor {
     public boolean isKilled() {
         return killed;
     }
+
 
 }

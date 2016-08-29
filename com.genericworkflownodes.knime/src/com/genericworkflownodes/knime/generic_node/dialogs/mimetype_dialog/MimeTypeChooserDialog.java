@@ -54,14 +54,22 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
             Port port = this.config.getOutputPorts().get(i);
 
             this.add(new JLabel(port.getName()));
-
+            
             List<String> types = port.getMimeTypes();
+            
             String[] strs = new String[types.size()];
-
+            
             int idx = 0;
+            
             for (String type : types) {
                 strs[idx++] = type;
             }
+            
+            // Is already added to the possible MimeTypes
+//            if (port.isOptional()){
+//                //TODO make it a static variable?
+//                strs[idx++] = "Inactive";   
+//            }
 
             JComboBox cb = new JComboBox(strs);
             cbs[i] = cb;
