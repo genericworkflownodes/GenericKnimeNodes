@@ -461,7 +461,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         return createOutSpec();
     }
 
-    private void checkIfToolExists() throws InvalidSettingsException {
+    protected void checkIfToolExists() throws InvalidSettingsException {
         try {
             m_pluginConfig.getBinaryManager().findBinary(
                     m_nodeConfig.getExecutableName());

@@ -16,6 +16,7 @@
 
    <extension point="org.knime.workbench.repository.nodes">
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory" id="com.genericworkflownodes.knime.nodes.io.exporter.MimeFileExporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
@@ -28,6 +29,13 @@
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
    	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
 	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
+ <node
+       after="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"
+       category-path="/community/GenericKnimeNodes/Flow"
+       deprecated="false"
+       factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"
+       id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory">
+ </node>
 </extension>
    
    <extension point="org.knime.product.splashExtension">
@@ -40,6 +48,7 @@
    
    <extension point="org.eclipse.ui.preferencePages">
       <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.PreferencePage" name="Generic KNIME Nodes"/>
+      <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.DockerMachinePreferencePage" id="com.genericworkflownodes.knime.preferences.com.genericworkflownodes.knime.preferences.DockerMachinePreferencePage" name="GKN Docker"/>
    </extension>
    <extension
          point="com.genericworkflownodes.knime.execution.Executor">
@@ -50,6 +59,14 @@
       <executor
             class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
             name="LocalToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
+            name="LocalDockerToolExecutor">
       </executor>
    </extension>
    <extension
@@ -67,6 +84,10 @@
             name="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator">
       </commandgenerator>
       <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.DockerCommandGenerator"
+            name="com.genericworkflownodes.knime.execution.impl.DockerCommandGenerator">
+      </commandgenerator>
+      <commandgenerator
             class="com.genericworkflownodes.knime.execution.impl.BALLCommandGenerator"
             name="BALLCommandGenerator">
       </commandgenerator>
@@ -78,6 +99,13 @@
             class="com.genericworkflownodes.knime.execution.impl.OpenMSCommandGenerator"
             name="OpenMSCommandGenerator">
       </commandgenerator>
+      <commandgenerator
+            class="com.genericworkflownodes.knime.execution.impl.DockerCommandGenerator"
+            name="DockerCommandGenerator">
+      </commandgenerator>
+   </extension>
+   <extension
+         point="com.genericworkflownodes.knime.execution.CommandGenerator">
    </extension>
    <extension
          point="org.knime.core.PortType">

@@ -46,7 +46,7 @@ public class CLICommandGenerator implements ICommandGenerator {
     protected static final NodeLogger logger = NodeLogger
             .getLogger(CLICommandGenerator.class);
 
-    private INodeConfiguration nodeConfig;
+    protected INodeConfiguration nodeConfig;
 
     @Override
     public List<String> generateCommands(INodeConfiguration nodeConfiguration,
@@ -81,7 +81,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @throws Exception
      *             Is thrown if the configuration values are invalid.
      */
-    private List<String> processCLI() throws Exception {
+    protected List<String> processCLI() throws Exception {
         List<String> commands = new ArrayList<String>();
 
         for (CLIElement cliElement : nodeConfig.getCLI().getCLIElement()) {
@@ -128,7 +128,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @param cliElement
      * @param commands
      */
-    private void expandParameters(List<List<String>> extractedParameterValues,
+    protected void expandParameters(List<List<String>> extractedParameterValues,
             CLIElement cliElement, List<String> commands) {
         // since we assume that the outer list is not empty this will always
         // work
@@ -158,7 +158,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @throws Exception
      *             If not all contained lists have the same size.
      */
-    private void validateExtractedParameters(
+    protected void validateExtractedParameters(
             List<List<String>> extractedParameterValues) throws Exception {
 
         int currentSize = -1;
@@ -213,7 +213,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @param cliElement
      * @return
      */
-    private boolean isMappedToBooleanParameter(CLIElement cliElement) {
+    protected boolean isMappedToBooleanParameter(CLIElement cliElement) {
         return cliElement.getMapping().size() == 1
                 && nodeConfig.getParameter(cliElement.getMapping().get(0)
                         .getReferenceName()) instanceof BoolParameter;
@@ -228,7 +228,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @param cliElement
      *            The currently interpreted clielement.
      */
-    private void handleBooleanParameter(List<String> commands,
+    protected void handleBooleanParameter(List<String> commands,
             CLIElement cliElement) {
         if (((BoolParameter) nodeConfig.getParameter(cliElement.getMapping()
                 .get(0).getReferenceName())).getValue()) {
@@ -242,7 +242,7 @@ public class CLICommandGenerator implements ICommandGenerator {
      * @param configStore
      * @throws IOException
      */
-    private void exportPlainConfiguration(File workingDirectory)
+    protected void exportPlainConfiguration(File workingDirectory)
             throws IOException {
         PlainNodeConfigurationWriter writer = new PlainNodeConfigurationWriter();
         writer.init(nodeConfig);

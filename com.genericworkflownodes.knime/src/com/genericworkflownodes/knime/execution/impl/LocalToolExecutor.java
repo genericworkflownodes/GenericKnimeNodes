@@ -62,7 +62,7 @@ public class LocalToolExecutor implements IToolExecutor {
      * 
      * @author aiche
      */
-    private static class StreamGobbler extends Thread {
+    protected static class StreamGobbler extends Thread {
         /**
          * The stream that is gobbled.
          */
@@ -120,38 +120,45 @@ public class LocalToolExecutor implements IToolExecutor {
     /**
      * The working directory where the process will be executed.
      */
-    private File m_workingDirectory;
+    protected File m_workingDirectory;
 
     /**
      * The environment variables that will be passed to the running environment.
      */
-    private final Map<String, String> m_environmentVariables;
+    protected final Map<String, String> m_environmentVariables;
 
     /**
      * The return code of the process.
      */
-    private int m_returnCode;
+    protected int m_returnCode;
 
     /**
      * The std-out of the executed process.
      */
-    private LinkedList<String> m_stdOut;
+    protected LinkedList<String> m_stdOut;
 
     /**
      * The std-err of the executed process.
      */
-    private LinkedList<String> m_stdErr;
+    protected LinkedList<String> m_stdErr;
 
-    private Process m_process;
+    protected Process m_process;
 
-    private ICommandGenerator m_generator;
+    protected ICommandGenerator m_generator;
 
     /**
      * The executable.
      */
-    private File m_executable;
+    protected File m_executable;
 
-    private List<String> m_commands;
+    protected List<String> m_commands;
+
+    /**
+     * @return the m_environmentVariables
+     */
+    public Map<String, String> getEnvironmentVariables() {
+        return m_environmentVariables;
+    }
 
     /**
      * C'tor.
@@ -341,11 +348,16 @@ public class LocalToolExecutor implements IToolExecutor {
      * @param builder
      *            The builder that should be initialized.
      */
-    private void setupProcessEnvironment(ProcessBuilder builder) {
+    protected void setupProcessEnvironment(ProcessBuilder builder) {
         for (String key : m_environmentVariables.keySet()) {
             String value = expandEnvironmentVariables(m_environmentVariables
                     .get(key));
-            builder.environment().put(key, value);
+            if(builder.environment().containsKey(key)){
+                builder.environment().put(key, value
+                        +File.pathSeparator+builder.environment().get(key));
+            }else{
+                builder.environment().put(key, value);
+            }
         }
     }
 
@@ -373,7 +385,7 @@ public class LocalToolExecutor implements IToolExecutor {
      * @throws NoBinaryAvailableException
      *             If no matching binary was found.
      */
-    private void findExecutable(INodeConfiguration nodeConfiguration,
+    protected void findExecutable(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration)
             throws NoBinaryAvailableException {
         m_executable = pluginConfiguration.getBinaryManager().findBinary(
@@ -388,5 +400,9 @@ public class LocalToolExecutor implements IToolExecutor {
     @Override
     public LinkedList<String> getToolErrorOutput() {
         return m_stdErr;
+    }
+    
+    public File getExecutable(){
+        return m_executable; 
     }
 }

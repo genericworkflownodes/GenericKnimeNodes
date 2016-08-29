@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -176,6 +177,7 @@ public class NodeGenerator {
                     .getManifestMf());
 
             // src/[PACKAGE]/knime/plugin.properties
+            final Properties toolProperites = srcDir.getToolProperites();
             new PropertiesWriter(new File(pluginBuildDir.getKnimeDirectory(),
                     "plugin.properties")).write(new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
@@ -184,6 +186,11 @@ public class NodeGenerator {
                             srcDir.getProperty("executor", "LocalToolExecutor"));
                     put("commandGenerator", srcDir.getProperty(
                             "commandGenerator", "CLICommandGenerator"));
+                    put("dockerMachine", srcDir.getProperty(
+                    		"dockerMachine", "default"));
+                    for(String key: toolProperites.stringPropertyNames()){
+                    	put(key, ((String) toolProperites.get(key)).replace("\"",""));
+                    }
                 }
             });
 
@@ -208,6 +215,7 @@ public class NodeGenerator {
             }
 
             // src/[PACKAGE]/knime/PluginActivator.java
+            
             new PluginActivatorTemplate(generatedPluginMeta, configurations)
                     .write(new File(pluginBuildDir.getKnimeDirectory(),
                             "PluginActivator.java"));
@@ -456,9 +464,18 @@ public class NodeGenerator {
          */
         new NodeDialogTemplate(generatedPluginMeta.getPackageRoot(), nodeName)
                 .write(new File(nodeSourceDir, nodeName + "NodeDialog.java"));
-        new NodeModelTemplate(generatedPluginMeta.getPackageRoot(), nodeName,
-                nodeConfiguration).write(new File(nodeSourceDir, nodeName
-                + "NodeModel.java"));
+        //If node is a docker tool use NodeDockerModel.template instead of usual template
+        //it overrides the checkIfToolExists method that checks whether a the executable defined in the CTD
+        //exists in PATH on the host system
+        if(srcDir.getProperty("commandGenerator", "CLI").endsWith("DockerCommandGenerator")){
+        	new NodeModelTemplate(generatedPluginMeta.getPackageRoot(), nodeName,
+        			nodeConfiguration,"NodeDockerModel.template").write(new File(nodeSourceDir, nodeName
+        					+ "NodeModel.java"));
+        }else{
+        	new NodeModelTemplate(generatedPluginMeta.getPackageRoot(), nodeName,
+        			nodeConfiguration, "NodeModel.template").write(new File(nodeSourceDir, nodeName
+        					+ "NodeModel.java"));
+        }
         new NodeFactoryXMLTemplate(nodeName, nodeConfiguration,
                 nodeIcon.getName()).write(new File(nodeSourceDir, nodeName
                 + "NodeFactory.xml"));

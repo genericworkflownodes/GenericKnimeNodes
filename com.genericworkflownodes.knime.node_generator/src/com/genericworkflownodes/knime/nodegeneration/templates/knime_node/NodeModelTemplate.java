@@ -11,10 +11,10 @@ import com.genericworkflownodes.knime.port.Port;
 public class NodeModelTemplate extends Template {
 
     public NodeModelTemplate(String packageName, String nodeName,
-            INodeConfiguration nodeConfiguration) throws IOException,
+            INodeConfiguration nodeConfiguration, String nodeTemplate) throws IOException,
             UnknownMimeTypeException {
         super(NodeGenerator.class
-                .getResourceAsStream("templates/knime_node/NodeModel.template"));
+                .getResourceAsStream("templates/knime_node/"+nodeTemplate));
 
         replace("__BASE__", packageName);
         replace("__NODENAME__", nodeName);
