@@ -124,7 +124,7 @@
             hidden="false"
             name="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject"
             objectClass="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject"
-            objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObjectSerializer"
+            objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObjectSerializer"
             specClass="org.knime.core.data.uri.URIPortObjectSpec"
             specSerializer="org.knime.core.data.uri.URIPortObjectSpec$Serializer">
       </portType>
