@@ -75,7 +75,7 @@ public class ParamHandler extends DefaultHandler {
     private static final String TAG_NODE = "NODE"; // name, description
     private static final String TAG_ITEM = "ITEM"; // name, type, value,
                                                    // description,
-                                                   // tags, restritions,
+                                                   // tags, restrictions,
                                                    // supported_formats,
                                                    // output_format_source
     private static final String TAG_ITEMLIST = "ITEMLIST"; // name, type,
@@ -350,16 +350,21 @@ public class ParamHandler extends DefaultHandler {
         Port p = new Port();
         p.setName(m_currentPath + paramName);
         p.setMultiFile(isList);
-
+        p.setOptional(isOptional(attributes));
+        p.setActive(true);
+        
         List<String> mimetypes = extractMIMETypes(attributes);
         for (String mt : mimetypes) {
             p.addMimeType(mt);
         }
+        // TODO maybe this is a misuse of MimeTypes. But otherwise we need to change the objects and methods
+        // to save/load settings.
+        if (p.isOptional()) {
+        	p.addMimeType("Inactive");
+        }
 
         String description = attributes.getValue(ATTR_DESCRIPTION);
         p.setDescription(description);
-
-        p.setOptional(isOptional(attributes));
 
         m_currentParameter = null;
         // create port parameter

@@ -245,6 +245,19 @@ public class CTDConfigurationWriter {
     }
 
     private void writeItem(String key, Parameter<?> p) throws IOException {
+    	if (p instanceof FileParameter) {
+    		// Omit complete parameter when its value is null (e.g. not connected)
+    		if (p.isNull()) {
+    			return;
+    		}
+    		// If it is an optional outport, check activation
+    		if (p.isOptional() && currentConfig.getOutputPortByName(key) != null) {
+    			if (((FileParameter) p).getPort().isActive()) {
+    				//skip addition of inactive Ports. They should not have any meaningful filenames/values anyway.
+    				return;
+    			}
+    		}
+    	}
         // construct parameter entry
         StringBuffer item = new StringBuffer();
         item.append("<ITEM name=\"");

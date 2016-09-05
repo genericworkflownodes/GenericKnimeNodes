@@ -46,7 +46,7 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
     // The parameters.
     private Map<String, Parameter<?>> params;
 
-    // The section descriptions for the sections of the paramters.
+    // The section descriptions for the sections of the parameters.
     private Map<String, String> sectionDescriptions;
 
     private Map<String, Port> inputPorts;

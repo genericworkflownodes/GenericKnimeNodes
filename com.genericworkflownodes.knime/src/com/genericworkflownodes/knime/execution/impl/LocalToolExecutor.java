@@ -207,6 +207,16 @@ public class LocalToolExecutor implements IToolExecutor {
             Map<String, String> newEnvironmentVariables) {
         m_environmentVariables.putAll(newEnvironmentVariables);
     }
+    
+    /**
+     * Returns the command used to execute the tool as a list of strings.
+     * 
+     * @return The command arguments to execute the tool.
+     */
+    @Override
+    public List<String> getCommand() {
+        return m_commands;
+    }
 
     /**
      * Returns the return value of the process. If the tool didn't not run or is
