@@ -73,7 +73,7 @@ public class CTDConfigurationReaderTest {
 
         FileParameter fp = (FileParameter) config
                 .getParameter("FileFilter.1.in");
-        assertNull(fp.getValue());
+        assertEquals("temp", fp.getValue());
 
         // get list restrictions
         assertNotNull(config.getParameter("FileFilter.1.peak_options.level"));

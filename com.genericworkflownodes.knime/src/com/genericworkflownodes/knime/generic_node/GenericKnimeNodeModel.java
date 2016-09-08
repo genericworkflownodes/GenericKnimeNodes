@@ -775,29 +775,35 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             throws Exception {
         // Transfer settings from the input ports into the configuration object
         for (int i = 0; i < inData.length; i++) {
-            // skip optional and unconnected inport ports
-            if (inData[i] == null) {
-                continue;
-            }
-
             // find the internal port for this PortObject
             Port port = m_nodeConfig.getInputPorts().get(i);
 
             IURIPortObject po = (IURIPortObject) inData[i];
-            List<URIContent> uris = po.getURIContents();
+            
 
             String name = port.getName();
+            // find the associated parameter in the configuration
+            Parameter<?> p = m_nodeConfig.getParameter(name);
+            
             boolean isMultiFile = port.isMultiFile();
             boolean isPrefix = port.isPrefix();
+            
+            // skip optional and unconnected inport ports
+            if (inData[i] == null) {
+                ((FileParameter) p).setValue(null);
+                continue;
+            }
+            
+            // connected: check contents
+            List<URIContent> uris = po.getURIContents();
 
+            // check validity of subtypes with actual inputs
             if (uris.size() > 1 && (!isMultiFile && !isPrefix)) {
                 throw new Exception(
                         "IURIPortObject with multiple URIs supplied at single URI port #"
                                 + i);
             }
 
-            // find the associated parameter in the configuration
-            Parameter<?> p = m_nodeConfig.getParameter(name);
             // check that we are actually referencing a file parameter from this
             // port
             if (!(p instanceof IFileParameter)) {

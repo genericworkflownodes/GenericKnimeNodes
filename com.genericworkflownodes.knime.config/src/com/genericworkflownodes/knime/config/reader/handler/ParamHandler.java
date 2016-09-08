@@ -382,12 +382,15 @@ public class ParamHandler extends DefaultHandler {
                     .getDescription());
             ((FileListParameter) m_currentParameter).setIsOptional(p
                     .isOptional());
+            // Values will be filled at the end of the ITEMLIST tag.
         } else {
             m_currentParameter = new FileParameter(paramName, "");
             ((FileParameter) m_currentParameter).setPort(p);
             ((FileParameter) m_currentParameter).setDescription(p
                     .getDescription());
             ((FileParameter) m_currentParameter).setIsOptional(p.isOptional());
+            // Fills parameter with default value
+            ((FileParameter) m_currentParameter).setValue(attributes.getValue(ATTR_VALUE));
         }
 
         

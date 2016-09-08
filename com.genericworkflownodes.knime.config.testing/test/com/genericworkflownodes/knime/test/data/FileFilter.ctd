@@ -6,7 +6,7 @@
   <NODE name="FileFilter" description="Extracts or manipulates portions of data from peak, feature or consensus-feature files.">
     <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
     <NODE name="1" description="Instance &apos;1&apos; section for &apos;FileFilter&apos;">
-      <ITEM name="in" value="" type="input-file" description="input file " required="true" advanced="false" supported_formats="*.mzML,*.featureXML,*.consensusXML" />
+      <ITEM name="in" value="temp" type="input-file" description="input file " required="true" advanced="false" supported_formats="*.mzML,*.featureXML,*.consensusXML" />
       <ITEM name="in_type" value="" type="string" description="input file type -- default: determined from file extension or content#br#" required="false" advanced="false" restrictions="mzML,featureXML,consensusXML" />
       <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.mzML,*.featureXML,*.consensusXML" />
       <ITEM name="out_type" value="" type="string" description="output file type -- default: determined from file extension or content#br#" required="false" advanced="false" restrictions="mzML,featureXML,consensusXML" />
@@ -56,7 +56,7 @@
         <ITEM name="map_and" value="false" type="string" description="Consensus features are kept only if they contain exactly one feature from each map (as given above in &apos;map&apos;)." required="false" advanced="false" restrictions="true,false" />
         <NODE name="blackorwhitelist" description="Black or white listing of of MS2 spectra by consensus features.">
           <ITEM name="blacklist" value="true" type="string" description="True: remove matched MS2. False: retain matched MS2 spectra. Other levels are kept." required="false" advanced="false" restrictions="false,true" />
-          <ITEM name="file" value="" type="input-file" description="Input file containing consensus features whose corresponding MS2 spectra should be removed from the mzML file!#br#Matching tolerances are taken from &apos;consensus:blackorwhitelist:rt&apos; and &apos;consensus:blackorwhitelist:mz&apos; options.#br#If consensus:blackorwhitelist:maps is specified, only these will be used.#br#" required="false" advanced="false" supported_formats="*.consensusXML" />
+          <ITEM name="file" value="tempoptional" type="input-file" description="Input file containing consensus features whose corresponding MS2 spectra should be removed from the mzML file!#br#Matching tolerances are taken from &apos;consensus:blackorwhitelist:rt&apos; and &apos;consensus:blackorwhitelist:mz&apos; options.#br#If consensus:blackorwhitelist:maps is specified, only these will be used.#br#" required="false" advanced="false" supported_formats="*.consensusXML" />
           <ITEMLIST name="maps" type="int" description="maps used for black/white list filtering." required="false" advanced="false">
           </ITEMLIST>
           <ITEM name="rt" value="60" type="double" description="retention tolerance [s] for precursor to consensus feature position" required="false" advanced="false" restrictions="0:" />

@@ -98,7 +98,8 @@ public class CTDConfigurationWriterTest {
         assertEquals(false, no_progress.getValue());
         assertEquals(true, no_progress.isAdvanced());
 
-        assertEquals(3, config.getInputPorts().size());
+        // Three inputs, one required, one optional with default, one optional without default
+        assertEquals(2, config.getInputPorts().size());
         assertEquals("FileFilter.1.in", config.getInputPorts().get(0).getName());
     }
 }
