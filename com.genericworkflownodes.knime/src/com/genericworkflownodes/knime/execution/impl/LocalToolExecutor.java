@@ -311,7 +311,7 @@ public class LocalToolExecutor implements IToolExecutor {
      *            The string where the variables should be replaced.
      * @return The string with replaced variables.
      */
-    private String expandEnvironmentVariables(String value) {
+    protected String expandEnvironmentVariables(String value) {
         // matching pattern for ${VNAME}
         final Pattern variableNamePattern = Pattern.compile("\\$\\{([^}]+)\\}");
 
@@ -352,12 +352,7 @@ public class LocalToolExecutor implements IToolExecutor {
         for (String key : m_environmentVariables.keySet()) {
             String value = expandEnvironmentVariables(m_environmentVariables
                     .get(key));
-            if(builder.environment().containsKey(key)){
-                builder.environment().put(key, value
-                        +File.pathSeparator+builder.environment().get(key));
-            }else{
-                builder.environment().put(key, value);
-            }
+            builder.environment().put(key, value);
         }
     }
 

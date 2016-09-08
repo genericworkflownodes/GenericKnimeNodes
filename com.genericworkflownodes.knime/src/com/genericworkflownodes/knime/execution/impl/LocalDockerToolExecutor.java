@@ -233,4 +233,21 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
             throws NoBinaryAvailableException {
     }
     
+    @Override
+    protected void setupProcessEnvironment(ProcessBuilder builder) {
+        for (String key : m_environmentVariables.keySet()) {
+            String value = expandEnvironmentVariables(m_environmentVariables
+                    .get(key));
+            // if a variable has been already defined, concatenate its value
+            // NOTE: for applications like OpenMS, where you could have OpenMS in KNIME and outside KNIME in parallel
+            // this code might not work, therefore, the method has been overriden
+            if(builder.environment().containsKey(key)){
+                builder.environment().put(key, value
+                        +File.pathSeparator+builder.environment().get(key));
+            }else{
+                builder.environment().put(key, value);
+            }
+        }
+    }
+    
 }
