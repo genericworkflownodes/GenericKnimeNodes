@@ -357,9 +357,15 @@ public class ParamHandler extends DefaultHandler {
         for (String mt : mimetypes) {
             p.addMimeType(mt);
         }
+        
+        String attr_type = attributes.getValue(ATTR_TYPE);
+        boolean isInputPort = TYPE_INPUT_FILE.equals(attr_type)
+        		|| getTags(attributes).contains(INPUTFILE_TAG)
+        		|| TYPE_INPUT_PREFIX.equals(attr_type);
+        
         // TODO maybe this is a misuse of MimeTypes. But otherwise we need to change the objects and methods
         // to save/load settings.
-        if (p.isOptional()) {
+        if (p.isOptional() && !isInputPort) {
         	p.addMimeType("Inactive");
         }
 
@@ -384,13 +390,11 @@ public class ParamHandler extends DefaultHandler {
             ((FileParameter) m_currentParameter).setIsOptional(p.isOptional());
         }
 
-        String attr_type = attributes.getValue(ATTR_TYPE);
+        
         p.setIsPrefix(TYPE_OUTPUT_PREFIX.equals(attr_type)
                 || TYPE_INPUT_PREFIX.equals(attr_type));
 
-        if (TYPE_INPUT_FILE.equals(attr_type)
-                || getTags(attributes).contains(INPUTFILE_TAG)
-                || TYPE_INPUT_PREFIX.equals(attr_type)) {
+        if (isInputPort) {
             m_inputPorts.add(p);
         } else {
             m_outputPorts.add(p);
