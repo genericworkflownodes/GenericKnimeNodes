@@ -252,7 +252,7 @@ public class CTDConfigurationWriter {
     		}
     		// If it is an optional outport, check activation
     		if (p.isOptional() && currentConfig.getOutputPortByName(key) != null) {
-    			if (((FileParameter) p).getPort().isActive()) {
+    			if (!((FileParameter) p).getPort().isActive()) {
     				//skip addition of inactive Ports. They should not have any meaningful filenames/values anyway.
     				return;
     			}
