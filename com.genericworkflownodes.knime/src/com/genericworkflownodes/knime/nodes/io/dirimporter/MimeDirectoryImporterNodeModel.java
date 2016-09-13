@@ -50,11 +50,13 @@ package com.genericworkflownodes.knime.nodes.io.dirimporter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import org.apache.commons.io.FilenameUtils;
 import org.knime.base.filehandling.NodeUtils;
@@ -63,8 +65,11 @@ import org.knime.base.filehandling.remote.connectioninformation.port.ConnectionI
 import org.knime.base.filehandling.remote.connectioninformation.port.ConnectionInformationPortObjectSpec;
 import org.knime.base.filehandling.remote.files.Connection;
 import org.knime.base.filehandling.remote.files.ConnectionMonitor;
+import org.knime.base.filehandling.remote.files.FileRemoteFile;
+import org.knime.base.filehandling.remote.files.FileRemoteFileHandler;
 import org.knime.base.filehandling.remote.files.RemoteFile;
 import org.knime.base.filehandling.remote.files.RemoteFileFactory;
+import org.knime.core.util.FileUtil;
 import org.knime.base.node.io.listfiles.ListFiles.Filter;
 import org.knime.base.util.WildcardMatcher;
 import org.knime.core.data.DataColumnSpec;
@@ -139,8 +144,8 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
                         new URI(m_connectionInformation.toURI().toString()
                                 + NodeUtils.encodePath(m_configuration.getDirectory()));
             } else {
-                // Create local URI
-                directoryUri = new File(m_configuration.getDirectory()).toURI();
+                // Create local URI with FileUtil to decode knime relative paths
+                directoryUri = FileUtil.resolveToPath(FileUtil.toURL(m_configuration.getDirectory())).toUri();
             }
             // Create remote file for directory selection
             final RemoteFile<? extends Connection> file =
@@ -184,14 +189,15 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
                 uris.add(content);
             }
         }
+        RemoteFile relativeFile = file;
         // If the source is a directory list inner files
-        if (file.isDirectory()) {
+        if (relativeFile.isDirectory()) {
             if (root || m_configuration.getRecursive()) {
-                final RemoteFile<? extends Connection>[] files = file.listFiles();
+                final RemoteFile<? extends Connection>[] files = relativeFile.listFiles();
                 Arrays.sort(files);
                 final RemoteFile<? extends Connection>[] filteredFiles = filterFiles(files);
                 maxEntries.setValue(maxEntries.intValue() + filteredFiles.length);
-                exec.setMessage("Scanning " + file.getFullName());
+                exec.setMessage("Scanning " + relativeFile.getFullName());
                 for (final RemoteFile<? extends Connection> file2 : filteredFiles) {
                     listDirectory(file2, uris, false, exec, processedEntries, maxEntries);
                     processedEntries.inc();
