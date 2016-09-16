@@ -50,7 +50,6 @@ package com.genericworkflownodes.knime.nodes.io.dirimporter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,25 +64,15 @@ import org.knime.base.filehandling.remote.connectioninformation.port.ConnectionI
 import org.knime.base.filehandling.remote.connectioninformation.port.ConnectionInformationPortObjectSpec;
 import org.knime.base.filehandling.remote.files.Connection;
 import org.knime.base.filehandling.remote.files.ConnectionMonitor;
-import org.knime.base.filehandling.remote.files.FileRemoteFile;
-import org.knime.base.filehandling.remote.files.FileRemoteFileHandler;
 import org.knime.base.filehandling.remote.files.RemoteFile;
 import org.knime.base.filehandling.remote.files.RemoteFileFactory;
 import org.knime.core.util.FileUtil;
 import org.knime.base.node.io.listfiles.ListFiles.Filter;
 import org.knime.base.util.WildcardMatcher;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.def.BooleanCell;
-import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIDataCell;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
-import org.knime.core.node.BufferedDataContainer;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -95,8 +84,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.util.MutableInteger;
-
-import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation.
@@ -113,10 +100,6 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
     private String m_extension;
 
     private Pattern m_regExpPattern;
-
-    private int m_analyzedFiles;
-
-    private int m_currentRowID;
 
     /**
      * Constructor for the node model.
@@ -189,15 +172,14 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
                 uris.add(content);
             }
         }
-        RemoteFile relativeFile = file;
         // If the source is a directory list inner files
-        if (relativeFile.isDirectory()) {
+        if (file.isDirectory()) {
             if (root || m_configuration.getRecursive()) {
-                final RemoteFile<? extends Connection>[] files = relativeFile.listFiles();
+                final RemoteFile<? extends Connection>[] files = file.listFiles();
                 Arrays.sort(files);
                 final RemoteFile<? extends Connection>[] filteredFiles = filterFiles(files);
                 maxEntries.setValue(maxEntries.intValue() + filteredFiles.length);
-                exec.setMessage("Scanning " + relativeFile.getFullName());
+                exec.setMessage("Scanning " + file.getFullName());
                 for (final RemoteFile<? extends Connection> file2 : filteredFiles) {
                     listDirectory(file2, uris, false, exec, processedEntries, maxEntries);
                     processedEntries.inc();
@@ -239,8 +221,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             throw new IllegalStateException("Unknown filter: " + filter);
             // transform wildcard to regExp.
         }
-        m_analyzedFiles = 0;
-        m_currentRowID = 0;
+
         List<RemoteFile<? extends Connection>> filteredFiles = new ArrayList<RemoteFile<? extends Connection>>();
         for (RemoteFile<?> f : files) {
             try {
