@@ -44,9 +44,6 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.util.FilesHistoryPanel;
-import org.knime.core.node.util.FilesHistoryPanel.LocationValidation;
-import org.knime.core.node.util.MultipleURLList;
 
 /**
  * Dialog component to choose multiple files at once, as input for a KNIME
@@ -210,6 +207,11 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
      */
     public DialogComponentMultiFileChooser(SettingsModelStringArray model) {
         super(model);
+
+        chooser = new JFileChooser();
+
+        // enable multiple selections
+        chooser.setMultiSelectionEnabled(true);
 
         SpringLayout springLayout = new SpringLayout();
         getComponentPanel().setLayout(springLayout);
