@@ -4,7 +4,8 @@
 <plugin>
    <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
-   <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>  
+   <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.filesplitter" name="FileSplitter" schema="schema/com.genericworkflownodes.knime.filesplitter.exsd"/>  
    
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -35,6 +36,11 @@
        deprecated="false"
        factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"
        id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory">
+ </node>
+ <node
+       deprecated="false"
+       factory-class="com.genericworkflownodes.knime.nodes.filesplitter.FileSplitterNodeFactory"
+       id="com.genericworkflownodes.knime.nodes.filesplitter.FileSplitterNodeFactory">
  </node>
 </extension>
    
@@ -149,5 +155,11 @@
                serializerClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCellSerializer">
          </serializer>
       </DataType>
+   </extension>
+   <extension
+         point="com.genericworkflownodes.knime.filesplitter">
+      <FileSplitter
+            FileSplitterFactory="com.genericworkflownodes.knime.filesplitter.impl.LineSplitterFactory">
+      </FileSplitter>
    </extension>
 </plugin>
