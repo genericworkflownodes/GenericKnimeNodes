@@ -21,7 +21,6 @@
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -38,7 +37,6 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
@@ -47,11 +45,12 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
-import org.netbeans.swing.outline.*;
 import org.knime.core.node.NodeLogger;
+import org.netbeans.swing.outline.DefaultOutlineModel;
+import org.netbeans.swing.outline.Outline;
+import org.netbeans.swing.outline.OutlineModel;
+import org.netbeans.swing.outline.RenderDataProvider;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
@@ -61,7 +60,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 /**
  * Parameter dialog visualizing the tree like parameter structure.
  * 
- * @author roettig, aiche, bkahlert
+ * @author roettig, aiche, bkahlert, jpfeuffer
  */
 public class ParameterDialog extends JPanel {
 
@@ -105,7 +104,7 @@ public class ParameterDialog extends JPanel {
     }
 
     /**
-     * ListSelectionListener for the JXTreeTable.
+     * ListSelectionListener for the NetBeans Outline object.
      * 
      * @author aiche
      */
@@ -127,7 +126,7 @@ public class ParameterDialog extends JPanel {
     }
 
     /**
-     * The high-lighter for the JXTreeTable.
+     * The high-lighter for the NetBeans Outline object.
      * 
      * @author aiche
      */
@@ -136,25 +135,6 @@ public class ParameterDialog extends JPanel {
         @Override
         public Color getBackground(Object node) {
             return null;
-            /*
-            boolean optional = true;
-            boolean advanced = false;
-            ParameterNode paramnode = (ParameterNode) node;
-            if (paramnode.getPayload() != null) {
-                optional = paramnode.getPayload().isOptional();
-                advanced = paramnode.getPayload().isAdvanced();
-            }
-            if (!optional) {
-                return Color.blue;
-                //TODO Manage to set fonts
-                //comp.setFont(MAND_FONT);
-            } else {
-                //comp.setFont(OPT_FONT);
-                if (advanced) {
-                    return Color.GRAY;
-                }
-            }
-            return Color.GRAY;*/
         }
 
         @Override
@@ -178,7 +158,7 @@ public class ParameterDialog extends JPanel {
             }
             if (!optional) {
                 return Color.blue;
-                //TODO Manage to set fonts
+                //TODO Manage to set fonts in another way
                 //comp.setFont(MAND_FONT);
             } else {
                 //comp.setFont(OPT_FONT);
@@ -233,7 +213,7 @@ public class ParameterDialog extends JPanel {
         model = DefaultOutlineModel.createOutlineModel(treemdl, 
                 new ParameterDialogRowModel(), true, "Parameter");
 
-        // create the JXTreeTable
+        // create the NetBeans Outline object
         createTable();
 
         // adjust size of columns initially to fit the screen
@@ -257,11 +237,7 @@ public class ParameterDialog extends JPanel {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setRootVisible(false);
         table.setModel(model);
-
-        //TODO I think this was setting a first editable parameter
-        //table.getColumn(1).setCellEditor(treemdl.getCellEditor());
         
-        //TODO not sure if we still need this.
         // under some circumstances the cellEditor gets lost, therefore we
         // register a default for parameter objects
         table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
@@ -312,7 +288,7 @@ public class ParameterDialog extends JPanel {
         // adjust column widths
         TableColumnAdjuster tca = new TableColumnAdjuster(table);
         tca.adjustColumns();
-        //plot new
+        // plot new
         table.updateUI();
     }
 

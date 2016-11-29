@@ -1,14 +1,3 @@
-package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
-
-import javax.swing.event.TreeModelListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-
-import com.genericworkflownodes.knime.config.INodeConfiguration;
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.NodeConfigurationTree;
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
-
 /**
  * Copyright (c) 2011, Marc Röttig.
  *
@@ -32,6 +21,17 @@ import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tr
  * 
  * @author roettig, aiche
  */
+
+package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
+
+import javax.swing.event.TreeModelListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.NodeConfigurationTree;
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
 
 public class ParameterDialogTreeModel implements TreeModel{
 
