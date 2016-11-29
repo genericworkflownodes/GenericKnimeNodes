@@ -47,6 +47,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.netbeans.swing.outline.*;
@@ -133,9 +134,27 @@ public class ParameterDialog extends JPanel {
     private final class ParamDialogDataProvider implements RenderDataProvider {
 
         @Override
-        public Color getBackground(Object arg0) {
-            // TODO Auto-generated method stub
+        public Color getBackground(Object node) {
             return null;
+            /*
+            boolean optional = true;
+            boolean advanced = false;
+            ParameterNode paramnode = (ParameterNode) node;
+            if (paramnode.getPayload() != null) {
+                optional = paramnode.getPayload().isOptional();
+                advanced = paramnode.getPayload().isAdvanced();
+            }
+            if (!optional) {
+                return Color.blue;
+                //TODO Manage to set fonts
+                //comp.setFont(MAND_FONT);
+            } else {
+                //comp.setFont(OPT_FONT);
+                if (advanced) {
+                    return Color.GRAY;
+                }
+            }
+            return Color.GRAY;*/
         }
 
         @Override
@@ -279,6 +298,7 @@ public class ParameterDialog extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 treemdl.setShowAdvanced(toggle.isSelected());
                 treemdl.refresh();
+                model.getLayout().setModel(treemdl);
                 updateTableView();
             }
         });
@@ -286,10 +306,14 @@ public class ParameterDialog extends JPanel {
 
     private void updateTableView() {
         // expand full tree by default
-        //TODO extend OUtlineView and support expandAll https://netbeans.org/bugzilla/show_bug.cgi?id=192661
-        //table.expandAll();
+        for (int rowid = 0; rowid < model.getRowCount(); rowid++){       
+            model.getLayout().setExpandedState(model.getLayout().getPathForRow(rowid), true);
+        }
+        // adjust column widths
         TableColumnAdjuster tca = new TableColumnAdjuster(table);
         tca.adjustColumns();
+        //plot new
+        table.updateUI();
     }
 
     private void updateDocumentationSection(String description) {
