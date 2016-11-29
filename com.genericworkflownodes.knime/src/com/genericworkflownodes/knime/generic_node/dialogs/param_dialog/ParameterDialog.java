@@ -30,6 +30,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,9 +49,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.TreePath;
 
-import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.decorator.ComponentAdapter;
-import org.jdesktop.swingx.decorator.Highlighter;
+import org.netbeans.swing.outline.*;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -72,7 +71,7 @@ public class ParameterDialog extends JPanel {
             .getLogger(ParameterDialog.class);
 
     /**
-     * TreeModelListener for the JXTreeTable.
+     * TreeModelListener for netbeans.swing.Outline .
      * 
      * @author aiche
      */
@@ -131,53 +130,67 @@ public class ParameterDialog extends JPanel {
      * 
      * @author aiche
      */
-    private final class ParamDialogTableHighlighter implements Highlighter {
+    private final class ParamDialogDataProvider implements RenderDataProvider {
 
         @Override
-        public void addChangeListener(ChangeListener arg0) {
-        }
-
-        @Override
-        public ChangeListener[] getChangeListeners() {
+        public Color getBackground(Object arg0) {
+            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public Component highlight(Component comp, ComponentAdapter adapter) {
-            boolean optional = true;
-            boolean advanced = false;
-            TreePath path = table.getPathForRow(adapter.row);
-
-            if (path != null && path.getLastPathComponent() != null) {
-                ParameterNode node = (ParameterNode) path
-                        .getLastPathComponent();
-                if (node.getPayload() != null) {
-                    optional = node.getPayload().isOptional();
-                    advanced = node.getPayload().isAdvanced();
-                }
-            }
-            if (!optional) {
-                comp.setForeground(Color.blue);
-                comp.setFont(MAND_FONT);
-            } else {
-                comp.setFont(OPT_FONT);
-                if (advanced) {
-                    comp.setForeground(Color.GRAY);
-                }
-            }
-            return comp;
+        public String getDisplayName(Object arg0) {
+            // TODO Auto-generated method stub
+            return null;
         }
 
         @Override
-        public void removeChangeListener(ChangeListener arg0) {
+        public Color getForeground(Object node) {
+            boolean optional = true;
+            boolean advanced = false;
+            ParameterNode paramnode = (ParameterNode) node;
+            if (paramnode.getPayload() != null) {
+                optional = paramnode.getPayload().isOptional();
+                advanced = paramnode.getPayload().isAdvanced();
+            }
+            if (!optional) {
+                return Color.blue;
+                //TODO Manage to set fonts
+                //comp.setFont(MAND_FONT);
+            } else {
+                //comp.setFont(OPT_FONT);
+                if (advanced) {
+                    return Color.GRAY;
+                }
+            }
+            return Color.GRAY;
+        }
+
+        @Override
+        public Icon getIcon(Object arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public String getTooltipText(Object arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public boolean isHtmlDisplayName(Object arg0) {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
     private static final long serialVersionUID = 8098990326681120709L;
-    private JXTreeTable table;
+    private Outline table;
     private JTextPane help;
     private JCheckBox toggle;
-    private ParameterDialogModel model;
+    private OutlineModel model;
+    private ParameterDialogTreeModel treemdl;
 
     private static final Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
     private static final Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
@@ -209,34 +222,33 @@ public class ParameterDialog extends JPanel {
     }
 
     private void createModel(INodeConfiguration config) {
-        model = new ParameterDialogModel(config);
-        model.addTreeModelListener(new ParamDialogTreeModelListener());
+        treemdl = new ParameterDialogTreeModel(config);
+        treemdl.addTreeModelListener(new ParamDialogTreeModelListener());
+        model = DefaultOutlineModel.createOutlineModel(new ParameterDialogTreeModel(config), 
+                new ParameterDialogRowModel(), true);
     }
 
     private void createTable() {
-        table = new JXTreeTable(model);
+
+        table = new Outline(model);
+        table.setRenderDataProvider(new ParamDialogDataProvider());
         table.setMinimumSize(new Dimension(1000, 500));
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        table.getColumn(1).setCellEditor(model.getCellEditor());
+        table.getColumn(1).setCellEditor(treemdl.getCellEditor());
         // under some circumstances the cellEditor gets lost, therefore we
         // register a default for parameter objects
-        table.setDefaultEditor(Parameter.class, model.getCellEditor());
+        table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
 
-        addHighlighter();
         addSelectionListener();
     }
 
     private void addSelectionListener() {
         table.getSelectionModel().addListSelectionListener(
                 new ParamDialogListSelectionListener());
-    }
-
-    private void addHighlighter() {
-        table.setHighlighters(new ParamDialogTableHighlighter());
     }
 
     private void addControlsToPanel() {
@@ -261,8 +273,8 @@ public class ParameterDialog extends JPanel {
         toggle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                model.setShowAdvanced(toggle.isSelected());
-                model.refresh();
+                treemdl.setShowAdvanced(toggle.isSelected());
+                treemdl.refresh();
                 updateTableView();
             }
         });
@@ -270,7 +282,8 @@ public class ParameterDialog extends JPanel {
 
     private void updateTableView() {
         // expand full tree by default
-        table.expandAll();
+        //TODO extend OUtlineView and support expandAll https://netbeans.org/bugzilla/show_bug.cgi?id=192661
+        //table.expandAll();
         TableColumnAdjuster tca = new TableColumnAdjuster(table);
         tca.adjustColumns();
     }
@@ -292,7 +305,7 @@ public class ParameterDialog extends JPanel {
      * Ensures that all edit operations are finalized.
      */
     public void stopEditing() {
-        model.getCellEditor().stopCellEditing();
+        treemdl.getCellEditor().stopCellEditing();
     }
 
 }
