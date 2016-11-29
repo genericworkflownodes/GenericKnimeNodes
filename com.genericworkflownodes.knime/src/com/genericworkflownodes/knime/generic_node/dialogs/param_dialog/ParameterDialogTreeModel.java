@@ -35,8 +35,6 @@ import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tr
 
 public class ParameterDialogTreeModel implements TreeModel{
 
-
-
         /**
          * The node configuration represented by this dialog model.
          */

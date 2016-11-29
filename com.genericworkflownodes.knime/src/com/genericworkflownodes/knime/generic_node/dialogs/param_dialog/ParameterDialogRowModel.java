@@ -65,7 +65,7 @@ public class ParameterDialogRowModel implements RowModel{
     @Override
     public boolean isCellEditable(Object value, int column) {
         ParameterNode n = (ParameterNode) value;
-        return (column == 1 && n.isLeaf());
+        return (column == 0 && n.isLeaf());
     }
 
     @Override

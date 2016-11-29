@@ -139,9 +139,13 @@ public class ParameterDialog extends JPanel {
         }
 
         @Override
-        public String getDisplayName(Object arg0) {
-            // TODO Auto-generated method stub
-            return null;
+        public String getDisplayName(Object node) {
+            ParameterNode paramnode = (ParameterNode) node;
+            if (paramnode.getPayload() == null) {
+                return paramnode.getName();
+            } else {
+                return paramnode.getPayload().getKey();
+            }
         }
 
         @Override
@@ -205,7 +209,10 @@ public class ParameterDialog extends JPanel {
         setLayout(new GridBagLayout());
 
         // create the data model for the table
-        createModel(config);
+        treemdl = new ParameterDialogTreeModel(config);
+        treemdl.addTreeModelListener(new ParamDialogTreeModelListener());
+        model = DefaultOutlineModel.createOutlineModel(treemdl, 
+                new ParameterDialogRowModel(), true, "Parameter");
 
         // create the JXTreeTable
         createTable();
@@ -221,24 +228,21 @@ public class ParameterDialog extends JPanel {
         addControlsToPanel();
     }
 
-    private void createModel(INodeConfiguration config) {
-        treemdl = new ParameterDialogTreeModel(config);
-        treemdl.addTreeModelListener(new ParamDialogTreeModelListener());
-        model = DefaultOutlineModel.createOutlineModel(new ParameterDialogTreeModel(config), 
-                new ParameterDialogRowModel(), true);
-    }
-
     private void createTable() {
-
-        table = new Outline(model);
+        table = new Outline();
         table.setRenderDataProvider(new ParamDialogDataProvider());
         table.setMinimumSize(new Dimension(1000, 500));
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setRootVisible(false);
+        table.setModel(model);
 
-        table.getColumn(1).setCellEditor(treemdl.getCellEditor());
+        //TODO I think this was setting a first editable parameter
+        //table.getColumn(1).setCellEditor(treemdl.getCellEditor());
+        
+        //TODO not sure if we still need this.
         // under some circumstances the cellEditor gets lost, therefore we
         // register a default for parameter objects
         table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
