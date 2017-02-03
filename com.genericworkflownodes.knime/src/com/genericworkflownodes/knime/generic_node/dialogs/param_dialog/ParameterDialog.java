@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -47,6 +48,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.knime.core.node.NodeLogger;
 import org.netbeans.swing.outline.DefaultOutlineModel;
@@ -160,6 +162,9 @@ public class ParameterDialog extends JPanel {
         @Override
         public Icon getIcon(Object arg0) {
             // TODO Auto-generated method stub
+            // Return empty Icon for "no icon"
+            //return new ImageIcon();
+            // Return null for "standard" file and folder icons
             return null;
         }
 
