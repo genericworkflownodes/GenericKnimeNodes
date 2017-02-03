@@ -41,11 +41,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.table.TableColumn;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.knime.core.node.NodeLogger;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
@@ -117,6 +119,7 @@ public class ParameterDialog extends JPanel {
             }
             if (event.getSource() == table.getSelectionModel()) {
                 int row = table.getSelectedRow();
+                // Gets description from hidden third row
                 Object val = table.getModel().getValueAt(row, 3);
                 if (val instanceof String) {
                     updateDocumentationSection((String) val);
@@ -215,14 +218,18 @@ public class ParameterDialog extends JPanel {
 
         // create the NetBeans Outline object
         createTable();
-
+        
         // adjust size of columns initially to fit the screen
         updateTableView();
-
+        
         // create the sub controls (documentation and toggle for advanced)
         createHelpPane();
         createShowAdvancedToggle();
-
+        
+        // set the custom renderer for the first column (the "tree" or "parameter" column)
+        TableColumn treecol = table.getColumnModel().getColumn(0);
+        treecol.setCellRenderer(treemdl.getCellRenderer());
+        
         // finally add controls to panel
         addControlsToPanel();
     }
@@ -234,7 +241,7 @@ public class ParameterDialog extends JPanel {
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setRootVisible(false);
         table.setModel(model);
         

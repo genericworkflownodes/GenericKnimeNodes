@@ -30,12 +30,11 @@ public class ParameterDialogRowModel implements RowModel{
     /**
      * Type information for the individual columns.
      */
-    private static Class<?>[] cTypes = { /*ParameterDialogTreeModel.class,*/ Parameter.class,
-            String.class };
+    private static Class<?>[] cTypes = {Parameter.class, String.class };
     /**
      * Column name/header information.
      */
-    private static String[] cNames = { /*"Parameter",*/ "Value", "Type" };
+    private static String[] cNames = {"Value", "Type" };
     
     @Override
     public Class<?> getColumnClass(int column) {
@@ -58,12 +57,6 @@ public class ParameterDialogRowModel implements RowModel{
 
         if (column == -1) {
             return n.getName();
-        /*} else if (column == 0) {
-            if (n.getPayload() == null) {
-                return n.getName();
-            } else {
-                return n.getPayload().getKey();
-            }*/
         } else if (column == 0) {
             if (n.getPayload() == null) {
                 return "";
@@ -76,6 +69,8 @@ public class ParameterDialogRowModel implements RowModel{
             } else {
                 return n.getPayload().getMnemonic();
             }
+        // Hidden column storing the description.
+        // Gets an own textbox below.
         } else if (column == 2) {
             return n.getDescription();
         }
@@ -85,6 +80,8 @@ public class ParameterDialogRowModel implements RowModel{
     @Override
     public boolean isCellEditable(Object value, int column) {
         ParameterNode n = (ParameterNode) value;
+        // Only the first (= param value column) is editable
+        // Not on parameter subsection descriptors
         return (column == 0 && n.isLeaf());
     }
 
