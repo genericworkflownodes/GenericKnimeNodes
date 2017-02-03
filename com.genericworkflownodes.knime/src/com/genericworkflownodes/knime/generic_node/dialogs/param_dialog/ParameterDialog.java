@@ -137,6 +137,7 @@ public class ParameterDialog extends JPanel {
 
         @Override
         public Color getBackground(Object node) {
+          //Set through the ParamCellRenderer.
             return null;
         }
 
@@ -152,24 +153,8 @@ public class ParameterDialog extends JPanel {
 
         @Override
         public Color getForeground(Object node) {
-            boolean optional = true;
-            boolean advanced = false;
-            ParameterNode paramnode = (ParameterNode) node;
-            if (paramnode.getPayload() != null) {
-                optional = paramnode.getPayload().isOptional();
-                advanced = paramnode.getPayload().isAdvanced();
-            }
-            if (!optional) {
-                return Color.blue;
-                //TODO Manage to set fonts in another way
-                //comp.setFont(MAND_FONT);
-            } else {
-                //comp.setFont(OPT_FONT);
-                if (advanced) {
-                    return Color.GRAY;
-                }
-            }
-            return Color.GRAY;
+            //Set through the ParamCellRenderer.
+            return null;
         }
 
         @Override
