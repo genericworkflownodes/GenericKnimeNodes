@@ -285,6 +285,7 @@ public class ParamHandler extends DefaultHandler {
     private void handleNodeTag(Attributes attributes) {
         String nodeName = attributes.getValue(ATTR_NAME);
         String nodeDescription = attributes.getValue(ATTR_DESCRIPTION);
+        nodeDescription = nodeDescription.replaceAll("#br#", "\n");
         m_currentPath += nodeName;
         m_config.setSectionDescription(m_currentPath, nodeDescription);
         m_currentPath += PATH_SEPARATOR;
@@ -304,6 +305,7 @@ public class ParamHandler extends DefaultHandler {
 
         // extract the description
         String description = attributes.getValue(ATTR_DESCRIPTION);
+        description = description.replaceAll("#br#", "\n");
         m_currentParameter.setDescription(description);
     }
 

@@ -20,6 +20,7 @@
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.jdesktop.swingx.treetable.TreeTableModel;
@@ -62,6 +63,11 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
      * The {@link ParamCellEditor} instance for this DialogModel.
      */
     private final ParamCellEditor paramCellEditor;
+    
+    /**
+     * The {@link ParamCellRenderer} instance for this DialogModel.
+     */
+    private final ParamCellRenderer paramCellRenderer;
 
     /**
      * Create ParameterDialogModel from a given NodeConfiguration.
@@ -74,6 +80,7 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
         wrapper = new NodeConfigurationTree(config, false);
         root = wrapper.getRoot();
         paramCellEditor = new ParamCellEditor();
+        paramCellRenderer = new ParamCellRenderer();
     }
 
     /**
@@ -189,6 +196,15 @@ public class ParameterDialogModel extends AbstractTreeTableModel implements
      */
     public TableCellEditor getCellEditor() {
         return paramCellEditor;
+    }
+    
+    /**
+     * Gives access to the underlying table cell renderer.
+     * 
+     * @return The TableCellRenderer.
+     */
+    public TableCellRenderer getCellRenderer() {
+        return paramCellRenderer;
     }
 
 }
