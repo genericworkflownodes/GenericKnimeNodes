@@ -18,21 +18,20 @@
  */
 package com.genericworkflownodes.knime.execution.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.io.File;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
-import com.genericworkflownodes.knime.execution.impl.LocalToolExecutor.StreamGobbler;
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.StringUtils;
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 
 public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolExecutor {
     

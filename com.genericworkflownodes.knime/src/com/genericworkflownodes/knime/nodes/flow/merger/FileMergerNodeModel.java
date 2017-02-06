@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.uri.IURIPortObject;
-import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -38,7 +36,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
@@ -92,26 +89,6 @@ public class FileMergerNodeModel extends NodeModel {
         incomingPorts.add((IURIPortObject) inData[0]);
         incomingPorts.add((IURIPortObject) inData[1]);
         // transform to new FileStoreReferenceURIPortObject
-//        List<URIContent> uriContents = new ArrayList<URIContent>();
-//        List<String> relPaths = new ArrayList<String>();
-//        List<Integer> fsIndices = new ArrayList<Integer>();
-//        List<FileStore> fileStores = new ArrayList<FileStore>();
-//
-//        for (IURIPortObject po : incomingPorts) {
-//            uriContents.addAll(po.getURIContents());
-//            if (po instanceof AbstractFileStoreURIPortObject) {
-//                AbstractFileStoreURIPortObject afspo = (AbstractFileStoreURIPortObject) po;
-//                relPaths.addAll(afspo.getRelativePaths());
-//                fileStores.add(afspo.getInternalFileStore());
-//                fsIndices.add(fileStores.size() - 1);
-//            } else {
-//                // we add a dummy relative path
-//                relPaths.add("");
-//                fsIndices.add(-1);
-//            }
-//        }
-//        return new FileStoreReferenceURIPortObject(uriContents, relPaths,
-//                fsIndices, fileStores);
         return new PortObject[] { FileStoreReferenceURIPortObject
                 .create(incomingPorts) };
     }
