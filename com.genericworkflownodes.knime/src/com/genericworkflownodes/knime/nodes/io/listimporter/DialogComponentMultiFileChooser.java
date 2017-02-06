@@ -22,6 +22,11 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +35,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.Spring;
@@ -44,6 +50,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.util.FileUtil;
 
 /**
  * Dialog component to choose multiple files at once, as input for a KNIME
@@ -68,25 +75,25 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
      * 
      * @author aiche
      */
-    private static class FileListModel extends AbstractListModel {
+    private static class URIListModel extends AbstractListModel {
         /**
          * The serialVersionUID.
          */
         private static final long serialVersionUID = 1080200522143129018L;
 
         /**
-         * The resulting files.
+         * The resulting URIs.
          */
-        private List<File> files;
+        private List<URI> uris;
 
         @Override
         public Object getElementAt(final int index) {
-            return files.get(index).getAbsolutePath();
+            return uris.get(index).toString();
         }
 
         @Override
         public int getSize() {
-            return files.size();
+            return uris.size();
         }
 
         /**
@@ -96,8 +103,8 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
          * @param model
          *            The data model.
          */
-        public FileListModel(final SettingsModelStringArray model) {
-            files = new ArrayList<File>();
+        public URIListModel(final SettingsModelStringArray model) {
+            uris = new ArrayList<URI>();
             updateFromSettingsModel(model);
             model.addChangeListener(new ChangeListener() {
                 @Override
@@ -121,9 +128,14 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
          */
         private void updateFromSettingsModel(
                 final SettingsModelStringArray model) {
-            files.clear();
+            uris.clear();
             for (String f : model.getStringArrayValue()) {
-                files.add(new File(f));
+                try {
+                    uris.add(new URI(f));
+                } catch (URISyntaxException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             fireContentsChanged(this, 0, getSize());
         }
@@ -134,9 +146,9 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
          * @param newFiles
          *            The new files to display.
          */
-        public void updateFileList(final File[] newFiles) {
-            for (File f : newFiles) {
-                files.add(f);
+        public void updateURIList(final URI[] newURIs) {
+            for (URI f : newURIs) {
+                uris.add(f);
             }
             fireContentsChanged(this, 0, getSize());
         }
@@ -146,15 +158,15 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
          * 
          * @return The list of stored files.
          */
-        public List<File> getFiles() {
-            return files;
+        public List<URI> getFiles() {
+            return uris;
         }
 
         /**
          * Clears the stored data.
          */
         public void clear() {
-            files.clear();
+            uris.clear();
             fireContentsChanged(this, 0, getSize());
         }
 
@@ -168,7 +180,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
             // ensure we have a sorted list of indices
             Arrays.sort(selectedIndices);
             for (int index = selectedIndices.length - 1; index >= 0; --index) {
-                files.remove(selectedIndices[index]);
+                uris.remove(selectedIndices[index]);
             }
             fireContentsChanged(this, 0, getSize());
         }
@@ -178,11 +190,21 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
      * File chooser.
      */
     private JFileChooser chooser;
+    
+    /**
+     * Textbox for pasting user defined file paths.
+     */
+    private JOptionPane textbox;
 
+    /**
+     * The add button.
+     */
+    private JButton addButton;
+    
     /**
      * The browse button.
      */
-    private JButton addButton;
+    private JButton browseButton;
 
     /**
      * The remove button.
@@ -217,7 +239,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         getComponentPanel().setLayout(springLayout);
 
         // Create some items to add to the list
-        listbox = new JList(new FileListModel(model));
+        listbox = new JList(new URIListModel(model));
         listbox.setLayoutOrientation(JList.VERTICAL);
         listbox.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         listbox.setVisibleRowCount(-1);
@@ -228,13 +250,15 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         getComponentPanel().add(listScroller);
 
-        addButton = new JButton("Add");
+        addButton = new JButton("Add..");
+        browseButton = new JButton("Browse..");
         removeButton = new JButton("Remove");
         clearButton = new JButton("Clear");
 
         // adjust size for all three buttons to the widest (remove)
 
         getComponentPanel().add(addButton);
+        getComponentPanel().add(browseButton);
         getComponentPanel().add(removeButton);
         getComponentPanel().add(clearButton);
 
@@ -249,11 +273,39 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent arg0) {
+                
+                final String returnVal = textbox.showInputDialog("Input semicolon separated list of filepaths. May contain KNIME relative paths.");
+                
+                if (returnVal != null) {
+                    String[] filepaths = returnVal.split(";");
+                    URI[] files = new URI[filepaths.length];
+                    for (int i = 0; i < filepaths.length; i++)
+                    {
+                        try {
+                            files[i] = new URI(filepaths[i]);
+                        } catch (URISyntaxException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    ((URIListModel) listbox.getModel()).updateURIList(files);
+                }
+            }
+        });
+        
+        browseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent arg0) {
                 final int returnVal = chooser.showDialog(getComponentPanel()
                         .getParent(), null);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File[] files = chooser.getSelectedFiles();
-                    ((FileListModel) listbox.getModel()).updateFileList(files);
+                    URI[] uris = new URI[files.length];
+                    for (int i = 0; i < files.length; i++)
+                    {
+                      uris[i] = files[i].toURI();
+                    }
+                    ((URIListModel) listbox.getModel()).updateURIList(uris);
                 }
             }
         });
@@ -265,7 +317,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
                 // but we want to be sure
                 if (listbox.getSelectedIndex() != -1) {
                     int[] selectedIndices = listbox.getSelectedIndices();
-                    ((FileListModel) listbox.getModel())
+                    ((URIListModel) listbox.getModel())
                             .remove(selectedIndices);
                 }
             }
@@ -274,7 +326,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
-                ((FileListModel) listbox.getModel()).clear();
+                ((URIListModel) listbox.getModel()).clear();
             }
         });
 
@@ -308,6 +360,8 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         springLayout.putConstraint(SpringLayout.WEST, addButton, 10,
                 SpringLayout.EAST, listScroller);
+        springLayout.putConstraint(SpringLayout.WEST, browseButton, 10,
+                SpringLayout.EAST, listScroller);
         springLayout.putConstraint(SpringLayout.WEST, removeButton, 10,
                 SpringLayout.EAST, listScroller);
         springLayout.putConstraint(SpringLayout.WEST, clearButton, 10,
@@ -315,17 +369,23 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         springLayout.putConstraint(SpringLayout.NORTH, addButton, 10,
                 SpringLayout.NORTH, getComponentPanel());
-        springLayout.putConstraint(SpringLayout.NORTH, removeButton,
+        springLayout.putConstraint(SpringLayout.NORTH, browseButton,
                 12 + springLayout.getConstraints(addButton).getHeight()
+                .getPreferredValue(),
+                SpringLayout.NORTH, getComponentPanel());
+        springLayout.putConstraint(SpringLayout.NORTH, removeButton,
+                14 + 2 * springLayout.getConstraints(addButton).getHeight()
                         .getPreferredValue(), SpringLayout.NORTH,
                 getComponentPanel());
         springLayout.putConstraint(SpringLayout.NORTH, clearButton,
-                14 + 2 * springLayout.getConstraints(addButton).getHeight()
+                16 + 3 * springLayout.getConstraints(addButton).getHeight()
                         .getPreferredValue(), SpringLayout.NORTH,
                 getComponentPanel());
 
         SpringLayout.Constraints addCst = springLayout
                 .getConstraints(addButton);
+        SpringLayout.Constraints browseCst = springLayout
+                .getConstraints(browseButton);
         SpringLayout.Constraints removeCst = springLayout
                 .getConstraints(removeButton);
         SpringLayout.Constraints clearCst = springLayout
@@ -333,10 +393,13 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         Spring maxSpring = Spring.max(addCst.getWidth(),
                 Spring.max(removeCst.getWidth(), clearCst.getWidth()));
         addCst.setWidth(maxSpring);
+        browseCst.setWidth(maxSpring);
         removeCst.setWidth(maxSpring);
         clearCst.setWidth(maxSpring);
 
         springLayout.putConstraint(SpringLayout.EAST, addButton, -10,
+                SpringLayout.EAST, getComponentPanel());
+        springLayout.putConstraint(SpringLayout.EAST, browseButton, -10,
                 SpringLayout.EAST, getComponentPanel());
         springLayout.putConstraint(SpringLayout.EAST, removeButton, -10,
                 SpringLayout.EAST, getComponentPanel());
@@ -373,9 +436,23 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         String[] filenames = new String[listbox.getModel().getSize()];
         int idx = 0;
 
-        for (File file : ((FileListModel) listbox.getModel()).getFiles()) {
-            String filename = file.getAbsolutePath();
-            filenames[idx] = filename;
+        for (URI file : ((URIListModel) listbox.getModel()).getFiles()) {
+            try {
+                Path filename = FileUtil.resolveToPath(file.toURL());
+                if (! filename.toFile().canRead()) {
+                    throw new InvalidSettingsException("Cannot read " + filename.toString());
+                }
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            filenames[idx] = file.toString();
             idx++;
         }
 

@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -38,6 +39,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.MIMETypeHelper;
 
@@ -67,7 +69,7 @@ public class OutputFilesNodeModel extends NodeModel {
     @Override
     protected void reset() {
         // set string value to ""
-        m_filename.setStringValue("");
+        //m_filename.setStringValue("");
     }
 
     /**
@@ -173,17 +175,21 @@ public class OutputFilesNodeModel extends NodeModel {
 
             String outfilename = insertIndex(m_filename.getStringValue(), obj
                     .getSpec().getFileExtensions().get(0), idx++);
-            File out = new File(outfilename);
-
-            if (out.exists() && !out.canWrite()) {
-                throw new Exception("Cannot write to file: "
-                        + out.getAbsolutePath());
-            } else if (!out.getParentFile().canWrite()) {
-                throw new Exception("Cannot write to containing directoy: "
-                        + out.getParentFile().getAbsolutePath());
+            
+            try {
+                File out = FileUtil.resolveToPath(FileUtil.toURL(outfilename)).toFile();
+                if (out.exists() && !out.canWrite()) {
+                    throw new Exception("Cannot write to file: "
+                            + out.getAbsolutePath());
+                } else if (!out.getParentFile().canWrite()) {
+                    throw new Exception("Cannot write to containing directoy: "
+                            + out.getParentFile().getAbsolutePath());
+                }
+                FileUtils.copyFile(in, out);
+            } catch (InvalidPathException | IOException e) {
+                throw new InvalidSettingsException("Invalid URL: "
+                        + e.getMessage(), e);
             }
-
-            FileUtils.copyFile(in, out);
         }
         return null;
     }

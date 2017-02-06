@@ -2,6 +2,8 @@ package com.genericworkflownodes.knime.nodes.io.outputfolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.InvalidPathException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -21,6 +23,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 /**
  * This is the model implementation of OutputFolder. Writes all the incoming
@@ -61,6 +64,11 @@ public class OutputFolderNodeModel extends NodeModel {
         }
 
         double idx = 1.0;
+        String newfolder = "";
+        try {
+            newfolder = FileUtil.resolveToPath(FileUtil.toURL(m_foldername.getStringValue())).toString();
+        } catch (InvalidPathException | IOException | URISyntaxException e) {
+        }
         for (URIContent uri : uris) {
             File in = new File(uri.getURI());
             if (!in.canRead()) {
@@ -68,7 +76,7 @@ public class OutputFolderNodeModel extends NodeModel {
                         + in.getAbsolutePath());
             }
 
-            File target = new File(m_foldername.getStringValue(), in.getName());
+            File target = new File(newfolder, in.getName());
 
             if (target.exists() && !target.canWrite()) {
                 throw new Exception("Cannot write to file: "
