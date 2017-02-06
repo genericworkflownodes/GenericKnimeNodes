@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
@@ -39,8 +37,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-
-import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
 
 /**
  * This is the model implementation of FileMerger. This nodes takes two files

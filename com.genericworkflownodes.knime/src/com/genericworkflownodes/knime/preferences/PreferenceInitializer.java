@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.util.Helper;
 /**
  * Initializer for the GKN preferences.
  * 

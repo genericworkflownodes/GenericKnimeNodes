@@ -87,7 +87,7 @@ public class NodeConfigurationTree {
     }
 
     /**
-     * Constructs a list of prefixes from a given strin.
+     * Constructs a list of prefixes from a given string.
      * 
      * @param key
      *            The string to process.

@@ -4,7 +4,7 @@
 <plugin>
    <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
-   <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>  
+   <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
    
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -29,14 +29,8 @@
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
    	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
 	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
- <node
-       after="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"
-       category-path="/community/GenericKnimeNodes/Flow"
-       deprecated="false"
-       factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"
-       id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory">
- </node>
-</extension>
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory" id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
+   </extension>
    
    <extension point="org.knime.product.splashExtension">
         <splashExtension icon="icons/GKN.png" id="com.genericworkflownodes.knime.splashExtension"/>
