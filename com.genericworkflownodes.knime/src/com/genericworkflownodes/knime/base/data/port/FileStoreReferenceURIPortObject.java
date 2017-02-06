@@ -113,24 +113,34 @@ public class FileStoreReferenceURIPortObject extends FileStorePortObject
     public static FileStoreReferenceURIPortObject create(
             List<IURIPortObject> uriPortObjects) {
 
-        List<URIContent> uriContents = new ArrayList<URIContent>(
-                uriPortObjects.size());
-        List<String> relPaths = new ArrayList<String>(uriPortObjects.size());
-        List<Integer> fsIndices = new ArrayList<Integer>(uriPortObjects.size());
-        List<FileStore> fileStores = new ArrayList<FileStore>(
-                uriPortObjects.size());
+        List<URIContent> uriContents = new ArrayList<URIContent>();
+        List<String> relPaths = new ArrayList<String>();
+        List<Integer> fsIndices = new ArrayList<Integer>();
+        List<FileStore> fileStores = new ArrayList<FileStore>();
 
         for (IURIPortObject po : uriPortObjects) {
-            uriContents.add(po.getURIContents().get(0));
-            if (po instanceof AbstractFileStoreURIPortObject) {
-                AbstractFileStoreURIPortObject afspo = (AbstractFileStoreURIPortObject) po;
-                relPaths.add(afspo.getRelativePaths().get(0));
-                fileStores.add(afspo.getInternalFileStore());
-                fsIndices.add(fileStores.size() - 1);
-            } else {
-                // we add a dummy relative path
-                relPaths.add("");
-                fsIndices.add(-1);
+            int count = 0;
+            for (URIContent uriContent : po.getURIContents()) {
+                uriContents.add(uriContent);
+                if (po instanceof AbstractFileStoreURIPortObject) {
+                    AbstractFileStoreURIPortObject afspo = (AbstractFileStoreURIPortObject) po;
+                    relPaths.add(afspo.getRelativePaths().get(count));
+                    fileStores.add(afspo.getInternalFileStore());
+                    fsIndices.add(fileStores.size() - 1);
+                } else if (po instanceof FileStoreReferenceURIPortObject) {
+                    FileStoreReferenceURIPortObject frpo = (FileStoreReferenceURIPortObject) po;
+                    relPaths.add(frpo.getRelativePath(count));
+                    if (count < frpo.getFileStoreCount()) {
+                        fileStores.add(frpo.getFileStore(count));
+                    }
+                    fsIndices.add(frpo.getFileStoreIndex(count));
+                } else {
+                    // we add a dummy relative path
+                    fileStores.add(null);
+                    relPaths.add("");
+                    fsIndices.add(-1);
+                }
+                ++count;
             }
         }
         return new FileStoreReferenceURIPortObject(uriContents, relPaths,
@@ -251,6 +261,14 @@ public class FileStoreReferenceURIPortObject extends FileStorePortObject
     @Override
     public URIPortObjectSpec getSpec() {
         return m_uriPortObjectSpec;
+    }
+    
+    public String getRelativePath(int index) {
+        return m_relPaths.get(index);
+    }
+    
+    public Integer getFileStoreIndex(int index) {
+        return m_fsIndices.get(index);
     }
 
 }

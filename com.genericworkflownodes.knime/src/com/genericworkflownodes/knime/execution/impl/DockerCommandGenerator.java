@@ -22,11 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.knime.core.node.NodeLogger;
 
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -36,7 +37,6 @@ import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.ListParameter;
 import com.genericworkflownodes.knime.parameter.Parameter;
-import com.genericworkflownodes.knime.GenericNodesPlugin;
 /**
  * Implements a Docker tool specific generation of a command line.
  * 
