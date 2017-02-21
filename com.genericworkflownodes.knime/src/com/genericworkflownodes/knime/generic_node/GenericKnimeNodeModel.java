@@ -83,7 +83,7 @@ import com.genericworkflownodes.util.Helper;
  */
 public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     static final String GENERIC_KNIME_NODES_OUTTYPE_PREFIX = "GENERIC_KNIME_NODES_outtype#";
-    static final String GENERIC_KNIME_NODES_OUT_ACTIVE = "GENERIC_KNIME_NODES_active#";
+    static final String GENERIC_KNIME_NODES_OUT_ACTIVE = "GENERIC_KNIME_NODES_outport_active#";
     
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(GenericKnimeNodeModel.class);
