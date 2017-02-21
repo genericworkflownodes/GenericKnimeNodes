@@ -93,11 +93,15 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
         }
 
         int[] selectedPorts = mtc.getSelectedTypes();
+        boolean[] activePorts = mtc.getActiveness();
 
         for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
             settings.addInt(
                     GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUTTYPE_PREFIX
                             + i, selectedPorts[i]);
+            settings.addBoolean(
+                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
+                            + i, activePorts[i]);
         }
     }
 
@@ -126,6 +130,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 
         int nP = config.getNumberOfOutputPorts();
         int[] selectedPorts = new int[nP];
+        boolean[] activePorts = new boolean[nP];
 
         for (int i = 0; i < nP; i++) {
             try {
@@ -133,10 +138,15 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
                         .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUTTYPE_PREFIX
                                 + i);
                 selectedPorts[i] = idx;
+                boolean active = settings
+                        .getBoolean(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
+                                + i);
+                activePorts[i] = active;
             } catch (InvalidSettingsException e) {
                 throw new NotConfigurableException(e.getMessage(), e);
             }
         }
         mtc.setSelectedTypes(selectedPorts);
+        mtc.setActivePorts(activePorts);
     }
 }

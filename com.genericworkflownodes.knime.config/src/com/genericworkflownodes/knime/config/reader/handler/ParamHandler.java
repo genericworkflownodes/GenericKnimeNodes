@@ -364,12 +364,6 @@ public class ParamHandler extends DefaultHandler {
         boolean isInputPort = TYPE_INPUT_FILE.equals(attr_type)
         		|| getTags(attributes).contains(INPUTFILE_TAG)
         		|| TYPE_INPUT_PREFIX.equals(attr_type);
-        
-        // TODO maybe this is a misuse of MimeTypes. But otherwise we need to change the objects and methods
-        // to save/load settings.
-        if (p.isOptional() && !isInputPort) {
-        	p.addMimeType("Inactive");
-        }
 
         String description = attributes.getValue(ATTR_DESCRIPTION);
         p.setDescription(description);
