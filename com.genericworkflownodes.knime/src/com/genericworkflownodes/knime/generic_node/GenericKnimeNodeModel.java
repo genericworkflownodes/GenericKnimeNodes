@@ -480,7 +480,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             int selectedMIMETypeIndex = getOutputTypeIndex(i);
             // TODO: check
             String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
-            if (!mt.equals("Inactive")) {
+            if (!mt.toLowerCase().equals("inactive")) {
                 out_spec[i] = new URIPortObjectSpec(mt);
             } else {
                 out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
@@ -605,7 +605,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 
                 //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
                 PortObject fsupo;
-                if (!ext.equals("Inactive")) {
+                if (!ext.toLowerCase().equals("inactive")) {
 
                     fsupo = new FileStoreURIPortObject(
                             exec.createFileStore(m_nodeConfig.getName() + "_" + i));
@@ -631,7 +631,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             } else if (p instanceof FileParameter && !port.isMultiFile()) {
                 //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
                 PortObject po;
-                if (!ext.equals("Inactive")) {
+                if (!ext.toLowerCase().equals("inactive")) {
                     // if we have no basename to use (e.g., Node without input-file)
                     // we use the nodename
                     String basename;
