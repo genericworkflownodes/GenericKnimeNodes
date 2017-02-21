@@ -212,9 +212,6 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < ports.size(); i++) {
             if (ports.get(i).isOptional()) {
                 portTypes[i] = OPTIONAL_PORT_TYPE;
-                //if (!ports.get(i).isActive()) {
-                //    portTypes[i] = InactiveBranchPortObject.TYPE;
-                //}
             }
         }
         return portTypes;
@@ -482,12 +479,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < nOut; i++) {
             // selected output MIMEType
             int selectedMIMETypeIndex = getOutputTypeIndex(i);
-            // TODO: check
             String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
             if (!isInactive(i)) {
                 out_spec[i] = new URIPortObjectSpec(mt);
             } else {
-                
                 out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
             }
         }
