@@ -631,7 +631,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             } else if (p instanceof FileParameter && !port.isMultiFile()) {
                 //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
                 PortObject po;
-                if (!ext.toLowerCase().equals("Inactive")) {
+                if (!ext.toLowerCase().equals("inactive")) {
                     // if we have no basename to use (e.g., Node without input-file)
                     // we use the nodename
                     String basename;
