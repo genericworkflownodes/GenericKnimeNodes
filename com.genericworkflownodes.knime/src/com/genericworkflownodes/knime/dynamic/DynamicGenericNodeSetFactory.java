@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
@@ -21,6 +23,7 @@ import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 public abstract class DynamicGenericNodeSetFactory implements NodeSetFactory {
 
     private static final NodeLogger logger = NodeLogger.getLogger(DynamicGenericNodeSetFactory.class);
+    private static String[] CTD_EXT = new String[]{"ctd", "xml"};
     
     /**
      * Creates a new <code>DynamicGenericNodeSetFactory</code>
@@ -42,9 +45,7 @@ public abstract class DynamicGenericNodeSetFactory implements NodeSetFactory {
     protected abstract Class<? extends DynamicGenericNodeFactory> getNodeFactory();
     
     protected abstract String getCategoryPath();
-    
-    protected abstract String getNodeIdPrefix();
-    
+
     static File resolveSourceFile(Class<?> clazz, String relPath) {
         return Paths.get(clazz
                 .getProtectionDomain()
@@ -53,24 +54,23 @@ public abstract class DynamicGenericNodeSetFactory implements NodeSetFactory {
                 .getPath(), relPath).toFile();
     }
     
-    String getIdForTool(String toolName) {
-        return getNodeIdPrefix() + "." + toolName.toLowerCase().replaceAll("[^a-zA-Z0-9_]", "_");
-    }
+    protected abstract String getIdForTool(String relPath);
     
     @Override
     public Collection<String> getNodeFactoryIds() {
         if (m_idToFile == null) {
             m_idToFile = new LinkedHashMap<>();
-            FilenameFilter filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".ctd");
-                }
-            };
-            for (File f : m_folderFile.listFiles(filter)) {
+
+            for (File f : FileUtils.listFiles(m_folderFile, CTD_EXT, true)) {
                 if (f.isFile()) {
                     String name = f.getName();
-                    m_idToFile.put(getIdForTool(name), name);
+                    if (name.endsWith(".xml") && !name.equals("config.xml")) {
+                        continue;
+                    }
+                    Path parent = Paths.get(m_folderFile.getAbsolutePath());
+                    Path filePath = Paths.get(f.getAbsolutePath());
+                    String p = parent.relativize(filePath).toString();
+                    m_idToFile.put(getIdForTool(p), p);
                 }
             }
         }
