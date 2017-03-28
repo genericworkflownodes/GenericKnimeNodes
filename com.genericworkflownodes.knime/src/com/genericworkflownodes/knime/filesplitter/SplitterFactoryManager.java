@@ -1,6 +1,7 @@
 package com.genericworkflownodes.knime.filesplitter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +11,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.knime.base.filehandling.mime.MIMETypeEntry;
 import org.knime.core.node.NodeLogger;
 
 public final class SplitterFactoryManager {
@@ -85,7 +85,7 @@ public final class SplitterFactoryManager {
         m_factories.add(factory);
     }
 
-    public Iterable<SplitterFactory> getFactories() {
+    public Collection<SplitterFactory> getFactories() {
         return Collections.unmodifiableList(m_factories);
     }
     
@@ -98,7 +98,7 @@ public final class SplitterFactoryManager {
         return null;
     }
 
-    public Iterable<SplitterFactory> getFactories(String... mimetypes) {
+    public Collection<SplitterFactory> getFactories(String... mimetypes) {
         Set<SplitterFactory> factories = new HashSet<SplitterFactory>();
         for (SplitterFactory fac : m_factories) {
             for (String mimetype : mimetypes) {

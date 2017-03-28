@@ -42,6 +42,10 @@
        factory-class="com.genericworkflownodes.knime.nodes.filesplitter.FileSplitterNodeFactory"
        id="com.genericworkflownodes.knime.nodes.filesplitter.FileSplitterNodeFactory">
  </node>
+ <node
+       deprecated="false"
+       factory-class="com.genericworkflownodes.knime.nodes.filemerger.FileMergerNodeFactory">
+ </node>
 </extension>
    
    <extension point="org.knime.product.splashExtension">
