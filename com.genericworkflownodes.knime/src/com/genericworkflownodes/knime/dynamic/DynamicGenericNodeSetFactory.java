@@ -85,7 +85,7 @@ public abstract class DynamicGenericNodeSetFactory implements NodeSetFactory {
     @Override
     public String getCategoryPath(String id) {
         String category;
-        File f = Paths.get(m_folderFile.getAbsolutePath()).resolve(id + ".ctd").toAbsolutePath().toFile();
+        File f = Paths.get(m_folderFile.getAbsolutePath()).resolve(m_idToFile.get(id)).toAbsolutePath().toFile();
         try (InputStream cfgStream = new FileInputStream(f)) {
             category = new CTDConfigurationReader().read(cfgStream).getCategory();
         } catch(Exception e) {
