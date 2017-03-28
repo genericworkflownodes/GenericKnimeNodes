@@ -1,13 +1,10 @@
 package com.genericworkflownodes.knime.dynamic;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.knime.base.node.util.exttool.ExtToolStderrNodeView;
@@ -16,23 +13,19 @@ import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDescription28Proxy;
-import org.knime.core.node.NodeDescription31Proxy;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.config.ConfigRO;
 import org.knime.core.node.config.ConfigWO;
-import org.knime.node.v28.KnimeNodeDocument;
 import org.knime.node.v28.FullDescriptionDocument.FullDescription;
 import org.knime.node.v28.InPortDocument.InPort;
 import org.knime.node.v28.IntroDocument.Intro;
+import org.knime.node.v28.KnimeNodeDocument;
 import org.knime.node.v28.KnimeNodeDocument.KnimeNode;
 import org.knime.node.v28.OptionDocument.Option;
 import org.knime.node.v28.OutPortDocument.OutPort;
 import org.knime.node.v28.PortsDocument.Ports;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkUtil;
 import org.w3c.dom.Document;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
