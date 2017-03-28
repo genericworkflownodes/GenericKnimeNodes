@@ -60,7 +60,7 @@ public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> 
      */
     @Override
     public boolean hasDialog() {
-        return true;
+        return false;
     }
 
     /**
@@ -68,7 +68,7 @@ public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> 
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new FileSplitterNodeDialog();
+        return null;
     }
 
 }

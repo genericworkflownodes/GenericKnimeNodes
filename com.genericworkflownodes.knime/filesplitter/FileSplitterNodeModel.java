@@ -61,10 +61,10 @@ import com.genericworkflownodes.knime.filesplitter.SplitterFactoryManager;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
- * This is the model implementation of FileSplitter. The node takes a file, applies a splitter
- * and outputs a table containing the resulting parts.
+ * This is the model implementation of FileMerger. This nodes takes two files
+ * (file lists) as input and outputs a merged list of both inputs.
  * 
- * @author Julianus Pfeuffer, Temesgen H. Dadi, Alexander Fillbrunn
+ * @author aiche
  */
 public class FileSplitterNodeModel extends NodeModel {
 
@@ -122,15 +122,12 @@ public class FileSplitterNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
         IURIPortObject input = (IURIPortObject) inData[0];
-        if (input.getURIContents().size() != 1) {
-            throw new InvalidSettingsException("The input port must contain exactly one file to be split.");
+        if (input.getURIContents().size() > 1) {
+            throw new InvalidSettingsException("This node can only split a single file");
         }
-        URIContent content = input.getURIContents().get(0);
-        
-        // Get splitter either from settings or by finding a fitting for the mimetype
         String factoryID = m_factoryID.getStringValue();
         if (factoryID == null) {
-            String ext = content.getExtension();
+            String ext = input.getURIContents().get(0).getExtension();
             String mime = MIMETypeHelper.getMIMEtypeByExtension(ext);
             for (SplitterFactory fac : SplitterFactoryManager.getInstance().getFactories()) {
                 if (fac.isApplicable(mime)) {
@@ -142,36 +139,36 @@ public class FileSplitterNodeModel extends NodeModel {
             }
         }
         
-        File f = new File(content.getURI().toURL().getFile());
-
-        FileStore fileStore = exec.createFileStore("test");
+        File f = new File(input.getURIContents().get(0).getURI().toURL().getFile());
+        //FileStore[] filestores = new FileStore[m_numParts.getIntValue()];
+        
+        FileStore fs = exec.createFileStore("test");
+        //fs.getFile().mkdirs();
         File[] outputs = new File[m_numParts.getIntValue()];
-        
-        String ext, name;
-        
-        // Get file extension and name
-        int idx = f.getPath().lastIndexOf('.');
-        if (idx == -1) {
-            ext = "";
-            name = f.getName();
-        } else {
-            ext = f.getPath().substring(idx);
-            name = f.getName().substring(0, f.getName().lastIndexOf('.'));
-        }
-        // Create pointers to output files
         for (int i = 0; i < m_numParts.getIntValue(); i++) {
-            outputs[i] = Paths.get(fileStore.getFile().toString()).resolve(name + i + ext).toFile();
+            int idx = f.getPath().lastIndexOf('.');
+            String ext;
+            String name;
+            if (idx == -1) {
+                ext = "";
+                name = f.getName();
+            } else {
+                ext = f.getPath().substring(idx);
+                name = f.getName().substring(0, f.getName().lastIndexOf('.'));
+            }
+            //filestores[i] = exec.createFileStore(name + i + ext);
+            outputs[i] = Paths.get(fs.getFile().toString()).resolve(name + i + ext).toFile();
             outputs[i].getParentFile().mkdirs();
         }
-        // Split input
-        m_splitter.split(f, outputs);
         
-        // Create table containing file store cells
+        m_splitter.split(f, outputs);
         DataContainer dc = exec.createDataContainer(createSpec());
+
         for (int i = 0; i < m_numParts.getIntValue(); i++) {
-            FileStoreURIPortObject po = new FileStoreURIPortObject(fileStore);
-            po.registerFile(outputs[i].getName());
+            FileStoreURIPortObject po = new FileStoreURIPortObject(fs);
+            po.registerFile(outputs[i].getAbsolutePath());
             PortObjectHandlerCell cell = new PortObjectHandlerCell(po);
+            
             
             dc.addRowToTable(new DefaultRow(new RowKey("Row" + i), cell));
         }

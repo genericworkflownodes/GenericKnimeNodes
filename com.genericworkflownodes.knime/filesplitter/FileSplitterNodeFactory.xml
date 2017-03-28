@@ -12,7 +12,7 @@
     </fullDescription>
     
     <ports>
-        <inPort index="0" name="File"></inPort>
-        <outPort index="0" name="File list"></outPort>
+        <inPort index="0" name="File list"></inPort>
+        <outPort index="0" name="First file"></outPort>
     </ports>    
 </knimeNode>
