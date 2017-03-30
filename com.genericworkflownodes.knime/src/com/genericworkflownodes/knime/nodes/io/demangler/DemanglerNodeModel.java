@@ -45,6 +45,7 @@ import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of DemanglerNodeModel.
@@ -111,9 +112,9 @@ public class DemanglerNodeModel extends NodeModel {
                 SELECTED_DEMANGLER_SETTINGNAME, "");
         fileExtension = settings
                 .getString(CONFIGURED_FILE_EXTENSION_SETTINGNAME);
-
+        String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension);
         List<IDemangler> availableDemangler = DemanglerRegistry
-                .getDemanglerRegistry().getDemangler(fileExtension);
+                .getDemanglerRegistry().getDemangler(mimeType);
 
         demangler = null;
         if (!"".equals(demanglerClassName)) {
@@ -152,11 +153,11 @@ public class DemanglerNodeModel extends NodeModel {
 
         URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[0];
         fileExtension = spec.getFileExtensions().get(0);
-
+        String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension);
         // try to find a demangler for the data type ...
 
         List<IDemangler> availableDemanglers = DemanglerRegistry
-                .getDemanglerRegistry().getDemangler(fileExtension);
+                .getDemanglerRegistry().getDemangler(mimeType);
 
         if (availableDemanglers == null || availableDemanglers.size() == 0) {
             throw new InvalidSettingsException(

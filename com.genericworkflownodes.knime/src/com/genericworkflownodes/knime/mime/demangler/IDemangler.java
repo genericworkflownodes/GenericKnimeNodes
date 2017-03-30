@@ -68,7 +68,7 @@ public interface IDemangler extends Serializable {
      *            The file to demangle.
      * @return An {@link Iterator} to the file content in {@link DataRow} form.
      */
-    Iterator<DataRow> demangle(URI file);
+    Iterator<DataRow> demangle(URI file) throws DemanglerException;
 
     /**
      * Writes the content of the table to the given file.
@@ -79,5 +79,5 @@ public interface IDemangler extends Serializable {
      * @param file
      *            The file where the content of the table should be stored.
      */
-    void mangle(BufferedDataTable table, URI file);
+    void mangle(BufferedDataTable table, URI file) throws DemanglerException;
 }

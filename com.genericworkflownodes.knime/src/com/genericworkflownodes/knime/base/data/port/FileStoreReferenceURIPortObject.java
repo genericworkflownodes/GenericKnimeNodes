@@ -135,8 +135,8 @@ public class FileStoreReferenceURIPortObject extends FileStorePortObject
                     }
                     fsIndices.add(frpo.getFileStoreIndex(count));
                 } else {
-                    // we add a dummy relative path
-                    fileStores.add(null);
+                    // we add a dummy relative path for URIPortObjects etc.
+                    //fileStores.add(null);
                     relPaths.add("");
                     fsIndices.add(-1);
                 }
