@@ -32,6 +32,7 @@ import org.knime.core.node.port.PortObjectSpec;
 
 import com.genericworkflownodes.knime.mime.demangler.DemanglerRegistry;
 import com.genericworkflownodes.knime.mime.demangler.IDemangler;
+import com.genericworkflownodes.util.MIMETypeHelper;
 import com.genericworkflownodes.util.ui.ChoiceDialog;
 import com.genericworkflownodes.util.ui.ChoiceDialogListener;
 
@@ -103,8 +104,10 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
             configuredFileExtension = settings
                     .getString(DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
+            String mimeType = MIMETypeHelper.getMIMEtypeByExtension(configuredFileExtension);
+            
             availableDemangler = DemanglerRegistry.getDemanglerRegistry()
-                    .getDemangler(configuredFileExtension);
+                    .getDemangler(mimeType);
         } catch (InvalidSettingsException e) {
             e.printStackTrace();
         }
