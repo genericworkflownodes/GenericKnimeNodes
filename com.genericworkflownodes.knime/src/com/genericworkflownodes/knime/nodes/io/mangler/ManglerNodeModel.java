@@ -94,7 +94,7 @@ public class ManglerNodeModel extends NodeModel {
      */
     @Override
     protected PortObject[] execute(final PortObject[] inData,
-            final ExecutionContext exec) throws IOException {
+            final ExecutionContext exec) throws Exception {
 
         // translate portobject to table
 
