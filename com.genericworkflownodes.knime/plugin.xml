@@ -5,6 +5,7 @@
    <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.filesplitter" name="File Splitter" schema="schema/com.genericworkflownodes.knime.filesplitter.exsd"/>
    
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -30,6 +31,11 @@
    	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
 	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory" id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
+    <node
+          category-path="/community/GenericKnimeNodes"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.filesplitter.FileSplitterNodeFactory">
+    </node>
    </extension>
    
    <extension point="org.knime.product.splashExtension">
@@ -143,5 +149,9 @@
                serializerClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCellSerializer">
          </serializer>
       </DataType>
+   </extension>
+   <extension
+         point="com.genericworkflownodes.knime.filesplitter">
+      <FileSplitter FileSplitterFactory="com.genericworkflownodes.knime.filesplitter.impl.LineSplitterFactory"/>
    </extension>
 </plugin>
