@@ -13,6 +13,13 @@
     <category description="/community/GenericKnimeNodes/View" icon="icons/category.png" level-id="Util" name="Util" path="/community/GenericKnimeNodes"/>
     <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="KNIMEConversion" name="KNIMEConversion" path="/community/GenericKnimeNodes"/>
     <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="Flow" name="Flow" path="/community/GenericKnimeNodes"/>
+    <category
+          icon="icons/category.png"
+          level-id="GenericKNIMENodeCluster"
+          locked="true"
+          name="GenericKNIMENodeCluster"
+          path="/community/GenericKnimeNodes">
+    </category>
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
@@ -32,9 +39,19 @@
 	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory" id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
     <node
-          category-path="/community/GenericKnimeNodes"
+          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.nodes.filesplitter.FileSplitterNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.splittabletoport.SplitTableToPortNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.porttofilestore.PortToFileStoreNodeFactory">
     </node>
    </extension>
    

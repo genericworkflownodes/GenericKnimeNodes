@@ -85,10 +85,18 @@ public final class SplitterFactoryManager {
         m_factories.add(factory);
     }
 
-    public Iterable<SplitterFactory> getFactories() {
+    /**
+     * @return all factories registered in this instance
+     */
+    public List<SplitterFactory> getFactories() {
         return Collections.unmodifiableList(m_factories);
     }
     
+    /**
+     * Retrieves a factory with a given unique identifier.
+     * @param id the factory id
+     * @return the factory or null if it does not exist
+     */
     public SplitterFactory getFactory(String id) {
         for (SplitterFactory fac : m_factories) {
             if (id.equals(fac.getID())){
@@ -98,12 +106,19 @@ public final class SplitterFactoryManager {
         return null;
     }
 
-    public Iterable<SplitterFactory> getFactories(String... mimetypes) {
-        Set<SplitterFactory> factories = new HashSet<SplitterFactory>();
+    /**
+     * Retrieves all factories compatible with the given mimetypes.
+     * @param mimetypes the mimetypes
+     * @return a list of matching factories
+     */
+    public List<SplitterFactory> getFactories(String... mimetypes) {
+        Set<String> factoryIds = new HashSet<String>();
+        List<SplitterFactory> factories = new ArrayList<SplitterFactory>();
         for (SplitterFactory fac : m_factories) {
             for (String mimetype : mimetypes) {
-                if (fac.isApplicable(mimetype)) {
+                if (fac.isApplicable(mimetype) && !factoryIds.contains(fac.getID())) {
                     factories.add(fac);
+                    factoryIds.add(fac.getID());
                     break;
                 }
             }

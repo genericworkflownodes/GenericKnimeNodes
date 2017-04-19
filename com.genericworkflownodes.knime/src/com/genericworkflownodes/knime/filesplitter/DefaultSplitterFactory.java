@@ -1,7 +1,5 @@
 package com.genericworkflownodes.knime.filesplitter;
 
-import org.knime.base.filehandling.mime.MIMETypeEntry;
-
 public abstract class DefaultSplitterFactory implements SplitterFactory {
 
     @Override

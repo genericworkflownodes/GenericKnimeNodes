@@ -21,10 +21,8 @@ package com.genericworkflownodes.knime.nodes.filesplitter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 
-import org.knime.base.filehandling.mime.MIMETypeEntry;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
@@ -32,12 +30,7 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.filestore.FileStore;
-import org.knime.core.data.filestore.FileStoreCell;
-import org.knime.core.data.filestore.FileStoreFactory;
-import org.knime.core.data.filestore.FileStoreUtil;
 import org.knime.core.data.uri.IURIPortObject;
-import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -58,8 +51,6 @@ import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
 import com.genericworkflownodes.knime.filesplitter.Splitter;
 import com.genericworkflownodes.knime.filesplitter.SplitterFactory;
 import com.genericworkflownodes.knime.filesplitter.SplitterFactoryManager;
-import com.genericworkflownodes.knime.filesplitter.impl.LineSplitter;
-import com.genericworkflownodes.knime.filesplitter.impl.LineSplitterFactory;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
@@ -88,8 +79,8 @@ public class FileSplitterNodeModel extends NodeModel {
         return new SettingsModelInteger(NUM_PARTS_KEY, 2);
     }
     
-    private SettingsModelString m_factoryID = createFactoryIDSettingsModel();
     private Splitter m_splitter;
+    private SettingsModelString m_factoryID = createFactoryIDSettingsModel();
     private SettingsModelInteger m_numParts = createNumPartsSettingsModel();
 
     /**
@@ -124,27 +115,19 @@ public class FileSplitterNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
         IURIPortObject input = (IURIPortObject) inData[0];
-        if (input.getURIContents().size() > 1) {
+        
+        if (input.getURIContents().size() != 1) {
             throw new InvalidSettingsException("This node can only split a single file");
         }
         
+        // The factory for creating the splitter
         String factoryID = m_factoryID.getStringValue();
-        if (factoryID == null) {
-            String ext = input.getURIContents().get(0).getExtension();
-            String mime = MIMETypeHelper.getMIMEtypeByExtension(ext);
-            for (SplitterFactory fac : SplitterFactoryManager.getInstance().getFactories()) {
-                if (fac.isApplicable(mime)) {
-                    factoryID = fac.getID();
-                    m_factoryID.setStringValue(factoryID);
-                    m_splitter = fac.createSplitter();
-                    break;
-                }
-            }
-        }
-                
-        File f = new File(input.getURIContents().get(0).getURI().toURL().getFile());
+        m_splitter = SplitterFactoryManager.getInstance().getFactory(factoryID).createSplitter();
 
-        FileStore fs = exec.createFileStore("test");
+        File f = Paths.get(input.getURIContents().get(0).getURI()).toFile();
+        
+        // File Store in which we store the files
+        FileStore fs = exec.createFileStore("FileSplitter");
 
         File[] outputs = new File[m_numParts.getIntValue()];
         for (int i = 0; i < m_numParts.getIntValue(); i++) {
@@ -158,7 +141,6 @@ public class FileSplitterNodeModel extends NodeModel {
                 ext = f.getPath().substring(idx);
                 name = f.getName().substring(0, f.getName().lastIndexOf('.'));
             }
-            //filestores[i] = exec.createFileStore(name + i + ext);
             outputs[i] = Paths.get(fs.getFile().toString()).resolve(name + i + ext).toFile();
             outputs[i].getParentFile().mkdirs();
         }
@@ -191,10 +173,7 @@ public class FileSplitterNodeModel extends NodeModel {
     
     private DataTableSpec createSpec() {
         DataTableSpecCreator specCreator = new DataTableSpecCreator();
-        specCreator.addColumns(
-                new DataColumnSpecCreator("files",
-                                            PortObjectHandlerCell.TYPE)
-                .createSpec());
+        specCreator.addColumns(new DataColumnSpecCreator("files", PortObjectHandlerCell.TYPE).createSpec());
         return specCreator.createSpec();
     }
 
@@ -204,7 +183,26 @@ public class FileSplitterNodeModel extends NodeModel {
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+        String factoryID = m_factoryID.getStringValue();
+        URIPortObjectSpec spec = (URIPortObjectSpec)inSpecs[0];
         
+        // If no factory has been selected in the dialog, we take the first one that matches
+        if (factoryID == null) {
+            String ext = spec.getFileExtensions().get(0);
+            String mime = MIMETypeHelper.getMIMEtypeByExtension(ext);
+            
+            Iterator<SplitterFactory> factories = SplitterFactoryManager
+                                                    .getInstance()
+                                                    .getFactories(mime)
+                                                    .iterator();
+            if (!factories.hasNext()) {
+                throw new InvalidSettingsException("No suitable splitter found for mimetype " + mime + ".");
+            }
+            SplitterFactory fac = factories.next();
+            factoryID = fac.getID();
+            m_factoryID.setStringValue(factoryID);
+            setWarningMessage("No splitter selected. Choosing " + factoryID + ".");
+        }
         return new PortObjectSpec[] {createSpec()};
     }
 
@@ -217,6 +215,7 @@ public class FileSplitterNodeModel extends NodeModel {
         if (m_splitter != null) {
             m_splitter.saveSettingsTo(settings);
         }
+        m_numParts.saveSettingsTo(settings);
     }
 
     /**
@@ -225,11 +224,14 @@ public class FileSplitterNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        m_factoryID.loadSettingsFrom(settings);
-        m_splitter = SplitterFactoryManager.getInstance()
+        if (m_factoryID != null) {
+            m_factoryID.loadSettingsFrom(settings);
+            m_splitter = SplitterFactoryManager.getInstance()
                         .getFactory(m_factoryID.getStringValue())
                         .createSplitter();
-        m_splitter.loadSettingsFrom(settings);
+            m_splitter.loadSettingsFrom(settings);
+        }
+        m_numParts.loadSettingsFrom(settings);
     }
 
     /**
@@ -239,6 +241,7 @@ public class FileSplitterNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_factoryID.validateSettings(settings);
+        m_numParts.validateSettings(settings);
     }
 
     /**

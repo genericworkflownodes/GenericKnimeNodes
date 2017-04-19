@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.filesplitter;
+package com.genericworkflownodes.knime.nodes.porttofilestore;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -28,14 +28,14 @@ import org.knime.core.node.NodeView;
  * 
  * @author aiche
  */
-public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> {
+public class PortToFileStoreNodeFactory extends NodeFactory<PortToFileStoreNodeModel> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FileSplitterNodeModel createNodeModel() {
-        return new FileSplitterNodeModel();
+    public PortToFileStoreNodeModel createNodeModel() {
+        return new PortToFileStoreNodeModel();
     }
 
     /**
@@ -50,8 +50,8 @@ public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> 
      * {@inheritDoc}
      */
     @Override
-    public NodeView<FileSplitterNodeModel> createNodeView(final int viewIndex,
-            final FileSplitterNodeModel nodeModel) {
+    public NodeView<PortToFileStoreNodeModel> createNodeView(final int viewIndex,
+            final PortToFileStoreNodeModel nodeModel) {
         return null;
     }
 
@@ -60,7 +60,7 @@ public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> 
      */
     @Override
     public boolean hasDialog() {
-        return true;
+        return false;
     }
 
     /**
@@ -68,7 +68,7 @@ public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> 
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new FileSplitterNodeDialog();
+        return null;
     }
 
 }

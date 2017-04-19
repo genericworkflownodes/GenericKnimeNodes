@@ -10,11 +10,14 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
 /**
-*
+* Panel for a file splitter.
 * @author Alexander Fillbrunn
 */
 public abstract class SplitterPanel extends JPanel {
-   /**
+
+    private static final long serialVersionUID = 1L;
+
+/**
     * Saves settings for this panel.
     * @param settings the settings to save to
     * @throws InvalidSettingsException when there was a problem saving the settings
