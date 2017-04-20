@@ -75,15 +75,15 @@ public class DemanglerRegistry implements IDemanglerRegistry {
     @Override
     public List<IDemangler> getDemangler(final String mType) {
         List<IDemangler> availableDemangler = getAvailableDemangler();
-        List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
+        List<IDemangler> candidateDemangler = new ArrayList<IDemangler>();
 
         for (IDemangler demangler : availableDemangler) {
             if (demangler.getMIMEType().equals(mType)) {
-                candidateDemanger.add(demangler);
+                candidateDemangler.add(demangler);
             }
         }
 
-        return candidateDemanger;
+        return candidateDemangler;
     }
 
     /*
@@ -113,15 +113,15 @@ public class DemanglerRegistry implements IDemanglerRegistry {
     @Override
     public List<IDemangler> getMangler(final DataTableSpec spec) {
         List<IDemangler> availableDemangler = getAvailableDemangler();
-        List<IDemangler> candidateDemanger = new ArrayList<IDemangler>();
+        List<IDemangler> candidateDemangler = new ArrayList<IDemangler>();
 
         for (IDemangler demangler : availableDemangler) {
             if (isContainedIn(demangler.getTableSpec(), spec)) {
-                candidateDemanger.add(demangler);
+                candidateDemangler.add(demangler);
             }
         }
 
-        return candidateDemanger;
+        return candidateDemangler;
     }
 
     /**

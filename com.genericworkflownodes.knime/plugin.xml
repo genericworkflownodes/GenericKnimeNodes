@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 
 <plugin>
+
    <extension-point id="com.genericworkflownodes.knime.mime.demangler.Demangler" name="Demangler" schema="schema/com.genericworkflownodes.knime.mime.demangler.Demangler.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
@@ -15,21 +16,21 @@
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory" id="com.genericworkflownodes.knime.nodes.io.exporter.MimeFileExporterNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfiles.OutputFilesNodeFactory" id="com.genericworkflownodes.knime.nodes.io.listexporter.ListMimeFileExporterNodeFactory"/>
-	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory" id="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory" id="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory" id="org.ballproject.knime.base.flow.beanshell.BeanShellNodeFactory"/>    
-    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopStartNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopStartNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory" id="org.ballproject.knime.base.flow.listzip.ListZipLoopEndNodeFactory"/>
-   	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory" id="com.genericworkflownodes.knime.nodes.merger.FileMergerNodeFactory"/>
-	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory" id="com.genericworkflownodes.knime.nodes.io.image2file.Image2FilePortNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory" id="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfiles.OutputFilesNodeFactory"/>
+	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory"/>    
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopStartNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory"/>
+   	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory"/>
+	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory"/>
+    <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
    </extension>
    
    <extension point="org.knime.product.splashExtension">
@@ -97,9 +98,6 @@
             class="com.genericworkflownodes.knime.execution.impl.DockerCommandGenerator"
             name="DockerCommandGenerator">
       </commandgenerator>
-   </extension>
-   <extension
-         point="com.genericworkflownodes.knime.execution.CommandGenerator">
    </extension>
    <extension
          point="org.knime.core.PortType">
