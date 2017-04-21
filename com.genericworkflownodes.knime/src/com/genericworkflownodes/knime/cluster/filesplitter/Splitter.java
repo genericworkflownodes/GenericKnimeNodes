@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.filesplitter;
+package com.genericworkflownodes.knime.cluster.filesplitter;
 
 import java.io.File;
 import java.io.IOException;

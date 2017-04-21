@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.filesplitter.impl;
+package com.genericworkflownodes.knime.cluster.filesplitter.impl;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
-import com.genericworkflownodes.knime.filesplitter.Splitter;
+import com.genericworkflownodes.knime.cluster.filesplitter.Splitter;
 
 public class LineSplitter implements Splitter {
 

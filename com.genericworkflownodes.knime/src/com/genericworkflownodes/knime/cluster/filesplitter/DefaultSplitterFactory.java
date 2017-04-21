@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.filesplitter;
+package com.genericworkflownodes.knime.cluster.filesplitter;
 
 public abstract class DefaultSplitterFactory implements SplitterFactory {
 

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.splittabletoport;
+package com.genericworkflownodes.knime.cluster.nodes.filesplitter;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
@@ -28,14 +28,14 @@ import org.knime.core.node.NodeView;
  * 
  * @author aiche
  */
-public class SplitTableToPortNodeFactory extends NodeFactory<SplitTableToPortNodeModel> {
+public class FileSplitterNodeFactory extends NodeFactory<FileSplitterNodeModel> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public SplitTableToPortNodeModel createNodeModel() {
-        return new SplitTableToPortNodeModel();
+    public FileSplitterNodeModel createNodeModel() {
+        return new FileSplitterNodeModel();
     }
 
     /**
@@ -50,8 +50,8 @@ public class SplitTableToPortNodeFactory extends NodeFactory<SplitTableToPortNod
      * {@inheritDoc}
      */
     @Override
-    public NodeView<SplitTableToPortNodeModel> createNodeView(final int viewIndex,
-            final SplitTableToPortNodeModel nodeModel) {
+    public NodeView<FileSplitterNodeModel> createNodeView(final int viewIndex,
+            final FileSplitterNodeModel nodeModel) {
         return null;
     }
 
@@ -60,7 +60,7 @@ public class SplitTableToPortNodeFactory extends NodeFactory<SplitTableToPortNod
      */
     @Override
     public boolean hasDialog() {
-        return false;
+        return true;
     }
 
     /**
@@ -68,7 +68,7 @@ public class SplitTableToPortNodeFactory extends NodeFactory<SplitTableToPortNod
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return null;
+        return new FileSplitterNodeDialog();
     }
 
 }

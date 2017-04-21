@@ -1,7 +1,7 @@
-package com.genericworkflownodes.knime.filesplitter.impl;
+package com.genericworkflownodes.knime.cluster.filesplitter.impl;
 
-import com.genericworkflownodes.knime.filesplitter.DefaultSplitterFactory;
-import com.genericworkflownodes.knime.filesplitter.Splitter;
+import com.genericworkflownodes.knime.cluster.filesplitter.DefaultSplitterFactory;
+import com.genericworkflownodes.knime.cluster.filesplitter.Splitter;
 
 public class LineSplitterFactory extends DefaultSplitterFactory {
 

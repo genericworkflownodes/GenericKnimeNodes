@@ -1,11 +1,9 @@
-package com.genericworkflownodes.knime.nodes.filesplitter;
+package com.genericworkflownodes.knime.cluster.nodes.filesplitter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -16,8 +14,8 @@ import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.genericworkflownodes.knime.filesplitter.SplitterFactory;
-import com.genericworkflownodes.knime.filesplitter.SplitterFactoryManager;
+import com.genericworkflownodes.knime.cluster.filesplitter.SplitterFactory;
+import com.genericworkflownodes.knime.cluster.filesplitter.SplitterFactoryManager;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 public class FileSplitterNodeDialog extends DefaultNodeSettingsPane {

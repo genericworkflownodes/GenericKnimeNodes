@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.splittabletoport;
+package com.genericworkflownodes.knime.cluster.nodes.splittabletoport;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,11 +25,13 @@ import java.util.List;
 
 import javax.activation.MimeType;
 
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -38,6 +40,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -78,6 +81,12 @@ public class SplitTableToPortNodeModel extends NodeModel {
         super(getIncomingPorts(), getOutgoing());
     }
 
+    public static SettingsModelColumnName createFileColumnSettingsModel() {
+        return new SettingsModelColumnName("fileColumn", null);
+    }
+    
+    private SettingsModelColumnName m_fileCol = createFileColumnSettingsModel();
+    
     /**
      * {@inheritDoc}
      */
@@ -88,8 +97,10 @@ public class SplitTableToPortNodeModel extends NodeModel {
         BufferedDataTable input = (BufferedDataTable)inData[0];
         List<URIContent> contents = new ArrayList<>();
         String mimetype = null;
+        int index = input.getDataTableSpec().findColumnIndex(m_fileCol.getColumnName());
+
         for (DataRow row : input) {
-            PortObjectHandlerCell cell = (PortObjectHandlerCell)row.getCell(0);
+            PortObjectHandlerCell cell = (PortObjectHandlerCell)row.getCell(index);
             URIContent uc = cell.getURIContent();
             String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension());
             if (mimetype == null) {
@@ -110,8 +121,8 @@ public class SplitTableToPortNodeModel extends NodeModel {
     protected void reset() {
     }
     
-    private DataTableSpec createSpec() {
-        return null;
+    private PortObjectSpec createSpec() {
+        return new URIPortObjectSpec();
     }
 
     /**
@@ -120,6 +131,25 @@ public class SplitTableToPortNodeModel extends NodeModel {
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
+        DataTableSpec spec = (DataTableSpec)inSpecs[0];
+        // If the user has not selected a column yet, we use one that fits
+        if (m_fileCol.getColumnName() == null) {
+            for (int i = 0; i < spec.getNumColumns(); i++) {
+                DataColumnSpec colSpec = spec.getColumnSpec(i);
+                if (colSpec.getType().equals(PortObjectHandlerCell.TYPE)) {
+                    m_fileCol.setStringValue(colSpec.getName());
+                    setWarningMessage("No column with file cells configured. Using \"" + m_fileCol.getColumnName() + "\".");
+                    break;
+                }
+            }
+        } else {
+            // Check that the configured column still exists
+            int index = spec.findColumnIndex(m_fileCol.getColumnName());
+            if (index == -1) {
+                throw new InvalidSettingsException("Column \""+  m_fileCol.getColumnName() + "\" does not exist in the input table. "
+                        + "Please reconfigure the node.");
+            }
+        }
         
         return new PortObjectSpec[] {createSpec()};
     }
@@ -129,6 +159,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
+        m_fileCol.saveSettingsTo(settings);
     }
 
     /**
@@ -137,7 +168,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-
+        m_fileCol.loadSettingsFrom(settings);
     }
 
     /**
@@ -146,6 +177,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
+        m_fileCol.loadSettingsFrom(settings);
     }
 
     /**

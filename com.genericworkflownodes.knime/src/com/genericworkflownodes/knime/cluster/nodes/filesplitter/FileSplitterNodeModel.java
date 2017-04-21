@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.filesplitter;
+package com.genericworkflownodes.knime.cluster.nodes.filesplitter;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,9 +48,9 @@ import org.knime.core.node.port.PortType;
 
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
-import com.genericworkflownodes.knime.filesplitter.Splitter;
-import com.genericworkflownodes.knime.filesplitter.SplitterFactory;
-import com.genericworkflownodes.knime.filesplitter.SplitterFactoryManager;
+import com.genericworkflownodes.knime.cluster.filesplitter.Splitter;
+import com.genericworkflownodes.knime.cluster.filesplitter.SplitterFactory;
+import com.genericworkflownodes.knime.cluster.filesplitter.SplitterFactoryManager;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
