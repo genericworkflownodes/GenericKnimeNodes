@@ -30,6 +30,9 @@ import org.knime.core.node.NodeLogger;
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineParameter;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
@@ -56,7 +59,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
     //private INodeConfiguration nodeConfig;
     private IPluginConfiguration pluginConfig;
     
-    public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+    public List<CommandLineElement> generateCommands(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception {
 
@@ -68,7 +71,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
         // logging
         exportPlainConfiguration(workingDirectory);
 
-        List<String> commands;
+        List<CommandLineElement> commands;
 
         try {
             commands = processCLI();
@@ -90,14 +93,16 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
      * @throws Exception
      *             Is thrown if the configuration values are invalid.
      */
-    protected List<String> processCLI() throws Exception {
-        List<String> commands = new ArrayList<String>();
-        List<String> dockerCommands = new ArrayList<String>();
+    protected List<CommandLineElement> processCLI() throws Exception {
+        List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
+        List<CommandLineElement> dockerCommands = new ArrayList<CommandLineElement>();
         Map<String, String> hostDockerMap = new HashMap<String, String>();
-        dockerCommands.add(GenericNodesPlugin.getDockerInstallationDir()
-                            +File.separator+DOCKER_COMMAND);
-        dockerCommands.add(DOCKER_EXECUTION);
-        commands.add(nodeConfig.getExecutablePath()+nodeConfig.getExecutableName());
+        dockerCommands.add(new CommandLineOptionIdentifier(GenericNodesPlugin.getDockerInstallationDir()
+                            +File.separator+DOCKER_COMMAND));
+        dockerCommands.add(new CommandLineOptionIdentifier(DOCKER_EXECUTION));
+        // this DOES NOT represent the docker VM, rather, the name of the executable
+        // INSIDE the docker image, so it's always fixed!        
+        commands.add(new CommandLineOptionIdentifier(nodeConfig.getExecutablePath()+nodeConfig.getExecutableName()));
         for (CLIElement cliElement : nodeConfig.getCLI().getCLIElement()) {
             logger.info("CLIElement: " + cliElement.getOptionIdentifier());
 
@@ -111,7 +116,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                 String[] splitResult = cliElement.getOptionIdentifier().split(
                         " ");
                 for (String splittedCommand : splitResult) {
-                    commands.add(splittedCommand);
+                    commands.add(new CommandLineOptionIdentifier(splittedCommand));
                 }
             } else if (super.isMappedToBooleanParameter(cliElement)) {
                 // it is mapped to bool
@@ -119,7 +124,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                 
             } else {
 
-                List<List<String>> extractedParameterValues = extractParamterValues(cliElement, dockerCommands,hostDockerMap);
+                List<List<? extends CommandLineElement>> extractedParameterValues = extractParamterValues(cliElement, dockerCommands,hostDockerMap);
                 validateExtractedParameters(extractedParameterValues);
 
                 // we only add those parameters to the command line if they
@@ -133,7 +138,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
         }
         try{
             String dockerContainer = pluginConfig.getToolProperty(nodeConfig.getName()).getProperty("dockerImage", null);
-            dockerCommands.add(dockerContainer.replace("\"", ""));
+            dockerCommands.add(new CommandLineOptionIdentifier(dockerContainer.replace("\"", "")));
             dockerCommands.addAll(commands);
             return dockerCommands;
         }catch (NullPointerException e){
@@ -142,10 +147,10 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
     }
 
 
-    private List<List<String>> extractParamterValues(CLIElement cliElement,
-            List<String> dockerCommands, Map<String, String> hostDockerMap) throws IOException {
+    private List<List<? extends CommandLineElement>> extractParamterValues(CLIElement cliElement,
+            List<CommandLineElement> dockerCommands, Map<String, String> hostDockerMap) throws IOException {
         
-        List<List<String>> extractedParameterValues = new ArrayList<List<String>>();
+        List<List<? extends CommandLineElement>> extractedParameterValues = new ArrayList<List<? extends CommandLineElement>>();
         
         for (CLIMapping cliMapping : cliElement.getMapping()) {
             if (nodeConfig.getParameterKeys().contains(
@@ -157,7 +162,11 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                     if (p instanceof ListParameter) {
                         ListParameter lp = (ListParameter) p;
                         if (lp.getStrings().size() > 0) {
-                            extractedParameterValues.add(lp.getStrings());
+                            final List<CommandLineElement> tmp = new ArrayList<CommandLineElement>();
+                            for (final String s : lp.getStrings()) {
+                                tmp.add(new CommandLineOptionIdentifier(s));
+                            }
+                            extractedParameterValues.add(tmp);
                         }
                     } else if (p instanceof FileParameter){
                         extractedParameterValues.add(
@@ -177,8 +186,8 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                             }
                         }
                     } else {
-                        List<String> l = new ArrayList<String>();
-                        l.add(p.getStringRep());
+                        List<CommandLineElement> l = new ArrayList<CommandLineElement>();
+                        l.add(new CommandLineParameter(p));
                         extractedParameterValues.add(l);
                     }
                 }
@@ -198,8 +207,8 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
      * @return List of extracted commands
      * @throws IOException
      */
-    private List<String> handleFileParameter(String hostFile,
-            List<String> dockerCommands, Map<String, String> hostDockerMap) 
+    private List<? extends CommandLineElement> handleFileParameter(String hostFile,
+            List<CommandLineElement> dockerCommands, Map<String, String> hostDockerMap) 
             throws IOException {
         
         String dockerMount;
@@ -214,13 +223,13 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                     +dockerCommands.size()
                     +DOCKER_DIR_SEP;
              hostDockerMap.put(hostPath, dockerMount);
-             dockerCommands.add(DOCKER_MOUNT_COMMAND);
-             dockerCommands.add(hostPath+":"+dockerMount);
+             dockerCommands.add(new CommandLineOptionIdentifier(DOCKER_MOUNT_COMMAND));
+             dockerCommands.add(new CommandLineOptionIdentifier(hostPath+":"+dockerMount));
         }  
 
             
-        List<String> l = new ArrayList<String>();
-        l.add(dockerMount+fileParam.getName());
+        List<CommandLineElement> l = new ArrayList<CommandLineElement>();
+        l.add(new CommandLineOptionIdentifier(dockerMount+fileParam.getName()));
         
         return l;
     }

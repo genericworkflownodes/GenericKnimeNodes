@@ -32,18 +32,14 @@ import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
 /**
  * Class useful for unit testing.
  * 
- * Simulates real work by just waiting (using {@link Thread#sleep(long)}). It is
- * possible to adjust the behaviour of this class by using
- * {@link #setSleepTime(long)}, {@link #setReturnCode(int)} and
- * {@link #setThrowException(boolean)}.
+ * Simulates real work by just waiting (using {@link Thread#sleep(long)}). It is possible to adjust the behaviour of
+ * this class by using {@link #setSleepTime(long)}, {@link #setReturnCode(int)} and {@link #setThrowException(boolean)}.
  * 
- * This class provides debugging information via the methods:
- * {@link #isCompleted()} and {@link #isKilled()}.
+ * This class provides debugging information via the methods: {@link #isCompleted()} and {@link #isKilled()}.
  * 
  * @author Luis de la Garza
  */
 public class DummyToolExecutor implements IToolExecutor {
-
     private volatile long sleepTime = 2000;
     private volatile int returnCode = 0;
     private final Object monitor = new Object();
@@ -88,6 +84,11 @@ public class DummyToolExecutor implements IToolExecutor {
     @Override
     public void setCommandGenerator(ICommandGenerator generator) {
     }
+    
+    @Override
+	public ICommandGenerator getCommandGenerator() {
+		return null;
+	}
 
     @Override
     public int execute() throws ToolExecutionFailedException {
@@ -170,6 +171,4 @@ public class DummyToolExecutor implements IToolExecutor {
     public boolean isKilled() {
         return killed;
     }
-
-
 }

@@ -45,7 +45,7 @@ public class LocalDockerToolExecutor extends LocalToolExecutor implements IToolE
     public int execute() throws ToolExecutionFailedException {
         try {
             List<String> command = new ArrayList<String>();
-            command.addAll(m_commands);
+            extractFromCommandLineElements(m_commands, command);
     
             // emit command
             LOGGER.debug("Executing: " + StringUtils.join(command, " "));

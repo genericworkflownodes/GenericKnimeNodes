@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -50,6 +51,7 @@ import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
@@ -172,7 +174,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      *            The port number for which the output type should be returned.
      * @return The selected output type.
      */
-    protected String getOutputType(int idx) {
+    public String getOutputType(int idx) {
         return m_nodeConfig.getOutputPorts().get(idx).getMimeTypes()
                 .get(m_selectedOutputType[idx]);
     }
@@ -830,5 +832,32 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 ((FileParameter) p).setValue(filename);
             }
         }
+    }
+
+    /**
+     * Retrieves the node configuration.
+     * 
+     * @return the node configuration.
+     */
+    public INodeConfiguration getNodeConfiguration() {
+        return m_nodeConfig;
+    }
+
+    /**
+     * Returns a collection with the command line elements to execute this node.
+     * 
+     * @param workingDirectory
+     *            The working folder.
+     * @return A collection with the command line elements.
+     * @throws Exception
+     *             If the generation of the command line elements fails.
+     */
+    public Collection<CommandLineElement> getCommandLine(
+            final File workingDirectory) throws Exception {
+        final IToolExecutor executor = prepareExecutor(workingDirectory);
+        final ICommandGenerator commandGenerator = executor
+                .getCommandGenerator();
+        return commandGenerator.generateCommands(m_nodeConfig, m_pluginConfig,
+                workingDirectory);
     }
 }
