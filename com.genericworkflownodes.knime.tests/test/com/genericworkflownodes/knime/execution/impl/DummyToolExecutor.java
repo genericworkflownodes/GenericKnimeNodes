@@ -32,25 +32,23 @@ import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
 /**
  * Class useful for unit testing.
  * 
- * Simulates real work by just waiting (using {@link Thread#sleep(long)}). It is
- * possible to adjust the behaviour of this class by using
- * {@link #setSleepTime(long)}, {@link #setReturnCode(int)} and
- * {@link #setThrowException(boolean)}.
+ * Simulates real work by just waiting (using {@link Thread#sleep(long)}). It is possible to adjust the behaviour of
+ * this class by using {@link #setSleepTime(long)}, {@link #setReturnCode(int)} and {@link #setThrowException(boolean)}.
  * 
- * This class provides debugging information via the methods:
- * {@link #isCompleted()} and {@link #isKilled()}.
+ * This class provides debugging information via the methods: {@link #isCompleted()} and {@link #isKilled()}.
  * 
  * @author Luis de la Garza
  */
 public class DummyToolExecutor implements IToolExecutor {
-
     private volatile long sleepTime = 2000;
     private volatile int returnCode = 0;
     private final Object monitor = new Object();
+    private volatile boolean started = false;
     private volatile boolean killed = false;
     private volatile boolean completed = false;
     private volatile boolean throwException = false;
-
+    private volatile long timeBeforeSleep;
+    
     /**
      * Instructs this executor to throw an exception when {@link #execute()} is
      * invoked.
@@ -90,20 +88,22 @@ public class DummyToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public int execute() throws ToolExecutionFailedException {
+    public int execute() throws ToolExecutionFailedException {    	
         completed = false;
-        killed = false;
+        killed = false;        
         if (throwException) {
             throw new ToolExecutionFailedException("I failed");
         }
         try {
             synchronized (monitor) {
+            	started = true;
+            	timeBeforeSleep = System.currentTimeMillis();
                 monitor.wait(sleepTime);
             }
         } catch (InterruptedException e) {
-            // ignore
+            
         } finally {
-            completed = true;
+            completed = started && ((System.currentTimeMillis() - timeBeforeSleep) >= sleepTime);
         }
         return returnCode;
     }
@@ -118,7 +118,7 @@ public class DummyToolExecutor implements IToolExecutor {
     @Override
     public void kill() {
         synchronized (monitor) {
-            monitor.notifyAll();
+        	monitor.notifyAll();
         }
         killed = true;
     }
@@ -170,6 +170,4 @@ public class DummyToolExecutor implements IToolExecutor {
     public boolean isKilled() {
         return killed;
     }
-
-
 }
