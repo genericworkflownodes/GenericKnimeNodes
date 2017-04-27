@@ -1,10 +1,13 @@
 package com.genericworkflownodes.knime.commandline.impl;
 
-import com.genericworkflownodes.knime.commandline.ICommandLineFile;
 import com.genericworkflownodes.knime.parameter.FileParameter;
 
-public class CommandLineFile extends CommandLineParameter
-        implements ICommandLineFile {
+/**
+ * Command line element that represents a file.
+ * @author delagarza
+ *
+ */
+public class CommandLineFile extends CommandLineParameter {
 
     public CommandLineFile(final FileParameter fileParameter) {
         super(fileParameter);

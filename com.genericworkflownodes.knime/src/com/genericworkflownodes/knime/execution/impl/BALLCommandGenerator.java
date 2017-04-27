@@ -24,7 +24,7 @@ import java.util.List;
 
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.commandline.impl.CommandLineCTDFile;
-import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineFixedString;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.writer.CTDConfigurationWriter;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
@@ -49,7 +49,7 @@ public class BALLCommandGenerator implements ICommandGenerator {
         File paramFile = writePARFile(nodeConfiguration, workingDirectory);
 
         List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
-        commands.add(new CommandLineOptionIdentifier(PAR_SWITCH));
+        commands.add(new CommandLineFixedString(PAR_SWITCH));
         commands.add(new CommandLineCTDFile(paramFile));
 
         return commands;

@@ -31,7 +31,7 @@ import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.commandline.impl.CommandLineFile;
-import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineFixedString;
 import com.genericworkflownodes.knime.commandline.impl.CommandLineParameter;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.PlainNodeConfigurationWriter;
@@ -108,7 +108,7 @@ public class CLICommandGenerator implements ICommandGenerator {
                         .split(" ");
                 for (final String splittedCommand : splitResult) {
                     commands.add(
-                            new CommandLineOptionIdentifier(splittedCommand));
+                            new CommandLineFixedString(splittedCommand));
                 }
             } else if (isMappedToBooleanParameter(cliElement)) {
                 // it is mapped to bool
@@ -146,7 +146,7 @@ public class CLICommandGenerator implements ICommandGenerator {
         for (final List<? extends CommandLineElement> innerList : extractedParameterValues) {
             // add the command prefix in each iteration
             if (!StringUtils.isBlank(cliElement.getOptionIdentifier())) {
-                commands.add(new CommandLineOptionIdentifier(
+                commands.add(new CommandLineFixedString(
                         cliElement.getOptionIdentifier()));
             }
             commands.addAll(innerList);
@@ -283,7 +283,7 @@ public class CLICommandGenerator implements ICommandGenerator {
         if (((BoolParameter) nodeConfig.getParameter(
                 cliElement.getMapping().get(0).getReferenceName()))
                         .getValue()) {
-            commands.add(new CommandLineOptionIdentifier(
+            commands.add(new CommandLineFixedString(
                     cliElement.getOptionIdentifier()));
         }
     }

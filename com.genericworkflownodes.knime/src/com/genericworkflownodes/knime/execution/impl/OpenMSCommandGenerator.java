@@ -24,7 +24,7 @@ import java.util.List;
 
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.commandline.impl.CommandLineCTDFile;
-import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineFixedString;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
 import com.genericworkflownodes.knime.config.writer.CTDConfigurationWriter;
@@ -56,7 +56,7 @@ public class OpenMSCommandGenerator implements ICommandGenerator {
         File iniFile = createINIFile(nodeConfiguration, workingDirectory);
 
         List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
-        commands.add(new CommandLineOptionIdentifier(INI_SWITCH));
+        commands.add(new CommandLineFixedString(INI_SWITCH));
         commands.add(new CommandLineCTDFile(iniFile));
 
         return commands;

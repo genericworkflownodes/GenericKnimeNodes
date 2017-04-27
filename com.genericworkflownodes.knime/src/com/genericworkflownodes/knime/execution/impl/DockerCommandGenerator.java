@@ -31,7 +31,7 @@ import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
-import com.genericworkflownodes.knime.commandline.impl.CommandLineOptionIdentifier;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineFixedString;
 import com.genericworkflownodes.knime.commandline.impl.CommandLineParameter;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
@@ -97,12 +97,12 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
         List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
         List<CommandLineElement> dockerCommands = new ArrayList<CommandLineElement>();
         Map<String, String> hostDockerMap = new HashMap<String, String>();
-        dockerCommands.add(new CommandLineOptionIdentifier(GenericNodesPlugin.getDockerInstallationDir()
+        dockerCommands.add(new CommandLineFixedString(GenericNodesPlugin.getDockerInstallationDir()
                             +File.separator+DOCKER_COMMAND));
-        dockerCommands.add(new CommandLineOptionIdentifier(DOCKER_EXECUTION));
+        dockerCommands.add(new CommandLineFixedString(DOCKER_EXECUTION));
         // this DOES NOT represent the docker VM, rather, the name of the executable
         // INSIDE the docker image, so it's always fixed!        
-        commands.add(new CommandLineOptionIdentifier(nodeConfig.getExecutablePath()+nodeConfig.getExecutableName()));
+        commands.add(new CommandLineFixedString(nodeConfig.getExecutablePath()+nodeConfig.getExecutableName()));
         for (CLIElement cliElement : nodeConfig.getCLI().getCLIElement()) {
             logger.info("CLIElement: " + cliElement.getOptionIdentifier());
 
@@ -116,7 +116,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                 String[] splitResult = cliElement.getOptionIdentifier().split(
                         " ");
                 for (String splittedCommand : splitResult) {
-                    commands.add(new CommandLineOptionIdentifier(splittedCommand));
+                    commands.add(new CommandLineFixedString(splittedCommand));
                 }
             } else if (super.isMappedToBooleanParameter(cliElement)) {
                 // it is mapped to bool
@@ -138,7 +138,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
         }
         try{
             String dockerContainer = pluginConfig.getToolProperty(nodeConfig.getName()).getProperty("dockerImage", null);
-            dockerCommands.add(new CommandLineOptionIdentifier(dockerContainer.replace("\"", "")));
+            dockerCommands.add(new CommandLineFixedString(dockerContainer.replace("\"", "")));
             dockerCommands.addAll(commands);
             return dockerCommands;
         }catch (NullPointerException e){
@@ -164,7 +164,7 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                         if (lp.getStrings().size() > 0) {
                             final List<CommandLineElement> tmp = new ArrayList<CommandLineElement>();
                             for (final String s : lp.getStrings()) {
-                                tmp.add(new CommandLineOptionIdentifier(s));
+                                tmp.add(new CommandLineFixedString(s));
                             }
                             extractedParameterValues.add(tmp);
                         }
@@ -223,13 +223,13 @@ public class DockerCommandGenerator extends CLICommandGenerator implements IComm
                     +dockerCommands.size()
                     +DOCKER_DIR_SEP;
              hostDockerMap.put(hostPath, dockerMount);
-             dockerCommands.add(new CommandLineOptionIdentifier(DOCKER_MOUNT_COMMAND));
-             dockerCommands.add(new CommandLineOptionIdentifier(hostPath+":"+dockerMount));
+             dockerCommands.add(new CommandLineFixedString(DOCKER_MOUNT_COMMAND));
+             dockerCommands.add(new CommandLineFixedString(hostPath+":"+dockerMount));
         }  
 
             
         List<CommandLineElement> l = new ArrayList<CommandLineElement>();
-        l.add(new CommandLineOptionIdentifier(dockerMount+fileParam.getName()));
+        l.add(new CommandLineFixedString(dockerMount+fileParam.getName()));
         
         return l;
     }
