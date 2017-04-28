@@ -83,7 +83,8 @@ import com.genericworkflownodes.util.Helper;
  */
 public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     static final String GENERIC_KNIME_NODES_OUTTYPE_PREFIX = "GENERIC_KNIME_NODES_outtype#";
-
+    static final String GENERIC_KNIME_NODES_OUT_ACTIVE = "GENERIC_KNIME_NODES_outport_active#";
+    
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(GenericKnimeNodeModel.class);
 
@@ -97,6 +98,11 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * for each output port.
      */
     protected int[] m_selectedOutputType;
+    
+    /**
+     * Contains information on which output ports are active.
+     */
+    protected boolean[] m_activeOutputPorts;
 
     /**
      * stores the node configuration (i.e. parameters, ports, ..)
@@ -147,22 +153,13 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         Helper.array2dcopy(fileEndingsInPorts, m_fileEndingsInPorts);
 
         m_fileEndingsOutPorts = new String[fileEndingsOutPorts.length][];
-        //Special treatment of outports. If they are optional, an inactive mimetype is allowed.
-        for (int i = 0; i < fileEndingsOutPorts.length; ++i) {
-            int array_length = fileEndingsOutPorts[i].length;
-            if (nodeConfig.getOutputPorts().get(i).isOptional()) {
-                array_length++;
-            }
-            
-            m_fileEndingsOutPorts[i] = new String[array_length];
-            System.arraycopy(fileEndingsOutPorts[i], 0, m_fileEndingsOutPorts[i], 0, fileEndingsOutPorts[i].length);
-            if (nodeConfig.getOutputPorts().get(i).isOptional()) {
-                m_fileEndingsOutPorts[i][array_length-1] = "Inactive";
-            }
-            
-        }
+        Helper.array2dcopy(fileEndingsOutPorts, m_fileEndingsOutPorts);
 
         m_selectedOutputType = new int[m_nodeConfig.getNumberOfOutputPorts()];
+        m_activeOutputPorts = new boolean[m_nodeConfig.getNumberOfOutputPorts()];
+        for (int i = 0; i < m_activeOutputPorts.length; i++){
+            m_activeOutputPorts[i] = true; //default to true during creation of the node.
+        }
     }
 
     /**
@@ -197,8 +194,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return If the port is inactive.
      */
     protected boolean isInactive(int idx) {
-        return this.getOutputType(idx).equals("Inactive");
+        return !m_activeOutputPorts[idx];
     }
+
+
 
     /**
      * Creates a list of output port types for the nodes.
@@ -213,9 +212,6 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < ports.size(); i++) {
             if (ports.get(i).isOptional()) {
                 portTypes[i] = OPTIONAL_PORT_TYPE;
-                if (!ports.get(i).isActive()) {
-                    portTypes[i] = InactiveBranchPortObject.TYPE;
-                }
             }
         }
         return portTypes;
@@ -316,6 +312,8 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
             settings.addInt(GENERIC_KNIME_NODES_OUTTYPE_PREFIX + i,
                     getOutputTypeIndex(i));
+            settings.addBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE + i,
+                    !isInactive(i));
         }
     }
 
@@ -326,7 +324,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         // - we know that values are validated and thus are valid
-        // - we xfer the values into the corresponding model objects
+        // - we transfer the values into the corresponding model objects
         for (String key : m_nodeConfig.getParameterKeys()) {
             // FileParameters are not set by the UI
             if (m_nodeConfig.getParameter(key) instanceof IFileParameter)
@@ -345,6 +343,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
             int idx = settings.getInt(GENERIC_KNIME_NODES_OUTTYPE_PREFIX + i);
             m_selectedOutputType[i] = idx;
+            boolean active = settings.getBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE + i);
+            m_activeOutputPorts[i] = active;
+            m_nodeConfig.getOutputPorts().get(i).setActive(active); 
         }
     }
 
@@ -478,9 +479,8 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         for (int i = 0; i < nOut; i++) {
             // selected output MIMEType
             int selectedMIMETypeIndex = getOutputTypeIndex(i);
-            // TODO: check
             String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
-            if (!mt.toLowerCase().equals("inactive")) {
+            if (!isInactive(i)) {
                 out_spec[i] = new URIPortObjectSpec(mt);
             } else {
                 out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
@@ -603,9 +603,8 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                             "Cannot determine number of output files if no input file is given.");
                 }
                 
-                //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
                 PortObject fsupo;
-                if (!ext.toLowerCase().equals("inactive")) {
+                if (port.isActive()) {
 
                     fsupo = new FileStoreURIPortObject(
                             exec.createFileStore(m_nodeConfig.getName() + "_" + i));
@@ -631,7 +630,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             } else if (p instanceof FileParameter && !port.isMultiFile()) {
                 //if MimeType is "Inactive" just create Empty FileStore(Prefix)URIPortObjects
                 PortObject po;
-                if (!ext.toLowerCase().equals("inactive")) {
+                if (port.isActive()) {
                     // if we have no basename to use (e.g., Node without input-file)
                     // we use the nodename
                     String basename;
