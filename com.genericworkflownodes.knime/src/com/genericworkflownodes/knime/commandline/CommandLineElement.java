@@ -16,7 +16,7 @@ public interface CommandLineElement {
 
     /**
      * Since not all instances are related to other instance by their keys,
-     * implementations could
+     * implementations could use this handy index.
      */
     public final static int NO_SEQUENCE = -1;
 

@@ -2,6 +2,11 @@ package com.genericworkflownodes.knime.commandline.impl;
 
 import com.genericworkflownodes.knime.commandline.ParametrizedCommandLineElement;
 
+/**
+ * Abstract class for all parametrized command line elements.
+ * @author delagarza
+ *
+ */
 public abstract class AbstractParametrizedCommandLineElement extends
         AbstractCommandLineElement implements ParametrizedCommandLineElement {
 
