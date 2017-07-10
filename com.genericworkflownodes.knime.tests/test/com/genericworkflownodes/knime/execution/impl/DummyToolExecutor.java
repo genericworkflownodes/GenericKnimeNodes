@@ -86,6 +86,11 @@ public class DummyToolExecutor implements IToolExecutor {
     @Override
     public void setCommandGenerator(ICommandGenerator generator) {
     }
+    
+    @Override
+	public ICommandGenerator getCommandGenerator() {
+		return null;
+	}
 
     @Override
     public int execute() throws ToolExecutionFailedException {    	
