@@ -51,18 +51,14 @@ public abstract class DynamicGenericNodeFactory
     
     public static final String ID_CFG_KEY = "id";
 
+    public static final String DEPRECATION_CFG_KEY = "deprecated";
+    
     private static final NodeLogger logger = NodeLogger.getLogger(DynamicGenericNodeFactory.class);
     
     private String m_id;
     private String m_ctdFile;
     private INodeConfiguration m_config;
-    
-    /**
-     * Implement this method and return the configuration of the plugin
-     * the nodes are hosted in.
-     * @return the plugin configuration.
-     */
-    protected abstract IPluginConfiguration getPluginConfig();
+    private boolean m_isDeprecated = false;
     
     protected String getIconPath() {
         return "";
@@ -70,6 +66,11 @@ public abstract class DynamicGenericNodeFactory
     
     public String getId() {
         return m_id;
+    }
+    
+    @Override
+    public boolean isDeprecated() {
+        return m_isDeprecated;
     }
     
     /**
@@ -148,6 +149,9 @@ public abstract class DynamicGenericNodeFactory
             throws InvalidSettingsException {
         m_ctdFile = config.getString(CTD_FILE_CFG_KEY);
         m_id = config.getString(ID_CFG_KEY);
+        if (config.containsKey(DEPRECATION_CFG_KEY)) {
+            m_isDeprecated = config.getBoolean(DEPRECATION_CFG_KEY);
+        }
         super.loadAdditionalFactorySettings(config);
     }
     
@@ -155,6 +159,7 @@ public abstract class DynamicGenericNodeFactory
     public void saveAdditionalFactorySettings(ConfigWO config) {
         config.addString(CTD_FILE_CFG_KEY, m_ctdFile);
         config.addString(ID_CFG_KEY, m_id);
+        config.addBoolean(DEPRECATION_CFG_KEY, m_isDeprecated);
         super.saveAdditionalFactorySettings(config);
     }
     
@@ -167,7 +172,7 @@ public abstract class DynamicGenericNodeFactory
             
             // Node
             KnimeNode node = doc.addNewKnimeNode();
-            node.setName(cfg.getExecutableName());
+            node.setName(cfg.getName());
             node.setIcon(getIconPath());
             node.setType(KnimeNode.Type.MANIPULATOR);
             
@@ -224,7 +229,7 @@ public abstract class DynamicGenericNodeFactory
     }
     
     private InputStream getConfigAsStream() throws FileNotFoundException { 
-        return new FileInputStream(DynamicGenericNodeSetFactory.resolveSourceFile(getClass(), m_ctdFile));
+        return new FileInputStream(getPluginConfig().getBinaryManager().resolveToolDescriptorPath(m_ctdFile));
     }
     
     private String mimetypes2String(List<String> mt) {
@@ -238,5 +243,7 @@ public abstract class DynamicGenericNodeFactory
         mimetypes.append("]");
         return mimetypes.toString();
     }
+
+    protected abstract IPluginConfiguration getPluginConfig();
    
 }
