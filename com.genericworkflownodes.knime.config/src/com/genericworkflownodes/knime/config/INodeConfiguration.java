@@ -22,6 +22,7 @@ package com.genericworkflownodes.knime.config;
 import java.util.List;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.config.citation.Citation;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.relocator.Relocator;
@@ -99,6 +100,13 @@ public interface INodeConfiguration {
      * @return the category.
      */
     String getCategory();
+
+    /**
+     * Returns the citation(s) for the tool.
+     * 
+     * @return the citation.
+     */
+    List<Citation> getCitations();
 
     /**
      * Returns the command line interface mapping of the tool.
