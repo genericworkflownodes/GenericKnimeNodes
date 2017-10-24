@@ -20,7 +20,9 @@
 
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -28,9 +30,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -38,6 +42,10 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
@@ -48,8 +56,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import org.jdesktop.swingx.renderer.IconValue;
-import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.knime.core.node.NodeLogger;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
@@ -57,6 +63,7 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.netbeans.swing.outline.RenderDataProvider;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.citation.Citation;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ui_helper.TableColumnAdjuster;
 import com.genericworkflownodes.knime.parameter.Parameter;
@@ -182,8 +189,11 @@ public class ParameterDialog extends JPanel {
     }
 
     private static final long serialVersionUID = 8098990326681120709L;
+    private JTextPane header;
+    private JPanel headerpanel;
     private Outline table;
     private JTextPane help;
+    private JPanel helppanel;
     private JCheckBox toggle;
     private OutlineModel model;
     private ParameterDialogTreeModel treemdl;
@@ -209,6 +219,27 @@ public class ParameterDialog extends JPanel {
         // create the NetBeans Outline object
         createTable();
         
+        // create citation text header
+        if(config.getCitations() != null && !config.getCitations().isEmpty()) {
+            createHeader();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html>\n");
+            for (Citation c : config.getCitations()) {
+                try {
+                    sb.append("<a href=\"");
+                    sb.append(c.getDoiLink());
+                    sb.append("\"> doi:");
+                    sb.append(c.getDoi());
+                    sb.append("</a>");
+                } catch (MalformedURLException e) {
+                    sb.append(c.getDoi());
+                    e.printStackTrace();
+                }
+                sb.append("<br>\n");
+            }
+            header.setText(sb.toString());
+        }
+        
         // adjust size of columns initially to fit the screen
         updateTableView();
         
@@ -222,6 +253,36 @@ public class ParameterDialog extends JPanel {
         
         // finally add controls to panel
         addControlsToPanel();
+    }
+
+    private void createHeader() {
+        headerpanel = new JPanel();
+        headerpanel.setLayout(new BorderLayout());
+        TitledBorder b = new TitledBorder ( new EtchedBorder (), "Please cite:" );
+        b.setTitleFont(MAND_FONT);
+        headerpanel.setBorder(b);
+        headerpanel.setPreferredSize(new Dimension(table.getWidth(), 50));
+        header = new JTextPane();
+        header.setContentType("text/html");
+        header.setEditable(false);
+        header.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch (URISyntaxException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        headerpanel.add(new JScrollPane(header));
     }
 
     private void createTable() {
@@ -248,24 +309,36 @@ public class ParameterDialog extends JPanel {
     }
 
     private void addControlsToPanel() {
-        add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1, 1.0,
-                .79f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        if (headerpanel != null){
+            add(headerpanel, new GridBagConstraints(0, 0, 1, 1, 1.0, .2f,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(2, 2, 2, 2), 0, 0));
+        }
+        add(new JScrollPane(table), new GridBagConstraints(0, 1, 1, 1, 1.0, .79f,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(2, 2, 2, 2), 0, 0));
-        add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 2, 1.0, .2f,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
-                        2, 2, 2, 2), 0, 0));
-        add(toggle, new GridBagConstraints(0, 3, 1, 1, 1.0, .01f,
+        add(helppanel, new GridBagConstraints(0, 2, 1, 3, 1.0, .2f,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(2, 2, 2, 2), 0, 0));
+        add(toggle, new GridBagConstraints(0, 5, 1, 1, 1.0, .01f,
                 GridBagConstraints.SOUTHEAST, GridBagConstraints.VERTICAL,
                 new Insets(2, 2, 2, 2), 0, 0));
     }
 
     private void createHelpPane() {
+        helppanel = new JPanel();
+        helppanel.setLayout(new BorderLayout());
+        TitledBorder b = new TitledBorder ( new EtchedBorder (), "Parameter description:" );
+        b.setTitleFont(MAND_FONT);
+        helppanel.setBorder(b);
+        helppanel.setPreferredSize(new Dimension(table.getWidth(), 50));
         help = new JTextPane();
-        help.setPreferredSize(new Dimension(table.getWidth(), 50));
+        helppanel.add(new JScrollPane(help));
     }
 
     private void createShowAdvancedToggle() {
         toggle = new JCheckBox("Show advanced parameter");
+        toggle.setFont(new Font("Dialog", Font.PLAIN, 10));
         toggle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
