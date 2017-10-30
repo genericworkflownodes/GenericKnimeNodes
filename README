@@ -4,24 +4,24 @@ This package provides the source code for the KNIME plugin
 
 providing basic functionality for further plugins depending 
 on the Generic Workflow Nodes for KNIME mechanism.
-
-Please adjust the file build.properties and make the property
-knimeSDKpath point to the path of the KNIME SDK root. You can
-download the KNIME SDK at http://knime.org/downloads/overview.
+It also provides a framework to generate Java sources for
+your generic tools given their descriptions (in the
+Common Tool Description format) and their binaries.
 
 NOTE: At least KNIME 2.7.2 is required and you need to install 
 the "KNIME File Handling Nodes".
 
 Creating your personal KNIME nodes is as easy as typing "ant"!
 
-1. Switch to you Generic Workflow Nodes for KNIME directory
-2. Call "ant"
+1. ```git clone https://github.com/genericworkflownodes/GenericKnimeNodes```
+1. ```cd GenericKnimeNodes```
+1. Call ```ant```
    This generates the required base plugin and the node generator. 
    Further it will generate the source code for the KNIME plugin in 
    a directory called ```generated_plugin/```
-3. Load the generic knime node projects and the generated plugin into 
-   the KNIME SDK.
-4. Enjoy your new nodes!
+1. Load the GenericKnimeNodes folder and the generated plugin folder
+   as folders into the KNIME SDK.
+1. Enjoy your new nodes!
 
 If you want to build your KNIME nodes from another directory
 just call:
