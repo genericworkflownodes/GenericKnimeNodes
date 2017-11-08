@@ -216,10 +216,13 @@ public class ParameterDialog extends JPanel {
         model = DefaultOutlineModel.createOutlineModel(treemdl, 
                 new ParameterDialogRowModel(), true, "Parameter");
 
-        // create the NetBeans Outline object
+        // create the NetBeans Outline object (basically a TreeTable)
         createTable();
         
-        // create citation text header
+        // adjust size of columns initially to fit the screen
+        updateTableView();
+        
+        // create (citation text) header
         if(config.getCitations() != null && !config.getCitations().isEmpty()) {
             createHeader();
             StringBuilder sb = new StringBuilder();
@@ -240,10 +243,7 @@ public class ParameterDialog extends JPanel {
             header.setText(sb.toString());
         }
         
-        // adjust size of columns initially to fit the screen
-        updateTableView();
-        
-        // create the sub controls (documentation and toggle for advanced)
+        // create the sub controls on the bottom (documentation and toggle for advanced)
         createHelpPane();
         createShowAdvancedToggle();
         
@@ -256,16 +256,19 @@ public class ParameterDialog extends JPanel {
     }
 
     private void createHeader() {
+        // use JPanel to be able to create a border
         headerpanel = new JPanel();
         headerpanel.setLayout(new BorderLayout());
         TitledBorder b = new TitledBorder ( new EtchedBorder (), "Please cite:" );
         b.setTitleFont(MAND_FONT);
         headerpanel.setBorder(b);
         headerpanel.setPreferredSize(new Dimension(table.getWidth(), 50));
+        // fill the Panel with a non-editable HTML TextPane
         header = new JTextPane();
         header.setContentType("text/html");
         header.setEditable(false);
         header.addHyperlinkListener(new HyperlinkListener() {
+            // Open Desktop browser when clicking links (e.g. dois)
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                     if (Desktop.isDesktopSupported()) {
@@ -309,6 +312,7 @@ public class ParameterDialog extends JPanel {
     }
 
     private void addControlsToPanel() {
+        // only display citation header if there are citations
         if (headerpanel != null){
             add(headerpanel, new GridBagConstraints(0, 0, 1, 1, 1.0, .2f,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
