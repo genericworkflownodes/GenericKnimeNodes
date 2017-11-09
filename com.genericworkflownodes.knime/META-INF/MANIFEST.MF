@@ -8,14 +8,11 @@ Bundle-ClassPath: genericnodes.jar,
  lib/bsh-2.0b4.jar,
  lib/org-netbeans-swing-outline.jar
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
-Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
- org.eclipse.ui;bundle-version="[3.107.0,4.0.0)",
- org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
- org.knime.core;bundle-version="[3.0.0,4.0.0)",
+Require-Bundle: org.eclipse.ui;bundle-version="[3.107.0,4.0.0)",
  org.knime.base;bundle-version="[3.0.0,4.0.0)",
  org.knime.core.data.uritype;bundle-version="[3.0.0,4.0.0)",
  com.genericworkflownodes.knime.config;bundle-version="0.8.0",
- org.knime.base.filehandling;bundle-version="3.1.0",
+ org.knime.base.filehandling;bundle-version="[3.1.0,4.0.0)",
  org.apache.commons.lang
 Export-Package: com.genericworkflownodes.knime.commandline,
  com.genericworkflownodes.knime.commandline.impl,
