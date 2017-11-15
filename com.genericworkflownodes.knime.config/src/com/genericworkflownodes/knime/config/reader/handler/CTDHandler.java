@@ -45,6 +45,7 @@ public class CTDHandler extends DefaultHandler {
     private static final String TAG_EXECUTABLE_NAME = "executableName";
     private static final String TAG_EXECUTABLE_PATH = "executablePath";
     private static final String TAG_TOOL = "tool";
+    private static final String TAG_CITATIONS = "citations";
 
     /**
      * The {@link INodeConfiguration} generated while parsing the CTD document.
@@ -100,6 +101,9 @@ public class CTDHandler extends DefaultHandler {
                     this, m_config));
         } else if (TAG_CLI.equals(name)) {
             m_xmlReader.setContentHandler(new CLIElementHandler(m_xmlReader,
+                    this, m_config));
+        } else if (TAG_CITATIONS.equals(name)) {
+            m_xmlReader.setContentHandler(new CitationHandler(m_xmlReader,
                     this, m_config));
         } else if (TAG_TOOL.equals(name)) {
             // root tag -> parse out the attribute values

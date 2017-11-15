@@ -5,10 +5,6 @@ This package provides the source code for the KNIME plugin
 providing basic functionality for further plugins depending 
 on the Generic Workflow Nodes for KNIME mechanism.
 
-Please adjust the file build.properties and make the property
-knimeSDKpath point to the path of the KNIME SDK root. You can
-download the KNIME SDK at http://knime.org/downloads/overview.
-
 NOTE: At least KNIME 2.7.2 is required and you need to install 
 the "KNIME File Handling Nodes".
 
@@ -21,7 +17,8 @@ Creating your personal KNIME nodes is as easy as typing "ant"!
    a directory called ```generated_plugin/```
 3. Load the generic knime node projects and the generated plugin into 
    the KNIME SDK.
-4. Enjoy your new nodes!
+4. Run the preconfigured KNIME Instance
+5. Enjoy your new nodes!
 
 If you want to build your KNIME nodes from another directory
 just call:
@@ -80,3 +77,6 @@ and thus being installed together with the KNIME nodes themselves.
 You have two options to make the target system execute your code:
 1) You use the Activator/Plugin class.
 2) You extend the extension point "org.eclipse.ui.startup".
+
+If you want to build an update site for your new nodes, please
+see the KNIME developer forum first, then contact us.

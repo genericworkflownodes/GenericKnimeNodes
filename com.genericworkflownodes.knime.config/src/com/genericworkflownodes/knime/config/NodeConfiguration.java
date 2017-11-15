@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.genericworkflownodes.knime.cliwrapper.CLI;
+import com.genericworkflownodes.knime.config.citation.Citation;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.relocator.Relocator;
@@ -36,7 +37,7 @@ import com.genericworkflownodes.knime.relocator.Relocator;
  * Note: Two {@link NodeConfiguration}s are equal iff their {@link #getName()
  * names} are equal.
  * 
- * @author roettig, bkahlert, aiche
+ * @author roettig, bkahlert, aiche, jpfeuffer
  * 
  */
 public class NodeConfiguration implements INodeConfiguration, Serializable {
@@ -59,6 +60,7 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
     private String longdescription = "";
     private String xml = "";
     private String category = "";
+    private List<Citation> citations;
 
     /**
      * Name of the executable.
@@ -178,6 +180,11 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
         return category;
     }
 
+    @Override
+    public List<Citation> getCitations() {
+        return citations;
+    }
+
     // / protected setters
 
     @Override
@@ -268,6 +275,10 @@ public class NodeConfiguration implements INodeConfiguration, Serializable {
 
     public void setCategory(String newCategory) {
         category = newCategory;
+    }
+
+    public void setCitations(List<Citation> newCitations) {
+        citations = newCitations;
     }
 
     public void setVersion(String newVersion) {
