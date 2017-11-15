@@ -62,9 +62,4 @@ public class VersionedNodeSetFactory implements NodeSetFactory {
     public ConfigRO getAdditionalSettings(String id) {
         return m_nodeSetFactory.getAdditionalSettings(removeSuffix(id));
     }
-
-    public void setIsDeprecated(boolean isDeprecated) {
-        m_nodeSetFactory.setIsDeprecated(isDeprecated);
-    }
-
 }

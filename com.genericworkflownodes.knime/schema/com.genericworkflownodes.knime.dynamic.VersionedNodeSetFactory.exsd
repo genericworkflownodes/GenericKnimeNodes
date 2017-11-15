@@ -55,15 +55,8 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.knime.core.node.NodeSetFactory"/>
+                  <meta.attribute kind="java" basedOn=":com.genericworkflownodes.knime.dynamic.GenericNodeSetFactory"/>
                </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="version" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Semantic versioning of the registered NodeSetFactory
-               </documentation>
             </annotation>
          </attribute>
       </complexType>

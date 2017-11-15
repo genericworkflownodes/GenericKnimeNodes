@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -221,16 +222,14 @@ public final class BinaryManager {
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
-            p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toURI());
+            p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
         } catch (Exception ex) {
             return Collections.emptyList();
         }
         while (e.hasMoreElements()){
             try {
-                Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toURI());
+                Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toString());
                 files.add(p.relativize(el).toString());
-            } catch (URISyntaxException e1) {
-                throw new AssertionError("Should not happen", e1);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

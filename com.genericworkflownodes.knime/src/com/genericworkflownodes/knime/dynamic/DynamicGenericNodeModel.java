@@ -415,7 +415,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
 
             // get MIMEType from incoming port
-            // TODO: we should check all file extensions, if its more then one
+            // TODO: we should check all file extensions, if its more than one
             String mt = MIMEMap.getMIMEType(spec.getFileExtensions().get(0));
 
             // check whether input MIMEType is in list of allowed MIMETypes
