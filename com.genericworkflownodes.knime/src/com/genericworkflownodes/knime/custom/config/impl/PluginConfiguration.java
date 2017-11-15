@@ -22,6 +22,10 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.osgi.service.resolver.BundleDescription;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
 import com.genericworkflownodes.knime.custom.config.BinaryManager;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
@@ -69,6 +73,11 @@ public class PluginConfiguration implements IPluginConfiguration {
     private final String m_dockerMachine;
     
     /**
+     * The version
+     */
+     private final String m_version;
+    
+    /**
      * C'tor for {@link PluginConfiguration}.
      * 
      * @param pluginId
@@ -87,22 +96,24 @@ public class PluginConfiguration implements IPluginConfiguration {
         m_pluginId = pluginId;
         m_pluginName = pluginName;
         m_props = props;
+        Bundle bundle = FrameworkUtil.getBundle(classFromPlugin);
+        m_version = bundle.getVersion().toString();
         m_binaryManager = new BinaryManager(classFromPlugin);
         Properties p = new Properties();
         Map<String,Properties> toolMap = new Hashtable<String,Properties>(); 
-        for(String key: m_props.stringPropertyNames()){
-            if(key.startsWith("tool.")){
+        for (String key: m_props.stringPropertyNames()) {
+            if (key.startsWith("tool.")) {
                 String value = m_props.getProperty(key);
                 p.put(key, value);
                 String[] keyElements = key.split("\\.");
-                if(keyElements.length > 2){
+                if (keyElements.length > 2) {
                     String tool_key = "";
-                    for(int i=2;i<keyElements.length;i++){
+                    for (int i=2; i<keyElements.length; i++) {
                         tool_key+=keyElements[i];
                     }
-                    if(toolMap.containsKey(keyElements[1])){
+                    if (toolMap.containsKey(keyElements[1])) {
                         toolMap.get(keyElements[1]).put(tool_key, value);
-                    }else{
+                    } else {
                         Properties p_tool = new Properties();
                         p_tool.put(tool_key, value);
                         toolMap.put(keyElements[1], p_tool);
@@ -114,6 +125,15 @@ public class PluginConfiguration implements IPluginConfiguration {
         m_specifcToolProps = toolMap;
         m_dockerMachine = props.getProperty("dockerMachine","default");
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String getPluginVersion() {
+        return m_version;
+    }
+
 
     /**
      * {@inheritDoc}

@@ -20,7 +20,13 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +53,12 @@ public final class BinaryManager {
     /**
      * Path inside the bundle where the binaries should be located.
      */
-    private static final String BUNDLE_PATH = "payload";
+    private static final String BUNDLE_PATH = "payload";    
+    
+    /**
+     * Path inside the bundle where the descriptors should be located.
+     */
+    private static final String DESCRIPTORS_PATH = BUNDLE_PATH + File.separator + "descriptors";
 
     /**
      * File that should be present to identify the correct path.
@@ -162,6 +173,16 @@ public final class BinaryManager {
             return null;
         }
     }
+    
+    public File resolveToolDescriptorPath(final String relToolPath) {
+        Bundle bundle = FrameworkUtil.getBundle(classInBundle);
+        try {
+            return new File(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH + File.separator + relToolPath)).getFile());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            return null;
+        }
+    }
 
     /**
      * Search the bundle for the given file name.
@@ -187,5 +208,32 @@ public final class BinaryManager {
                 return null;
             }
         }
+    }
+    
+    /**
+     * Search the bundle for CTDs and list them in a List of Files.
+     * 
+     * @return List of CTD Files in the bundle
+     * @throws URISyntaxException 
+     */
+    public Iterable<String> listTools() {
+        Bundle bundle = FrameworkUtil.getBundle(classInBundle);
+        Enumeration<URL> e = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+        ArrayList<String> files = new ArrayList<>();
+        Path p;
+        try {
+            p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
+        } catch (Exception ex) {
+            return Collections.emptyList();
+        }
+        while (e.hasMoreElements()){
+            try {
+                Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toString());
+                files.add(p.relativize(el).toString());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return files;
     }
 }
