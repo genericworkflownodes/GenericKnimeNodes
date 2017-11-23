@@ -228,17 +228,20 @@ public class ParameterDialog extends JPanel {
             StringBuilder sb = new StringBuilder();
             sb.append("<html>\n");
             for (Citation c : config.getCitations()) {
-                try {
-                    sb.append("<a href=\"");
-                    sb.append(c.getDoiLink());
-                    sb.append("\"> doi:");
-                    sb.append(c.getDoi());
-                    sb.append("</a>");
-                } catch (MalformedURLException e) {
-                    sb.append(c.getDoi());
-                    e.printStackTrace();
+                if (c.getDoi() != null || c.getDoi().isEmpty()) {
+                    try {
+                        sb.append("<a href=\"");
+                        sb.append(c.getDoiLink());
+                        sb.append("\"> doi:");
+                        sb.append(c.getDoi());
+                        sb.append("</a>");
+                    } catch (MalformedURLException e) {
+                        sb.append("doi: ");
+                        sb.append(c.getDoi());
+                        e.printStackTrace();
+                    }
+                    sb.append("<br>\n");
                 }
-                sb.append("<br>\n");
             }
             header.setText(sb.toString());
         }
