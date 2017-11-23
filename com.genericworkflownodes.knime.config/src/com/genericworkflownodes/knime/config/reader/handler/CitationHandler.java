@@ -49,11 +49,6 @@ public class CitationHandler extends DefaultHandler {
 	    private XMLReader m_xmlReader;
 
 	    /**
-	     * Stores the current path inside the xml tree.
-	     */
-	    private String m_currentPath;
-
-	    /**
 	     * The NodeConfiguration that will be filled while parsing the document.
 	     */
 	    private NodeConfiguration m_config;
@@ -91,7 +86,12 @@ public class CitationHandler extends DefaultHandler {
 
 	    private void handleCitation(Attributes attributes) {
 	    	try {
-				m_listCitations.add(new Citation(attributes.getValue(ATTR_DOI), new URL(attributes.getValue(ATTR_URL))));
+	    		String urlString = attributes.getValue(ATTR_URL);
+	    		if (urlString == null || urlString.isEmpty()) {
+	    			m_listCitations.add(new Citation(attributes.getValue(ATTR_DOI)));
+	    		} else {
+	    			m_listCitations.add(new Citation(attributes.getValue(ATTR_DOI), new URL(urlString)));
+	    		}
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

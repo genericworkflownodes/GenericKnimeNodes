@@ -27,12 +27,16 @@ import java.net.URL;
  * @author jpfeuffer
  */
 public class Citation {
-	private String m_doi;
-	private URL m_url;
+	private String m_doi = null;
+	private URL m_url = null;
 	
 	public Citation(String doi, URL url) {
 		m_doi = doi;
 		m_url = url;
+	}
+	
+	public Citation(String doi) {
+		m_doi = doi;
 	}
 
 	public String getDoi() {
