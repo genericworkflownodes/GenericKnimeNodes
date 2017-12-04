@@ -2,9 +2,13 @@ package com.genericworkflownodes.knime.nodegeneration.model.files;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import org.xml.sax.SAXException;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
+import com.genericworkflownodes.knime.config.reader.InvalidCTDFileException;
 
 public class CTDFile extends File implements INodeConfigurationFile {
 
@@ -12,17 +16,26 @@ public class CTDFile extends File implements INodeConfigurationFile {
 
     private INodeConfiguration nodeConfiguration;
 
-    public CTDFile(File file) throws Exception {
+    public CTDFile(File file) throws InvalidCTDFileException, FileNotFoundException {
         super(file.getPath());
 
         try {
             CTDConfigurationReader reader = new CTDConfigurationReader();
             nodeConfiguration = reader.read(new FileInputStream(file));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("Error while reading file: "
+        } catch (InvalidCTDFileException e) {
+            System.err.println(e.getMessage());
+            System.err.println("Error while reading file: "
                     + file.getAbsolutePath());
-//          throw e;
+            if (e.getCause() != null) {
+            	System.err.println("Caused by:");
+            	System.err.println(e.getCause().getMessage());
+            }
+          throw e;
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+            System.err.println("CTD file not found: "
+                    + file.getAbsolutePath());
+            throw e;
         }
     }
 
