@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -383,9 +384,12 @@ public class LocalToolExecutor implements IToolExecutor {
     public void prepareExecution(final INodeConfiguration nodeConfiguration,
             final IPluginConfiguration pluginConfiguration) throws Exception {
         findExecutable(nodeConfiguration, pluginConfiguration);
-
-        addEnvironmentVariables(pluginConfiguration.getBinaryManager()
-                .getProcessEnvironment(nodeConfiguration.getExecutableName()));
+        Map<String, String> nodeEnv = pluginConfiguration.getBinaryManager()
+        .getProcessEnvironment(nodeConfiguration.getExecutableName());
+        String pathWithJava = nodeEnv.get("PATH")+File.pathSeparator+System.getProperty("java.home")+File.separator+"bin";
+        nodeEnv.put("PATH", pathWithJava);
+        addEnvironmentVariables(nodeEnv);
+        
         m_commands = m_generator.generateCommands(nodeConfiguration,
                 pluginConfiguration, m_workingDirectory);
     }
