@@ -383,9 +383,25 @@ public class LocalToolExecutor implements IToolExecutor {
     public void prepareExecution(final INodeConfiguration nodeConfiguration,
             final IPluginConfiguration pluginConfiguration) throws Exception {
         findExecutable(nodeConfiguration, pluginConfiguration);
-
-        addEnvironmentVariables(pluginConfiguration.getBinaryManager()
-                .getProcessEnvironment(nodeConfiguration.getExecutableName()));
+        Map<String, String> nodeEnv = pluginConfiguration.getBinaryManager()
+        .getProcessEnvironment(nodeConfiguration.getExecutableName());
+        String pathWithJava = "";
+        if (nodeEnv.containsKey("PATH")) {
+            pathWithJava = nodeEnv.get("PATH") + File.pathSeparator;
+        }
+        pathWithJava += System.getProperty("java.home") + File.separator + "bin";
+        nodeEnv.put("PATH", pathWithJava);
+        
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            if (nodeEnv.containsKey("Path")) {
+                pathWithJava = nodeEnv.get("Path") + File.pathSeparator;
+            }
+            pathWithJava += System.getProperty("java.home")+File.separator+"bin";
+            nodeEnv.put("Path", pathWithJava);
+        }
+        
+        addEnvironmentVariables(nodeEnv);
+        
         m_commands = m_generator.generateCommands(nodeConfiguration,
                 pluginConfiguration, m_workingDirectory);
     }
