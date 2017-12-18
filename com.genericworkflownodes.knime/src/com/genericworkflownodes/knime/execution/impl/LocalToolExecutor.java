@@ -388,6 +388,9 @@ public class LocalToolExecutor implements IToolExecutor {
         .getProcessEnvironment(nodeConfiguration.getExecutableName());
         String pathWithJava = nodeEnv.get("PATH")+File.pathSeparator+System.getProperty("java.home")+File.separator+"bin";
         nodeEnv.put("PATH", pathWithJava);
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            nodeEnv.put("Path", pathWithJava);
+        }
         addEnvironmentVariables(nodeEnv);
         
         m_commands = m_generator.generateCommands(nodeConfiguration,
