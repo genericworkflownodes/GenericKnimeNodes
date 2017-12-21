@@ -104,7 +104,7 @@
          point="org.knime.core.PortType">
       <portType
             hidden="false"
-            name="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject"
+            name="FileStoreURIPort"
             objectClass="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject"
             objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObjectSerializer"
             specClass="org.knime.core.data.uri.URIPortObjectSpec"
@@ -115,7 +115,7 @@
          point="org.knime.core.PortType">
       <portType
             hidden="false"
-            name="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject"
+            name="FileStorePrefixURIPort"
             objectClass="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject"
             objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObjectSerializer"
             specClass="org.knime.core.data.uri.URIPortObjectSpec"
@@ -126,7 +126,7 @@
          point="org.knime.core.PortType">
       <portType
             hidden="false"
-            name="com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject"
+            name="FileStoreReferenceURIPort"
             objectClass="com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject"
             objectSerializer="com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObjectSerializer"
             specClass="org.knime.core.data.uri.URIPortObjectSpec"
