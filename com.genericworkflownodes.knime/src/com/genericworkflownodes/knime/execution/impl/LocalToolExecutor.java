@@ -392,6 +392,7 @@ public class LocalToolExecutor implements IToolExecutor {
         pathWithJava += System.getProperty("java.home") + File.separator + "bin";
         nodeEnv.put("PATH", pathWithJava);
         
+        pathWithJava = "";
         if (System.getProperty("os.name").startsWith("Windows")) {
             if (nodeEnv.containsKey("Path")) {
                 pathWithJava = nodeEnv.get("Path") + File.pathSeparator;
