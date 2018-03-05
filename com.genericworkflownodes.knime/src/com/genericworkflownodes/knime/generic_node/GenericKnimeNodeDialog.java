@@ -104,24 +104,34 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
     @Override
     protected void loadSettingsFrom(NodeSettingsRO settings,
             PortObjectSpec[] specs) throws NotConfigurableException {
+        
+        String errorsFound = "";
         for (String key : config.getParameterKeys()) {
             Parameter<?> param = config.getParameter(key);
             // skip file parameters
             if (param instanceof IFileParameter) {
                 continue;
             }
-
+            
             String value = null;
             try {
                 value = settings.getString(key);
-            } catch (InvalidSettingsException e) {
-                LOGGER.warn("Invalid value detected.", e);
-            }
-            try {
                 param.fillFromString(value);
+            } catch (InvalidSettingsException e) {
+                errorsFound += "- Entry for " + key + " not found in settings.xml.\n";
             } catch (InvalidParameterValueException e) {
-                throw new NotConfigurableException(e.getMessage(), e);
+                errorsFound += "- Entry for " + key + " in settings.xml has a value that does not match it restrictions.\n";
+                //Do not hard fail. Users should be able to edit the value in the dialog.
+                /*throw new NotConfigurableException(e.getMessage(), e);*/
             }
+        }
+        
+        if (!errorsFound.isEmpty())
+        {
+           LOGGER.error("Errors found loading Settings from disk. Maybe you are loading a node created with another version."
+                   + "\nUsing default values as defined in the Tool description."
+                   + "\nWe recommend to check the parameters highlighted in red carefully before clicking OK: \n"
+                   + errorsFound);
         }
 
         int nP = config.getNumberOfOutputPorts();

@@ -43,6 +43,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
     public MimeTypeChooserDialog(INodeConfiguration config) {
         this.config = config;
 
+        //TODO find a replacement to get rid of swingx dependency
         setLayout(new VerticalLayout());
 
         int nCB = this.config.getNumberOfOutputPorts();
