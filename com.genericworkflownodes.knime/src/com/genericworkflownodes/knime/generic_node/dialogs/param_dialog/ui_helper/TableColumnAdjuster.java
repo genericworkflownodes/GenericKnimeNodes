@@ -116,7 +116,16 @@ public class TableColumnAdjuster implements PropertyChangeListener,
 
         int columnHeaderWidth = getColumnHeaderWidth(column);
         int columnDataWidth = getColumnDataWidth(column);
+        
         int preferredWidth = Math.max(columnHeaderWidth, columnDataWidth);
+        if (column == 1)
+        {
+         // +50 to account for bigger size when opening a combobox
+         //TODO actually to be fully correct, you would need to check every possible
+         //entry, otherwise it is truncated (with dots ...) after selection.
+         //or trigger a new adjust/repaint/updateUI after every ItemChange in the ComboBoxes?
+         preferredWidth += 50;
+        }
 
         updateTableColumn(column, preferredWidth);
     }

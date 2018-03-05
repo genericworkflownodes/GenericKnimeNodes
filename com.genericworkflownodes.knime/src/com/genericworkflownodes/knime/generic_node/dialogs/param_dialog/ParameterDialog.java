@@ -22,6 +22,7 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -50,7 +51,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -140,7 +143,7 @@ public class ParameterDialog extends JPanel {
     /**
      * The high-lighter for the NetBeans Outline object.
      * 
-     * @author aiche
+     * @author aiche, jpfeuffer
      */
     private final class ParamDialogDataProvider implements RenderDataProvider {
 
@@ -199,7 +202,6 @@ public class ParameterDialog extends JPanel {
     private ParameterDialogTreeModel treemdl;
 
     private static final Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
-    private static final Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
 
     /**
      * Construct dialog from a NodeConfiguration.
@@ -256,6 +258,7 @@ public class ParameterDialog extends JPanel {
         
         // finally add controls to panel
         addControlsToPanel();
+        updateTableView();
     }
 
     private void createHeader() {
@@ -293,19 +296,25 @@ public class ParameterDialog extends JPanel {
 
     private void createTable() {
         table = new Outline();
+        // under some circumstances the cellEditor gets lost, therefore we
+        // register a default for parameter objects
+        table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
         table.setRenderDataProvider(new ParamDialogDataProvider());
         table.setMinimumSize(new Dimension(1000, 500));
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        //Disabled Auto resizing, otherwise it sometimes closes the Comboboxes right
+        //away because of a redraw caused by the dropdown arrow increasing the col width
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //Root node has no param and no function
         table.setRootVisible(false);
         table.setModel(model);
+        //Set MinWidth here, set Preferred width in the TableAdjuster
+        table.getColumnModel().getColumn(0).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setMinWidth(50);
+        table.getColumnModel().getColumn(2).setMinWidth(50);
         
-        // under some circumstances the cellEditor gets lost, therefore we
-        // register a default for parameter objects
-        table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
-
         addSelectionListener();
     }
 
@@ -340,6 +349,7 @@ public class ParameterDialog extends JPanel {
         helppanel.setBorder(b);
         helppanel.setPreferredSize(new Dimension(table.getWidth(), 50));
         help = new JTextPane();
+        help.setEditable(false);
         helppanel.add(new JScrollPane(help));
     }
 
@@ -366,6 +376,7 @@ public class ParameterDialog extends JPanel {
         TableColumnAdjuster tca = new TableColumnAdjuster(table);
         tca.adjustColumns();
         // plot new
+        table.setSize(table.getSize());
         table.updateUI();
     }
 
