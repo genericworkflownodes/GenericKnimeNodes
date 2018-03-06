@@ -144,8 +144,7 @@ public class PluginXMLTemplate {
                 .selectSingleNode("/plugin/extension[@point='org.knime.workbench.repository.nodes']");
         Element elem = (Element) node;
 
-        elem.addElement("node").addAttribute("factory-class", clazz)
-                .addAttribute("id", clazz).addAttribute("category-path", path);
+        elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("category-path", path);
     }
 
     public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {

@@ -16,6 +16,8 @@ import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tr
 * Renderer for the first parameter column. Uses different fonts for optional etc.
 */
 public class ParamCellRenderer extends DefaultOutlineCellRenderer {
+
+    private static final long serialVersionUID = -7908521959904400099L;
     private static final Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
     private static final Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
 
@@ -38,15 +40,22 @@ public class ParamCellRenderer extends DefaultOutlineCellRenderer {
         if (value instanceof ParameterNode) {
             boolean optional = true;
             boolean advanced = false;
+            boolean defaulted = false;
             ParameterNode paramnode = (ParameterNode) value;
             if (paramnode.getPayload() != null) {
                 optional = paramnode.getPayload().isOptional();
                 advanced = paramnode.getPayload().isAdvanced();
+                defaulted = paramnode.getPayload().isDefaulted();
             }
             if (!optional) {
                 setFont(MAND_FONT);
             } else {
                 setFont(OPT_FONT);
+            }
+            
+            //TODO See if you can mark the whole row pink.
+            if(defaulted) {
+                setBackground(Color.PINK);
             }
             
             if (!isSelected) {

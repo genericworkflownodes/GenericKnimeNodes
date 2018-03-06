@@ -22,6 +22,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineCTDFile;
+import com.genericworkflownodes.knime.commandline.impl.CommandLineFixedString;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.writer.CTDConfigurationWriter;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
@@ -38,15 +41,16 @@ public class BALLCommandGenerator implements ICommandGenerator {
     private static final String PAR_FILE_NAME = "params.xml";
 
     @Override
-    public List<String> generateCommands(INodeConfiguration nodeConfiguration,
+    public List<CommandLineElement> generateCommands(
+            INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration, File workingDirectory)
             throws Exception {
 
         File paramFile = writePARFile(nodeConfiguration, workingDirectory);
 
-        List<String> commands = new ArrayList<String>();
-        commands.add(PAR_SWITCH);
-        commands.add(paramFile.getCanonicalPath());
+        List<CommandLineElement> commands = new ArrayList<CommandLineElement>();
+        commands.add(new CommandLineFixedString(PAR_SWITCH));
+        commands.add(new CommandLineCTDFile(paramFile));
 
         return commands;
     }

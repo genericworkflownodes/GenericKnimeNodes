@@ -18,10 +18,15 @@
  */
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier;
 
+import java.awt.Color;
+
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import org.knime.core.node.NodeLogger;
+
+import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ParamCellEditor;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
@@ -35,6 +40,12 @@ import com.genericworkflownodes.knime.parameter.Parameter;
  * @author aiche
  */
 public class ParameterVerifier extends InputVerifier {
+    
+    /**
+     * Logger instance.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(ParameterVerifier.class);
 
     /**
      * The m_parameter that needs to be verified.
@@ -70,32 +81,38 @@ public class ParameterVerifier extends InputVerifier {
      */
     @Override
     public boolean verify(JComponent input) {
+        boolean returnVal = false;
         if (input instanceof JTextField) {
 
             String inputValue = ((JTextField) input).getText();
 
             if (m_parameter instanceof DoubleParameter) {
                 DoubleParameter dp = (DoubleParameter) m_parameter;
-                return verifyDouble(inputValue, dp.getLowerBound(),
+                returnVal = verifyDouble(inputValue, dp.getLowerBound(),
                         dp.getUpperBound());
             } else if (m_parameter instanceof DoubleListParameter) {
                 DoubleListParameter dlp = (DoubleListParameter) m_parameter;
-                return verifyDouble(inputValue, dlp.getLowerBound(),
+                returnVal = verifyDouble(inputValue, dlp.getLowerBound(),
                         dlp.getUpperBound());
             } else if (m_parameter instanceof IntegerParameter) {
                 IntegerParameter ip = (IntegerParameter) m_parameter;
-                return verifyInteger(inputValue, ip.getLowerBound(),
+                returnVal = verifyInteger(inputValue, ip.getLowerBound(),
                         ip.getUpperBound());
             } else if (m_parameter instanceof IntegerListParameter) {
                 IntegerListParameter ilp = (IntegerListParameter) m_parameter;
-                return verifyInteger(inputValue, ilp.getLowerBound(),
+                returnVal = verifyInteger(inputValue, ilp.getLowerBound(),
                         ilp.getUpperBound());
             } else {
-                return true;
+                returnVal = true;
             }
-        } else {
-            return false;
+            
+            if (!returnVal) 
+            {  
+              //TODO we currently just show a message box in the ParamCellEditor (that uses the verify function).
+              //input.setBackground(Color.PINK);
+              LOGGER.debug("Tried to set Parameter to an invalid value. Please see the restrictrions of the parameter.");
+            }
         }
+        return returnVal;
     }
-
-}
+};

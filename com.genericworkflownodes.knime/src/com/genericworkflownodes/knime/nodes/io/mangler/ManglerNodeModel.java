@@ -79,7 +79,7 @@ public class ManglerNodeModel extends NodeModel {
     /**
      * The currently active inputTalbeSpecification.
      */
-    private DataTableSpec inputTalbeSpecification;
+    private DataTableSpec inputTableSpecification;
 
     /**
      * Constructor for the node model.
@@ -94,7 +94,7 @@ public class ManglerNodeModel extends NodeModel {
      */
     @Override
     protected PortObject[] execute(final PortObject[] inData,
-            final ExecutionContext exec) throws IOException {
+            final ExecutionContext exec) throws Exception {
 
         // translate portobject to table
 
@@ -140,10 +140,10 @@ public class ManglerNodeModel extends NodeModel {
             throws InvalidSettingsException {
         if (inSpecs[0] instanceof DataTableSpec) {
 
-            inputTalbeSpecification = (DataTableSpec) inSpecs[0];
+            inputTableSpecification = (DataTableSpec) inSpecs[0];
 
             availableMangler = DemanglerRegistry.getDemanglerRegistry()
-                    .getMangler(inputTalbeSpecification);
+                    .getMangler(inputTableSpecification);
 
             if (availableMangler == null || availableMangler.size() == 0) {
                 throw new InvalidSettingsException(
@@ -190,7 +190,7 @@ public class ManglerNodeModel extends NodeModel {
                 SELECTED_DEMANGLER_SETTINGNAME, "");
 
         List<IDemangler> matchingManglers = DemanglerRegistry
-                .getDemanglerRegistry().getMangler(inputTalbeSpecification);
+                .getDemanglerRegistry().getMangler(inputTableSpecification);
 
         boolean found = false;
         for (IDemangler mangler : matchingManglers) {

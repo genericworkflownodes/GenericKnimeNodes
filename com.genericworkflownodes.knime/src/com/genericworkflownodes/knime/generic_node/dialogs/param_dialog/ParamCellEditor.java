@@ -21,8 +21,8 @@
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
@@ -57,35 +57,36 @@ public class ParamCellEditor extends AbstractCellEditor implements
      */
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(ParamCellEditor.class);
-
+    
+    
     /**
-     * ActionListener for choice parameters (e.g., StringChoice).
+     * ItemListener for choice parameters (e.g., StringChoice).
      * 
-     * @author aiche
+     * @author jpfeuffer
      * 
      * @param <T>
      *            The type of the represented parameter.
      */
-    private final class ChoiceParamActionListener<T extends Parameter<?>>
-            implements ActionListener {
-
+    private final class ChoiceParamItemListener<T extends Parameter<?>>
+        implements ItemListener
+    {
         /**
          * The underlying parameter.
          */
         private final T representedParameter;
-
+        
         /**
          * C'tor.
          * 
          * @param param
          *            The underlying parameter.
          */
-        public ChoiceParamActionListener(T param) {
+        public ChoiceParamItemListener(T param) {
             representedParameter = param;
         }
-
+        
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void itemStateChanged(ItemEvent e) {
             JComboBox cb = (JComboBox) e.getSource();
             String selectedParamValue = (String) cb.getSelectedItem();
             try {
@@ -96,7 +97,7 @@ public class ParamCellEditor extends AbstractCellEditor implements
                         selectedParamValue), ex);
             }
         }
-    }
+        }
 
     /**
      * The serialVersionUID.
@@ -183,10 +184,9 @@ public class ParamCellEditor extends AbstractCellEditor implements
                 values[i++] = s;
             }
             choiceComboBox = new JComboBox(values);
-
             // we need to make sure that we catch all edit operations.
             choiceComboBox
-                    .addActionListener(new ChoiceParamActionListener<StringChoiceParameter>(
+                    .addItemListener(new ChoiceParamItemListener<StringChoiceParameter>(
                             scp));
             choiceComboBox.setSelectedItem(scp.getValue());
             return choiceComboBox;
@@ -202,8 +202,10 @@ public class ParamCellEditor extends AbstractCellEditor implements
             String[] values = new String[] { "true", "false" };
             choiceComboBox = new JComboBox(values);
             choiceComboBox
-                    .addActionListener(new ChoiceParamActionListener<BoolParameter>(
+                    .addItemListener(new ChoiceParamItemListener<BoolParameter>(
                             (BoolParameter) param));
+            // Make sure that the old value is selected in the beginning.
+            choiceComboBox.setSelectedIndex( ((BoolParameter) value).getValue() ? 0 : 1);
             return choiceComboBox;
         }
         if (value instanceof ListParameter) {

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
 
+import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
@@ -73,15 +75,15 @@ public class LocalToolExecutor implements IToolExecutor {
          */
         final LinkedList<String> m_buffer;
 
-        StreamGobbler(InputStream is) {
+        StreamGobbler(final InputStream is) {
             m_is = is;
             m_buffer = new LinkedList<String>();
         }
 
         @Override
         public void run() {
-            InputStreamReader isr = new InputStreamReader(m_is);
-            BufferedReader br = new BufferedReader(isr);
+            final InputStreamReader isr = new InputStreamReader(m_is);
+            final BufferedReader br = new BufferedReader(isr);
 
             try {
                 String line = null;
@@ -90,12 +92,13 @@ public class LocalToolExecutor implements IToolExecutor {
                         m_buffer.add(line);
                     }
                 }
-            } catch (IOException ioe) {
-                LOGGER.error("LocalToolExecutor: Error in stream gobbler.", ioe);
+            } catch (final IOException ioe) {
+                LOGGER.error("LocalToolExecutor: Error in stream gobbler.",
+                        ioe);
             } finally {
                 try {
                     br.close();
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     // then don't close it..
                 }
             }
@@ -145,21 +148,21 @@ public class LocalToolExecutor implements IToolExecutor {
     protected Process m_process;
 
     protected ICommandGenerator m_generator;
+    
+    protected List<CommandLineElement> m_commands;
 
     /**
      * The executable.
      */
     protected File m_executable;
 
-    protected List<String> m_commands;
-
     /**
      * @return the m_environmentVariables
      */
     public Map<String, String> getEnvironmentVariables() {
         return m_environmentVariables;
-    }
-
+    }    
+    
     /**
      * C'tor.
      */
@@ -182,7 +185,7 @@ public class LocalToolExecutor implements IToolExecutor {
      *             directory).
      */
     @Override
-    public void setWorkingDirectory(File directory) throws IOException {
+    public void setWorkingDirectory(final File directory) throws IOException {
         m_workingDirectory = directory;
         if (!m_workingDirectory.isDirectory() || !m_workingDirectory.exists()) {
             throw new IOException(directory + " is not a directory!");
@@ -204,7 +207,7 @@ public class LocalToolExecutor implements IToolExecutor {
      *            The environment variables that will be added.
      */
     private void addEnvironmentVariables(
-            Map<String, String> newEnvironmentVariables) {
+            final Map<String, String> newEnvironmentVariables) {
         m_environmentVariables.putAll(newEnvironmentVariables);
     }
     
@@ -215,7 +218,11 @@ public class LocalToolExecutor implements IToolExecutor {
      */
     @Override
     public List<String> getCommand() {
-        return m_commands;
+        final List<String> commands = new LinkedList<String>();
+        for (final CommandLineElement commandLineElement : m_commands) {
+            commands.add(commandLineElement.getStringRepresentation());
+        }
+        return commands;
     }
 
     /**
@@ -255,20 +262,29 @@ public class LocalToolExecutor implements IToolExecutor {
     public File getWorkingDirectory() {
         return m_workingDirectory;
     }
+    
+    protected void extractFromCommandLineElements(final Collection<CommandLineElement> elements, final Collection<String> commands) {
+        for (final CommandLineElement element : elements) {
+            commands.add(element.getStringRepresentation());
+        }
+    }
 
     @Override
     public int execute() throws ToolExecutionFailedException {
 
         try {
-            List<String> command = new ArrayList<String>();
-            command.add(m_executable.getCanonicalPath());
-            command.addAll(m_commands);
+            final List<String> commands = new ArrayList<String>();
+            commands.add(m_executable.getCanonicalPath());
+            // this is a local execution, we need the values of all of the
+            // command line elements
+            // so we need the string representation of each element
+            extractFromCommandLineElements(m_commands, commands);
 
             // emit command
-            LOGGER.debug("Executing: " + StringUtils.join(command, " "));
+            LOGGER.debug("Executing: " + StringUtils.join(commands, " "));
 
             // build process
-            ProcessBuilder builder = new ProcessBuilder(command);
+            final ProcessBuilder builder = new ProcessBuilder(commands);
             setupProcessEnvironment(builder);
 
             if (m_workingDirectory != null) {
@@ -279,9 +295,9 @@ public class LocalToolExecutor implements IToolExecutor {
             m_process = builder.start();
 
             // prepare capture of cerr/cout streams
-            StreamGobbler stdOutGobbler = new StreamGobbler(
+            final StreamGobbler stdOutGobbler = new StreamGobbler(
                     m_process.getInputStream());
-            StreamGobbler stdErrGobbler = new StreamGobbler(
+            final StreamGobbler stdErrGobbler = new StreamGobbler(
                     m_process.getErrorStream());
 
             // start separate threads to capture the cerr/cout streams
@@ -294,10 +310,10 @@ public class LocalToolExecutor implements IToolExecutor {
             // extract messages from stderr and stdout
             m_stdOut = stdOutGobbler.getContent();
             m_stdErr = stdErrGobbler.getContent();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.warn("Failed to execute tool " + m_executable.getName(), e);
-            throw new ToolExecutionFailedException("Failed to execute tool "
-                    + m_executable.getName(), e);
+            throw new ToolExecutionFailedException(
+                    "Failed to execute tool " + m_executable.getName(), e);
         }
 
         return m_returnCode;
@@ -318,20 +334,21 @@ public class LocalToolExecutor implements IToolExecutor {
         // expand variables in value
         boolean found = true;
         while (found) {
-            Matcher m = variableNamePattern.matcher(value);
+            final Matcher m = variableNamePattern.matcher(value);
             found = m.find();
             if (found) {
-                String variableName = m.group(1);
+                final String variableName = m.group(1);
                 // extract current variable value
                 String replacement = "";
                 if (System.getenv(variableName) != null) {
                     replacement = System.getenv(variableName);
                 }
 
-                Pattern specificVariablePattern = Pattern.compile("\\$\\{"
-                        + variableName + "\\}");
+                final Pattern specificVariablePattern = Pattern
+                        .compile("\\$\\{" + variableName + "\\}");
 
-                Matcher replaceMatcher = specificVariablePattern.matcher(value);
+                final Matcher replaceMatcher = specificVariablePattern
+                        .matcher(value);
                 value = replaceMatcher.replaceAll(replacement);
             }
         }
@@ -363,12 +380,29 @@ public class LocalToolExecutor implements IToolExecutor {
      * @param pluginConfiguration
      */
     @Override
-    public void prepareExecution(INodeConfiguration nodeConfiguration,
-            IPluginConfiguration pluginConfiguration) throws Exception {
+    public void prepareExecution(final INodeConfiguration nodeConfiguration,
+            final IPluginConfiguration pluginConfiguration) throws Exception {
         findExecutable(nodeConfiguration, pluginConfiguration);
-
-        addEnvironmentVariables(pluginConfiguration.getBinaryManager()
-                .getProcessEnvironment(nodeConfiguration.getExecutableName()));
+        Map<String, String> nodeEnv = pluginConfiguration.getBinaryManager()
+        .getProcessEnvironment(nodeConfiguration.getExecutableName());
+        String pathWithJava = "";
+        if (nodeEnv.containsKey("PATH")) {
+            pathWithJava = nodeEnv.get("PATH") + File.pathSeparator;
+        }
+        pathWithJava += System.getProperty("java.home") + File.separator + "bin";
+        nodeEnv.put("PATH", pathWithJava);
+        
+        pathWithJava = "";
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            if (nodeEnv.containsKey("Path")) {
+                pathWithJava = nodeEnv.get("Path") + File.pathSeparator;
+            }
+            pathWithJava += System.getProperty("java.home")+File.separator+"bin";
+            nodeEnv.put("Path", pathWithJava);
+        }
+        
+        addEnvironmentVariables(nodeEnv);
+        
         m_commands = m_generator.generateCommands(nodeConfiguration,
                 pluginConfiguration, m_workingDirectory);
     }
@@ -388,8 +422,13 @@ public class LocalToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public void setCommandGenerator(ICommandGenerator generator) {
+    public void setCommandGenerator(final ICommandGenerator generator) {
         m_generator = generator;
+    }
+
+    @Override
+    public ICommandGenerator getCommandGenerator() {
+        return m_generator;
     }
 
     @Override
