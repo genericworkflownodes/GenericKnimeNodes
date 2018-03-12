@@ -94,15 +94,25 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
 
         int[] selectedPorts = mtc.getSelectedTypes();
         boolean[] activePorts = mtc.getActiveness();
+        int[] linkedInputPorts = mtc.getLinkedInputPorts();
+        String[] customBasenames = mtc.getCustomBasenames();
 
         for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
             settings.addInt(
-                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUTTYPE_PREFIX
+                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
                             + i, selectedPorts[i]);
             settings.addBoolean(
                     GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
                             + i, activePorts[i]);
+            settings.addInt(
+                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+                            + i, linkedInputPorts[i]);
+            settings.addString(
+                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+                            + i, customBasenames[i]);
         }
+        //TODO we probably need to save some additional settings:
+        // e.g. an integer link to an input or a string for a custom basename
     }
 
     @Override
@@ -141,22 +151,63 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
         int nP = config.getNumberOfOutputPorts();
         int[] selectedPorts = new int[nP];
         boolean[] activePorts = new boolean[nP];
+        int[] linkedInputPorts = new int[nP];
+        String[] customBasenames = new String[nP];
 
         for (int i = 0; i < nP; i++) {
+            int idx = -1;
             try {
-                int idx = settings
-                        .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUTTYPE_PREFIX
+                idx = settings
+                        .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
                                 + i);
                 selectedPorts[i] = idx;
+            } catch (InvalidSettingsException e) {
+                // Output type index not found. Quite bad!
+                throw new NotConfigurableException(e.getMessage(), e);
+            }
+            
+            try{
+                // A found activeness setting takes precedence
                 boolean active = settings
                         .getBoolean(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
                                 + i);
                 activePorts[i] = active;
             } catch (InvalidSettingsException e) {
-                throw new NotConfigurableException(e.getMessage(), e);
+                // else check if index is invalid
+                if (idx < 0 || idx > config.getOutputPorts().get(i).getMimeTypes().size())
+                {
+                  activePorts[i] = false;
+                } // otherwise default to active
+                else
+                {
+                  activePorts[i] = true; 
+                }
+            }
+            
+            try{ //get linked inport
+                int linked = settings
+                        .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+                                + i);
+                linkedInputPorts[i] = linked;
+            } catch (InvalidSettingsException e) {
+                // probably an older version then. Index 0 is auto.
+                linkedInputPorts[i] = 0;
+            }
+            
+            try{ //get custom basename
+                String bn = settings
+                        .getString(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+                                + i);
+                customBasenames[i] = bn;
+            } catch (InvalidSettingsException e) {
+                // probably an older version then.
+                customBasenames[i] = "";
             }
         }
+        // let the outputtype tab know about the settings so we can show when opened
         mtc.setSelectedTypes(selectedPorts);
         mtc.setActivePorts(activePorts);
+        mtc.setBasenameTextboxes(customBasenames);
+        mtc.setSelectedLinkedInports(linkedInputPorts);
     }
 }

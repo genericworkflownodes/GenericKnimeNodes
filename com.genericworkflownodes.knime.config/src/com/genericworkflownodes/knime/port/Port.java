@@ -77,6 +77,20 @@ public class Port implements Serializable {
      * Flag to indicate that this port represents an output prefix.
      */
     private boolean m_isPrefix;
+    
+    /**
+     * Index of a linked Port from the opposite type:
+     * For outputs it's an input port, for inputs it's an output.
+     * -1 if unset.
+     * Not encoded in the CTD yet, but only set in KNIME
+     * OutputType tab in config dialog.
+     */
+    private int m_linkedPort = -1;
+    
+    /**
+     * user-defined basename for this port
+     */
+    private String m_baseName;
 
     /**
      * Adds a supported {@link MIMEType} to the port.
@@ -215,5 +229,47 @@ public class Port implements Serializable {
      */
     public void setIsPrefix(boolean isPrefix) {
         m_isPrefix = isPrefix;
+    }
+    
+    /**
+     * Returns the index of a linked Port of the opposite type.
+     * I.e. an output port maps to an input and vice versa
+     * Especially useful for output name generation.
+     * Usually for multiPorts
+     * 
+     * @return Index of the linked Port
+     */
+    public int getLinkedPortIndex() {
+        return m_linkedPort;
+    }
+
+    /**
+     * Sets the index of a linked Port of the opposite type.
+     * 
+     * @param index
+     *            index of a linked Port of the opposite type
+     */
+    public void setLinkedPortIndex(int index) {
+        m_linkedPort = index;
+    }
+    
+    /**
+     * Returns a defined basename for this Port.
+     * To be used e.g. for output file generation.
+     * 
+     * @return Index of the linked Port
+     */
+    public String getUserBasename() {
+        return m_baseName;
+    }
+
+    /**
+     * Sets a user defined basename to be used
+     * for output file generation.
+     * 
+     * @param name the new basename
+     */
+    public void setUserBasename(String name) {
+        m_baseName = name;
     }
 }
