@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./filetotable.png" type="Other">
+    <name>Port to File Cells</name>
+    
+    <shortDescription>
+        Enables files to be stored in a table in order to send them from a cluster node to the client.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+        	When processing files in parallel on a cluster KNIME expects the results to be a table that is concatenated locally.
+        	To send files from a cluster node back to the client they must be put into a table with cells that contain a reference to a file.
+        	Once the table is sent back to the client, the file is taken along.
+        </intro>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="File">The file to put into a table</inPort>
+        <outPort index="0" name="File Table">The table referencing the file</outPort>
+    </ports>    
+</knimeNode>

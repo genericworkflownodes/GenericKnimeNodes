@@ -7,13 +7,20 @@
    <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory" name="VersionedNodeSetFactory" schema="schema/com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory.exsd"/>
-   
+
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
-    <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" level-id="IO" name="IO" path="/community/GenericKnimeNodes"/>      
+    <category description="/community/GenericKnimeNodes/IO" icon="icons/category.png" level-id="IO" name="IO" path="/community/GenericKnimeNodes"/>
     <category description="/community/GenericKnimeNodes/View" icon="icons/category.png" level-id="Util" name="Util" path="/community/GenericKnimeNodes"/>
     <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="KNIMEConversion" name="KNIMEConversion" path="/community/GenericKnimeNodes"/>
     <category description="/community/GenericKnimeNodes/KNIMEConversion" icon="icons/category.png" level-id="Flow" name="Flow" path="/community/GenericKnimeNodes"/>
+    <category
+          icon="icons/category.png"
+          level-id="GenericKNIMENodeCluster"
+          locked="true"
+          name="GenericKNIMENodeCluster"
+          path="/community/GenericKnimeNodes">
+    </category>
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
@@ -26,22 +33,37 @@
 	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory"/>
-    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory"/>    
+    <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopStartNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.listzip.ListZipLoopEndNodeFactory"/>
    	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.merger.FileMergerNodeFactory"/>
 	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
+	<node
+          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.cluster.nodes.filesplitter.FileSplitterNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.cluster.nodes.splittabletoport.SplitTableToPortNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.cluster.nodes.porttofilestore.PortToFileStoreNodeFactory">
+    </node>
    </extension>
-   
+
    <extension point="org.knime.product.splashExtension">
         <splashExtension icon="icons/GKN.png" id="com.genericworkflownodes.knime.splashExtension"/>
    </extension>
-   
+
    <extension point="org.eclipse.equinox.preferences.preferences">
       <initializer class="com.genericworkflownodes.knime.preferences.PreferenceInitializer"/>
    </extension>
-   
+
    <extension point="org.eclipse.ui.preferencePages">
       <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.PreferencePage" id="com.genericworkflownodes.knime.preferences.PreferencePage" name="Generic KNIME Nodes"/>
       <page category="org.knime.workbench.ui.preferences" class="com.genericworkflownodes.knime.preferences.DockerMachinePreferencePage" id="com.genericworkflownodes.knime.preferences.com.genericworkflownodes.knime.preferences.DockerMachinePreferencePage" name="GKN Docker"/>
