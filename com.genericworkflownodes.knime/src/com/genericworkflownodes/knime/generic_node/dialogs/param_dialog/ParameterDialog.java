@@ -20,7 +20,10 @@
 
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -28,9 +31,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -38,18 +43,22 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import org.jdesktop.swingx.renderer.IconValue;
-import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.knime.core.node.NodeLogger;
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
@@ -57,6 +66,7 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.netbeans.swing.outline.RenderDataProvider;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.config.citation.Citation;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tree.ParameterNode;
 import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ui_helper.TableColumnAdjuster;
 import com.genericworkflownodes.knime.parameter.Parameter;
@@ -133,7 +143,7 @@ public class ParameterDialog extends JPanel {
     /**
      * The high-lighter for the NetBeans Outline object.
      * 
-     * @author aiche
+     * @author aiche, jpfeuffer
      */
     private final class ParamDialogDataProvider implements RenderDataProvider {
 
@@ -182,14 +192,16 @@ public class ParameterDialog extends JPanel {
     }
 
     private static final long serialVersionUID = 8098990326681120709L;
+    private JTextPane header;
+    private JPanel headerpanel;
     private Outline table;
     private JTextPane help;
+    private JPanel helppanel;
     private JCheckBox toggle;
     private OutlineModel model;
     private ParameterDialogTreeModel treemdl;
 
     private static final Font MAND_FONT = new Font("Dialog", Font.BOLD, 12);
-    private static final Font OPT_FONT = new Font("Dialog", Font.ITALIC, 12);
 
     /**
      * Construct dialog from a NodeConfiguration.
@@ -206,13 +218,37 @@ public class ParameterDialog extends JPanel {
         model = DefaultOutlineModel.createOutlineModel(treemdl, 
                 new ParameterDialogRowModel(), true, "Parameter");
 
-        // create the NetBeans Outline object
+        // create the NetBeans Outline object (basically a TreeTable)
         createTable();
         
         // adjust size of columns initially to fit the screen
         updateTableView();
         
-        // create the sub controls (documentation and toggle for advanced)
+        // create (citation text) header
+        if(config.getCitations() != null && !config.getCitations().isEmpty()) {
+            createHeader();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html>\n");
+            for (Citation c : config.getCitations()) {
+                if (c.getDoi() != null || c.getDoi().isEmpty()) {
+                    try {
+                        sb.append("<a href=\"");
+                        sb.append(c.getDoiLink());
+                        sb.append("\"> doi:");
+                        sb.append(c.getDoi());
+                        sb.append("</a>");
+                    } catch (MalformedURLException e) {
+                        sb.append("doi: ");
+                        sb.append(c.getDoi());
+                        e.printStackTrace();
+                    }
+                    sb.append("<br>\n");
+                }
+            }
+            header.setText(sb.toString());
+        }
+        
+        // create the sub controls on the bottom (documentation and toggle for advanced)
         createHelpPane();
         createShowAdvancedToggle();
         
@@ -222,23 +258,63 @@ public class ParameterDialog extends JPanel {
         
         // finally add controls to panel
         addControlsToPanel();
+        updateTableView();
+    }
+
+    private void createHeader() {
+        // use JPanel to be able to create a border
+        headerpanel = new JPanel();
+        headerpanel.setLayout(new BorderLayout());
+        TitledBorder b = new TitledBorder ( new EtchedBorder (), "Please cite:" );
+        b.setTitleFont(MAND_FONT);
+        headerpanel.setBorder(b);
+        headerpanel.setPreferredSize(new Dimension(table.getWidth(), 50));
+        // fill the Panel with a non-editable HTML TextPane
+        header = new JTextPane();
+        header.setContentType("text/html");
+        header.setEditable(false);
+        header.addHyperlinkListener(new HyperlinkListener() {
+            // Open Desktop browser when clicking links (e.g. dois)
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        } catch (URISyntaxException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        headerpanel.add(new JScrollPane(header));
     }
 
     private void createTable() {
         table = new Outline();
+        // under some circumstances the cellEditor gets lost, therefore we
+        // register a default for parameter objects
+        table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
         table.setRenderDataProvider(new ParamDialogDataProvider());
         table.setMinimumSize(new Dimension(1000, 500));
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        //Disabled Auto resizing, otherwise it sometimes closes the Comboboxes right
+        //away because of a redraw caused by the dropdown arrow increasing the col width
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //Root node has no param and no function
         table.setRootVisible(false);
         table.setModel(model);
+        //Set MinWidth here, set Preferred width in the TableAdjuster
+        table.getColumnModel().getColumn(0).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setMinWidth(50);
+        table.getColumnModel().getColumn(2).setMinWidth(50);
         
-        // under some circumstances the cellEditor gets lost, therefore we
-        // register a default for parameter objects
-        table.setDefaultEditor(Parameter.class, treemdl.getCellEditor());
-
         addSelectionListener();
     }
 
@@ -248,24 +324,38 @@ public class ParameterDialog extends JPanel {
     }
 
     private void addControlsToPanel() {
-        add(new JScrollPane(table), new GridBagConstraints(0, 0, 1, 1, 1.0,
-                .79f, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        // only display citation header if there are citations
+        if (headerpanel != null){
+            add(headerpanel, new GridBagConstraints(0, 0, 1, 1, 1.0, .2f,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(2, 2, 2, 2), 0, 0));
+        }
+        add(new JScrollPane(table), new GridBagConstraints(0, 1, 1, 1, 1.0, .79f,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(2, 2, 2, 2), 0, 0));
-        add(new JScrollPane(help), new GridBagConstraints(0, 1, 1, 2, 1.0, .2f,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
-                        2, 2, 2, 2), 0, 0));
-        add(toggle, new GridBagConstraints(0, 3, 1, 1, 1.0, .01f,
+        add(helppanel, new GridBagConstraints(0, 2, 1, 3, 1.0, .2f,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(2, 2, 2, 2), 0, 0));
+        add(toggle, new GridBagConstraints(0, 5, 1, 1, 1.0, .01f,
                 GridBagConstraints.SOUTHEAST, GridBagConstraints.VERTICAL,
                 new Insets(2, 2, 2, 2), 0, 0));
     }
 
     private void createHelpPane() {
+        helppanel = new JPanel();
+        helppanel.setLayout(new BorderLayout());
+        TitledBorder b = new TitledBorder ( new EtchedBorder (), "Parameter description:" );
+        b.setTitleFont(MAND_FONT);
+        helppanel.setBorder(b);
+        helppanel.setPreferredSize(new Dimension(table.getWidth(), 50));
         help = new JTextPane();
-        help.setPreferredSize(new Dimension(table.getWidth(), 50));
+        help.setEditable(false);
+        helppanel.add(new JScrollPane(help));
     }
 
     private void createShowAdvancedToggle() {
         toggle = new JCheckBox("Show advanced parameter");
+        toggle.setFont(new Font("Dialog", Font.PLAIN, 10));
         toggle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -286,6 +376,7 @@ public class ParameterDialog extends JPanel {
         TableColumnAdjuster tca = new TableColumnAdjuster(table);
         tca.adjustColumns();
         // plot new
+        table.setSize(table.getSize());
         table.updateUI();
     }
 

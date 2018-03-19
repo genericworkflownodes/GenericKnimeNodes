@@ -185,7 +185,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
      * @return If the port is inactive.
      */
     protected boolean isInactive(int idx) {
-        return this.getOutputType(idx).equals("Inactive");
+        return this.getOutputType(idx).toLowerCase().equals("inactive");
     }
 
     /**
@@ -314,7 +314,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         // - we know that values are validated and thus are valid
-        // - we xfer the values into the corresponding model objects
+        // - we transfer the values into the corresponding model objects
         for (String key : m_nodeConfig.getParameterKeys()) {
             // FileParameters are not set by the UI
             if (m_nodeConfig.getParameter(key) instanceof IFileParameter)
@@ -342,40 +342,32 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // - we validate incoming settings values here
-        // - we do not xfer values to member variables
+        // - we check if params are present with settings.getString
+        // - we validate incoming settings values basically with param.fillFromString
+        // - we do not transfer values to member variables yet
         // - we throw an exception if something is invalid
 
+        String errorsFound = "";
         for (String key : m_nodeConfig.getParameterKeys()) {
             Parameter<?> param = m_nodeConfig.getParameter(key);
             // FileParameters are not set by the UI
             if (param instanceof IFileParameter) {
                 continue;
             }
-            if (!param.isOptional()) {
-                if (!settings.containsKey(key)) {
-                    LOGGER.debug("\t no key found for mand. parameter " + key);
-                    throw new InvalidSettingsException(
-                            "no value for mandatory parameter " + key
-                                    + " supplied");
-                }
-                if (settings.getString(key) == null) {
-                    LOGGER.debug("\t null value found for mand. parameter "
-                            + key);
-                    throw new InvalidSettingsException(
-                            "no value for mandatory parameter " + key
-                                    + " supplied");
-                }
-            }
 
-            String value = settings.getString(key);
             try {
+                String value = settings.getString(key);
                 param.fillFromString(value);
             } catch (InvalidParameterValueException e) {
-                LOGGER.debug("\t invalid value for parameter " + key);
-                throw new InvalidSettingsException(
-                        "invalid value for parameter " + key);
+                errorsFound += "\t - Invalid value for parameter " + key + " in settings.xml.\n";
+            } catch (InvalidSettingsException e) {
+                errorsFound += "\t - Entry for parameter " + key + " not found in settings.xml.\n";
             }
+        }
+        // Accumulate errors otherwise only the first will be thrown.
+        if (!errorsFound.isEmpty())
+        {
+            throw new InvalidSettingsException( "\n\tGenericKNIMENodes:\n\t Maybe you are loading node settings (or a complete workflow) generated with an older version of the tool.\n\t If you do not reconfigure the node (marked with an exclamation mark),\n\t the current defaults will be loaded instead. \n" + errorsFound );
         }
     }
 
@@ -394,7 +386,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             if (!param.isOptional() && param.getValue() != null
                     && "".equals(param.getStringRep())
                     && !(param instanceof IFileParameter)) {
-                setWarningMessage("Some mandatory parameters might are not set.");
+                setWarningMessage("Some mandatory parameters might not be set.");
             }
         }
 
@@ -415,7 +407,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
 
             // get MIMEType from incoming port
-            // TODO: we should check all file extensions, if its more then one
+            // TODO: we should check all file extensions, if its more than one (e.g. last node outputs mixed list of txt and jpg)
             String mt = MIMEMap.getMIMEType(spec.getFileExtensions().get(0));
 
             // check whether input MIMEType is in list of allowed MIMETypes
@@ -436,7 +428,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             // we require consistent file endings for non prefix ports
             if (!ok && !m_nodeConfig.getInputPorts().get(i).isPrefix()) {
                 String mismatch = String.format(
-                        "has extension: [%s]; expected on of:[%s]", mt,
+                        "has extension: [%s]; expected one of:[%s]", mt,
                         Arrays.toString(m_fileEndingsInPorts[i]));
                 throw new InvalidSettingsException(
                         "Invalid MIMEtype at port number " + i + " : "
@@ -751,7 +743,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
 
     /**
      * Transfers the incoming ports into the config, that it can be written out
-     * into a config file or can be tranferred to the command line.
+     * into a config file or can be transferred to the command line.
      * 
      * @param inData
      *            The incoming port objects.

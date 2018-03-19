@@ -78,4 +78,11 @@ public interface IPluginConfiguration {
      * @return
      */
     String getDockerMachine();
+
+    /**
+     *  The version of the plugin
+     *  
+     * @return
+     */
+    String getPluginVersion();
 }

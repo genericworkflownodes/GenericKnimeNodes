@@ -65,6 +65,11 @@ public abstract class Parameter<T> implements Serializable {
      * user.
      */
     private boolean m_isAdvanced;
+    
+    /**
+     * Flag indicating if the parameters default value was used (e.g. because of version upgrade)
+     */
+    private boolean m_defaulted = true;
 
     /**
      * Constructor with unique m_key of parameter and generic m_value to store.
@@ -120,6 +125,7 @@ public abstract class Parameter<T> implements Serializable {
      */
     public void setValue(final T value) {
         m_value = value;
+        m_defaulted = false;
     }
 
     /**
@@ -242,6 +248,25 @@ public abstract class Parameter<T> implements Serializable {
      */
     public final void setAdvanced(final boolean newAdvanced) {
         m_isAdvanced = newAdvanced;
+    }
+    
+    /**
+     * Was the parameters default from the tool description used (true) or was the value
+     * at least once set (false)?
+     * 
+     */
+    public boolean isDefaulted() {
+        return m_defaulted;
+    }
+    
+    /**
+     * Set whether the parameters default was used.
+     * 
+     * @param newAdvanced
+     *            New isAdvanced flag for the parameter.
+     */
+    public final void setDefaulted(final boolean newDefaulted) {
+        m_defaulted = newDefaulted;
     }
 
     /**

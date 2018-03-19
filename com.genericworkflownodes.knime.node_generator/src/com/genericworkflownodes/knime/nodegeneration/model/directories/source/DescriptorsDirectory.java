@@ -55,7 +55,8 @@ public class DescriptorsDirectory extends Directory {
 
         File mimeTypeFile = new File(this, "mime.types");
         mimeTypesFile = new MimeTypesFile(mimeTypeFile.getAbsolutePath());
-
+        
+        boolean failed = false;
         ctdFiles = new LinkedList<CTDFile>();
         for (File file : this.listFiles()) {
             if (file.getName().endsWith(".ctd")) {
@@ -77,13 +78,19 @@ public class DescriptorsDirectory extends Directory {
                 } catch (Exception e) {
                     // throw new IOException("Error reading " + file.getPath(),
                     // e);
-                    System.out.println(String.format("Invalid ctd-format: %s",
+                    System.err.println(String.format("Error processing CTD File: %s",
                             file.getName()));
-                    System.out.println(String.format("Reason: %s",
+                    System.err.println(String.format("Reason: %s",
                             e.getMessage()));
-
+                    System.err.println("WARNING: File will be skipped and no source code produced.");
+                    failed = true;
                 }
             }
+        }
+        if (failed) {
+        	throw new IOException("Error while reading or parsing the CTDs in folder: "
+        						+ this.getAbsolutePath()
+        						+ "\n See error messages for details.");
         }
     }
 

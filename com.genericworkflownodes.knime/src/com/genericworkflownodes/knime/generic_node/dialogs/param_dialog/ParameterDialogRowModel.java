@@ -26,15 +26,17 @@ import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.param_tr
 import com.genericworkflownodes.knime.parameter.Parameter;
 
 public class ParameterDialogRowModel implements RowModel{
+    
 
     /**
      * Type information for the individual columns.
      */
-    private static Class<?>[] cTypes = {Parameter.class, String.class };
+    private static Class<?>[] cTypes = {Parameter.class, String.class};
+    
     /**
      * Column name/header information.
      */
-    private static String[] cNames = {"Value", "Type" };
+    private static String[] cNames = {"Value", "Type"};
     
     @Override
     public Class<?> getColumnClass(int column) {
