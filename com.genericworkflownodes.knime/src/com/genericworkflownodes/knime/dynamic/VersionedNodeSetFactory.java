@@ -2,6 +2,7 @@ package com.genericworkflownodes.knime.dynamic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -14,7 +15,8 @@ public class VersionedNodeSetFactory implements NodeSetFactory {
     private final DynamicGenericNodeSetFactory m_nodeSetFactory;
     private final String m_versionSuffix;
     private final Version m_version;
-
+    Collection<String> m_ids;
+    
     public Version getVersion() {
         return m_version;
     }
@@ -27,15 +29,16 @@ public class VersionedNodeSetFactory implements NodeSetFactory {
         m_version = new Version(factory.getPluginConfig().getPluginVersion());
         m_nodeSetFactory = factory;
         m_versionSuffix = "_" + factory.getPluginConfig().getPluginVersion().replaceAll("\\.", "_");
+        ArrayList<String> ids = new ArrayList<>();
+        for (String id : m_nodeSetFactory.getNodeFactoryIds()) {
+            m_ids.add(id + m_versionSuffix);
+        }
+        m_ids = Collections.unmodifiableCollection(ids);
     }
 
     @Override
     public Collection<String> getNodeFactoryIds() {
-        ArrayList<String> ids = new ArrayList<>();
-        for (String id : m_nodeSetFactory.getNodeFactoryIds()) {
-            ids.add(id + m_versionSuffix);
-        }
-        return ids;
+        return m_ids;
     }
     
     private String removeSuffix(String id) {

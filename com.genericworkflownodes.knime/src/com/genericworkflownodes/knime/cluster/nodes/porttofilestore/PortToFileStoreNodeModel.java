@@ -107,20 +107,20 @@ public class PortToFileStoreNodeModel extends NodeModel {
             PortObjectHandlerCell cell = new PortObjectHandlerCell((AbstractFileStoreURIPortObject)input);
             dc.addRowToTable(new DefaultRow(new RowKey("files"), cell));
         } else {
-            int counter = 0;
             FileStore fs = exec.createFileStore("files");
             fs.getFile().mkdirs();
             
-            for (URIContent uc : input.getURIContents()) {   
-                String filename = "file" + counter + "." + uc.getExtension();
+            for (URIContent uc : input.getURIContents()) {
+                String filename = Paths.get(uc.getURI()).getFileName().toString();
+                if (!filename.endsWith(uc.getExtension())) {
+                    filename = filename.concat(".").concat(uc.getExtension());
+                }
                 // TODO: Report progress
                 Files.copy(Paths.get(uc.getURI()), Paths.get(fs.getFile().toURI()).resolve(filename));
                 AbstractFileStoreURIPortObject portObject = new FileStoreURIPortObject(fs);
                 portObject.registerFile(filename);
                 PortObjectHandlerCell cell = new PortObjectHandlerCell(portObject);
-                dc.addRowToTable(new DefaultRow(new RowKey(filename), cell));
-                counter++;
-            }
+                dc.addRowToTable(new DefaultRow(new RowKey(filename), cell));            }
         }
         dc.close();
         return new PortObject[] {(BufferedDataTable)dc.getTable()};

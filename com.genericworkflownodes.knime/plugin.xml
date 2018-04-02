@@ -40,17 +40,17 @@
 	<node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.image2file.Image2FilePortNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Flow" factory-class="com.genericworkflownodes.knime.nodes.flow.splitter.FileSplitterNodeFactory"/>
 	<node
-          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          category-path="/community/GenericKnimeNodes/GenericKNIMENodeCluster"
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.cluster.nodes.filesplitter.FileSplitterNodeFactory">
     </node>
     <node
-          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          category-path="/community/GenericKnimeNodes/GenericKNIMENodeCluster"
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.cluster.nodes.splittabletoport.SplitTableToPortNodeFactory">
     </node>
     <node
-          category-path="/community/GenericKnimeNodes/GenericKnimeNodeCluster"
+          category-path="/community/GenericKnimeNodes/GenericKNIMENodeCluster"
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.cluster.nodes.porttofilestore.PortToFileStoreNodeFactory">
     </node>
