@@ -224,14 +224,16 @@ public final class BinaryManager {
         try {
             p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
         } catch (Exception ex) {
+            LOGGER.error(ex);
             return Collections.emptyList();
         }
         while (e.hasMoreElements()){
             try {
                 Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toString());
+                LOGGER.info("Loading CTD from " + el.toString());
                 files.add(p.relativize(el).toString());
             } catch (IOException e1) {
-                e1.printStackTrace();
+                LOGGER.error(e1);
             }
         }
         return files;
