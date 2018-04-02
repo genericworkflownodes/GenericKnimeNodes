@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.activation.MimeType;
-
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
@@ -45,6 +43,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
+import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
