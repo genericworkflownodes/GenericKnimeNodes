@@ -56,6 +56,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
                     // definition
                     m_factories.add(o);
                     String pluginID = o.getPluginConfig().getPluginId();
+                    LOGGER.debug("Checking plugin " + pluginID);
                     if (!pluginIDQueues.containsKey(pluginID)) {
                         pluginIDQueues.put(pluginID, new PriorityQueue<GenericNodeSetFactory>(10, new Comparator<GenericNodeSetFactory>(){
                             @Override
