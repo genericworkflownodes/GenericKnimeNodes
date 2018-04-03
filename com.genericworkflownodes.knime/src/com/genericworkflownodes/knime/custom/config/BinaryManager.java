@@ -20,7 +20,6 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -220,6 +219,12 @@ public final class BinaryManager {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
         Enumeration<URL> ctds = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
         
+        // findEntries returns null if no entry is found
+        if (ctds == null) {
+            LOGGER.warn("The bundle " + bundle.getSymbolicName() + " does not contain any CTD files.");
+            return Collections.emptyList();
+        }
+        
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
@@ -239,9 +244,7 @@ public final class BinaryManager {
                 LOGGER.error(e);
             }
         }
-        if (files.size() == 0) {
-            LOGGER.warn("The bundle " + bundle.getSymbolicName() + " does not contain any CTD files.");
-        }
+        
         return files;
     }
 }
