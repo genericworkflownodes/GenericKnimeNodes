@@ -85,7 +85,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
                     m_nondeprecatedFactories.notifyAll();
                 }
             } catch (CoreException e) {
-                LOGGER.warn(e.getMessage());
+                LOGGER.warn(e);
             }
         }
         return m_factories;
