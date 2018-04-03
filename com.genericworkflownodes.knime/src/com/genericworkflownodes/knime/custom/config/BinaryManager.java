@@ -20,7 +20,6 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -58,7 +57,7 @@ public final class BinaryManager {
     /**
      * Path inside the bundle where the descriptors should be located.
      */
-    private static final String DESCRIPTORS_PATH = BUNDLE_PATH + File.separator + "descriptors";
+    private static final String DESCRIPTORS_PATH = "/" + BUNDLE_PATH + File.separator + "descriptors";
 
     /**
      * File that should be present to identify the correct path.
@@ -179,7 +178,7 @@ public final class BinaryManager {
         try {
             return new File(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH + File.separator + relToolPath)).getFile());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            LOGGER.error(e);
             return null;
         }
     }
@@ -218,24 +217,34 @@ public final class BinaryManager {
      */
     public Iterable<String> listTools() {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
-        Enumeration<URL> e = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+        Enumeration<URL> ctds = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+        
+        // findEntries returns null if no entry is found
+        if (ctds == null) {
+            LOGGER.warn("The bundle " + bundle.getSymbolicName() + " does not contain any CTD files.");
+            return Collections.emptyList();
+        }
+        
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
             p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
-        } catch (Exception ex) {
+            LOGGER.debug("Descriptors location: " + p.toString());
+        } catch (IOException ex) {
             LOGGER.error(ex);
             return Collections.emptyList();
         }
-        while (e.hasMoreElements()){
+        
+        while (ctds.hasMoreElements()){
             try {
-                Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toString());
+                Path el = Paths.get(FileLocator.toFileURL(ctds.nextElement()).toString());
                 LOGGER.info("Loading CTD from " + el.toString());
                 files.add(p.relativize(el).toString());
-            } catch (IOException e1) {
-                LOGGER.error(e1);
+            } catch (IOException e) {
+                LOGGER.error(e);
             }
         }
+        
         return files;
     }
 }
