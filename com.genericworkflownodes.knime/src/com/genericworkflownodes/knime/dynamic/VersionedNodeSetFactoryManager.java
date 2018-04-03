@@ -48,6 +48,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
             IExtensionRegistry reg = Platform.getExtensionRegistry();
             IConfigurationElement[] elements = reg
                     .getConfigurationElementsFor(EXTENSION_POINT_ID);
+            LOGGER.debug("Loading GenericNodeSetFactories");
             try {
                 for (IConfigurationElement elem : elements) {
                     final GenericNodeSetFactory o = (GenericNodeSetFactory)elem.createExecutableExtension("class");

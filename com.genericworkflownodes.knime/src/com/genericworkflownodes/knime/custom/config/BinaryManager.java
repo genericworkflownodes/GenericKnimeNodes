@@ -58,7 +58,7 @@ public final class BinaryManager {
     /**
      * Path inside the bundle where the descriptors should be located.
      */
-    private static final String DESCRIPTORS_PATH = BUNDLE_PATH + File.separator + "descriptors";
+    private static final String DESCRIPTORS_PATH = "/" + BUNDLE_PATH + File.separator + "descriptors";
 
     /**
      * File that should be present to identify the correct path.
@@ -179,7 +179,7 @@ public final class BinaryManager {
         try {
             return new File(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH + File.separator + relToolPath)).getFile());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            LOGGER.error(e);
             return null;
         }
     }
@@ -218,23 +218,29 @@ public final class BinaryManager {
      */
     public Iterable<String> listTools() {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
-        Enumeration<URL> e = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+        Enumeration<URL> ctds = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+        
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
             p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
-        } catch (Exception ex) {
+            LOGGER.debug("Descriptors location: " + p.toString());
+        } catch (IOException ex) {
             LOGGER.error(ex);
             return Collections.emptyList();
         }
-        while (e.hasMoreElements()){
+        
+        while (ctds.hasMoreElements()){
             try {
-                Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toString());
+                Path el = Paths.get(FileLocator.toFileURL(ctds.nextElement()).toString());
                 LOGGER.info("Loading CTD from " + el.toString());
                 files.add(p.relativize(el).toString());
-            } catch (IOException e1) {
-                LOGGER.error(e1);
+            } catch (IOException e) {
+                LOGGER.error(e);
             }
+        }
+        if (files.size() == 0) {
+            LOGGER.warn("The bundle " + bundle.getSymbolicName() + " does not contain any CTD files.");
         }
         return files;
     }

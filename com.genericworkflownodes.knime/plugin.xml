@@ -72,15 +72,7 @@
          point="com.genericworkflownodes.knime.execution.Executor">
       <executor
             class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
-            name="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor">
-      </executor>
-      <executor
-            class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
             name="LocalToolExecutor">
-      </executor>
-      <executor
-            class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
-            name="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor">
       </executor>
       <executor
             class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
