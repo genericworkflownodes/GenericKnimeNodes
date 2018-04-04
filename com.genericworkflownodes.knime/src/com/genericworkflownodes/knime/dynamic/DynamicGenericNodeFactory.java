@@ -151,7 +151,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
         } catch (InterruptedException e) {
             // This means that loading the nodes was interrupted.
             // We simply leave the node non-deprecated.
-            logger.error(e);
+            logger.error("Could not load additional factory settings.", e);
         }
         super.loadAdditionalFactorySettings(config);
     }

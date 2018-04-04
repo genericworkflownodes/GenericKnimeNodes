@@ -85,7 +85,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
                     m_nondeprecatedFactories.notifyAll();
                 }
             } catch (CoreException e) {
-                LOGGER.warn(e);
+                LOGGER.error("Could not load plugin for extension point " + EXTENSION_POINT_ID, e);
             }
         }
         return m_factories;
