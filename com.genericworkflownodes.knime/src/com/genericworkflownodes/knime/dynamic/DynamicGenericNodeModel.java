@@ -444,7 +444,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             m_pluginConfig.getBinaryManager().findBinary(
                     m_nodeConfig.getExecutableName());
         } catch (NoBinaryAvailableException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn("Failed to find matching binary.", e);
             throw new InvalidSettingsException(
                     "Failed to find matching binary.", e);
         }
