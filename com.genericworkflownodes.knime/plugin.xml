@@ -160,6 +160,7 @@
    <extension
          point="org.knime.workbench.repository.nodesets">
       <nodeset
+            default-category-icon="icons/category.png"
             deprecated="false"
             factory-class="com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactoryManager">
       </nodeset>
