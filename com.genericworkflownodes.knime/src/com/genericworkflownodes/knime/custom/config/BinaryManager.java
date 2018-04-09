@@ -209,6 +209,10 @@ public final class BinaryManager {
         }
     }
     
+    public boolean fileExists(final String fileName) {
+        return findFileInBundle(fileName) != null;
+    }
+    
     /**
      * Search the bundle for CTDs and list them in a List of Files.
      * 
