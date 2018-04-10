@@ -5,11 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.base.node.util.exttool.ExtToolStderrNodeView;
 import org.knime.base.node.util.exttool.ExtToolStdoutNodeView;
-import org.knime.core.node.DynamicNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDescription28Proxy;
@@ -31,7 +32,6 @@ import org.w3c.dom.Document;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 import com.genericworkflownodes.knime.config.reader.InvalidCTDFileException;
-import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
@@ -56,6 +56,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
     
     private static final NodeLogger logger = NodeLogger.getLogger(DynamicGenericNodeFactory.class);
     
+    private String m_filename;
     private String m_nsfid;
     private String m_id;
     private String m_ctdFile;
@@ -64,6 +65,10 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
     
     protected String getIconPath() {
         return "";
+    }
+    
+    public String getFileName() {
+        return m_filename;
     }
     
     public String getId() {
@@ -144,6 +149,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
     public void loadAdditionalFactorySettings(ConfigRO config)
             throws InvalidSettingsException {
         m_ctdFile = config.getString(CTD_FILE_CFG_KEY);
+        m_filename = FilenameUtils.removeExtension(Paths.get(m_ctdFile).getFileName().toString());
         m_id = config.getString(ID_CFG_KEY);
         m_nsfid = config.getString(NSFID_CFG_KEY);
         try {
@@ -175,6 +181,11 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             KnimeNode node = doc.addNewKnimeNode();
             node.setDeprecated(m_deprecated);
             node.setName(cfg.getName());
+            String iconPath = getIconPath();
+            if (!getPluginConfig().getBinaryManager().fileExists(iconPath)) {
+                logger.warn("Icon for tool " + getId() + " not found.");
+                iconPath = "";
+            }
             node.setIcon(getIconPath());
             node.setType(KnimeNode.Type.MANIPULATOR);
             
@@ -230,7 +241,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
         return m_config;
     }
     
-    private InputStream getConfigAsStream() throws FileNotFoundException { 
+    private InputStream getConfigAsStream() throws FileNotFoundException {
         return new FileInputStream(getPluginConfig().getBinaryManager().resolveToolDescriptorPath(m_ctdFile));
     }
     

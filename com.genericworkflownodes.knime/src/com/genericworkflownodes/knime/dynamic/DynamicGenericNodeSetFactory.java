@@ -78,7 +78,7 @@ public abstract class DynamicGenericNodeSetFactory implements GenericNodeSetFact
             logger.error("Could not read node category from CTD, using '/' instead.", e);
             category = "";
         }
-        return getCategoryPath() + "/" + category + "/" + getPluginConfig().getPluginVersion();
+        return getCategoryPath() + "/" + getPluginConfig().getPluginVersion() + "/" + category;
     }
 
     @Override
