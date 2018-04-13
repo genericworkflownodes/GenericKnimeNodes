@@ -75,8 +75,16 @@
             name="LocalToolExecutor">
       </executor>
       <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.LocalToolExecutor">
+      </executor>
+      <executor
             class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
             name="LocalDockerToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor">
       </executor>
    </extension>
    <extension
