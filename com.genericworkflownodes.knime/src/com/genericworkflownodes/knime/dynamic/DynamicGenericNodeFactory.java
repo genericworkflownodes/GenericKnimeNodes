@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.knime.base.node.preproc.columnTrans.BinaryCellFactory;
 import org.knime.base.node.util.exttool.ExtToolStderrNodeView;
 import org.knime.base.node.util.exttool.ExtToolStdoutNodeView;
 import org.knime.core.node.InvalidSettingsException;
@@ -32,6 +33,7 @@ import org.w3c.dom.Document;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 import com.genericworkflownodes.knime.config.reader.InvalidCTDFileException;
+import com.genericworkflownodes.knime.custom.config.BinaryManager;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
@@ -48,10 +50,19 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
      */
     public static final String CTD_FILE_CFG_KEY = "ctdFile";
     
+    /**
+     * The configuration key for the node id.
+     */
     public static final String ID_CFG_KEY = "id";
     
+    /**
+     * The configuration key for the node set factory id.
+     */
     public static final String NSFID_CFG_KEY = "nsfid";
 
+    /**
+     * The key for storing whether the factory is deprecated.
+     */
     public static final String DEPRECATION_CFG_KEY = "deprecated";
     
     private static final NodeLogger logger = NodeLogger.getLogger(DynamicGenericNodeFactory.class);
@@ -63,14 +74,23 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
     private INodeConfiguration m_config;
     private boolean m_deprecated;
     
+    /**
+     * @return The icon path relative to the payload folder.
+     */
     protected String getIconPath() {
         return "";
     }
     
+    /**
+     * @return the file name of the tool.
+     */
     public String getFileName() {
         return m_filename;
     }
     
+    /**
+     * @return the tool ID.
+     */
     public String getId() {
         return m_id;
     }
@@ -132,6 +152,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
     public boolean hasDialog() {
         return true;
     }
+    
     /**
      * {@inheritDoc}
      */
@@ -183,10 +204,12 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             node.setName(cfg.getName());
             String iconPath = getIconPath();
             if (!getPluginConfig().getBinaryManager().fileExists(iconPath)) {
-                logger.warn("Icon for tool " + getId() + " not found.");
+                logger.debug("Icon for tool " + getId() + " not found.");
                 iconPath = "";
+            } else {
+                iconPath = "/" + BinaryManager.BUNDLE_PATH + "/" + iconPath;
             }
-            node.setIcon(getIconPath());
+            node.setIcon(iconPath);
             node.setType(KnimeNode.Type.MANIPULATOR);
             
             node.setShortDescription(cfg.getDescription());
