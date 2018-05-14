@@ -52,7 +52,7 @@ public final class BinaryManager {
     /**
      * Path inside the bundle where the binaries should be located.
      */
-    private static final String BUNDLE_PATH = "payload";    
+    public static final String BUNDLE_PATH = "payload";    
     
     /**
      * Path inside the bundle where the descriptors should be located.
