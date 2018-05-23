@@ -38,7 +38,7 @@ The following directory structure must be provided within
 the specified directory:
 
 ```
-your_plugin_directory
+/home/jon.doe/my_plugin_sources
   │
   ├── plugin.properties
   │
