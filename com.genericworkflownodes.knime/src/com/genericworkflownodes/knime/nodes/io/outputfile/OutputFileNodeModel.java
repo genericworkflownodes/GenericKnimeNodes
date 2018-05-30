@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.InvalidPathException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -44,6 +46,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -122,14 +125,20 @@ public class OutputFileNodeModel extends NodeModel {
             throw new Exception(
                     "There were no URIs in the supplied IURIPortObject at port 0");
         }
-
-        String filename = m_filename.getStringValue();
-
+        
         File in = new File(uris.get(0).getURI());
-        File out = new File(filename);
 
-        FileUtils.copyFile(in, out);
-
+        String urlS = m_filename.getStringValue();
+        if (urlS == null) {
+            throw new InvalidSettingsException("URL must not be null");
+        }
+        try {
+            File out = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toFile();
+            FileUtils.copyFile(in, out);
+        } catch (InvalidPathException | IOException e) {
+            throw new InvalidSettingsException("Invalid URL: "
+                    + e.getMessage(), e);
+        }
         data = Helper.readFileSummary(in, 50);
 
         return new PortObject[] {};

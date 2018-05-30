@@ -21,8 +21,12 @@ package com.genericworkflownodes.knime.nodes.io.outputfile;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.InvalidPathException;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeView;
+import org.knime.core.util.FileUtil;
 
 /**
  * @author aiche
@@ -59,11 +63,17 @@ public class OpenFolderNodeView extends NodeView<OutputFileNodeModel> {
 
     public void openFolder() throws IOException {
         String f_name = getNodeModel().m_filename.getStringValue();
-        if (!"".equals(f_name)) {
-            File f = new File(f_name);
+        
+        File f;
+        try {
+            f = FileUtil.resolveToPath(FileUtil.toURL(f_name)).toFile();
             if (f.getParentFile() != null)
-                Desktop.getDesktop().open(f.getParentFile());
+            {
+              Desktop.getDesktop().open(f.getParentFile());
+            }
+        } catch (InvalidPathException | IOException | URISyntaxException e) {
         }
+
     }
 
     /**

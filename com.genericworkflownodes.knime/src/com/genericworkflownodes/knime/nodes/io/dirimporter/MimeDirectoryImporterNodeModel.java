@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import org.apache.commons.io.FilenameUtils;
 import org.knime.base.filehandling.NodeUtils;
 import org.knime.base.filehandling.remote.connectioninformation.port.ConnectionInformation;
@@ -65,6 +66,7 @@ import org.knime.base.filehandling.remote.files.Connection;
 import org.knime.base.filehandling.remote.files.ConnectionMonitor;
 import org.knime.base.filehandling.remote.files.RemoteFile;
 import org.knime.base.filehandling.remote.files.RemoteFileFactory;
+import org.knime.core.util.FileUtil;
 import org.knime.base.node.io.listfiles.ListFiles.Filter;
 import org.knime.base.util.WildcardMatcher;
 import org.knime.core.data.uri.IURIPortObject;
@@ -99,10 +101,6 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
 
     private Pattern m_regExpPattern;
 
-    private int m_analyzedFiles;
-
-    private int m_currentRowID;
-
     /**
      * Constructor for the node model.
      */
@@ -129,8 +127,8 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
                         new URI(m_connectionInformation.toURI().toString()
                                 + NodeUtils.encodePath(m_configuration.getDirectory()));
             } else {
-                // Create local URI
-                directoryUri = new File(m_configuration.getDirectory()).toURI();
+                // Create local URI with FileUtil to decode knime relative paths
+                directoryUri = FileUtil.resolveToPath(FileUtil.toURL(m_configuration.getDirectory())).toUri();
             }
             // Create remote file for directory selection
             final RemoteFile<? extends Connection> file =
@@ -223,8 +221,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             throw new IllegalStateException("Unknown filter: " + filter);
             // transform wildcard to regExp.
         }
-        m_analyzedFiles = 0;
-        m_currentRowID = 0;
+
         List<RemoteFile<? extends Connection>> filteredFiles = new ArrayList<RemoteFile<? extends Connection>>();
         for (RemoteFile<?> f : files) {
             try {

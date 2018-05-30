@@ -3,8 +3,11 @@ package com.genericworkflownodes.knime.nodes.io.outputfolder;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.InvalidPathException;
 
 import org.knime.core.node.NodeView;
+import org.knime.core.util.FileUtil;
 
 /**
  * <code>NodeView</code> for the "OutputFolder" Node. Writes all the incoming
@@ -49,9 +52,11 @@ public class OutputFolderNodeView extends NodeView<OutputFolderNodeModel> {
     }
 
     public void openFolder() throws IOException {
-        String folder_name = getNodeModel().m_foldername.getStringValue();
-        if (!"".equals(folder_name)) {
-            Desktop.getDesktop().open(new File(folder_name));
+        String f_name = getNodeModel().m_foldername.getStringValue();
+        try {
+            File f = FileUtil.resolveToPath(FileUtil.toURL(f_name)).toFile();
+            Desktop.getDesktop().open(f);
+        } catch (InvalidPathException | IOException | URISyntaxException e) {
         }
     }
 

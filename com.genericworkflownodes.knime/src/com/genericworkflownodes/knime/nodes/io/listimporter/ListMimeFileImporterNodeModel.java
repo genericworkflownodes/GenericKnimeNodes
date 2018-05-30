@@ -21,7 +21,9 @@ package com.genericworkflownodes.knime.nodes.io.listimporter;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +39,12 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.MIMETypeHelper;
 
@@ -237,8 +241,13 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = new URL(urlS);
-        } catch (MalformedURLException e) {
+            try {
+                url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
+            } catch (InvalidPathException | IOException e) {
+                throw new InvalidSettingsException("Invalid URL: "
+                        + e.getMessage(), e);
+            }
+        } catch (URISyntaxException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
             try {
@@ -251,4 +260,5 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
 
         return url;
     }
+
 }
