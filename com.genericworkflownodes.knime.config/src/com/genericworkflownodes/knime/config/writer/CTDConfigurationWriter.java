@@ -61,6 +61,8 @@ public class CTDConfigurationWriter {
     private int currentIndent;
     private List<String> currentNodeState;
     private INodeConfiguration currentConfig;
+    // whether unused parameters are ignored (see setter method for javadoc)
+    private boolean ignoreUnusedParameters;
 
     private String xmlEscapeText(String t) {
         return StringEscapeUtils.escapeXml(t);
@@ -75,10 +77,7 @@ public class CTDConfigurationWriter {
      *             If io operations fail.
      */
     public CTDConfigurationWriter(File target) throws IOException {
-        outputWriter = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(target), "UTF-8"));
-        currentIndent = 0;
-        currentNodeState = null;
+    	this(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target), "UTF-8")));
     }
 
     /**
@@ -91,6 +90,7 @@ public class CTDConfigurationWriter {
         outputWriter = out;
         currentIndent = 0;
         currentNodeState = null;
+        ignoreUnusedParameters = true;
     }
 
     /**
@@ -247,11 +247,11 @@ public class CTDConfigurationWriter {
     private void writeItem(String key, Parameter<?> p) throws IOException {
     	if (p instanceof FileParameter) {
     		// Omit complete parameter when its value is null (e.g. not connected)
-    		if (p.isNull()) {
+    		if (ignoreUnusedParameters && p.isNull()) {
     			return;
     		}
     		// If it is an optional outport, check activation
-    		if (p.isOptional() && currentConfig.getOutputPortByName(key) != null) {
+    		if (ignoreUnusedParameters && p.isOptional() && currentConfig.getOutputPortByName(key) != null) {
     			if (!((FileParameter) p).getPort().isActive()) {
     				//skip addition of inactive Ports. They should not have any meaningful filenames/values anyway.
     				return;
@@ -299,11 +299,11 @@ public class CTDConfigurationWriter {
     private void writeItemList(String key, Parameter<?> p) throws IOException {
     	if (p instanceof FileListParameter) {
     		// Omit complete parameter when its value is null (e.g. not connected)
-    		if (p.isNull()) {
+    		if (ignoreUnusedParameters && p.isNull()) {
     			return;
     		}
     		// If it is an optional outport, check activation
-    		if (p.isOptional() && currentConfig.getOutputPortByName(key) != null) {
+    		if (ignoreUnusedParameters && p.isOptional() && currentConfig.getOutputPortByName(key) != null) {
     			if (!((FileListParameter) p).getPort().isActive()) {
     				//skip addition of inactive Ports. They should not have any meaningful filenames/values anyway.
     				return;
@@ -606,5 +606,20 @@ public class CTDConfigurationWriter {
         closeCTDDocument();
         outputWriter.close();
     }
-
+    
+    /**
+     * Certain parameters are not needed when writing configurations. 
+     * A parameter will be ignored if any of the following conditions apply:
+     * <ul>
+     * 	<li> the parameter is not connected to any port.
+     * 	<li> the parameter is optional and is inactive.
+     * </ul>
+     * Default value of {@link #ignoreUnusedParameters} is {@code true}.
+     * 
+     * @param ignoreUnusedParameters whether unused parameters will be ignored 
+     * 			when writing a configuration.
+     */
+    public void setIgnoreUnusedParameters(final boolean ignoreUnusedParameters) {
+    	this.ignoreUnusedParameters = ignoreUnusedParameters;
+    }
 }
