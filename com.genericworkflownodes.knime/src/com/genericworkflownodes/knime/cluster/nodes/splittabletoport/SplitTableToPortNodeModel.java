@@ -138,7 +138,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
     }
     
     private PortObjectSpec createSpec() {
-        return new URIPortObjectSpec();
+        return null;
     }
 
     /**
