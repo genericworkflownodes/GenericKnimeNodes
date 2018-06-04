@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.cluster.nodes.filesplitter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.knime.core.data.DataColumnSpecCreator;
@@ -45,9 +46,12 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
+import com.genericworkflownodes.knime.base.data.port.SerializableFileStoreCell;
+import com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell;
 import com.genericworkflownodes.knime.cluster.filesplitter.Splitter;
 import com.genericworkflownodes.knime.cluster.filesplitter.SplitterFactory;
 import com.genericworkflownodes.knime.cluster.filesplitter.SplitterFactoryManager;
@@ -122,9 +126,14 @@ public class FileSplitterNodeModel extends NodeModel {
         
         // The factory for creating the splitter
         String factoryID = m_factoryID.getStringValue();
-        m_splitter = SplitterFactoryManager.getInstance().getFactory(factoryID).createSplitter();
-
-        File f = Paths.get(input.getURIContents().get(0).getURI()).toFile();
+        SplitterFactory factory = SplitterFactoryManager.getInstance().getFactory(factoryID);
+         
+        if (factory == null) {
+            throw new InvalidSettingsException("No splitter configured for the input files.");
+        }
+        m_splitter = factory.createSplitter();
+        
+        File f = FileUtil.getFileFromURL(input.getURIContents().get(0).getURI().toURL());
         
         // File Store in which we store the files
         FileStore fs = exec.createFileStore("FileSplitter");
@@ -154,7 +163,7 @@ public class FileSplitterNodeModel extends NodeModel {
                                 .relativize(Paths.get(outputs[i].getAbsolutePath()))
                                 .toString();
             po.registerFile(relPath);
-            PortObjectHandlerCell cell = new PortObjectHandlerCell(po);
+            SimpleFileStoreCell cell = new SimpleFileStoreCell(fs, Collections.singletonList(relPath));
             
             dc.addRowToTable(new DefaultRow(new RowKey("Row" + i), cell));
         }
@@ -173,7 +182,7 @@ public class FileSplitterNodeModel extends NodeModel {
     
     private DataTableSpec createSpec() {
         DataTableSpecCreator specCreator = new DataTableSpecCreator();
-        specCreator.addColumns(new DataColumnSpecCreator("files", PortObjectHandlerCell.TYPE).createSpec());
+        specCreator.addColumns(new DataColumnSpecCreator("files", SerializableFileStoreCell.TYPE).createSpec());
         return specCreator.createSpec();
     }
 
@@ -202,6 +211,8 @@ public class FileSplitterNodeModel extends NodeModel {
             factoryID = fac.getID();
             m_factoryID.setStringValue(factoryID);
             setWarningMessage("No splitter selected. Choosing " + factoryID + ".");
+        } else if (SplitterFactoryManager.getInstance().getFactory(factoryID) == null) {
+            throw new InvalidSettingsException("No splitter available for the input file types.");
         }
         return new PortObjectSpec[] {createSpec()};
     }
@@ -226,10 +237,12 @@ public class FileSplitterNodeModel extends NodeModel {
             throws InvalidSettingsException {
         if (m_factoryID != null) {
             m_factoryID.loadSettingsFrom(settings);
-            m_splitter = SplitterFactoryManager.getInstance()
-                        .getFactory(m_factoryID.getStringValue())
-                        .createSplitter();
-            m_splitter.loadSettingsFrom(settings);
+            SplitterFactory factory = SplitterFactoryManager.getInstance()
+            .getFactory(m_factoryID.getStringValue());
+            if (factory != null) {
+                m_splitter = factory.createSplitter();
+                m_splitter.loadSettingsFrom(settings);
+            }
         }
         m_numParts.loadSettingsFrom(settings);
     }

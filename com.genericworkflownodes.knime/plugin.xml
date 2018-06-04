@@ -7,6 +7,7 @@
    <extension-point id="com.genericworkflownodes.knime.execution.CommandGenerator" name="CommandGenerator" schema="schema/com.genericworkflownodes.knime.execution.CommandGenerator.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory" name="VersionedNodeSetFactory" schema="schema/com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.filesplitter" name="File Splitter" schema="schema/com.genericworkflownodes.knime.filesplitter.exsd"/>
 
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -164,6 +165,41 @@
                serializerClass="com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCellSerializer">
          </serializer>
       </DataType>
+      <DataType
+            cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell">
+         <serializer
+               cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell"
+               serializerClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCellSerializer">
+         </serializer>
+      </DataType>
+      <DataType
+            cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell">
+         <serializer
+               cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell"
+               serializerClass="com.genericworkflownodes.knime.DataCellSerializer2">
+         </serializer>
+      </DataType>
+      <DataType
+            cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell">
+         <serializer
+               cellClass="com.genericworkflownodes.knime.DataCell:2"
+               serializerClass="com.genericworkflownodes.knime.DataCellSerializer2">
+         </serializer>
+      </DataType>
+      <DataType
+            cellClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell">
+         <serializer
+               cellClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell"
+               serializerClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCellSerializer">
+         </serializer>
+      </DataType>
+      <DataType
+            cellClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell">
+         <serializer
+               cellClass="com.genericworkflownodes.knime.DataCell:1"
+               serializerClass="com.genericworkflownodes.knime.DataCellSerializer1">
+         </serializer>
+      </DataType>
    </extension>
    <extension
          point="org.knime.workbench.repository.nodesets">
@@ -172,5 +208,21 @@
             deprecated="false"
             factory-class="com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactoryManager">
       </nodeset>
+   </extension>
+   <extension
+         point="org.knime.core.DataValueRenderer">
+      <dataValue
+            valueClass="com.genericworkflownodes.knime.base.data.port.FileStoreValue">
+         <renderer
+               rendererFactoryClass="com.genericworkflownodes.knime.base.data.port.FileStoreValueRenderer$Factory"
+               suggestAsDefault="true">
+         </renderer>
+      </dataValue>
+   </extension>
+   <extension
+         point="com.genericworkflownodes.knime.filesplitter">
+      <fileSplitter
+            class="com.genericworkflownodes.knime.cluster.filesplitter.impl.LineSplitterFactory">
+      </fileSplitter>
    </extension>
 </plugin>

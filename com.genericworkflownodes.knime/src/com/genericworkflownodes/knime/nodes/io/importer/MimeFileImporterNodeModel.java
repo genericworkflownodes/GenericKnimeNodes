@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -49,6 +51,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -142,7 +145,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("No File selected.");
         }
 
-        convertToURL(tmp_filename);
+        convertToURL(tmp_filename.getStringValue());
 
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
@@ -175,16 +178,14 @@ public class MimeFileImporterNodeModel extends NodeModel {
      *             If the string in the given settings object cannot be
      *             converted properly.
      */
-    private URL convertToURL(SettingsModelString filename_settings)
-            throws InvalidSettingsException {
+    private URL convertToURL(String urlS) throws InvalidSettingsException {
         URL url;
 
-        String urlS = filename_settings.getStringValue();
         if (urlS == null) {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = new URL(urlS);
+            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -194,6 +195,9 @@ public class MimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
+        } catch (IOException | URISyntaxException e) {
+            throw new InvalidSettingsException("Invalid URL: "
+                    + e.getMessage(), e);
         }
 
         return url;
@@ -275,14 +279,14 @@ public class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        File file = new File(convertToURL(m_filename).toURI());
+        File file = new File(convertToURL(m_filename.getStringValue()).toURI());
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
         }
 
         List<URIContent> uris = new ArrayList<URIContent>();
-        uris.add(new URIContent(file.toURI(),
+        uris.add(new URIContent(new URI(m_filename.getStringValue()),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
                         .getMIMEtypeExtension(file.getAbsolutePath()))));

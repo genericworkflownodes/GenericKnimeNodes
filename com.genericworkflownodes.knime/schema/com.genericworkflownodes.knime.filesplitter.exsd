@@ -17,6 +17,9 @@
          </appinfo>
       </annotation>
       <complexType>
+         <choice>
+            <element ref="fileSplitter"/>
+         </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -44,9 +47,9 @@
       </complexType>
    </element>
 
-   <element name="FileSplitter">
+   <element name="fileSplitter">
       <complexType>
-         <attribute name="FileSplitterFactory" type="string" use="required">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   

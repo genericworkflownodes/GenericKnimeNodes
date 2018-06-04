@@ -4,15 +4,19 @@
     <name>File Cells to Port</name>
     
     <shortDescription>
-        
+        Turns a table with file store cells into a port object for use with Generic KNIME Nodes.
     </shortDescription>
     
     <fullDescription>
-        <intro></intro>
+        <intro>
+        	The Port to File Cells node can be used to turn a GKN port object into a table for use in loops and with the cluster extension.
+        	This node works the other way around, turning those cells back into port objects.
+        </intro>
+        <option name="File column">The column containing the file store cells</option>
     </fullDescription>
     
     <ports>
-        <inPort index="0" name="Table"></inPort>
-        <outPort index="0" name="Port"></outPort>
+        <inPort index="0" name="Table">Table containing file store cells</inPort>
+        <outPort index="0" name="File Port">A file port</outPort>
     </ports>    
 </knimeNode>

@@ -105,6 +105,10 @@ public class FileStorePrefixURIPortObject extends
         return (new File(getFileStoreRootDirectory(), m_prefix))
                 .getAbsolutePath();
     }
+    
+    String getPlainPrefix() {
+        return m_prefix;
+    }
 
     /**
      * Triggers the re-indexing of the current content of the port, by

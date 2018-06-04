@@ -41,6 +41,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 
@@ -176,7 +177,7 @@ public class MimeFileViewerNodeModel extends NodeModel {
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws IOException {
         IURIPortObject po = (IURIPortObject) inObjects[0];
-        File file = new File(po.getURIContents().get(0).getURI());
+        File file = FileUtil.getFileFromURL(po.getURIContents().get(0).getURI().toURL());
 
         int maxLines = max_num_lines.getIntValue();
         m_data = Helper.readFileSummary(file, maxLines);

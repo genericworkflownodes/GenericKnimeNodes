@@ -10,13 +10,12 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.knime.base.filehandling.mime.MIMETypeEntry;
 import org.knime.core.node.NodeLogger;
 
 public final class SplitterFactoryManager {
 
     public static final String EXT_POINT_ID = "com.genericworkflownodes.knime.filesplitter";
-    public static final String EXT_POINT_ATTR_DEF = "FileSplitterFactory";
+    public static final String EXT_POINT_ATTR_DEF = "class";
 
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(SplitterFactoryManager.class);

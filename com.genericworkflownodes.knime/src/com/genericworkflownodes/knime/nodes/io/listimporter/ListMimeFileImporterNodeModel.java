@@ -21,10 +21,15 @@ package com.genericworkflownodes.knime.nodes.io.listimporter;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -36,11 +41,13 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.MIMETypeHelper;
 
@@ -59,6 +66,11 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      * Config name for file extension.
      */
     static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
+    
+    /**
+     * Config name for the option to resolve all paths relative to the workflow.
+     */
+    static final String CFG_RESOLVE_WORKFLOW_RELATIVE = "RESOLVE_WORKFLOW";
 
     /**
      * Model containing the file names and optional extension.
@@ -71,6 +83,8 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
     private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
             CFG_FILE_EXTENSION, "", false);
 
+    private SettingsModelBoolean m_resolveWorkflowRel = new SettingsModelBoolean(CFG_RESOLVE_WORKFLOW_RELATIVE, false);
+    
     /**
      * Constructor for the node model.
      */
@@ -92,6 +106,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_filenames.saveSettingsTo(settings);
         m_file_extension.saveSettingsTo(settings);
+        m_resolveWorkflowRel.saveSettingsTo(settings);
     }
 
     /**
@@ -102,6 +117,11 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throws InvalidSettingsException {
         m_filenames.loadSettingsFrom(settings);
         m_file_extension.loadSettingsFrom(settings);
+        
+        // This is a new feature so we have to check if the key exists
+        if (settings.containsKey(CFG_RESOLVE_WORKFLOW_RELATIVE)) {
+            m_resolveWorkflowRel.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -111,6 +131,11 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
 
+        // This is a new feature so we have to check if the key exists
+        if (settings.containsKey(CFG_RESOLVE_WORKFLOW_RELATIVE)) {
+            m_resolveWorkflowRel.validateSettings(settings);
+        }
+        
         SettingsModelStringArray tmp_filenames = m_filenames
                 .createCloneWithValidatedValue(settings);
 
@@ -184,6 +209,22 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("No Files selected.");
         }
 
+        if (m_resolveWorkflowRel.getBooleanValue()) {
+            String[] newFilenames = new String[filenames.length];
+            Path localPath;
+            try {
+                URL url = FileUtil.toURL("knime://knime.workflow/");
+                localPath = FileUtil.resolveToPath(url);
+            } catch (IOException | InvalidPathException | URISyntaxException e) {
+                throw new InvalidSettingsException("Cannot resolve KNIME workflow URL", e);
+            }
+            for (int i = 0; i < filenames.length; i++) {
+                Path relative = localPath.relativize(Paths.get(filenames[i]));
+                newFilenames[i] = "knime://knime.workflow/" + relative.toString();
+            }
+            m_filenames.setStringArrayValue(newFilenames);
+        }
+        
         URIPortObjectSpec uri_spec = null;
 
         if (m_file_extension.isActive()) {
@@ -211,7 +252,8 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                         + in.getAbsolutePath());
             }
 
-            uris.add(new URIContent(in.toURI(),
+            // FileUtil.toURL(filename) should not throw anymore because it was already called in convertToURL(filename)
+            uris.add(new URIContent(FileUtil.toURL(filename).toURI(),
                     (m_file_extension.isActive() ? m_file_extension
                             .getStringValue() : MIMETypeHelper
                             .getMIMEtypeExtension(filename))));
@@ -237,7 +279,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = new URL(urlS);
+            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -247,6 +289,9 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
+        } catch (IOException | URISyntaxException e) {
+            throw new InvalidSettingsException("Invalid URL: "
+                    + e.getMessage(), e);
         }
 
         return url;

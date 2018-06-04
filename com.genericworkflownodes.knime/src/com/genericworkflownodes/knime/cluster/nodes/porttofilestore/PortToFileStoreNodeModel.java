@@ -20,22 +20,19 @@ package com.genericworkflownodes.knime.cluster.nodes.porttofilestore;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.filestore.FileStore;
-import org.knime.core.data.filestore.FileStoreFactory;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -50,16 +47,21 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
-import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
+import com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell;
+import com.genericworkflownodes.knime.base.data.port.PrefixURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.SerializableFileStoreCell;
+import com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell;
 
 /**
  * This is the model implementation of FileMerger. This nodes takes two files
  * (file lists) as input and outputs a merged list of both inputs.
  * 
- * @author aiche
+ * @author Alexander Fillbrunn
  */
 public class PortToFileStoreNodeModel extends NodeModel {
 
@@ -103,24 +105,44 @@ public class PortToFileStoreNodeModel extends NodeModel {
          * and must be copied into a FileStore to be handled properly.
          * Other files already have a file store and can be put into a <code>PortObjectHandlerCell</code>.
          */
-        if (input instanceof AbstractFileStoreURIPortObject) {
-            PortObjectHandlerCell cell = new PortObjectHandlerCell((AbstractFileStoreURIPortObject)input);
+        if (input instanceof FileStoreURIPortObject) {
+            AbstractFileStoreURIPortObject po = (AbstractFileStoreURIPortObject)input;
+            SimpleFileStoreCell cell = new SimpleFileStoreCell(po);
             dc.addRowToTable(new DefaultRow(new RowKey("files"), cell));
-        } else {
+        } else if (input instanceof FileStorePrefixURIPortObject) {
+            FileStorePrefixURIPortObject po = (FileStorePrefixURIPortObject)input;
+            PrefixFileStoreCell cell = new PrefixFileStoreCell(po);
+            dc.addRowToTable(new DefaultRow(new RowKey("files"), cell));
+        } else if (input instanceof PrefixURIPortObject) {
+            PrefixURIPortObject po = (PrefixURIPortObject)input;
             FileStore fs = exec.createFileStore("files");
             fs.getFile().mkdirs();
             
-            for (URIContent uc : input.getURIContents()) {
-                String filename = Paths.get(uc.getURI()).getFileName().toString();
+            for (URIContent uc : po.getURIContents()) {
+                Path localFile = FileUtil.getFileFromURL(uc.getURI().toURL()).toPath();
+                String filename = localFile.getFileName().toString();
                 if (!filename.endsWith(uc.getExtension())) {
                     filename = filename.concat(".").concat(uc.getExtension());
                 }
-                // TODO: Report progress
-                Files.copy(Paths.get(uc.getURI()), Paths.get(fs.getFile().toURI()).resolve(filename));
-                AbstractFileStoreURIPortObject portObject = new FileStoreURIPortObject(fs);
-                portObject.registerFile(filename);
-                PortObjectHandlerCell cell = new PortObjectHandlerCell(portObject);
-                dc.addRowToTable(new DefaultRow(new RowKey(filename), cell));            }
+                Files.copy(localFile, Paths.get(fs.getFile().toURI()).resolve(filename));
+                PrefixFileStoreCell cell = new PrefixFileStoreCell(fs, po.getPrefix(), Collections.singletonList(filename));
+                dc.addRowToTable(new DefaultRow(new RowKey(filename), cell));
+             }
+        } else if (input instanceof URIPortObject) {
+            URIPortObject po = (URIPortObject)input;
+            FileStore fs = exec.createFileStore("files");
+            fs.getFile().mkdirs();
+            
+            for (URIContent uc : po.getURIContents()) {
+                Path localFile = FileUtil.getFileFromURL(uc.getURI().toURL()).toPath();
+                String filename = localFile.getFileName().toString();
+                if (!filename.endsWith(uc.getExtension())) {
+                    filename = filename.concat(".").concat(uc.getExtension());
+                }
+                Files.copy(localFile, Paths.get(fs.getFile().toURI()).resolve(filename));
+                SimpleFileStoreCell cell = new SimpleFileStoreCell(fs, Collections.singletonList(filename));
+                dc.addRowToTable(new DefaultRow(new RowKey(filename), cell));
+             }
         }
         dc.close();
         return new PortObject[] {(BufferedDataTable)dc.getTable()};
@@ -134,7 +156,7 @@ public class PortToFileStoreNodeModel extends NodeModel {
     }
     
     private DataTableSpec createSpec() {
-        DataColumnSpec spec = new DataColumnSpecCreator("file", PortObjectHandlerCell.TYPE).createSpec();
+        DataColumnSpec spec = new DataColumnSpecCreator("files", SerializableFileStoreCell.TYPE).createSpec();
         return new DataTableSpecCreator()
                 .addColumns(spec)
                 .createSpec();

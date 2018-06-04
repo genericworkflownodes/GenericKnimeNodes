@@ -46,6 +46,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
@@ -809,13 +810,18 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 List<String> filenames = new ArrayList<String>();
                 for (URIContent uric : uris) {
                     URI uri = uric.getURI();
-                    filenames.add(new File(uri).getAbsolutePath());
+                    // Resolve the URI to a local path before adding it
+                    File localFile = FileUtil.getFileFromURL(uri.toURL());
+                    if (localFile == null) {
+                        throw new InvalidSettingsException("Tool can only be executed with local files.");
+                    }
+                    filenames.add(localFile.getAbsolutePath());
                 }
                 ((FileListParameter) p).setValue(filenames);
             } else {
                 // just one filename
                 URI uri = uris.get(0).getURI();
-                String filename = new File(uri).getAbsolutePath();
+                String filename = FileUtil.getFileFromURL(uri.toURL()).getAbsolutePath();
                 ((FileParameter) p).setValue(filename);
             }
         }
