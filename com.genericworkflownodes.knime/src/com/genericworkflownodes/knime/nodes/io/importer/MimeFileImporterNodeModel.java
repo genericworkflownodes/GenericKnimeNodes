@@ -34,6 +34,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -286,7 +287,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
         }
 
         List<URIContent> uris = new ArrayList<URIContent>();
-        uris.add(new URIContent(new URI(m_filename.getStringValue()),
+        
+        uris.add(new URIContent(new File(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
                         .getMIMEtypeExtension(file.getAbsolutePath()))));

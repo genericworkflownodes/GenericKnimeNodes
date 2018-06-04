@@ -157,7 +157,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
                 final List<URIContent> relUris = new ArrayList<URIContent>();
                 for (URIContent uri : uris) {
                     Path relative = localPath.relativize(Paths.get(uri.getURI()));
-                    relUris.add(new URIContent(new URI(prefix + relative.toString()), uri.getExtension()));
+                    relUris.add(new URIContent(new File(prefix + relative.toString()).toURI(), uri.getExtension()));
                 }
                 uris = relUris;
             }
