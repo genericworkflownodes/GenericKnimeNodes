@@ -4,19 +4,22 @@
     <name>Port to File Cells</name>
     
     <shortDescription>
-        Enables files to be stored in a table in order to send them from a cluster node to the client.
+        Turns a port object into a table with cells storing files.
     </shortDescription>
     
     <fullDescription>
         <intro>
-        	When processing files in parallel on a cluster KNIME expects the results to be a table that is concatenated locally.
-        	To send files from a cluster node back to the client they must be put into a table with cells that contain a reference to a file.
-        	Once the table is sent back to the client, the file is taken along.
+        	When dealing with port objects like they are used with Generic KNIME Nodes, problems arise when the data needs to be sent to
+        	a cluster or when the different KNIME loop constructs need to be used. In order to circumvent those problems this node can
+        	turn port objects containing files into tables. If the port object is a prefix port object, containing multiple files that
+        	share a prefix, all those files are put into a single row in the table. If, on the other hand, the port object simply contains
+        	a collection of files, those files are distributed over multiple rows, allowing the cluster extension to split the table and loop
+        	nodes to loop over the files. The File Cells to Port node can be used to turn a table created by this node back into a port object.
         </intro>
     </fullDescription>
     
     <ports>
-        <inPort index="0" name="File">The file to put into a table</inPort>
-        <outPort index="0" name="File Table">The table referencing the file</outPort>
+        <inPort index="0" name="File port">The file(s) to put into a table</inPort>
+        <outPort index="0" name="Table">The table referencing file(s)</outPort>
     </ports>    
 </knimeNode>

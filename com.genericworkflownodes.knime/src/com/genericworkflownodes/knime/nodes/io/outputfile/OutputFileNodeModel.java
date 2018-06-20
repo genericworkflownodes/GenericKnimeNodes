@@ -44,6 +44,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -125,9 +126,13 @@ public class OutputFileNodeModel extends NodeModel {
 
         String filename = m_filename.getStringValue();
 
-        File in = new File(uris.get(0).getURI());
-        File out = new File(filename);
-
+        File in = FileUtil.getFileFromURL(uris.get(0).getURI().toURL());
+        File out = FileUtil.getFileFromURL(FileUtil.toURL(filename));
+        
+        if (out == null) {
+            throw new InvalidSettingsException("Can only write to local paths.");
+        }
+        
         FileUtils.copyFile(in, out);
 
         data = Helper.readFileSummary(in, 50);

@@ -38,6 +38,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.MIMETypeHelper;
 
@@ -165,7 +166,7 @@ public class OutputFilesNodeModel extends NodeModel {
 
         int idx = 1;
         for (URIContent uri : uris) {
-            File in = new File(uri.getURI());
+            File in = FileUtil.getFileFromURL(uri.getURI().toURL());
             if (!in.canRead()) {
                 throw new Exception("Cannot read file to export: "
                         + in.getAbsolutePath());
@@ -173,7 +174,7 @@ public class OutputFilesNodeModel extends NodeModel {
 
             String outfilename = insertIndex(m_filename.getStringValue(), obj
                     .getSpec().getFileExtensions().get(0), idx++);
-            File out = new File(outfilename);
+            File out = FileUtil.getFileFromURL(FileUtil.toURL(outfilename));
 
             if (out.exists() && !out.canWrite()) {
                 throw new Exception("Cannot write to file: "

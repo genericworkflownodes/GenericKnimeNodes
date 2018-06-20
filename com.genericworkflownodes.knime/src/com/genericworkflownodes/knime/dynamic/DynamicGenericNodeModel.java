@@ -44,6 +44,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
@@ -757,7 +758,6 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             Port port = m_nodeConfig.getInputPorts().get(i);
 
             IURIPortObject po = (IURIPortObject) inData[i];
-            
 
             String name = port.getName();
             // find the associated parameter in the configuration
@@ -786,8 +786,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             // port
             if (!(p instanceof IFileParameter)) {
                 throw new Exception(
-                        "Invalid reference from port to non-file parameter. URI port #"
-                                + i);
+                        "Invalid reference from port to non-file parameter. URI port #" + i);
             }
 
             if (isPrefix) {
@@ -799,14 +798,12 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
                 // in the config
                 List<String> filenames = new ArrayList<String>();
                 for (URIContent uric : uris) {
-                    URI uri = uric.getURI();
-                    filenames.add(new File(uri).getAbsolutePath());
+                    filenames.add(FileUtil.getFileFromURL(uric.getURI().toURL()).getAbsolutePath());
                 }
                 ((FileListParameter) p).setValue(filenames);
             } else {
                 // just one filename
-                URI uri = uris.get(0).getURI();
-                String filename = new File(uri).getAbsolutePath();
+                String filename = FileUtil.getFileFromURL(uris.get(0).getURI().toURL()).getAbsolutePath();
                 ((FileParameter) p).setValue(filename);
             }
         }

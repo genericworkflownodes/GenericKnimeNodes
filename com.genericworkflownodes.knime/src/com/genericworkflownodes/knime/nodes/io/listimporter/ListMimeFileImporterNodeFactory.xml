@@ -22,6 +22,9 @@
 		this behavior can be overridden (e.g. in case of a custom file extension but known file type).
 		In that case, you can provide the extension for the file type you want the files to be interpreted as.
       </option>
+      <option name="Resolve to workflow relative path">
+		Instead of absolute file paths the node will pass on paths relative to the workflow in the format knime://knime.workflow/&lt;path&gt;
+      </option>
     </fullDescription>
     
     <ports>

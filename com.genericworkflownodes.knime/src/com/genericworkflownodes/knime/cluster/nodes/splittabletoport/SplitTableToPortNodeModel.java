@@ -43,15 +43,16 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 
-import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
-import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
+import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStoreValue;
+import com.genericworkflownodes.knime.base.data.port.SerializableFileStoreCell;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of FileMerger. This nodes takes two files
  * (file lists) as input and outputs a merged list of both inputs.
  * 
- * @author aiche
+ * @author Alexander Fillbrunn
  */
 public class SplitTableToPortNodeModel extends NodeModel {
 
@@ -80,6 +81,10 @@ public class SplitTableToPortNodeModel extends NodeModel {
         super(getIncomingPorts(), getOutgoing());
     }
 
+    /**
+     * Creates a settings model for the column name setting.
+     * @return a settings model for the column name, default value <code>null</code>
+     */
     public static SettingsModelColumnName createFileColumnSettingsModel() {
         return new SettingsModelColumnName("fileColumn", null);
     }
@@ -94,23 +99,35 @@ public class SplitTableToPortNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
         
         BufferedDataTable input = (BufferedDataTable)inData[0];
-        List<URIContent> contents = new ArrayList<>();
-        String mimetype = null;
         int index = input.getDataTableSpec().findColumnIndex(m_fileCol.getColumnName());
+        
+        // For multiple rows, we need to collect all the URIContents and put them in a single port object.
+        // Otherwise we retrieve the port object from the only cell we have.
+        if (input.size() > 1) {
+            String mimetype = null;
+            List<URIContent> contents = new ArrayList<>();
 
-        for (DataRow row : input) {
-            PortObjectHandlerCell cell = (PortObjectHandlerCell)row.getCell(index);
-            URIContent uc = cell.getURIContent();
-            String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension());
-            if (mimetype == null) {
-                mimetype = mt;
-            } else if (!mt.equals(mimetype)) {
-                throw new InvalidSettingsException("File ports do not support mixed mimetypes.");
+            for (DataRow row : input) {
+                SerializableFileStoreCell cell = (SerializableFileStoreCell)row.getCell(index);
+                AbstractFileStoreURIPortObject po = cell.getPortObject();
+
+                List<URIContent> uriContents = po.getURIContents();
+                for (URIContent uc : uriContents) {
+                    String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension());
+                    if (mimetype == null) {
+                        mimetype = mt;
+                    } else if (!mt.equals(mimetype)) {
+                        throw new InvalidSettingsException("File ports do not support mixed mimetypes.");
+                    }
+                    contents.add(uc);
+                }
             }
-            contents.add(uc);
+            return new PortObject[] {new URIPortObject(contents)};
+        } else {
+            DataRow row = input.iterator().next();
+            SerializableFileStoreCell cell = (SerializableFileStoreCell)row.getCell(index);
+            return new PortObject[] {cell.getPortObject()};
         }
-        URIPortObject output = new URIPortObject(contents);
-        return new PortObject[] {output};
     }
 
     /**
@@ -121,7 +138,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
     }
     
     private PortObjectSpec createSpec() {
-        return new URIPortObjectSpec();
+        return null;
     }
 
     /**
@@ -135,7 +152,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
         if (m_fileCol.getColumnName() == null) {
             for (int i = 0; i < spec.getNumColumns(); i++) {
                 DataColumnSpec colSpec = spec.getColumnSpec(i);
-                if (colSpec.getType().equals(PortObjectHandlerCell.TYPE)) {
+                if (colSpec.getType().isCompatible(FileStoreValue.class)) {
                     m_fileCol.setStringValue(colSpec.getName());
                     setWarningMessage("No column with file cells configured. Using \"" + m_fileCol.getColumnName() + "\".");
                     break;
