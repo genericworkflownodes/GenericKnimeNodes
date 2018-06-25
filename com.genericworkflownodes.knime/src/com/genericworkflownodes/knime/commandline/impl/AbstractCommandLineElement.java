@@ -56,7 +56,7 @@ public abstract class AbstractCommandLineElement implements CommandLineElement {
      */
     @Override
     public boolean isSequenced() {
-        return this.sequenceNumber == CommandLineElement.NO_SEQUENCE;
+        return this.sequenceNumber != CommandLineElement.NO_SEQUENCE;
     }
 
     /*
