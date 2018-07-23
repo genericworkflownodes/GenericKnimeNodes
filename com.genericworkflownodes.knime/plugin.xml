@@ -176,14 +176,7 @@
             cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell">
          <serializer
                cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell"
-               serializerClass="com.genericworkflownodes.knime.DataCellSerializer2">
-         </serializer>
-      </DataType>
-      <DataType
-            cellClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCell">
-         <serializer
-               cellClass="com.genericworkflownodes.knime.DataCell:2"
-               serializerClass="com.genericworkflownodes.knime.DataCellSerializer2">
+               serializerClass="com.genericworkflownodes.knime.base.data.port.PrefixFileStoreCellSerializer">
          </serializer>
       </DataType>
       <DataType
@@ -191,13 +184,6 @@
          <serializer
                cellClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell"
                serializerClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCellSerializer">
-         </serializer>
-      </DataType>
-      <DataType
-            cellClass="com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell">
-         <serializer
-               cellClass="com.genericworkflownodes.knime.DataCell:1"
-               serializerClass="com.genericworkflownodes.knime.DataCellSerializer1">
          </serializer>
       </DataType>
    </extension>
