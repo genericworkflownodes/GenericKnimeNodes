@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +29,9 @@ import org.knime.node.v28.KnimeNodeDocument.KnimeNode;
 import org.knime.node.v28.OptionDocument.Option;
 import org.knime.node.v28.OutPortDocument.OutPort;
 import org.knime.node.v28.PortsDocument.Ports;
+import org.knime.node.v28.ViewDocument.View;
+import org.knime.node.v28.ViewsDocument;
+import org.knime.node.v28.ViewsDocument.Views;
 import org.w3c.dom.Document;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -213,6 +217,15 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             node.setType(KnimeNode.Type.MANIPULATOR);
             
             node.setShortDescription(cfg.getDescription());
+            Views views = node.addNewViews();
+            View v0 = views.addNewView();
+            v0.setName("Standard output");
+            v0.setIndex(new BigInteger("0"));
+            v0.getDomNode().appendChild(domDoc.createTextNode("The output channel of the tool as seen on the command line."));
+            View v1 = views.addNewView();
+            v1.setName("Standard error");
+            v1.setIndex(new BigInteger("1"));
+            v1.getDomNode().appendChild(domDoc.createTextNode("The error channel of the tool as seen on the command line."));
             
             FullDescription fullDescr = node.addNewFullDescription();
             
@@ -220,17 +233,12 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             Intro intro = fullDescr.addNewIntro();
             intro.addNewP().getDomNode().appendChild(domDoc.createTextNode(cfg.getManual()));
             
-            // Options
-            for (Parameter<?> p : cfg.getParameters()) {
-                Option option = fullDescr.addNewOption();
-                option.setName(p.getKey());
-                option.getDomNode().appendChild(domDoc.createTextNode(p.getDescription()));
-            }
-            
             // Ports
+            ArrayList<String> portParamsToSkip = new ArrayList<String>();
             Ports ports = node.addNewPorts();
             int index = 0;
             for (Port p : cfg.getInputPorts()) {
+                portParamsToSkip.add(p.getName());
                 InPort ip = ports.addNewInPort();
                 ip.setIndex(new BigInteger(Integer.toString(index++)));
                 String mimetypes = mimetypes2String(p.getMimeTypes());
@@ -240,11 +248,22 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             
             index = 0;
             for (Port p : cfg.getOutputPorts()) {
+                portParamsToSkip.add(p.getName());
                 OutPort op = ports.addNewOutPort();
                 op.setIndex(new BigInteger(Integer.toString(index++)));
                 String mimetypes = mimetypes2String(p.getMimeTypes());
                 op.setName(p.getName() + mimetypes);
                 op.getDomNode().appendChild(domDoc.createTextNode(p.getDescription() + mimetypes));
+            }
+            
+            // Options (skip ports)
+            for (Parameter<?> p : cfg.getParameters()) {
+                if (!portParamsToSkip.contains(p.getKey()))
+                {
+                    Option option = fullDescr.addNewOption();
+                    option.setName(p.getKey());
+                    option.getDomNode().appendChild(domDoc.createTextNode(p.getDescription()));
+                }
             }
             
             return new NodeDescription28Proxy(doc);
