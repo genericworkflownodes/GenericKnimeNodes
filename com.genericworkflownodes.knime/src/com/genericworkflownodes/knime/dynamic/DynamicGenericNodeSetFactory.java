@@ -48,7 +48,17 @@ public abstract class DynamicGenericNodeSetFactory implements GenericNodeSetFact
     public abstract IPluginConfiguration getPluginConfig();
     
     protected abstract String getCategoryPath();
-    
+
+    /**
+     * Add additional grouping in category independent of CTD category
+     * definition and after the plugin version. This can be useful if a single
+     * plugin contains sources from multiple projects.
+     *
+     * @return String with the name of the group. Use null to omit the category
+     *         group.
+     */
+    protected abstract String getCategoryGroup();
+
     protected abstract String getIdForTool(String relPath);
     
     @Override
@@ -77,6 +87,10 @@ public abstract class DynamicGenericNodeSetFactory implements GenericNodeSetFact
             logger.error("Could not read node category from CTD, using '/' instead.", e);
             category = "";
         }
+        String categoryGroup = getCategoryGroup();
+        if (categoryGroup != null)
+            category = categoryGroup + "/" + category;
+
         return getCategoryPath() + "/" + getPluginConfig().getPluginVersion() + "/" + category;
     }
 
