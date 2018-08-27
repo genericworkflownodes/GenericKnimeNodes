@@ -48,7 +48,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
             IExtensionRegistry reg = Platform.getExtensionRegistry();
             IConfigurationElement[] elements = reg
                     .getConfigurationElementsFor(EXTENSION_POINT_ID);
-            LOGGER.debug("Loading GenericNodeSetFactories");
+            LOGGER.debug("Loading " + elements.length + " GenericNodeSetFactories whose plugin.xmls registered in the com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory extension point.");
             try {
                 for (IConfigurationElement elem : elements) {
                     final GenericNodeSetFactory o = (GenericNodeSetFactory)elem.createExecutableExtension("class");
