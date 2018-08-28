@@ -1,0 +1,31 @@
+2018-08-28 13:09:15,570 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Welcome to the KNIME Analytics Platform v1.0.0.000000 (Build April 04, 2018)          #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Based on Eclipse, http://www.eclipse.org                                              #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Copyright by KNIME AG, Zurich, Switzerland and others.                                #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Website: http://www.knime.com                                                         #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # E-mail: contact@knime.com                                                             #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2018-08-28 13:09:15,572 : INFO  : WorkbenchTestable : NodeLogger :  :  : # For more details see the KNIME log file:                                              #
+2018-08-28 13:09:15,572 : INFO  : WorkbenchTestable : NodeLogger :  :  : # /Users/pfeuffer/git/GKN_dev/com.genericworkflownodes.knime.tests/target/work/data/.metadata/knime/knime.log
+2018-08-28 13:09:15,572 : INFO  : WorkbenchTestable : NodeLogger :  :  : #---------------------------------------------------------------------------------------#
+2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # logging date=Tue Aug 28 13:09:15 CEST 2018
+2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.version=1.8.0_05
+2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.vm.version=25.5-b02
+2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.vendor=Oracle Corporation
+2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # os.name=Mac OS X
+2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # os.arch=x86_64
+2018-08-28 13:09:15,577 : INFO  : WorkbenchTestable : NodeLogger :  :  : # number of CPUs=4
+2018-08-28 13:09:15,577 : INFO  : WorkbenchTestable : NodeLogger :  :  : # assertions=off
+2018-08-28 13:09:15,577 : INFO  : WorkbenchTestable : NodeLogger :  :  : # host=homosapiens
+2018-08-28 13:09:15,583 : INFO  : WorkbenchTestable : NodeLogger :  :  : # username=pfeuffer
+2018-08-28 13:09:15,583 : INFO  : WorkbenchTestable : NodeLogger :  :  : # max mem=1820MB
+2018-08-28 13:09:15,584 : INFO  : WorkbenchTestable : NodeLogger :  :  : # application=org.eclipse.tycho.surefire.osgibooter.uitest
+2018-08-28 13:09:15,602 : INFO  : WorkbenchTestable : NodeLogger :  :  : # ID=01-8ed91c18556d6381
+2018-08-28 13:09:15,603 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2018-08-28 13:09:15,620 : DEBUG : WorkbenchTestable : GenericNodesPlugin :  :  : Setting GKN dockerInstallationDir: /usr/local/bin
+2018-08-28 13:09:15,620 : DEBUG : WorkbenchTestable : GenericNodesPlugin :  :  : Setting GKN vmInstllationDir: /usr/local/bin

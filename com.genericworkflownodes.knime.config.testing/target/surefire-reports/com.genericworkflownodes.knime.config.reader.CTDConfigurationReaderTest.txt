@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.568 sec - in com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest
+testRead(com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest)  Time elapsed: 0.399 sec
+testGKNIgnoreTag(com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest)  Time elapsed: 0.079 sec
+testReadTMTAnalyzer(com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest)  Time elapsed: 0.029 sec
+testReadFileFilter(com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest)  Time elapsed: 0.038 sec
+testSeqAnCTD(com.genericworkflownodes.knime.config.reader.CTDConfigurationReaderTest)  Time elapsed: 0.017 sec

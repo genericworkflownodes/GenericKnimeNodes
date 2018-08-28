@@ -1,0 +1,6 @@
+-------------------------------------------------------------------------------
+Test set: com.genericworkflownodes.knime.config.writer.CTDConfigurationWriterTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.152 sec - in com.genericworkflownodes.knime.config.writer.CTDConfigurationWriterTest
+testWrite(com.genericworkflownodes.knime.config.writer.CTDConfigurationWriterTest)  Time elapsed: 0.15 sec
+testCTDConfigurationWriter(com.genericworkflownodes.knime.config.writer.CTDConfigurationWriterTest)  Time elapsed: 0 sec

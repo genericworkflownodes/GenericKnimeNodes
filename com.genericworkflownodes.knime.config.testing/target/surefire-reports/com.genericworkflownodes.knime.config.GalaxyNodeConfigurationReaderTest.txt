@@ -1,0 +1,5 @@
+-------------------------------------------------------------------------------
+Test set: com.genericworkflownodes.knime.config.GalaxyNodeConfigurationReaderTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.57 sec - in com.genericworkflownodes.knime.config.GalaxyNodeConfigurationReaderTest
+testReader(com.genericworkflownodes.knime.config.GalaxyNodeConfigurationReaderTest)  Time elapsed: 0.508 sec

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool>
+    <name>MascotAdapter</name>
+    <version>1.8.0</version>
+    <description>Annotates MS/MS spectra using Mascot.</description>
+    <manual>Annotates MS/MS spectra using Mascot.</manual>
+    <docurl/>
+    <category>OpenMS</category>
+    <PARAMETERS>
+  <NODE name="MascotAdapter" description="Annotates MS/MS spectra using Mascot.">
+    <ITEM name="version" value="1.8.0" type="string" description="Version of the tool that generated this parameters file." tags="advanced"/>
+    <NODE name="1" description="Instance '1' section for 'MascotAdapter'">
+      <ITEMLIST name="in2" type="string" description="two or more input files separated by blanks (valid formats: 'idXML')" tags="input file,required" supported_formats="idXML">
+      </ITEMLIST>
+      <ITEM name="in" value="" type="string" description="input file in mzData format.#br#Note: In mode 'mascot_out' a Mascot results file (.mascotXML) is read" tags="input file,required" supported_formats=""/>
+      <ITEM name="out" value="" type="string" description="output file in IdXML format.#br#Note: In mode 'mascot_in' Mascot generic format is written." tags="output file,required" supported_formats=""/>
+      <ITEM name="mascot_in" value="false" type="string" description="if this flag is set the MascotAdapter will read in mzData and write Mascot generic format" restrictions="true,false"/>
+      <ITEM name="mascot_out" value="false" type="string" description="if this flag is set the MascotAdapter will read in a Mascot results file (.mascotXML) and write IdXML" restrictions="true,false"/>
+      <ITEM name="instrument" value="Default" type="string" description="the instrument that was used to measure the spectra"/>
+      <ITEM name="precursor_mass_tolerance" value="2" type="float" description="the precursor mass tolerance"/>
+      <ITEM name="peak_mass_tolerance" value="1" type="float" description="the peak mass tolerance"/>
+      <ITEM name="taxonomy" value="All entries" type="string" description="the taxonomy" restrictions="All entries,. . Archaea (Archaeobacteria),. . Eukaryota (eucaryotes),. . . . Alveolata (alveolates),. . . . . . Plasmodium falciparum (malaria parasite),. . . . . . Other Alveolata,. . . . Metazoa (Animals),. . . . . . Caenorhabditis elegans,. . . . . . Drosophila (fruit flies),. . . . . . Chordata (vertebrates and relatives),. . . . . . . . bony vertebrates,. . . . . . . . . . lobe-finned fish and tetrapod clade,. . . . . . . . . . . . Mammalia (mammals),. . . . . . . . . . . . . . Primates,. . . . . . . . . . . . . . . . Homo sapiens (human),. . . . . . . . . . . . . . . . Other primates,. . . . . . . . . . . . . . Rodentia (Rodents),. . . . . . . . . . . . . . . . Mus.,. . . . . . . . . . . . . . . . . . Mus musculus (house mouse),. . . . . . . . . . . . . . . . Rattus,. . . . . . . . . . . . . . . . Other rodentia,. . . . . . . . . . . . . . Other mammalia,. . . . . . . . . . . . Xenopus laevis (African clawed frog),. . . . . . . . . . . . Other lobe-finned fish and tetrapod clade,. . . . . . . . . . Actinopterygii (ray-finned fishes),. . . . . . . . . . . . Takifugu rubripes (Japanese Pufferfish),. . . . . . . . . . . . Danio rerio (zebra fish),. . . . . . . . . . . . Other Actinopterygii,. . . . . . . . Other Chordata,. . . . . . Other Metazoa,. . . . Dictyostelium discoideum,. . . . Fungi,. . . . . . Saccharomyces Cerevisiae (baker's yeast),. . . . . . Schizosaccharomyces pombe (fission yeast),. . . . . . Pneumocystis carinii,. . . . . . Other Fungi,. . . . Viridiplantae (Green Plants),. . . . . . Arabidopsis thaliana (thale cress),. . . . . . Oryza sativa (rice),. . . . . . Other green plants,. . . . Other Eukaryota,. . Bacteria (Eubacteria),. . . . Actinobacteria (class),. . . . . . Mycobacterium tuberculosis complex,. . . . . . Other Actinobacteria (class),. . . . Firmicutes (gram-positive bacteria),. . . . . . Bacillus subtilis,. . . . . . Mycoplasma,. . . . . . Streptococcus Pneumoniae,. . . . . . Streptomyces coelicolor,. . . . . . Other Firmicutes,. . . . Proteobacteria (purple bacteria),. . . . . . Agrobacterium tumefaciens,. . . . . . Campylobacter jejuni,. . . . . . Escherichia coli,. . . . . . Neisseria meningitidis,. . . . . . Salmonella,. . . . . . Other Proteobacteria,. . . . Other Bacteria,. . Viruses,. . . . Hepatitis C virus,. . . . Other viruses,. . Other (includes plasmids and artificial sequences),. . unclassified,. . Species information unavailable"/>
+      <ITEMLIST name="modifications" type="string" description="the modifications i.e. Carboxymethyl (C)">
+      </ITEMLIST>
+      <ITEMLIST name="charge" type="int" description="List of charge states; required if 'in_seq' is given">
+         <LISTITEM value="0"/>
+         <LISTITEM value="1"/>
+         <LISTITEM value="2"/>
+      </ITEMLIST>
+      <ITEMLIST name="somefloats" type="float" tags="required" description="List of charge states; required if 'in_seq' is given" restrictions="-3:5">
+         <LISTITEM value="0.22"/>
+         <LISTITEM value="1.4"/>
+         <LISTITEM value="-2.2"/>
+      </ITEMLIST>
+      <ITEMLIST name="variable_modifications" type="string" description="the variable modifications i.e. Carboxymethyl (C)">
+      </ITEMLIST>
+      <ITEMLIST name="charges" type="string" description="the different charge states">
+        <LISTITEM value="1+"/>
+        <LISTITEM value="2+"/>
+        <LISTITEM value="3+"/>
+      </ITEMLIST>
+      <ITEM name="db" value="MSDB" type="string" description="the database to search in"/>
+      <ITEM name="hits" value="AUTO" type="string" description="the number of hits to report"/>
+      <ITEM name="cleavage" value="Trypsin" type="string" description="the enzyme used for digestion" restrictions="Trypsin,Arg-C,Asp-N,Asp-N_ambic,Chymotrypsin,CNBr,CNBr+Trypsin,Formic_acid,Lys-C,Lys-C/P,PepsinA,Tryp-CNBr,TrypChymo,Trypsin/P,V8-DE,V8-E,semiTrypsin,LysC+AspN,None"/>
+      <ITEM name="missed_cleavages" value="0" type="int" description="number of allowed missed cleavages" restrictions="0:"/>
+      <ITEM name="sig_threshold" value="0.05" type="float" description="significance threshold"/>
+      <ITEM name="pep_homol" value="1" type="float" description="peptide homology threshold"/>
+      <ITEM name="pep_ident" value="1" type="float" description="peptide ident threshold"/>
+      <ITEM name="pep_rank" value="1" type="int" description="peptide rank"/>
+      <ITEM name="prot_score" value="1" type="float" description="protein score"/>
+      <ITEM name="pep_score" value="1" type="float" description="peptide score"/>
+      <ITEM name="pep_exp_z" value="1" type="int" description="peptide expected charge"/>
+      <ITEM name="show_unassigned" value="1" type="int" description="show_unassigned"/>
+      <ITEM name="first_dim_rt" value="0" type="float" description="additional information which is added to every peptide identification as metavalue if set &gt; 0"/>
+      <ITEM name="boundary" value="" type="string" description="MIME boundary for mascot output format"/>
+      <ITEM name="mass_type" value="Monoisotopic" type="string" description="mass type" restrictions="Monoisotopic,Average"/>
+      <ITEM name="mascot_directory" value="" type="string" description="the directory in which mascot is located"/>
+      <ITEM name="temp_data_directory" value="" type="string" description="a directory in which some temporary files can be stored"/>
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" tags="advanced"/>
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" tags="advanced"/>
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool"/>
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" tags="advanced" restrictions="true,false"/>
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" tags="advanced" restrictions="true,false"/>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

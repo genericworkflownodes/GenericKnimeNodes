@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./loop_end_zip.png" type="LoopEnd">
+    <name>ZipLoopEnd</name>
+    
+    <shortDescription>ZipLoopEnd</shortDescription>
+    
+    <fullDescription>
+        <intro>ZipLoopEnd collects result files generated during all iterations of the ListZipLoop</intro>
+    </fullDescription>
+    
+    <ports>
+     <inPort index="0" name="mimefile"> URI </inPort>
+     <inPort index="1" name="mimefile"> URI (optional) </inPort>
+     <inPort index="2" name="mimefile"> URI (optional) </inPort>
+     <inPort index="3" name="mimefile"> URI (optional) </inPort>
+     <outPort index="0" name="table"> URIs from port 0 collected during iteration (optional)</outPort>
+     <outPort index="1" name="table"> URIs from port 1 collected during iteration (optional)</outPort>
+     <outPort index="2" name="table"> URIs from port 2 collected during iteration (optional)</outPort>
+     <outPort index="3" name="table"> URIs from port 3 collected during iteration (optional)</outPort>
+    </ports>    
+</knimeNode>

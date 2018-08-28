@@ -1,0 +1,52 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package __BASE__.knime.nodes.__NODENAME__;
+
+import java.io.InputStream;
+
+import org.knime.core.node.NodeLogger;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeFactory;
+
+import __BASE__.knime.PluginActivator;
+
+/**
+    @brief __NODENAME__ Node Factory.
+*/
+public class __NODENAME__NodeFactory extends GenericKnimeNodeFactory {
+    
+    private static final NodeLogger logger = NodeLogger.getLogger(__NODENAME__NodeFactory.class);
+    
+    @Override
+    public __NODENAME__NodeModel createNodeModel() {
+        INodeConfiguration tmpConfig;
+        try {
+            tmpConfig = getNodeConfiguration();
+            return new __NODENAME__NodeModel(tmpConfig, PluginActivator
+                    .getInstance().getPluginConfiguration());
+        } catch (Exception e) {
+            logger.error("__NODENAME__ model instantiation failed", e);
+        }
+        return null;
+
+    }
+
+    @Override
+    public GenericKnimeNodeDialog createNodeDialogPane() {
+        INodeConfiguration tmpConfig;
+        try {
+            tmpConfig = getNodeConfiguration();
+            return new __NODENAME__NodeDialog(tmpConfig);
+        } catch (Exception e) {
+            logger.error("__NODENAME__ dialog instantiation failed", e);
+        }
+        return null;
+    }
+
+    @Override
+    protected InputStream getConfigAsStream() {
+        return this.getClass().getResourceAsStream("config/config.xml");
+    }
+}

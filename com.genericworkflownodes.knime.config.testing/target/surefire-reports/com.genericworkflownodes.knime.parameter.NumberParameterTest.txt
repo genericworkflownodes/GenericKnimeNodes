@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: com.genericworkflownodes.knime.parameter.NumberParameterTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 sec - in com.genericworkflownodes.knime.parameter.NumberParameterTest
+testGetLowerBound(com.genericworkflownodes.knime.parameter.NumberParameterTest)  Time elapsed: 0.004 sec
+testSetLowerBound(com.genericworkflownodes.knime.parameter.NumberParameterTest)  Time elapsed: 0 sec
+testGetUpperBound(com.genericworkflownodes.knime.parameter.NumberParameterTest)  Time elapsed: 0 sec
+testNumberListParameter(com.genericworkflownodes.knime.parameter.NumberParameterTest)  Time elapsed: 0 sec
+testSetUpperBound(com.genericworkflownodes.knime.parameter.NumberParameterTest)  Time elapsed: 0 sec

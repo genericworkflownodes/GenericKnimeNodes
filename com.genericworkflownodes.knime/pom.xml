@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.genericworkflownodes.knime</groupId>
+  <artifactId>com.genericworkflownodes.knime</artifactId>
+	<parent>
+		<groupId>com.genericworkflownodes.maven</groupId>
+		<artifactId>com.genericworkflownodes.maven</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../../../IDE_Workspaces/KNIME_SDK_3.1/com.genericworkflownodes.maven</relativePath>
+	</parent>
+	<packaging>eclipse-plugin</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>com.genericworkflownodes.knime.config</groupId>
+			<artifactId>
+				com.genericworkflownodes.knime.config
+			</artifactId>
+			<version>0.8.0-SNAPSHOT</version>
+			<type>eclipse-plugin</type>
+		</dependency>
+	</dependencies>
+	<version>0.8.100-SNAPSHOT</version>
+</project>

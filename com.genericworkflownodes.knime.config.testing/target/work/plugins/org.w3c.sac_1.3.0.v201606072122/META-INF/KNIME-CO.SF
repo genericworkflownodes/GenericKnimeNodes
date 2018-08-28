@@ -1,0 +1,30 @@
+Signature-Version: 1.0
+SHA-256-Digest-Manifest-Main-Attributes: 50dDnMK2goKj0k8NLLgxEc2EGcxMO
+ iMnYGMiP/VqZFE=
+SHA-256-Digest-Manifest: aTjBb89TTUrzVy6V7z97ndjL6sbNX3Wu3+d7oIeVJ0A=
+Created-By: 1.8.0_131 (Oracle Corporation)
+
+Name: about.properties
+SHA-256-Digest: bFRJRVjtbW6EJgO30lyfNiZ0LYlXusHM7N7Y8PrJp7M=
+
+Name: about.html
+SHA-256-Digest: EGXoZ7Yx1SpGKZC54ZTixO4ErQNMhz8w9kGEZ8P0LoY=
+
+Name: about_files/copyright-software-20021231.htm
+SHA-256-Digest: bTcAmpEtTRd1rxIG01Vn5SX5S4hCUI+t0JWOOyyi3Wc=
+
+Name: about.ini
+SHA-256-Digest: M3beRhx17igp2US/+lHd9Rm/TTjcU1yQYHzZ8/efnjo=
+
+Name: eclipse32.png
+SHA-256-Digest: M6assZwc2xFPohvsXozDkB76w2srQDv7Y8TKJLGcVvs=
+
+Name: lib/flute.jar
+SHA-256-Digest: e9v326oJUvcdBsHGzRWstr8WEuYPZEWfyZ1wER1DVas=
+
+Name: about_files/copyright-software-20021231_files/base.css
+SHA-256-Digest: tj10nZTwvOXqcEhpVaF1G1ljrTFp68zCt/uYUJBWBwY=
+
+Name: about.mappings
+SHA-256-Digest: z5FZ3qJQz8mpXgEPLbeUullsnvf8LX82g+2h+Z2loQY=
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./merge.png" type="Other">
+    <name>FileMerger</name>
+    
+    <shortDescription>
+        This nodes takes two files (file lists) as input and outputs a merged list of both inputs.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>This nodes takes two files (or file lists) as input and outputs a merged list of both inputs. 
+        The order corresponds to the order of the input lists and ports.</intro>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="First file">The first (list of) file(s) that should be merged.</inPort>
+        <inPort index="1" name="Second file">The second (list of) file(s) that should be merged.</inPort>
+        <outPort index="0" name="Merged files">The merged file list.</outPort>
+    </ports>    
+</knimeNode>

@@ -1,0 +1,18 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package __BASE__.knime.nodes.__NODENAME__;
+
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
+
+import com.genericworkflownodes.knime.config.INodeConfiguration;
+
+/**
+    @brief __NODENAME__ Node Dialog.
+*/
+public class __NODENAME__NodeDialog extends GenericKnimeNodeDialog
+{
+    protected __NODENAME__NodeDialog(INodeConfiguration config)
+    {
+        super(config);
+    }
+}

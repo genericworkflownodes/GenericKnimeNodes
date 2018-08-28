@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: com.genericworkflownodes.knime.config.testing;sin
+ gleton:=true
+Bundle-Name: Tests for com.genericworkflownodes.knime.config plugin
+Bundle-Version: 0.8.100.v201808281108
+Bundle-ClassPath: gkn-config-tests.jar
+Require-Bundle: org.knime.testing;bundle-version="[3.0.0,4.0.0)",org.j
+ unit;bundle-version="[4.8.2,5.0.0)"
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-SourceReferences: scm:git:https://github.com/genericworkflowno
+ des/GenericKnimeNodes.git;path="com.genericworkflownodes.knime.config
+ .testing";commitId=5ef9b4ab4bd7783216b28c34f6947a29b0c02fa1
+Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and 
+ the GenericWorkflowNodes Team
+Fragment-Host: com.genericworkflownodes.knime.config;bundle-version="0
+ .8.0"
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+
+<plugin>   
+    <extension point="org.knime.workbench.repository.categories">      
+    </extension>
+    
+    <extension point="org.knime.workbench.repository.nodes">
+    </extension>
+       
+    <extension point="org.knime.product.splashExtension">
+    </extension>
+       
+    <extension point="org.knime.base.filehandling.mimetypes">
+    </extension> 
+
+</plugin>

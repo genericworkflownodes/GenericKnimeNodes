@@ -1,0 +1,58 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package __BASE__.knime.nodes.mimetypes;
+
+
+import org.knime.core.data.DataType;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.container.BlobDataCell;
+import org.ballproject.knime.base.mime.*;
+import org.ballproject.knime.base.port.*;
+import org.knime.core.data.DataValue; 
+
+import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class __NAME__FileCell extends MIMEFileCell implements __NAME__FileValue
+{
+    public __NAME__FileCell()
+    {
+        TYPE = DataType.getType(__NAME__FileCell.class);
+    }
+    
+    @Override
+    public String getExtension()
+    {
+        String ext = "__EXT__";
+        return ext.toLowerCase();
+    }
+        
+    @Override
+    public String toString()
+    {
+        // we will not return the file content here
+        // since file sizes might be quite large !
+        return "__NAME__MimeFileCell";
+    }
+
+    @Override
+    protected boolean equalsDataCell(DataCell dc)
+    {
+        __NAME__FileCell mfc = (__NAME__FileCell) dc;
+        return Arrays.equals(getData(), mfc.getData());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return data_delegate.getHash();
+    }
+    
+    public static final Class<? extends DataValue> getPreferredValueClass() 
+    {
+        return __NAME__FileValue.class;
+    }
+        
+}

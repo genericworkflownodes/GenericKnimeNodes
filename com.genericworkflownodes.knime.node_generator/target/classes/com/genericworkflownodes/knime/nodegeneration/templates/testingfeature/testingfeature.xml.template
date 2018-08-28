@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="@@packageName@@.testing.feature"
+      label="@@pluginName@@ - Testing"
+      version="@@pluginVersion@@">
+
+    <description>
+    @@description@@
+    </description>
+
+    <copyright>
+    @@copyright@@
+    </copyright>
+
+    <license>
+    @@license@@
+    </license>
+
+    <requires>
+        <import feature="org.knime.features.testingapplication" version="2.9.0" match="greaterOrEqual"/>
+    </requires>
+
+</feature>
