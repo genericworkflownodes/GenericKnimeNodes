@@ -50,7 +50,17 @@ public class CommandLineParameter
 
     @Override
     public String getStringRepresentation() {
-        return this.prefix + ((Parameter<?>) this.getValue()).getStringRep()
-                + this.suffix;
+        return generateStringRepresentation(
+                ((Parameter<?>) this.getValue()).getStringRep());
     }
+
+    @Override
+    public String getExternalStringRepresentation() {
+        return generateStringRepresentation(getKey());
+    }
+
+    private String generateStringRepresentation(final String value) {
+        return this.prefix + value + this.suffix;
+    }
+
 }

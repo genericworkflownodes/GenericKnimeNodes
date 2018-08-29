@@ -14,6 +14,11 @@ import com.genericworkflownodes.knime.parameter.FileParameter;
 public class CommandLineCTDFile extends CommandLineFile {
 
     /**
+     * Default key.
+     */
+    public static final String CTD_FILE_KEY = "parameters.ctd";
+
+    /**
      * Constructor.
      * 
      * @param ctdFile
@@ -21,7 +26,7 @@ public class CommandLineCTDFile extends CommandLineFile {
      * @throws IOException
      */
     public CommandLineCTDFile(final File ctdFile) throws IOException {
-        super(new FileParameter("ctdfile", ctdFile.getCanonicalPath()));
+        super(new FileParameter(CTD_FILE_KEY, ctdFile.getCanonicalPath()));
     }
 
 }

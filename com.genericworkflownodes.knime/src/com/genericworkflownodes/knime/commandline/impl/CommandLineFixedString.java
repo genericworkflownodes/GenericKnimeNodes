@@ -8,7 +8,7 @@ package com.genericworkflownodes.knime.commandline.impl;
  */
 public class CommandLineFixedString extends AbstractCommandLineElement {
 
-    public CommandLineFixedString(String name) {
+    public CommandLineFixedString(final String name) {
         super(name);
     }
 
@@ -17,4 +17,8 @@ public class CommandLineFixedString extends AbstractCommandLineElement {
         return this.key;
     }
 
+    @Override
+    public String getExternalStringRepresentation() {
+        return getStringRepresentation();
+    }
 }

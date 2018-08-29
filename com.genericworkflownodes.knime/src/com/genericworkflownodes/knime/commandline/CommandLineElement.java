@@ -29,6 +29,16 @@ public interface CommandLineElement {
     public String getStringRepresentation();
 
     /**
+     * Similar to {@link #getStringRepresentation()}, but this method is
+     * intended for non-local environments (e.g., a cluster). Instead of using
+     * the local path of a file, a more "generic" representation can be used,
+     * e.g., by using a key.
+     * 
+     * @return
+     */
+    public String getExternalStringRepresentation();
+
+    /**
      * Certain command line elements can be referred to using a key, for
      * instance, the name of a parameter.
      * 

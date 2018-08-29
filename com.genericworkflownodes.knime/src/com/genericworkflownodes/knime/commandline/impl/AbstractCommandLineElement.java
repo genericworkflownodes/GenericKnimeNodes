@@ -5,6 +5,7 @@ import com.genericworkflownodes.knime.commandline.CommandLineElement;
 public abstract class AbstractCommandLineElement implements CommandLineElement {
 
     protected final String key;
+    protected String associatedPortName;
     protected Object value;
     protected int sequenceNumber = CommandLineElement.NO_SEQUENCE;
 
@@ -80,5 +81,4 @@ public abstract class AbstractCommandLineElement implements CommandLineElement {
     public void setSequenceNumber(final int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
-
 }

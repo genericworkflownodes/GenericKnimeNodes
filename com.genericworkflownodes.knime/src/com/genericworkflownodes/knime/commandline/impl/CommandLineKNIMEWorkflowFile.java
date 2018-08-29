@@ -15,9 +15,14 @@ import com.genericworkflownodes.knime.parameter.FileParameter;
  */
 public class CommandLineKNIMEWorkflowFile extends CommandLineFile {
 
+    /**
+     * Default key.
+     */
+    public static final String KNIME_MINI_WORKFLOW_KEY = "knmwf.zip";
+
     public CommandLineKNIMEWorkflowFile(final File workflowFile)
             throws IOException {
-        super(new FileParameter("knime-workflow-zip",
+        super(new FileParameter(KNIME_MINI_WORKFLOW_KEY,
                 workflowFile.getCanonicalPath()), "-workflowFile=\"", "\"");
     }
 }
