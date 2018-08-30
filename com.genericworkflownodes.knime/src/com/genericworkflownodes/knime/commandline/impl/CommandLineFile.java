@@ -4,6 +4,7 @@ import com.genericworkflownodes.knime.parameter.FileParameter;
 
 /**
  * Command line element that represents a file.
+ * 
  * @author delagarza
  *
  */
@@ -21,6 +22,13 @@ public class CommandLineFile extends CommandLineParameter {
     @Override
     public FileParameter getValue() {
         return (FileParameter) super.getValue();
+    }
+
+    @Override
+    public String getExternalStringRepresentation() {
+        // use the key referring to the file instead of the name of the file,
+        // which refers to a local file where KNIME runs
+        return super.generateStringRepresentation(getKey());
     }
 
 }

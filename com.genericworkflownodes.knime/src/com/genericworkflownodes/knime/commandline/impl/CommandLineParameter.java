@@ -56,10 +56,11 @@ public class CommandLineParameter
 
     @Override
     public String getExternalStringRepresentation() {
-        return generateStringRepresentation(getKey());
+        // parameters don't change across platforms, allegedly
+        return getStringRepresentation();
     }
 
-    private String generateStringRepresentation(final String value) {
+    protected String generateStringRepresentation(final String value) {
         return this.prefix + value + this.suffix;
     }
 
