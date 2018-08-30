@@ -62,8 +62,6 @@ import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
  */
 public class ParamHandler extends DefaultHandler {
 
-    private static final String TRUE = "true";
-
     private static final String FALSE = "false";
 
     /**
@@ -505,42 +503,15 @@ public class ParamHandler extends DefaultHandler {
         if (isPort(attributes)) {
             createPort(paramName, attributes, false);
         } else {
-            // check if we have a boolean
             String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
-            if (isBooleanParameter(restrictions)) {
-                m_currentParameter = new BoolParameter(paramName, paramValue);
+            if (restrictions != null && restrictions.length() > 0) {
+                m_currentParameter = new StringChoiceParameter(paramName,
+                        restrictions.split(","));
+                ((StringChoiceParameter) m_currentParameter)
+                        .setValue(paramValue);
             } else {
-                if (restrictions != null && restrictions.length() > 0) {
-                    m_currentParameter = new StringChoiceParameter(paramName,
-                            restrictions.split(","));
-                    ((StringChoiceParameter) m_currentParameter)
-                            .setValue(paramValue);
-                } else {
-                    m_currentParameter = new StringParameter(paramName,
-                            paramValue);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns true if the Parameter is a BoolParameter.
-     * 
-     * @param restrictions
-     *            The restrictions encoding the bool restrictions.
-     * @return True if the parameter is a BoolParameter, false otherwise.
-     */
-    private boolean isBooleanParameter(final String restrictions) {
-        if (restrictions == null || restrictions.trim().length() == 0) {
-            return false;
-        } else {
-            // tokenize restrictions
-            String[] tokens = restrictions.split(",");
-            if (tokens.length != 2) {
-                return false;
-            } else {
-                return ((TRUE.equals(tokens[0]) && FALSE.equals(tokens[1])) || (FALSE
-                        .equals(tokens[0]) && TRUE.equals(tokens[1])));
+                m_currentParameter = new StringParameter(paramName,
+                        paramValue);
             }
         }
     }

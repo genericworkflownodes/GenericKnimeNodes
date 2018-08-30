@@ -2,7 +2,7 @@
 <feature
       id="com.genericworkflownodes.knime.feature"
       label="Generic Workflow Nodes for KNIME"
-      version="0.8.100.qualifier"
+      version="1.0.0.qualifier"
       provider-name="Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team">
 
    <description url="http://www.genericworkflownodes.com">
@@ -12,7 +12,7 @@ See http://www.genericworkflownodes.com for details.
    </description>
 
    <copyright>
-      Copyright (c) 2011-2014, Marc Röttig, Stephan Aiche, and Björn Kahlert.
+      Copyright (c) 2011-2018, Marc Röttig, Stephan Aiche, Björn Kahlert, Julianus Pfeuffer and Alexander Fillbrunn.
    </copyright>
 
    <license url="http://www.gnu.org/copyleft/lesser.html">
