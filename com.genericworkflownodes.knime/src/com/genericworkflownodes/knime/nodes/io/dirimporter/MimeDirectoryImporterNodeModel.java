@@ -373,6 +373,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
         final ListDirectoryConfiguration config = new ListDirectoryConfiguration();
         config.loadSettingsInModel(settings);
         m_configuration = config;
+        m_extension = config.getExtensionsString();
     }
 
     /**
