@@ -8,6 +8,7 @@
    <extension-point id="com.genericworkflownodes.knime.execution.Executor" name="Executor" schema="schema/com.genericworkflownodes.knime.execution.Executor.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory" name="VersionedNodeSetFactory" schema="schema/com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.filesplitter" name="File Splitter" schema="schema/com.genericworkflownodes.knime.filesplitter.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.custom.config.DLLProvider" name="DLLProvider" schema="schema/com.genericworkflownodes.knime.custom.config.DLLProvider.exsd"/>
 
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -86,6 +87,14 @@
       <executor
             class="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor"
             name="com.genericworkflownodes.knime.execution.impl.LocalDockerToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor"
+            name="SeqAnToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor">
       </executor>
    </extension>
    <extension
