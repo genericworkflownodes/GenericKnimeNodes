@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.genericworkflownodes.knime.nodes.exttool.ExtToolOutputNodeModel;
+
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
@@ -70,6 +72,13 @@ public interface IToolExecutor {
      */
     void prepareExecution(INodeConfiguration nodeConfiguration,
             IPluginConfiguration pluginConfiguration) throws Exception;
+    
+    /**
+     * Initialization method of the executor.
+     * 
+     * @param model The NodeModel e.g. used to update Views
+     */
+    void setModel(ExtToolOutputNodeModel model);
 
     /**
      * Kills the running process.

@@ -21,6 +21,7 @@ package com.genericworkflownodes.knime.generic_node;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream.GetField;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.knime.base.filehandling.mime.MIMEMap;
-import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -49,6 +49,7 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
+import com.genericworkflownodes.knime.nodes.exttool.ExtToolOutputNodeModel;
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
@@ -143,6 +144,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             String[][] fileEndingsOutPorts) {
         super(createOPOs(nodeConfig.getInputPorts()), createOPOs(nodeConfig
                 .getOutputPorts()));
+        this.
         m_nodeConfig = nodeConfig;
         m_pluginConfig = pluginConfig;
 
@@ -548,6 +550,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
 
         executor.setWorkingDirectory(jobdir);
         executor.prepareExecution(m_nodeConfig, m_pluginConfig);
+        executor.setModel(this);
 
         return executor;
     }
@@ -853,4 +856,5 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         return commandGenerator.generateCommands(m_nodeConfig, m_pluginConfig,
                 workingDirectory);
     }
+    
 }

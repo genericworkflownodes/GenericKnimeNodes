@@ -272,8 +272,8 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
         }
 
         // finally fill the stdout/stderr messages into the dialogs
-        setExternalOutput(executor.getToolOutput());
-        setExternalErrorOutput(executor.getToolErrorOutput());
+        //setExternalOutput(executor.getToolOutput());
+        //setExternalErrorOutput(executor.getToolErrorOutput());
 
     }
 
