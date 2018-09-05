@@ -208,47 +208,54 @@ public final class BinaryManager {
             }
         }
     }
-    
+
     public boolean fileExists(final String fileName) {
         return findFileInBundle(fileName) != null;
     }
-    
+
     /**
      * Search the bundle for CTDs and list them in a List of Files.
-     * 
+     *
      * @return List of CTD Files in the bundle
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public Iterable<String> listTools() {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
         Enumeration<URL> ctds = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
-        
+
         // findEntries returns null if no entry is found
         if (ctds == null) {
             LOGGER.warn("The bundle " + bundle.getSymbolicName() + " does not contain any CTD files.");
             return Collections.emptyList();
         }
-        
+
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
-            p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
+            p = Paths.get(FileLocator
+                    .toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toURI());
             LOGGER.debug("Descriptors location: " + p.toString());
         } catch (IOException ex) {
             LOGGER.error(ex);
             return Collections.emptyList();
+        } catch (URISyntaxException ex) {
+            LOGGER.error(ex);
+            return Collections.emptyList();
         }
-        
+
         while (ctds.hasMoreElements()){
             try {
-                Path el = Paths.get(FileLocator.toFileURL(ctds.nextElement()).toString());
+                Path el = Paths
+                        .get(FileLocator.toFileURL(ctds.nextElement()).toURI());
                 LOGGER.info("Loading CTD from " + el.toString());
                 files.add(p.relativize(el).toString());
             } catch (IOException e) {
                 LOGGER.error(e);
+            } catch (URISyntaxException e) {
+                LOGGER.error(e);
             }
         }
-        
+
         return files;
     }
 }
