@@ -17,6 +17,16 @@ import com.genericworkflownodes.knime.custom.config.DLLRegistry;
 public class SeqAnToolExecutor extends LocalToolExecutor {
 
     /**
+     * Defines the name of the PATH environment variable.
+     */
+    private static final String PATH_ENVIRONMENT = "PATH";
+
+    /**
+     * Defines an alternative name of the PATH environment variable for windows.
+     */
+    private static final String PATH_ENVIRONMENT_WINDOWS = "Path";
+
+    /**
      * NodeLogger used for this executor.
      */
     protected static final NodeLogger LOGGER = NodeLogger
@@ -31,34 +41,49 @@ public class SeqAnToolExecutor extends LocalToolExecutor {
 
     @Override
     protected void setupProcessEnvironment(ProcessBuilder builder) {
-        super.setupProcessEnvironment(builder);
 
         // Get the dlls from the DLLRegistry.
-        String dll_paths = "";
+        StringBuilder lib_paths = new StringBuilder();
         try {
-            for (String dll_path : DLLRegistry.getDLLRegistry()
+            for (String lib_path : DLLRegistry.getDLLRegistry()
                     .getAvailableDLLs()) {
-                dll_paths += dll_path + File.pathSeparator;
+                lib_paths.append(lib_path).append(File.pathSeparator);
             }
         } catch (CoreException e) {
-            LOGGER.error("Could not extract dll search paths.", e);
+            LOGGER.error("Could not extract lib search paths.", e);
             return;
         }
 
-        // We would expect the dlls only on Windows.
-        if (dll_paths.isEmpty())
-            return;
+        if (lib_paths.length() != 0) {
+            String lib_paths_str = lib_paths.toString();
+            LOGGER.debug("Adding lib paths: " + lib_paths_str);
+            addLibsToPathEnvironment(lib_paths_str, PATH_ENVIRONMENT);
 
-        if (!m_environmentVariables.containsKey("Path")) {
-            LOGGER.warn(
-                    "Not setting dll search paths! Expected Path environment on Windows systems!");
-            return;
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                addLibsToPathEnvironment(lib_paths_str,
+                        PATH_ENVIRONMENT_WINDOWS);
+            }
         }
+        super.setupProcessEnvironment(builder);
+    }
 
-        String path_key = "Path";
-        m_environmentVariables.put(path_key,
-                expandEnvironmentVariables(m_environmentVariables.get(path_key))
-                        + File.pathSeparator
-                        + dll_paths);
+    /**
+     * Adds the passed lib paths to the given path environment.
+     *
+     * @param lib_paths
+     *            The paths for the shared libs to be added to the process
+     *            environment.
+     * @param path_key
+     *            The key of the path environment variable.
+     */
+    private void addLibsToPathEnvironment(String lib_paths,
+            String path_key) {
+        String pathWithLibs = "";
+        if (m_environmentVariables.containsKey(path_key)) {
+            pathWithLibs = m_environmentVariables.get(path_key)
+                    + File.pathSeparator;
+        }
+        pathWithLibs += lib_paths;
+        m_environmentVariables.put(path_key, pathWithLibs);
     }
 }
