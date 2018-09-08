@@ -2,7 +2,7 @@
  * Copyright (c) 2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -52,8 +53,8 @@ public final class BinaryManager {
     /**
      * Path inside the bundle where the binaries should be located.
      */
-    public static final String BUNDLE_PATH = "payload";    
-    
+    public static final String BUNDLE_PATH = "payload";
+
     /**
      * Path inside the bundle where the descriptors should be located.
      */
@@ -75,7 +76,7 @@ public final class BinaryManager {
 
     /**
      * C'tor.
-     * 
+     *
      * @param clazzInBundle
      *            A class inside the bundle where the files should be located.
      */
@@ -98,7 +99,7 @@ public final class BinaryManager {
     /**
      * Returns a set of environment variables required by the executable. Will
      * be an empty map if we use the system version of the tool.
-     * 
+     *
      * @param executableName
      *            The name of the executable for which the process environment
      *            should be returned.
@@ -172,7 +173,7 @@ public final class BinaryManager {
             return null;
         }
     }
-    
+
     public File resolveToolDescriptorPath(final String relToolPath) {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
         try {
@@ -185,7 +186,7 @@ public final class BinaryManager {
 
     /**
      * Search the bundle for the given file name.
-     * 
+     *
      * @param fileName
      *            The name of the file to find.
      * @return A File object pointing to the requested file or null if the file
@@ -232,8 +233,9 @@ public final class BinaryManager {
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
-            p = Paths.get(FileLocator
-                    .toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toURI());
+            p = Paths.get(new URI(
+                    FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH))
+                            .toString().replaceAll(" ", "%20")));
             LOGGER.debug("Descriptors location: " + p.toString());
         } catch (IOException ex) {
             LOGGER.error(ex);
@@ -246,7 +248,8 @@ public final class BinaryManager {
         while (ctds.hasMoreElements()){
             try {
                 Path el = Paths
-                        .get(FileLocator.toFileURL(ctds.nextElement()).toURI());
+                        .get(new URI(FileLocator.toFileURL(ctds.nextElement())
+                                .toString().replaceAll(" ", "%20")));
                 LOGGER.info("Loading CTD from " + el.toString());
                 files.add(p.relativize(el).toString());
             } catch (IOException e) {
