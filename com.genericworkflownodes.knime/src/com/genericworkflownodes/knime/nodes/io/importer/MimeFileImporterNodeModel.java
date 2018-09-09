@@ -20,18 +20,12 @@
 package com.genericworkflownodes.knime.nodes.io.importer;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
@@ -54,45 +48,42 @@ import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
+import com.genericworkflownodes.util.ZipUtils;
 
 /**
  * This is the model implementation of MimeFileImporter.
  *
  * @author roettig, aiche
  */
-public class MimeFileImporterNodeModel extends NodeModel {
+final class MimeFileImporterNodeModel extends NodeModel {
 
     /**
-     * Config name for file name.
+     * SettingsModel for the filename
      */
-    static final String CFG_FILENAME = "FILENAME";
-    /**
-     * Config name for file extension.
-     */
-    static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
+    static SettingsModelString filename() {
+        return new SettingsModelString("FILENAME", "");
+    }
+    private final SettingsModelString m_filename = filename();
 
-    /**
-     * SettingsModel to the filename and optional extension
-     */
-    private SettingsModelString m_filename = new SettingsModelString(
-            MimeFileImporterNodeModel.CFG_FILENAME, "");
     /**
      * SettingsModel for potential file extension override.
      */
-    private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
-            CFG_FILE_EXTENSION, "", false);
+    static SettingsModelOptionalString fileExtension() {
+        return new SettingsModelOptionalString("FILE_EXTENSION", "", false);
+    }
+    private final SettingsModelOptionalString m_file_extension = fileExtension();
 
     /**
      * Data member.
      */
-    private String data;
+    private byte[] data;
 
     /**
      * Getter for data member.
      *
      * @return The data member.
      */
-    public String getContent() {
+    public byte[] getContent() {
         return data;
     }
 
@@ -116,8 +107,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        m_filename.saveSettingsTo(settings);
-        m_file_extension.saveSettingsTo(settings);
+        this.m_filename.saveSettingsTo(settings);
+        this.m_file_extension.saveSettingsTo(settings);
     }
 
     /**
@@ -126,8 +117,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        m_filename.loadSettingsFrom(settings);
-        m_file_extension.loadSettingsFrom(settings);
+        this.m_filename.loadSettingsFrom(settings);
+        this.m_file_extension.loadSettingsFrom(settings);
     }
 
     /**
@@ -164,6 +155,11 @@ public class MimeFileImporterNodeModel extends NodeModel {
                     "File of unknown MIME type selected: "
                             + tmp_filename.getStringValue());
         }
+    }
+
+    private static File getDataFile(final File internDir) {
+
+        return new File(internDir, "loadeddata");
     }
 
     /**
@@ -209,31 +205,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        ZipFile zip = new ZipFile(new File(internDir, "loadeddata"));
 
-        @SuppressWarnings("unchecked")
-        Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-        int BUFFSIZE = 2048;
-        byte[] BUFFER = new byte[BUFFSIZE];
-
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-
-            if (entry.getName().equals("rawdata.bin")) {
-                int size = (int) entry.getSize();
-                byte[] data = new byte[size];
-                InputStream in = zip.getInputStream(entry);
-                int len;
-                int totlen = 0;
-                while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
-                    System.arraycopy(BUFFER, 0, data, totlen, len);
-                    totlen += len;
-                }
-                this.data = new String(data);
-            }
-        }
-        zip.close();
+        this.data = ZipUtils.read(getDataFile(internDir));
     }
 
     /**
@@ -243,12 +216,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-                new File(internDir, "loadeddata")));
-        ZipEntry entry = new ZipEntry("rawdata.bin");
-        out.putNextEntry(entry);
-        out.write(data.getBytes());
-        out.close();
+
+        ZipUtils.write(this.data, getDataFile(internDir));
     }
 
     @Override
@@ -291,7 +260,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
                         .getStringValue() : MIMETypeHelper
                         .getMIMEtypeExtension(file.getAbsolutePath()).orElse(null))));
 
-        data = Helper.readFileSummary(file, 50);
+        data = Helper.readFileSummary(file, 50).getBytes();
 
         return new PortObject[] { new URIPortObject(uris) };
     }

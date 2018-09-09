@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,36 +21,32 @@ package com.genericworkflownodes.knime.nodes.io.importer;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
-import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
  * <code>NodeDialog</code> for the "MimeFileImporter" Node.
- * 
- * 
+ *
+ *
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
  * creation of a simple dialog with standard components. If you need a more
  * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
- * 
+ *
  * @author roettig
  */
-public class MimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
+final class MimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
 
     /**
      * New pane for configuring MimeFileImporter node dialog. This is just a
      * suggestion to demonstrate possible default dialog components.
      */
-    protected MimeFileImporterNodeDialog(Object obj) {
-        super();
+    protected MimeFileImporterNodeDialog() {
 
         addDialogComponent(new DialogComponentFileChooser(
-                new SettingsModelString(MimeFileImporterNodeModel.CFG_FILENAME,
-                        ""), "MimeFileImporterNodeDialog"));
+                MimeFileImporterNodeModel.filename(),
+                "MimeFileImporterNodeDialog"));
 
         addDialogComponent(new DialogComponentOptionalString(
-                new SettingsModelOptionalString(
-                        MimeFileImporterNodeModel.CFG_FILE_EXTENSION, "", false),
-                "File extension (override)"));
+                MimeFileImporterNodeModel.fileExtension(),
+                "File extension (test)"));
     }
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,10 +24,10 @@ import org.knime.core.node.NodeView;
 
 /**
  * <code>NodeFactory</code> for the "MimeFileImporter" Node.
- * 
+ *
  * @author roettig
  */
-public class MimeFileImporterNodeFactory extends
+public final class MimeFileImporterNodeFactory extends
         NodeFactory<MimeFileImporterNodeModel> {
 
     /**
@@ -68,7 +68,6 @@ public class MimeFileImporterNodeFactory extends
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new MimeFileImporterNodeDialog(new Object());
+        return new MimeFileImporterNodeDialog();
     }
-
 }

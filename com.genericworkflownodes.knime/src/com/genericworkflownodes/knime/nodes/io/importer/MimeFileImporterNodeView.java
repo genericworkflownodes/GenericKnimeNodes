@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,26 +29,24 @@ import com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporter
 
 /**
  * <code>NodeView</code> for the "MimeFileImporter" Node.
- * 
+ *
  * @author roettig
  */
-public class MimeFileImporterNodeView extends
+final class MimeFileImporterNodeView extends
         NodeView<MimeFileImporterNodeModel> {
 
     /**
      * Creates a new view.
-     * 
+     *
      * @param nodeModel
      *            The model (class: {@link ListMimeFileImporterNodeModel})
      */
     protected MimeFileImporterNodeView(final MimeFileImporterNodeModel nodeModel) {
         super(nodeModel);
 
-        JTextArea text = new JTextArea(nodeModel.getContent(), 40, 80);
-        JScrollPane scrollpane = new JScrollPane(text);
+        final JTextArea text = new JTextArea(new String(nodeModel.getContent()), 40, 80);
         text.setFont(new Font("Monospaced", Font.BOLD, 12));
-        setComponent(scrollpane);
-
+        setComponent(new JScrollPane(text));
     }
 
     /**
