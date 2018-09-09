@@ -3,7 +3,7 @@
  * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -59,7 +57,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of MimeFileImporter.
- * 
+ *
  * @author roettig, aiche
  */
 public class MimeFileImporterNodeModel extends NodeModel {
@@ -91,7 +89,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
 
     /**
      * Getter for data member.
-     * 
+     *
      * @return The data member.
      */
     public String getContent() {
@@ -171,7 +169,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
     /**
      * Extract a URL from the given SettingsModelString, trying different
      * conversion approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
-     * 
+     *
      * @param filename_settings
      *            The settings object containing the URL to convert.
      * @return A URL object.
@@ -271,7 +269,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
         } else {
             uri_spec = new URIPortObjectSpec(
                     MIMETypeHelper.getMIMEtypeExtension(m_filename
-                            .getStringValue()));
+                            .getStringValue()).orElse(null));
         }
 
         return new PortObjectSpec[] { uri_spec };
@@ -287,11 +285,11 @@ public class MimeFileImporterNodeModel extends NodeModel {
         }
 
         List<URIContent> uris = new ArrayList<URIContent>();
-        
+
         uris.add(new URIContent(new File(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
-                        .getMIMEtypeExtension(file.getAbsolutePath()))));
+                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(null))));
 
         data = Helper.readFileSummary(file, 50);
 

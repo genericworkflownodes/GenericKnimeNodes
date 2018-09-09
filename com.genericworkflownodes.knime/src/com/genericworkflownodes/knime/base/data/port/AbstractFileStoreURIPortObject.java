@@ -125,7 +125,7 @@ public abstract class AbstractFileStoreURIPortObject extends
         // register the URIContent
         File child = new File(getFileStoreRootDirectory(), filename);
         URIContent uric = new URIContent(child.toURI(),
-                MIMETypeHelper.getMIMEtypeExtension(filename));
+                MIMETypeHelper.getMIMEtypeExtension(filename).orElse(null));
 
         // update content and spec accordingly
         m_uriContents.add(uric);
