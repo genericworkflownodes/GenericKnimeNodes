@@ -18,12 +18,19 @@
  */
 package com.genericworkflownodes.knime.nodes.io.importer;
 
+import java.awt.Font;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
+
+import com.genericworkflownodes.knime.nodes.GenericNodeView;
 
 /**
  * <code>NodeFactory</code> for the "MimeFileImporter" Node.
@@ -56,7 +63,12 @@ NodeFactory<MimeFileImporterNodeModel> {
     public NodeView<MimeFileImporterNodeModel> createNodeView(
             final int viewIndex, final MimeFileImporterNodeModel nodeModel) {
 
-        return new MimeFileImporterNodeView(nodeModel);
+        return new GenericNodeView<MimeFileImporterNodeModel>(nodeModel, (model) -> {
+
+            final JTextArea text = new JTextArea(new String(model.getContent()), 40, 80);
+            text.setFont(new Font("Monospaced", Font.BOLD, 12));
+            return new JScrollPane(text);
+        });
     }
 
     /**
