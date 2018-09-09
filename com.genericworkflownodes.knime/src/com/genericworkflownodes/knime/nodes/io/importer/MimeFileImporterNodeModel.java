@@ -203,8 +203,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void loadInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
+            final ExecutionMonitor exec) throws IOException, CanceledExecutionException {
 
         this.data = ZipUtils.read(getDataFile(internDir));
     }
@@ -214,8 +213,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void saveInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
+            final ExecutionMonitor exec) throws IOException, CanceledExecutionException {
 
         ZipUtils.write(this.data, getDataFile(internDir));
     }
@@ -224,24 +222,25 @@ final class MimeFileImporterNodeModel extends NodeModel {
     protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
 
+        final String filenameValue = this.m_filename.getStringValue();
+
         /*
          * Upon inserting the node into a workflow, it gets configured, so at
          * least something fundamental like the file name should be checked
          */
-        if (m_filename.getStringValue().isEmpty()) {
+        if (filenameValue.isEmpty()) {
             throw new InvalidSettingsException("No File selected.");
         }
 
-        URIPortObjectSpec uri_spec = null;
-        if (m_file_extension.isActive()) {
-            uri_spec = new URIPortObjectSpec(m_file_extension.getStringValue());
-        } else {
-            uri_spec = new URIPortObjectSpec(
-                    MIMETypeHelper.getMIMEtypeExtension(m_filename
-                            .getStringValue()).orElse(null));
-        }
+        // Determine the file extension
+        final String fileExtension = this.m_file_extension.isActive() ? this.m_file_extension.getStringValue()
+                : MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElseThrow( () ->
+                new InvalidSettingsException(
+                        String.format("Could not determine file type for selected input file: %s", filenameValue)));
 
-        return new PortObjectSpec[] { uri_spec };
+        return new PortObjectSpec[] {
+                new URIPortObjectSpec(fileExtension)
+        };
     }
 
     @Override

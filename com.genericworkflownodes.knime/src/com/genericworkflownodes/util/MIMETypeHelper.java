@@ -18,6 +18,7 @@
  */
 package com.genericworkflownodes.util;
 
+import java.io.File;
 import java.util.Optional;
 
 import org.knime.base.filehandling.mime.MIMEMap;
@@ -37,6 +38,8 @@ public final class MIMETypeHelper {
 
         throw new AssertionError("Contructor for utility class MIMETypeHelper called!");
     }
+
+    private static final String EXTENSION_EXECUTABLE = "exe";
 
     /**
      * Extracts the {@link MIMETypeEntry} from the given filename.
@@ -66,6 +69,16 @@ public final class MIMETypeHelper {
                 }
             }
         }
+
+        // If the type is still null, we check if the file is executable
+        if (type == null) {
+            final File f = new File(filename);
+
+            if (f.canExecute() &&  f.isFile()) {
+                return getMIMEtypeByExtension(EXTENSION_EXECUTABLE);
+            }
+        }
+
         return Optional.ofNullable(type);
     }
 
@@ -124,6 +137,14 @@ public final class MIMETypeHelper {
                     type = entry.getType();
                     foundExtension = ext.trim();
                 }
+            }
+        }
+        // If the type is still null, we check if the file is executable
+        if (type == null) {
+            final File f = new File(filename);
+
+            if (f.canExecute() &&  f.isFile()) {
+                return Optional.of(EXTENSION_EXECUTABLE);
             }
         }
         return (type != null ? Optional.of(foundExtension) : Optional.empty());
