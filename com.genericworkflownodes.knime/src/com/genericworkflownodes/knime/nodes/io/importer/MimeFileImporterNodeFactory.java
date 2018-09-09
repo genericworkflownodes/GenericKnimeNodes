@@ -21,6 +21,9 @@ package com.genericworkflownodes.knime.nodes.io.importer;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
+import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
 
 /**
  * <code>NodeFactory</code> for the "MimeFileImporter" Node.
@@ -28,7 +31,7 @@ import org.knime.core.node.NodeView;
  * @author roettig
  */
 public final class MimeFileImporterNodeFactory extends
-        NodeFactory<MimeFileImporterNodeModel> {
+NodeFactory<MimeFileImporterNodeModel> {
 
     /**
      * {@inheritDoc}
@@ -52,6 +55,7 @@ public final class MimeFileImporterNodeFactory extends
     @Override
     public NodeView<MimeFileImporterNodeModel> createNodeView(
             final int viewIndex, final MimeFileImporterNodeModel nodeModel) {
+
         return new MimeFileImporterNodeView(nodeModel);
     }
 
@@ -68,6 +72,15 @@ public final class MimeFileImporterNodeFactory extends
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new MimeFileImporterNodeDialog();
+
+        final DefaultNodeSettingsPane pane = new DefaultNodeSettingsPane();
+        pane.addDialogComponent(new DialogComponentFileChooser(
+                MimeFileImporterNodeModel.filename(),
+                "MimeFileImporterNodeDialog"));
+
+        pane.addDialogComponent(new DialogComponentOptionalString(
+                MimeFileImporterNodeModel.fileExtension(),
+                "File extension (test)"));
+        return pane;
     }
 }
