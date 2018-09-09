@@ -41,10 +41,14 @@ public final class PropertiesUtils {
     /**
      * Loads {@link Properties} from a given {@link File}.
      *
-     * @param file
-     * @return empty if file is no {@link File}
+     * @param file The {@link File} from which the {@link Properties} should be read from
+     * @return {@link Properties} that are read from the input {@link File}.
+     *         The returned {@link Properties} object will be empty if the input {@link File}
+     *         is not a properties file.
      * @throws IOException
      *             If method fails to open or read the file.
+     * @throws NullPointerException
+     *             If {@code file} is null.
      */
     public static Properties load(File file) throws IOException {
         final Properties properties = new Properties();
@@ -61,11 +65,13 @@ public final class PropertiesUtils {
      * necessary the {@link File} is automatically created.
      *
      * @param file
-     *            The file where the object should be saved.
+     *            The {@link File} where the {@link Properties} should be saved to.
      * @param properties
      *            The {@link Properties} object to save.
      * @throws IOException
      *             If method fails to open or write to the file.
+     * @throws NullPointerException
+     *             If {@code file} or {@code properties} is null
      */
     public static void save(File file, Properties properties)
             throws IOException {
