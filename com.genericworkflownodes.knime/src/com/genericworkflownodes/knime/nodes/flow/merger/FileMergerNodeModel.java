@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -42,7 +42,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * This is the model implementation of FileMerger. This nodes takes two files
  * (file lists) as input and outputs a merged list of both inputs.
- * 
+ *
  * @author aiche
  */
 public class FileMergerNodeModel extends NodeModel {
@@ -55,7 +55,7 @@ public class FileMergerNodeModel extends NodeModel {
 
     /**
      * Static method that provides the incoming {@link PortType}s.
-     * 
+     *
      * @return The incoming {@link PortType}s of this node.
      */
     private static PortType[] getIncomingPorts() {
@@ -64,7 +64,7 @@ public class FileMergerNodeModel extends NodeModel {
 
     /**
      * Static method that provides the outgoing {@link PortType}s.
-     * 
+     *
      * @return The outgoing {@link PortType}s of this node.
      */
     private static PortType[] getOutgoing() {
@@ -122,7 +122,7 @@ public class FileMergerNodeModel extends NodeModel {
 
     /**
      * Checks if all input {@link PortObjectSpec}s are not null.
-     * 
+     *
      * @param inSpecs
      *            The {@link PortObjectSpec}s to check.
      * @throws InvalidSettingsException
@@ -140,7 +140,7 @@ public class FileMergerNodeModel extends NodeModel {
 
     /**
      * Checks if all input specs have the same {@link MIMEType}.
-     * 
+     *
      * @param inSpecs
      *            The {@link PortObjectSpec}s to check.
      * @throws InvalidSettingsException
@@ -152,11 +152,11 @@ public class FileMergerNodeModel extends NodeModel {
         // get mime type from 1st port
         String inSpec0MimeType = MIMETypeHelper
                 .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0));
+                        .getFileExtensions().get(0)).orElse(null);
         // get mime type from 2nd port
         String inSpec1MimeType = MIMETypeHelper
                 .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[1])
-                        .getFileExtensions().get(0));
+                        .getFileExtensions().get(0)).orElse(null);
 
         // compare and indicate mismatch
         if (!inSpec0MimeType.equals(inSpec1MimeType)) {

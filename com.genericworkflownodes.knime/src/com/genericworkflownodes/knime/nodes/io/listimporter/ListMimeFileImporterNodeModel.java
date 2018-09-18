@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -53,7 +52,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of ListMimeFileImporter.
- * 
+ *
  * @author roettig, aiche
  */
 public class ListMimeFileImporterNodeModel extends NodeModel {
@@ -66,7 +65,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      * Config name for file extension.
      */
     static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
-    
+
     /**
      * Config name for the option to resolve all paths relative to the workflow.
      */
@@ -84,7 +83,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             CFG_FILE_EXTENSION, "", false);
 
     private SettingsModelBoolean m_resolveWorkflowRel = new SettingsModelBoolean(CFG_RESOLVE_WORKFLOW_RELATIVE, false);
-    
+
     /**
      * Constructor for the node model.
      */
@@ -117,7 +116,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throws InvalidSettingsException {
         m_filenames.loadSettingsFrom(settings);
         m_file_extension.loadSettingsFrom(settings);
-        
+
         // This is a new feature so we have to check if the key exists
         if (settings.containsKey(CFG_RESOLVE_WORKFLOW_RELATIVE)) {
             m_resolveWorkflowRel.loadSettingsFrom(settings);
@@ -135,7 +134,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         if (settings.containsKey(CFG_RESOLVE_WORKFLOW_RELATIVE)) {
             m_resolveWorkflowRel.validateSettings(settings);
         }
-        
+
         SettingsModelStringArray tmp_filenames = m_filenames
                 .createCloneWithValidatedValue(settings);
 
@@ -161,7 +160,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             List<String> mts = new ArrayList<String>();
             String mt = null;
             for (String filename : tmp_filenames.getStringArrayValue()) {
-                mt = MIMETypeHelper.getMIMEtype(filename);
+                mt = MIMETypeHelper.getMIMEtype(filename).orElse(null);
                 if (mt == null) {
                     throw new InvalidSettingsException(
                             "Files of unknown MIMEtype selected: " + filename);
@@ -224,7 +223,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             }
             m_filenames.setStringArrayValue(newFilenames);
         }
-        
+
         URIPortObjectSpec uri_spec = null;
 
         if (m_file_extension.isActive()) {
@@ -232,7 +231,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         } else {
             uri_spec = new URIPortObjectSpec(
                     MIMETypeHelper.getMIMEtypeExtension(m_filenames
-                            .getStringArrayValue()[0]));
+                            .getStringArrayValue()[0]).orElse(null));
         }
 
         return new PortObjectSpec[] { uri_spec };
@@ -256,7 +255,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             uris.add(new URIContent(FileUtil.toURL(filename).toURI(),
                     (m_file_extension.isActive() ? m_file_extension
                             .getStringValue() : MIMETypeHelper
-                            .getMIMEtypeExtension(filename))));
+                            .getMIMEtypeExtension(filename).orElse(null))));
         }
 
         return new PortObject[] { new URIPortObject(uris) };
@@ -265,7 +264,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
     /**
      * Extract a URL from the given String, trying different conversion
      * approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
-     * 
+     *
      * @param urlS
      *            The string containing the URL.
      * @return A URL object.

@@ -2,7 +2,7 @@
  * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +44,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of OutputFiles Node.
- * 
+ *
  * @author roettig, aiche
  */
 public class OutputFilesNodeModel extends NodeModel {
@@ -139,17 +139,17 @@ public class OutputFilesNodeModel extends NodeModel {
 
     /**
      * Checks if incoming and outgoing mime types are compatible.
-     * 
+     *
      * @param inSpecs
      *            The incoming port spec.
      * @return True if the mime types are compatible, false otherwise.
      */
     private boolean mimeTypeCompatible(PortObjectSpec[] inSpecs) {
         String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-                .getStringValue());
+                .getStringValue()).orElse(null);
         String incomingMimeType = MIMETypeHelper
                 .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0));
+                        .getFileExtensions().get(0)).orElse(null);
         return incomingMimeType.equals(selectedMimeType);
     }
 
