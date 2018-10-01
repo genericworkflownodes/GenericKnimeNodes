@@ -20,7 +20,7 @@ KNIME plugin:
 1. Run the preconfigured KNIME Instance
 1. Enjoy your new nodes!
 1. If you want to build an update site for your new nodes, you can do that by creating an update site project
-in Eclipse or use buckminster (TODO link to Thorstens blog post).
+in Eclipse or use buckminster as described [here](https://www.knime.com/blog/creating-knime-update-sites-with-buckminster).
 
 If you want to build your KNIME nodes from another directory
 just call:
@@ -62,12 +62,8 @@ the specified directory:
 See the sample* directories [here](https://github.com/genericworkflownodes/GenericKnimeNodes/tree/develop/com.genericworkflownodes.knime.node_generator/) for examples.
 
 You can supply the executables for each node in the plugin.
-The wrapped binaries have to be supplied in the payload directory
-Pleaser refer to payload.README (TODO link and update) for further details.
-
-Alternatively the user can use already installed versions of the 
-wrapped programs. These can be configured from within KNIME (see 
-Generic Workflow Nodes for KNIME preference tab) (TODO really? Verify).
+The wrapped binaries have to be supplied in the payload directory.
+Pleaser refer to [payload.README](payload.README) for further details.
 
 If you want to ship additional custom nodes written as any other KNIME node in Java code,
 you can create one or more OSGI bundles or Eclipse plugin projects (see KNIME node development documentation)
