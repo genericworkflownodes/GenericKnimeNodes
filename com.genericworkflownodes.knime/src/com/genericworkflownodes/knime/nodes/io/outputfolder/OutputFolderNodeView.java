@@ -1,9 +1,9 @@
 package com.genericworkflownodes.knime.nodes.io.outputfolder;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.swt.program.Program;
 import org.knime.core.node.NodeView;
 
 /**
@@ -37,21 +37,13 @@ public class OutputFolderNodeView extends NodeView<OutputFolderNodeModel> {
      */
     @Override
     protected void onOpen() {
-        try {
-            setShowNODATALabel(true);
-            openFolder();
-        } catch (IOException e) {
-            getLogger().error(
-                    "Could not open the folder for the selected output files.");
-            getLogger().error(e.getMessage());
-            e.printStackTrace();
-        }
+        setShowNODATALabel(true);
     }
 
     public void openFolder() throws IOException {
         String folder_name = getNodeModel().m_foldername.getStringValue();
         if (!"".equals(folder_name)) {
-            Desktop.getDesktop().open(new File(folder_name));
+            Program.launch(new File(folder_name).getCanonicalPath());
         }
     }
 
