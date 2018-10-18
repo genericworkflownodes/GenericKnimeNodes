@@ -18,10 +18,10 @@
  */
 package com.genericworkflownodes.knime.nodes.io.outputfile;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.swt.program.Program;
 import org.knime.core.node.NodeView;
 
 /**
@@ -46,15 +46,7 @@ public class OpenFolderNodeView extends NodeView<OutputFileNodeModel> {
      */
     @Override
     protected void onOpen() {
-        try {
-            setShowNODATALabel(true);
-            openFolder();
-        } catch (IOException e) {
-            getLogger().error(
-                    "Could not open the folder for the selected output files.");
-            getLogger().error(e.getMessage());
-            e.printStackTrace();
-        }
+        setShowNODATALabel(true);
     }
 
     public void openFolder() throws IOException {
@@ -62,7 +54,7 @@ public class OpenFolderNodeView extends NodeView<OutputFileNodeModel> {
         if (!"".equals(f_name)) {
             File f = new File(f_name);
             if (f.getParentFile() != null)
-                Desktop.getDesktop().open(f.getParentFile());
+                Program.launch(f.getParentFile().getCanonicalPath());
         }
     }
 
@@ -72,7 +64,6 @@ public class OpenFolderNodeView extends NodeView<OutputFileNodeModel> {
     @Override
     protected void modelChanged() {
         try {
-            setShowNODATALabel(true);
             openFolder();
         } catch (IOException e) {
             getLogger().error(
