@@ -37,6 +37,7 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -57,6 +58,9 @@ import com.genericworkflownodes.util.MIMETypeHelper;
  */
 public class ListMimeFileImporterNodeModel extends NodeModel {
 
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(ListMimeFileImporterNodeModel.class);
+    
     /**
      * ID for the filename configuration.
      */
@@ -229,9 +233,16 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         if (m_file_extension.isActive()) {
             uri_spec = new URIPortObjectSpec(m_file_extension.getStringValue());
         } else {
-            uri_spec = new URIPortObjectSpec(
-                    MIMETypeHelper.getMIMEtypeExtension(m_filenames
-                            .getStringArrayValue()[0]).orElse(null));
+            String ref_filename = m_filenames
+                    .getStringArrayValue()[0];
+            String ext = MIMETypeHelper.getMIMEtypeExtension(ref_filename).orElse(null);
+            if (ext == null){
+                ext = ref_filename.substring(ref_filename.indexOf('.'),ref_filename.length());
+                LOGGER.warn("MIMEType not registered for extension '" + ext + "'. Proceeding, but this might lead to problems connecting to the affected FileStoreURIPort.");
+                
+            }
+            uri_spec = new URIPortObjectSpec(ref_filename, ext);
+                    
         }
 
         return new PortObjectSpec[] { uri_spec };
@@ -251,6 +262,9 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                         + in.getAbsolutePath());
             }
 
+            //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
+            // Since we check during configure, this is minor, but there should be a more general solution
+            
             // FileUtil.toURL(filename) should not throw anymore because it was already called in convertToURL(filename)
             uris.add(new URIContent(FileUtil.toURL(filename).toURI(),
                     (m_file_extension.isActive() ? m_file_extension

@@ -232,6 +232,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("No File selected.");
         }
 
+        //TODO show warning on node if file does not exist
         // Determine the file extension
         final String fileExtension = this.m_file_extension.isActive() ? this.m_file_extension.getStringValue()
                 : MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElseThrow( () ->
@@ -254,6 +255,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
 
         List<URIContent> uris = new ArrayList<URIContent>();
 
+        //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
+        // Since we check during configure, this is minor, but there should be a more general solution
         uris.add(new URIContent(new File(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper

@@ -38,6 +38,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.ModelContent;
 import org.knime.core.node.ModelContentRO;
 import org.knime.core.node.ModelContentWO;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.ModelContentOutPortView;
 
@@ -51,6 +52,10 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 public abstract class AbstractFileStoreURIPortObject extends
         FileStorePortObject implements IURIPortObject {
 
+    
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(AbstractFileStoreURIPortObject.class);
+    
     /**
      * The key of the rel-path setting stored while loading/saving.
      */
@@ -124,8 +129,13 @@ public abstract class AbstractFileStoreURIPortObject extends
     public File registerFile(String filename) {
         // register the URIContent
         File child = new File(getFileStoreRootDirectory(), filename);
-        URIContent uric = new URIContent(child.toURI(),
-                MIMETypeHelper.getMIMEtypeExtension(filename).orElse(null));
+        String ext = MIMETypeHelper.getMIMEtypeExtension(filename).orElse(null);
+        if (ext == null)
+        {
+            ext = filename.substring(filename.indexOf('.'), filename.length());
+            LOGGER.warn("MIMEType not registered for extension '" + ext + "'. Proceeding, but this might lead to problems connecting to the affected FileStoreURIPort.");
+        }
+        URIContent uric = new URIContent(child.toURI(), ext);
 
         // update content and spec accordingly
         m_uriContents.add(uric);
