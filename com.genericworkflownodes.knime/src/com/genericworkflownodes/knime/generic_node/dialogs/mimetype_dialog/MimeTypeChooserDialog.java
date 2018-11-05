@@ -117,7 +117,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
             
             // Activeness checkbox
             JCheckBox chb = new JCheckBox();
-            chb.setSelected(active_ports[i]);
+            chb.setSelected(port.isActive());
             if(!port.isOptional()){
                 chb.setEnabled(false); // Do not change required outputs
             }
@@ -140,7 +140,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
             
             // type combo box
             JComboBox cb = new JComboBox(strs);
-            cb.setEnabled(strs.length > 1 && active_ports[i]);
+            cb.setEnabled(strs.length > 1 && port.isActive());
             cbsType[i] = cb;
             c.gridx++;
             c.weightx = xWeights[2];
@@ -156,7 +156,8 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
                 inports[j] = Integer.toString(j);
             }
             JComboBox cblink = new JComboBox(inports);
-            cblink.setEnabled(inports.length > 2 && active_ports[i]);
+            // the first choice is always "auto" -> use > 2 
+            cblink.setEnabled(inports.length > 2 && port.isActive());
             cbsLink[i] = cblink;
             c.gridx++;
             c.weightx = xWeights[3];
@@ -167,7 +168,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
             // Not for ListTypes
             JTextField tf = new JTextField();
             tf.setEditable(true);
-            tf.setEnabled(!port.isMultiFile() && active_ports[i]);
+            tf.setEnabled(!port.isMultiFile() && port.isActive());
             textsBasenames[i] = tf;
             c.gridx++;
             c.weightx = xWeights[4];
@@ -202,7 +203,27 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
         this.sel_ports = new int[sel_ports.length];
         System.arraycopy(sel_ports, 0, this.sel_ports, 0, sel_ports.length);
         for (int i = 0; i < cbsType.length; i++) {
-            cbsType[i].setSelectedIndex(sel_ports[i]);
+            if (sel_ports[i] >= 0 && sel_ports[i] < cbsType[i].getItemCount())
+            {
+                cbsType[i].setSelectedIndex(sel_ports[i]);
+            }
+            //TODO What if the combo box is empty (we should check before)?
+            // Or in general if the loaded mime-type from the settings
+            // file is invalid since e.g. some types were removed?
+            // 1) now: load as Inactive, show ".." (if types are empty) or 
+            //    first = default value in ComboBox. After applying in dialog, set to
+            //    new value if changed, otherwise to 0 (=default) and save new settings.
+            // 2) We can think about the code below to show an Invalid setting. Bit hacky.
+            // Since we cannot store the out-of-range value in the combobox we have to
+            // default to one for now. Show warning? But since it stays inactive, user
+            // has to reset anyway. Only problem: how to handle invalid required ports.
+            // Best would be like in parameter dialog, mark with warning what needed to
+            // be defaulted.
+            /*else
+            {
+                cbsType[i].setEditable(true);
+                cbsType[i].setSelectedItem("Invalid");
+            }*/
         }
     }
     
@@ -225,7 +246,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
     
     public void setSelectedLinkedInports(int[] sel_linked_inports) {
         this.linked_inports = new int[sel_linked_inports.length];
-        System.arraycopy(sel_linked_inports, 0, this.active_ports, 0, sel_linked_inports.length);
+        System.arraycopy(sel_linked_inports, 0, this.linked_inports, 0, sel_linked_inports.length);
         for (int i = 0; i < cbsLink.length; i++) {
             cbsLink[i].setSelectedIndex(sel_linked_inports[i]);
         }
@@ -239,6 +260,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
     
 
 
+    //TODO this needs serious rework. Shouldn't they all get a listener?
     @Override
     public void actionPerformed(ActionEvent ev) {
         for (int i = 0; i < cbsType.length; i++) {

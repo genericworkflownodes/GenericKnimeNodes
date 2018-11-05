@@ -33,6 +33,7 @@ import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.Paramete
 import com.genericworkflownodes.knime.parameter.IFileParameter;
 import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
+import com.genericworkflownodes.knime.port.Port;
 
 /**
  * Generic dialog for the tools.
@@ -111,10 +112,10 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
                     GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
                             + i, customBasenames[i]);
         }
-        //TODO we probably need to save some additional settings:
-        // e.g. an integer link to an input or a string for a custom basename
     }
 
+    // This is called before the dialog opens but after all the constructors of the dialogues and tabs in there
+    // were called
     @Override
     protected void loadSettingsFrom(NodeSettingsRO settings,
             PortObjectSpec[] specs) throws NotConfigurableException {
@@ -134,7 +135,7 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
             } catch (InvalidSettingsException e) {
                 errorsFound += "- Entry for " + key + " not found in settings.xml.\n";
             } catch (InvalidParameterValueException e) {
-                errorsFound += "- Entry for " + key + " in settings.xml has a value that does not match it restrictions.\n";
+                errorsFound += "- Entry for " + key + " in settings.xml has a value that does not match its restrictions.\n";
                 //Do not hard fail. Users should be able to edit the value in the dialog.
                 /*throw new NotConfigurableException(e.getMessage(), e);*/
             }
@@ -155,33 +156,42 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
         String[] customBasenames = new String[nP];
 
         for (int i = 0; i < nP; i++) {
-            int idx = -1;
-            try {
-                idx = settings
-                        .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
-                                + i);
+            Port p = config.getOutputPorts().get(i);
+            int idx = 0; // default mimetype is the first
+            try{
+                idx = settings.getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE + i);
                 selectedPorts[i] = idx;
             } catch (InvalidSettingsException e) {
-                // Output type index not found. Quite bad!
-                throw new NotConfigurableException(e.getMessage(), e);
+                //TODO Warning that we fell back to defaults?
+            }
+
+            boolean idxOOR = (idx < 0 || idx >= p.getMimeTypes().size());
+            if (idxOOR && !p.isOptional()) // invalid required port setting read
+            {
+                idx = 0;
+                //TODO Best would be to also deactivate this port to show the user that they have to reconfigure.
+                // But currently I disabled the editing of the activeness checkbox for required ports, so it would get
+                // initialized with an unchecked checkbox and you could not reactivate.
+                // You could do a function that, when the OutputTypes tab is clicked, that it resets to active
+                // for all required ports, because we assume the user has seen/thought about the new settings.
+                // But then, anyways a loaded unchanged workflow would fail due to inactiveness of the port, so no general best solution
+                // for it.
+                // Maybe provide better defaults (e.g. by looking at a mapping from old to new versions, if available). But
+                // that is a lot of work and does not work if the invalidness didnt come from a version change.
+                LOGGER.warn("Invalid mime-type index in settings.xml for required port #" + i + ". Using default (first).");
             }
             
             try{
-                // A found activeness setting takes precedence
+                // A found activeness setting always takes precedence
                 boolean active = settings
                         .getBoolean(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
                                 + i);
                 activePorts[i] = active;
             } catch (InvalidSettingsException e) {
-                // else check if index is invalid
-                if (idx < 0 || idx > config.getOutputPorts().get(i).getMimeTypes().size())
-                {
-                  activePorts[i] = false;
-                } // otherwise default to active
-                else
-                {
-                  activePorts[i] = true; 
-                }
+                // else check if index is invalid otherwise default to active. This is also to cope
+                // with old versions that encoded invalidness in an additional mimetype that is either present as inactive
+                // in old generated NodeFactories or out of range in newer ones/dynamic factories.
+                activePorts[i] = !(idxOOR || p.getMimeTypes().get(selectedPorts[i]).toLowerCase() == "inactive");
             }
             
             try{ //get linked inport

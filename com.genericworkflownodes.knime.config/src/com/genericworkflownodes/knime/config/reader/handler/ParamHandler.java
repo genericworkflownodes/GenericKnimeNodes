@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
@@ -355,9 +356,25 @@ public class ParamHandler extends DefaultHandler {
         p.setOptional(isOptional(attributes));
         p.setActive(true);
         
-        List<String> mimetypes = extractMIMETypes(attributes);
-        for (String mt : mimetypes) {
+        List<String> exts = extractSupportedExtensions(attributes);
+        for (String mt : exts) {
+        	//TODO think about adding a custom mimetype to the registry
+        	// with the same
+        	// name as the extension in case of unknown mimetypes so that they
+        	// are at least usable without errors if they do not have
+        	// successor nodes or if those successors do not care.
             p.addMimeType(mt);
+            //TODO This naming is flawed.
+            // We are actually adding possible extensions here!
+            // Not MimeTypes (which consists of sets of extensions)!
+        }
+        
+        // extensions are empty if they could be anything -> no restrictions
+        if (exts.isEmpty()) 
+        {
+        	// as an "extension" probably an empty extension is best
+        	// user needs to choose in the dialog
+        	p.addMimeType("");
         }
         
         String attr_type = attributes.getValue(ATTR_TYPE);
@@ -407,7 +424,7 @@ public class ParamHandler extends DefaultHandler {
      *            The attributes containing the FileExtension information.
      * @return A list of supported FileExtensions.
      */
-    private List<String> extractMIMETypes(Attributes attributes) {
+    private List<String> extractSupportedExtensions(Attributes attributes) {
         ArrayList<String> mimeTypes = new ArrayList<String>();
 
         // always prefer supported_formats

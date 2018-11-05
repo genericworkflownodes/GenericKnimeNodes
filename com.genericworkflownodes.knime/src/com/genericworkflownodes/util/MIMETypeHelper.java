@@ -18,6 +18,9 @@
  */
 package com.genericworkflownodes.util;
 
+import javax.activation.FileTypeMap;
+import javax.activation.MimetypesFileTypeMap;
+
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
 
@@ -28,6 +31,7 @@ import org.knime.base.filehandling.mime.MIMETypeEntry;
  */
 public class MIMETypeHelper {
 
+    private static final String UNKNOWN_MIMETYPE = "UNKNOWN";
     /**
      * Utility class should have private c'tor.
      */
@@ -39,11 +43,12 @@ public class MIMETypeHelper {
      * 
      * @param filename
      *            The file for which the mime type should be extracted.
-     * @return The MIME type of the file.
+     * @return The MIME type of the file. If not found in registry
+     * returns shortest extension of the file
      */
     public static String getMIMEtype(String filename) {
         // check existing mimetypes
-        String type = null;
+        String type = "";
         String foundExtension = "";
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
             for (String ext : entry.getExtensions()) {
@@ -55,6 +60,11 @@ public class MIMETypeHelper {
                 }
             }
         }
+        if (foundExtension.isEmpty())
+        {
+            //Fallback, use shortest extension as temporary mimetype
+            return filename.substring(filename.lastIndexOf('.') + 1);
+        }
         return type;
     }
 
@@ -65,11 +75,11 @@ public class MIMETypeHelper {
      *            The file extension for which the mime type should be
      *            extracted.
      * 
-     * @return The MIME type of the file.
+     * @return The MIME type of the file. If not found in registry,
+     *  returns the extension itself
      */
     public static String getMIMEtypeByExtension(String extension) {
-        // check existing mimetypes
-        String type = null;
+        // check existing mimetypes and pick first
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
             for (String ext : entry.getExtensions()) {
                 // some mimetypes are stored with spaces around them so .trim()
@@ -78,7 +88,8 @@ public class MIMETypeHelper {
                 }
             }
         }
-        return type;
+        //Fallback, return extension itself
+        return extension;
     }
 
     /**
@@ -92,7 +103,7 @@ public class MIMETypeHelper {
      */
     public static String getMIMEtypeExtension(String filename) {
         // check existing mimetypes
-        String type = null;
+        String type = "";
         String foundExtension = "";
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
             for (String ext : entry.getExtensions()) {
@@ -104,7 +115,12 @@ public class MIMETypeHelper {
                 }
             }
         }
-        return (type != null ? foundExtension : null);
+        if (foundExtension.isEmpty())
+        {
+            //Fallback, use shortest extension as temporary mimetype
+            return filename.substring(filename.lastIndexOf('.') + 1);
+        }
+        return type;
     }
 
     /**
