@@ -102,29 +102,28 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
     public static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
     
     
-
     /**
      * Contains information on which of the available output types is selected
      * for each output port.
      */
-    protected int[] selectedPorts;
+    protected int[] m_selectedOutPortTypes;
     
     /**
      * Contains information on which output ports are active.
      */
-    protected boolean[] activePorts;
+    protected boolean[] m_activeOutPorts;
 
     /**
      * Contains information on what input to use for
      * outputname inference at the outports
      */
-    protected int[] linkedInputPorts;
+    protected int[] m_linkedInPorts;
     
     /**
      * Contains information on which custom basename
      * was set by a user for the outports
      */
-    protected String[] customBasenames; 
+    protected String[] m_customBasenames; 
 
     /**
      * stores the node configuration (i.e. parameters, ports, ..)
@@ -177,12 +176,12 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         m_fileEndingsOutPorts = new String[fileEndingsOutPorts.length][];
         Helper.array2dcopy(fileEndingsOutPorts, m_fileEndingsOutPorts);
 
-        selectedPorts = new int[m_nodeConfig.getNumberOfOutputPorts()];
-        linkedInputPorts = new int[m_nodeConfig.getNumberOfOutputPorts()];
-        customBasenames = new String[m_nodeConfig.getNumberOfOutputPorts()];
-        activePorts = new boolean[m_nodeConfig.getNumberOfOutputPorts()];
-        for (int i = 0; i < activePorts.length; i++){
-            activePorts[i] = m_nodeConfig.getOutputPorts().get(i).isActive();
+        m_selectedOutPortTypes = new int[m_nodeConfig.getNumberOfOutputPorts()];
+        m_linkedInPorts = new int[m_nodeConfig.getNumberOfOutputPorts()];
+        m_customBasenames = new String[m_nodeConfig.getNumberOfOutputPorts()];
+        m_activeOutPorts = new boolean[m_nodeConfig.getNumberOfOutputPorts()];
+        for (int i = 0; i < m_activeOutPorts.length; i++){
+            m_activeOutPorts[i] = m_nodeConfig.getOutputPorts().get(i).isActive();
         }
     }
 
@@ -195,7 +194,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      */
     public String getOutputType(int idx) {
         return m_nodeConfig.getOutputPorts().get(idx).getMimeTypes()
-                .get(selectedPorts[idx]);
+                .get(m_selectedOutPortTypes[idx]);
     }
 
     /**
@@ -207,7 +206,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return The selected output type index.
      */
     protected int getOutputTypeIndex(int idx) {
-        return selectedPorts[idx];
+        return m_selectedOutPortTypes[idx];
     }
     
     /**
@@ -218,7 +217,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return If the port is inactive.
      */
     protected boolean isInactive(int idx) {
-        return !activePorts[idx];
+        return !m_activeOutPorts[idx];
     }
 
 
@@ -337,18 +336,14 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         }
 
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
-            settings.addInt(
-                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
-                            + i, selectedPorts[i]);
-            settings.addBoolean(
-                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
-                            + i, activePorts[i]);
-            settings.addInt(
-                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_LINKEDINPUT
-                            + i, linkedInputPorts[i]);
-            settings.addString(
-                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
-                            + i, customBasenames[i]);
+            settings.addInt(GENERIC_KNIME_NODES_OUT_TYPE
+                            + i, m_selectedOutPortTypes[i]);
+            settings.addBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE
+                            + i, m_activeOutPorts[i]);
+            settings.addInt(GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+                            + i, m_linkedInPorts[i]);
+            settings.addString(GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+                            + i, m_customBasenames[i]);
         }
     }
 
@@ -380,17 +375,17 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         // there has to be sth that we can do about that duplications
         //TODO Shouldn't this also be done in the validateSettings method?
         int nP = m_nodeConfig.getNumberOfOutputPorts();
-        selectedPorts = new int[nP];
-        activePorts = new boolean[nP];
-        linkedInputPorts = new int[nP];
-        customBasenames = new String[nP];
+        m_selectedOutPortTypes = new int[nP];
+        m_activeOutPorts = new boolean[nP];
+        m_linkedInPorts = new int[nP];
+        m_customBasenames = new String[nP];
         
         for (int i = 0; i < nP; i++) {
             Port p = m_nodeConfig.getOutputPorts().get(i);
             int idx = 0; // default mimetype is the first
             try{
-                idx = settings.getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE + i);
-                selectedPorts[i] = idx;
+                idx = settings.getInt(GENERIC_KNIME_NODES_OUT_TYPE + i);
+                m_selectedOutPortTypes[i] = idx;
             } catch (InvalidSettingsException e) {
                 //TODO Warning that we fell back to defaults?
             }
@@ -414,39 +409,39 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             try{
                 // A found activeness setting always takes precedence
                 boolean active = settings
-                        .getBoolean(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
+                        .getBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE
                                 + i);
-                activePorts[i] = active;
+                m_activeOutPorts[i] = active;
             } catch (InvalidSettingsException e) {
                 // else check if index is invalid otherwise default to active. This is also to cope
                 // with old versions that encoded invalidness in an additional mimetype that is either present as inactive
                 // in old generated NodeFactories or out of range in newer ones/dynamic factories.
-                activePorts[i] = !(idxOOR || p.getMimeTypes().get(selectedPorts[i]).toLowerCase() == "inactive");
+                m_activeOutPorts[i] = !(idxOOR || p.getMimeTypes().get(m_selectedOutPortTypes[i]).toLowerCase() == "inactive");
             }
             
             try{ //get linked inport
                 int linked = settings
-                        .getInt(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+                        .getInt(GENERIC_KNIME_NODES_OUT_LINKEDINPUT
                                 + i);
-                linkedInputPorts[i] = linked;
+                m_linkedInPorts[i] = linked;
             } catch (InvalidSettingsException e) {
                 // probably an older version then. Index 0 is auto.
-                linkedInputPorts[i] = 0;
+                m_linkedInPorts[i] = 0;
             }
             
             try{ //get custom basename
                 String bn = settings
-                        .getString(GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+                        .getString(GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
                                 + i);
-                customBasenames[i] = bn;
+                m_customBasenames[i] = bn;
             } catch (InvalidSettingsException e) {
                 // probably an older version then.
-                customBasenames[i] = "";
+                m_customBasenames[i] = "";
             }
             
-            m_nodeConfig.getOutputPorts().get(i).setActive(activePorts[i]);
-            m_nodeConfig.getOutputPorts().get(i).setLinkedPortIndex(linkedInputPorts[i]);
-            m_nodeConfig.getOutputPorts().get(i).setUserBasename(customBasenames[i]);
+            m_nodeConfig.getOutputPorts().get(i).setActive(m_activeOutPorts[i]);
+            m_nodeConfig.getOutputPorts().get(i).setLinkedPortIndex(m_linkedInPorts[i]);
+            m_nodeConfig.getOutputPorts().get(i).setUserBasename(m_customBasenames[i]);
         }
     }
 
@@ -577,7 +572,6 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             if (!isInactive(i)) {
                 out_spec[i] = new URIPortObjectSpec(mt);
             } else {
-                
                 out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
             }
         }
@@ -837,10 +831,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return outputname to use for registering an output file
      */
     private String getOutputBaseName(int outputIndex) throws InvalidSettingsException{
-        if (customBasenames[outputIndex] != null && !customBasenames[outputIndex].isEmpty())
+        if (m_customBasenames[outputIndex] != null && !m_customBasenames[outputIndex].isEmpty())
         {
             //TODO replace variables in that string
-            return customBasenames[outputIndex];
+            return m_customBasenames[outputIndex];
         }
         String iterationSuffix = "";
         try {
@@ -848,9 +842,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         } catch (NoSuchElementException e) {}
         
         // if it is not set to "auto"
-        if (linkedInputPorts[outputIndex] != 0)
+        if (m_linkedInPorts[outputIndex] != 0)
         {
-            Port linked = m_nodeConfig.getInputPorts().get(linkedInputPorts[outputIndex]-1);
+            Port linked = m_nodeConfig.getInputPorts().get(m_linkedInPorts[outputIndex]-1);
             Object portVal = m_nodeConfig.getParameter(linked.getName()).getValue();
             if (portVal != null)
             {
@@ -894,10 +888,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return outputname to use for registering an output file
      */
     private List<String> getOutputBaseNameList(int outputIndex) throws InvalidSettingsException {
-        if (customBasenames[outputIndex] != null && !customBasenames[outputIndex].isEmpty())
+        if (m_customBasenames[outputIndex] != null && !m_customBasenames[outputIndex].isEmpty())
         {
             //TODO replace variables in that string
-            return Arrays.asList(customBasenames[outputIndex].split(","));
+            return Arrays.asList(m_customBasenames[outputIndex].split(","));
         }
         
         // See if we are in an obvious loop context
@@ -907,9 +901,9 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         } catch (NoSuchElementException e) {}
         
         // if it is not set to "auto"
-        if (linkedInputPorts[outputIndex] != 0)
+        if (m_linkedInPorts[outputIndex] != 0)
         {
-            Port linked = m_nodeConfig.getInputPorts().get(linkedInputPorts[outputIndex]-1);
+            Port linked = m_nodeConfig.getInputPorts().get(m_linkedInPorts[outputIndex]-1);
             Object portVal = m_nodeConfig.getParameter(linked.getName()).getValue();
             if (portVal != null)
             {
