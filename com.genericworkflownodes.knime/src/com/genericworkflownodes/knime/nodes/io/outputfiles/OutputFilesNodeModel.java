@@ -120,37 +120,19 @@ public class OutputFilesNodeModel extends NodeModel {
             throws InvalidSettingsException {
         if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
             throw new InvalidSettingsException(
-                    "No URIPortObjectSpec compatible port object");
+                    "No URIPortObjectSpec compatible port object at the input port.");
         }
 
         // check the selected file
         if ("".equals(m_filename.getStringValue())) {
             throw new InvalidSettingsException(
-                    "Please select a target file for the Output Files node.");
+                    "Please select a basename for the Output Files.");
         }
-
-        if (!mimeTypeCompatible(inSpecs)) {
-            throw new InvalidSettingsException(
-                    "The selected output files and the incoming files have incompatible mime types.");
-        }
+        
+        //we do not need to check extension since the extension from the input
+        // is taken over anyways
 
         return new PortObjectSpec[] {};
-    }
-
-    /**
-     * Checks if incoming and outgoing mime types are compatible.
-     *
-     * @param inSpecs
-     *            The incoming port spec.
-     * @return True if the mime types are compatible, false otherwise.
-     */
-    private boolean mimeTypeCompatible(PortObjectSpec[] inSpecs) {
-        String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-                .getStringValue()).orElse(null);
-        String incomingMimeType = MIMETypeHelper
-                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0)).orElse(null);
-        return incomingMimeType.equals(selectedMimeType);
     }
 
     @Override
@@ -165,6 +147,7 @@ public class OutputFilesNodeModel extends NodeModel {
         }
 
         int idx = 1;
+        int c = 0;
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
             if (!in.canRead()) {
@@ -173,7 +156,7 @@ public class OutputFilesNodeModel extends NodeModel {
             }
 
             String outfilename = insertIndex(m_filename.getStringValue(), obj
-                    .getSpec().getFileExtensions().get(0), idx++);
+                    .getSpec().getFileExtensions().get(c), idx++);
             File out = FileUtil.getFileFromURL(FileUtil.toURL(outfilename));
 
             if (out.exists() && !out.canWrite()) {
@@ -183,6 +166,7 @@ public class OutputFilesNodeModel extends NodeModel {
                 throw new Exception("Cannot write to containing directoy: "
                         + out.getParentFile().getAbsolutePath());
             }
+            c++;
 
             FileUtils.copyFile(in, out);
         }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
@@ -112,11 +113,11 @@ public class SplitTableToPortNodeModel extends NodeModel {
 
                 List<URIContent> uriContents = po.getURIContents();
                 for (URIContent uc : uriContents) {
-                    String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension()).orElse(null);
+                    String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension()).orElse(uc.getExtension());
                     if (mimetype == null) {
                         mimetype = mt;
                     } else if (!mt.equals(mimetype)) {
-                        throw new InvalidSettingsException("File ports do not support mixed mimetypes.");
+                        throw new InvalidSettingsException("File ports do not support mixed mimetypes, yet.");
                     }
                     contents.add(uc);
                 }

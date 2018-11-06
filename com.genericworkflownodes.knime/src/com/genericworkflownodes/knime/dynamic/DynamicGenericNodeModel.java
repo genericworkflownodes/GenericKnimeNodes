@@ -65,7 +65,6 @@ import com.genericworkflownodes.knime.execution.UnknownCommandGeneratorException
 import com.genericworkflownodes.knime.execution.UnknownToolExecutorException;
 import com.genericworkflownodes.knime.execution.impl.CancelMonitorThread;
 import com.genericworkflownodes.knime.generic_node.ExecutionFailedException;
-import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 import com.genericworkflownodes.knime.parameter.FileListParameter;
 import com.genericworkflownodes.knime.parameter.FileParameter;
 import com.genericworkflownodes.knime.parameter.IFileParameter;
@@ -73,6 +72,7 @@ import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.util.Helper;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
     static final String GENERIC_KNIME_NODES_OUT_TYPE = "GENERIC_KNIME_NODES_outtype#";
@@ -307,30 +307,23 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-
         for (String key : m_nodeConfig.getParameterKeys()) {
             Parameter<?> param = m_nodeConfig.getParameter(key);
-
             // skip file parameters
             if (param instanceof IFileParameter) {
                 continue;
             }
-
             settings.addString(key, param.getStringRep());
         }
 
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
-            settings.addInt(
-                    GENERIC_KNIME_NODES_OUT_TYPE
+            settings.addInt(GENERIC_KNIME_NODES_OUT_TYPE
                             + i, m_selectedOutPortTypes[i]);
-            settings.addBoolean(
-                    GENERIC_KNIME_NODES_OUT_ACTIVE
+            settings.addBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE
                             + i, m_activeOutPorts[i]);
-            settings.addInt(
-                    GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+            settings.addInt(GENERIC_KNIME_NODES_OUT_LINKEDINPUT
                             + i, m_linkedInPorts[i]);
-            settings.addString(
-                    GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+            settings.addString(GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
                             + i, m_customBasenames[i]);
         }
     }
@@ -426,9 +419,9 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
                 m_customBasenames[i] = "";
             }
             
-            m_nodeConfig.getOutputPorts().get(i).setActive(m_activeOutPorts[i]);
-            m_nodeConfig.getOutputPorts().get(i).setLinkedPortIndex(m_linkedInPorts[i]);
-            m_nodeConfig.getOutputPorts().get(i).setUserBasename(m_customBasenames[i]);
+            p.setActive(m_activeOutPorts[i]);
+            p.setLinkedPortIndex(m_linkedInPorts[i]);
+            p.setUserBasename(m_customBasenames[i]);
         }
     }
 
@@ -501,17 +494,17 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             }
 
             URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
-
+            String firstExt = spec.getFileExtensions().get(0);
+            
             // get MIMEType from incoming port
             // TODO: we should check all file extensions, if its more than one (e.g. last node outputs mixed list of txt and jpg)
-            String mt = MIMEMap.getMIMEType(spec.getFileExtensions().get(0));
+            String mt = MIMETypeHelper.getMIMEtypeByExtension(firstExt).orElse(firstExt);
 
             // check whether input MIMEType is in list of allowed MIMETypes
             boolean ok = false;
             if (m_fileEndingsInPorts[i].length > 0) {
                 for (int j = 0; j < m_fileEndingsInPorts[i].length && !ok; j++) {
-                    if (mt.equals(MIMEMap
-                            .getMIMEType(m_fileEndingsInPorts[i][j]))) {
+                    if (mt.equals(MIMETypeHelper.getMIMEtypeByExtension(m_fileEndingsInPorts[i][j]).orElse(m_fileEndingsInPorts[i][j]))){
                         ok = true;
                     }
                 }
@@ -524,7 +517,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             // we require consistent file endings for non prefix ports
             if (!ok && !m_nodeConfig.getInputPorts().get(i).isPrefix()) {
                 String mismatch = String.format(
-                        "has extension: [%s]; expected one of:[%s]", mt,
+                        "has extension: '%s'; expected one of: %s", firstExt,
                         Arrays.toString(m_fileEndingsInPorts[i]));
                 throw new InvalidSettingsException(
                         "Invalid MIMEtype at port number " + i + " : "
@@ -552,15 +545,32 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
 
         // set selected MIMEURIPortObjectSpecs at output ports
         for (int i = 0; i < nOut; i++) {
+            if (isInactive(i))
+            {
+                out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
+                continue;
+            }
             // selected output MIMEType
             int selectedMIMETypeIndex = getOutputTypeIndex(i);
-            // TODO: check
-            String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
-            if (!isInactive(i)) {
-                out_spec[i] = new URIPortObjectSpec(mt);
-            } else {
-                out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
+            
+            // should never happen. Currently an empty file ending restriction in CTD
+            // will be read as a list of length 1 with "" as entry.
+            if (selectedMIMETypeIndex >= m_fileEndingsOutPorts[i].length)
+            {
+                out_spec[i] = new URIPortObjectSpec(FilenameUtils.getExtension(m_customBasenames[i]));
+                continue;
             }
+            String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
+            if (mt.isEmpty()) // this is the case in empty restrictions
+            {
+                //TODO: we could make the OutType dropdown menu to a text box in that case.
+                //but requires some changes, since we assume all rows have this dropdown
+                //so for now, you can only go for the custom basename (where you can now include
+                //an extension, because only the empty string will be added
+                out_spec[i] = new URIPortObjectSpec(FilenameUtils.getExtension(m_customBasenames[i]));
+                continue;
+            }
+            out_spec[i] = new URIPortObjectSpec(mt);
         }
 
         return out_spec;
@@ -699,6 +709,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
                     // Now it is either a single output file or a file prefix
                     String basename = getOutputBaseName(i);
                     if (isPrefix) {
+                        // we do not append the file extension if we have a prefix
                         po = new FileStorePrefixURIPortObject(filestore, basename);
                         ((FileParameter) p).setValue(((FileStorePrefixURIPortObject) po).getPrefix());
                         LOGGER.debug("> setting param " + portname + "->"
@@ -707,8 +718,6 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
                         ext = getOutputType(i);
                         basename += '.' + ext;
                         po = new FileStoreURIPortObject(filestore);
-
-                        // we do not append the file extension if we have a prefix
                         File file = ((FileStoreURIPortObject)po).registerFile(basename);
                         ((FileParameter) p).setValue(file.getAbsolutePath());
                         LOGGER.debug("> setting param " + portname + "->" + file);
@@ -887,7 +896,7 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
             if (uris.size() > 1 && (!isMultiFile && !isPrefix)) {
                 throw new Exception(
                         "IURIPortObject with multiple URIs supplied at single URI port #"
-                                + i);
+                                + i + ". Use Loops/FileSplitter to branch/iterate or somehow merge the files.");
             }
 
             // check that we are actually referencing a file parameter from this
@@ -906,12 +915,19 @@ public class DynamicGenericNodeModel extends ExtToolOutputNodeModel {
                 // in the config
                 List<String> filenames = new ArrayList<String>();
                 for (URIContent uric : uris) {
-                    filenames.add(FileUtil.getFileFromURL(uric.getURI().toURL()).getAbsolutePath());
+                    URI uri = uric.getURI();
+                    // Resolve the URI to a local path before adding it
+                    File localFile = FileUtil.getFileFromURL(uri.toURL());
+                    if (localFile == null) {
+                        throw new InvalidSettingsException("Tool can only be executed with local files.");
+                    }
+                    filenames.add(localFile.getAbsolutePath());
                 }
                 ((FileListParameter) p).setValue(filenames);
             } else {
                 // just one filename
-                String filename = FileUtil.getFileFromURL(uris.get(0).getURI().toURL()).getAbsolutePath();
+                URI uri = uris.get(0).getURI();
+                String filename = FileUtil.getFileFromURL(uri.toURL()).getAbsolutePath();
                 ((FileParameter) p).setValue(filename);
             }
         }

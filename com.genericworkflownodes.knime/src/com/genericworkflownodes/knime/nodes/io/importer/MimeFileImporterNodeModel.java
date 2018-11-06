@@ -22,11 +22,11 @@ package com.genericworkflownodes.knime.nodes.io.importer;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -72,6 +72,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
         return new SettingsModelOptionalString("FILE_EXTENSION", "", false);
     }
     private final SettingsModelOptionalString m_file_extension = fileExtension();
+    
+    
 
     /**
      * Data member.
@@ -130,30 +132,23 @@ final class MimeFileImporterNodeModel extends NodeModel {
 
         SettingsModelString tmp_filename = m_filename
                 .createCloneWithValidatedValue(settings);
-
+        
         if (tmp_filename.getStringValue().isEmpty()) {
-            throw new InvalidSettingsException("No File selected.");
+            this.getLogger().warn("No File selected.");
+            //throw new InvalidSettingsException("No File selected.");
         }
 
-        convertToURL(tmp_filename.getStringValue());
+        //convertToURL(tmp_filename.getStringValue());
 
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
 
         if (tmp_file_extension.isActive()) {
             if (tmp_file_extension.getStringValue().equals("")) {
-                throw new InvalidSettingsException(
-                        "No File extension (override) provided.");
-            } else if (MIMETypeHelper.getMIMEtypeByExtension(tmp_file_extension
-                    .getStringValue()) == null) {
-                throw new InvalidSettingsException(
-                        "No MIME type registered for file extension: "
-                                + tmp_file_extension.getStringValue());
+                this.getLogger().warn("No File extension (override) provided.");
+                //throw new InvalidSettingsException(
+                //        "No File extension (override) provided.");
             }
-        } else if (MIMETypeHelper.getMIMEtype(tmp_filename.getStringValue()) == null) {
-            throw new InvalidSettingsException(
-                    "File of unknown MIME type selected: "
-                            + tmp_filename.getStringValue());
         }
     }
 
@@ -180,7 +175,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
+            url = FileUtil.toURL(urlS);
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -190,9 +185,6 @@ final class MimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
-        } catch (IOException | URISyntaxException e) {
-            throw new InvalidSettingsException("Invalid URL: "
-                    + e.getMessage(), e);
         }
 
         return url;
@@ -228,17 +220,55 @@ final class MimeFileImporterNodeModel extends NodeModel {
          * Upon inserting the node into a workflow, it gets configured, so at
          * least something fundamental like the file name should be checked
          */
-        if (filenameValue.isEmpty()) {
+        if (filenameValue.isEmpty() || filenameValue == null) {
             throw new InvalidSettingsException("No File selected.");
         }
+        
+        File f;
+        try {
+         f = FileUtil.getFileFromURL(convertToURL(m_filename.getStringValue()));
+        } catch (IllegalArgumentException e)
+        {
+            throw new InvalidSettingsException("Illegal URI given.");
+        }
+        
+        if (!f.exists())
+        {
+            throw new InvalidSettingsException("File does not exist.");
+        }
+        
+        if (!f.isFile())
+        {
+            throw new InvalidSettingsException("Path is not a file.");
+        }
+    
+        if (!f.canRead())
+        {
+            throw new InvalidSettingsException("File not readable.");
+        }
 
-        //TODO show warning on node if file does not exist
         // Determine the file extension
-        final String fileExtension = this.m_file_extension.isActive() ? this.m_file_extension.getStringValue()
-                : MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElseThrow( () ->
-                new InvalidSettingsException(
-                        String.format("Could not determine file type for selected input file: %s", filenameValue)));
-
+        String fileExtension = "";
+        
+        if (this.m_file_extension.isActive())
+        {
+            fileExtension = this.m_file_extension.getStringValue();
+            if (MIMETypeHelper.getMIMEtypeByExtension(fileExtension).orElse(null) == null)
+            {
+                this.getLogger().warn("Extension of unknown/unregistered MIME type selected: "
+                        + filenameValue); 
+            }
+        }
+        else
+        {
+            fileExtension = MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElse(null);
+            if (fileExtension == null)
+            {
+                this.getLogger().warn("File of unknown/unregistered MIME type selected: "
+                        + filenameValue);
+                fileExtension = FilenameUtils.getExtension(filenameValue);
+            }
+        }
         return new PortObjectSpec[] {
                 new URIPortObjectSpec(fileExtension)
         };
@@ -247,7 +277,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        File file = new File(convertToURL(m_filename.getStringValue()).toURI());
+        File file = FileUtil.getFileFromURL(convertToURL(m_filename.getStringValue()));
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
@@ -255,12 +285,10 @@ final class MimeFileImporterNodeModel extends NodeModel {
 
         List<URIContent> uris = new ArrayList<URIContent>();
 
-        //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
-        // Since we check during configure, this is minor, but there should be a more general solution
         uris.add(new URIContent(new File(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
-                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(null))));
+                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(FilenameUtils.getExtension(file.getAbsolutePath())))));
 
         data = Helper.readFileSummary(file, 50).getBytes();
 

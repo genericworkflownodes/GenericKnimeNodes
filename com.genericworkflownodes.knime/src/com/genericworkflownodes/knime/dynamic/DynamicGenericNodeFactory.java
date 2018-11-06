@@ -271,7 +271,8 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
                 OutPort op = ports.addNewOutPort();
                 op.setIndex(new BigInteger(Integer.toString(index++)));
                 String mimetypes = mimetypes2String(p.getMimeTypes());
-                op.setName(p.getName() + mimetypes);
+                String optional = p.isOptional() ? "(Optional) " : "";
+                op.setName(optional + p.getName() + mimetypes);
                 op.getDomNode().appendChild(domDoc.createTextNode(p.getDescription() + mimetypes));
             }
             

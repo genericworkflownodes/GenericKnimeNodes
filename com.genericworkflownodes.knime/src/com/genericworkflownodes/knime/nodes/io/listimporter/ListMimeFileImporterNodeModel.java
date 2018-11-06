@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -150,33 +151,40 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
 
+        //TODO if we want to allow flow variables here at some point,
+        // we should not hard fail/throw here, because the variable
+        // is first known during the configure method
         if (tmp_file_extension.isActive()) {
             if (tmp_file_extension.getStringValue().equals("")) {
                 throw new InvalidSettingsException(
                         "No File extension (override) provided.");
             } else if (MIMETypeHelper.getMIMEtypeByExtension(tmp_file_extension
                     .getStringValue()) == null) {
-                throw new InvalidSettingsException(
+                this.getLogger().warn(
                         "No MIMEtype registered for file extension: "
                                 + tmp_file_extension.getStringValue());
             }
         } else {
             List<String> mts = new ArrayList<String>();
             String mt = null;
+            String lastMt = null;
+            boolean first = true;
             for (String filename : tmp_filenames.getStringArrayValue()) {
                 mt = MIMETypeHelper.getMIMEtype(filename).orElse(null);
-                if (mt == null) {
-                    throw new InvalidSettingsException(
-                            "Files of unknown MIMEtype selected: " + filename);
+                if (mt == null)
+                {
+                    this.getLogger().warn(
+                            "Files of unknown MIMEtype selected.");
+                    mt = FilenameUtils.getExtension(filename);
                 }
+                if (!first && (lastMt != mt)) {
+                    throw new InvalidSettingsException(
+                            "Files with mixed MIMEType loaded. This is currently not supported.");
+                } else {
+                    first = false;
+                }
+                lastMt = mt;
                 mts.add(mt);
-            }
-
-            for (String mimeType : mts) {
-                if (!mimeType.equals(mt)) {
-                    throw new InvalidSettingsException(
-                            "Files with mixed MIMEType loaded");
-                }
             }
         }
     }
@@ -215,6 +223,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         if (m_resolveWorkflowRel.getBooleanValue()) {
             String[] newFilenames = new String[filenames.length];
             Path localPath;
+            //TODO allow different mountpoint except knime.workflow here (e.g. with a text box)
             try {
                 URL url = FileUtil.toURL("knime://knime.workflow/");
                 localPath = FileUtil.resolveToPath(url);
@@ -237,11 +246,11 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                     .getStringArrayValue()[0];
             String ext = MIMETypeHelper.getMIMEtypeExtension(ref_filename).orElse(null);
             if (ext == null){
-                ext = ref_filename.substring(ref_filename.indexOf('.'),ref_filename.length());
-                LOGGER.warn("MIMEType not registered for extension '" + ext + "'. Proceeding, but this might lead to problems connecting to the affected FileStoreURIPort.");
+                ext = FilenameUtils.getExtension(ref_filename);
+                LOGGER.warn("MIMEType not registered for extension '" + ext + "'. Proceeding with unknown.");
                 
             }
-            uri_spec = new URIPortObjectSpec(ref_filename, ext);
+            uri_spec = new URIPortObjectSpec(ext);
                     
         }
 
@@ -261,15 +270,12 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                 throw new Exception("Cannot read from input file: "
                         + in.getAbsolutePath());
             }
-
-            //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
-            // Since we check during configure, this is minor, but there should be a more general solution
             
             // FileUtil.toURL(filename) should not throw anymore because it was already called in convertToURL(filename)
             uris.add(new URIContent(FileUtil.toURL(filename).toURI(),
                     (m_file_extension.isActive() ? m_file_extension
                             .getStringValue() : MIMETypeHelper
-                            .getMIMEtypeExtension(filename).orElse(null))));
+                            .getMIMEtypeExtension(filename).orElse(FilenameUtils.getExtension(filename)))));
         }
 
         return new PortObject[] { new URIPortObject(uris) };

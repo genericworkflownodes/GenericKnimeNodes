@@ -37,6 +37,22 @@ import javax.swing.JTextField;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.port.Port;
 
+//TODO The whole Model needs serious rework! Info about configuration of ports
+// is stored at multiple points (Here in the arrays, here in the dialog components,
+// in the same arrays in the GKNView class, in the NodeSettings object that is somehow
+// synchronized with the settings.xml on disk and in the Port objects themselves
+// in the NodeConfiguration
+
+//Current flow:
+// 1) NodeView constructor
+// 2) MTChooser constructor
+// 3) NodeView loadSettings reads from NodeSettings
+// 4) NodeView loadSettings calls setXYZ on MTChooser
+// 5) MTChooser updates
+// 6) On clicks, Listener updates affected arrays
+// 7) On OK button, NodeView saveSettings is called
+// 8) Calls MTChooser getXYZ (which therefore has to represent the state of the components at every time)
+// 9) NodeModel calls loadSettings and configure
 public class MimeTypeChooserDialog extends JPanel implements ActionListener {
     private static final long serialVersionUID = 3102737955888696834L;
 
@@ -51,6 +67,7 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
     private int[] linked_inports;
     private String[] custom_basenames;
     
+    //TODO these are hardcoded for now. Maybe there is a better way
     private static double[] xWeights = {0.07,0.2,0.1,0.1,0.6};
 
     public MimeTypeChooserDialog(INodeConfiguration config) {
@@ -207,10 +224,9 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
             {
                 cbsType[i].setSelectedIndex(sel_ports[i]);
             }
-            //TODO What if the combo box is empty (we should check before)?
-            // Or in general if the loaded mime-type from the settings
+            //TODO What if the loaded mime-type from the settings
             // file is invalid since e.g. some types were removed?
-            // 1) now: load as Inactive, show ".." (if types are empty) or 
+            // 1) now: load as Inactive, show "" (if types are empty) or 
             //    first = default value in ComboBox. After applying in dialog, set to
             //    new value if changed, otherwise to 0 (=default) and save new settings.
             // 2) We can think about the code below to show an Invalid setting. Bit hacky.
@@ -255,7 +271,8 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
     private void setEnabledRow(int row, boolean enable) {
         cbsLink[row].setEnabled(enable && cbsLink[row].getItemCount() > 2);
         cbsType[row].setEnabled(enable && cbsType[row].getItemCount() > 1);
-        textsBasenames[row].setEnabled(enable && !config.getOutputPorts().get(row).isMultiFile());
+        // I think we can safely allow a common basename for output file lists
+        textsBasenames[row].setEnabled(enable/* && !config.getOutputPorts().get(row).isMultiFile()*/);
     }
     
 
@@ -272,6 +289,15 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
             if (ev.getSource() == chbs[i]) {
                 active_ports[i] = chbs[i].isSelected();
                 setEnabledRow(i, chbs[i].isSelected());
+                if (chbs[i].isSelected())
+                {
+                    //this is for backwards compatibility
+                    // if it was set to inactive by other means,
+                    // the selection might be invalid
+                    // and at first activation we need to update the internals
+                    sel_ports[i] = cbsType[i].getSelectedIndex();
+                }
+                
             }
         }
         for (int i = 0; i < cbsLink.length; i++) {

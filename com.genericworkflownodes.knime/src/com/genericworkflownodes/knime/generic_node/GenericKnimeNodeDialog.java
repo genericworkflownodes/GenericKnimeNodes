@@ -99,12 +99,27 @@ public class GenericKnimeNodeDialog extends NodeDialogPane {
         String[] customBasenames = mtc.getCustomBasenames();
 
         for (int i = 0; i < config.getNumberOfOutputPorts(); i++) {
-            settings.addInt(
-                    GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
-                            + i, selectedPorts[i]);
             settings.addBoolean(
                     GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_ACTIVE
                             + i, activePorts[i]);
+            
+            //TODO Remove that dirty hack for backwards compatibility ASAP
+            // in new version. Resets the selected mimetype index to an
+            // invalid one when it gets deactivated. -> User has to rechoose
+            // when he reactivates! But this ensures that inactive ports
+            // are correctly read by older GKN versions
+            if (!activePorts[i])
+            {
+                settings.addInt(
+                        GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
+                                + i, config.getOutputPorts().get(i).getMimeTypes().size());
+            } else {
+                settings.addInt(
+                        GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_TYPE
+                                + i, selectedPorts[i]);
+            }
+
+
             settings.addInt(
                     GenericKnimeNodeModel.GENERIC_KNIME_NODES_OUT_LINKEDINPUT
                             + i, linkedInputPorts[i]);

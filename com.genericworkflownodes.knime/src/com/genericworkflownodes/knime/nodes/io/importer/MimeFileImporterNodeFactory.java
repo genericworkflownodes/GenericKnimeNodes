@@ -33,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
@@ -75,7 +76,9 @@ NodeFactory<MimeFileImporterNodeModel> {
             // Determine the MIME Type
             final Optional<String> mime = checkbox.isSelected() ? MIMETypeHelper.getMIMEtypeByExtension(opt.getText())
                     : MIMETypeHelper.getMIMEtype((String) fileBox.getEditor().getItem());
-            this.label.setText("MIME Type: " + mime.orElse("Unknown"));
+            final String ext = checkbox.isSelected() ? opt.getText() :
+                FilenameUtils.getExtension((String)fileBox.getEditor().getItem());
+            this.label.setText("MIME Type: " + mime.orElse("unregistered ('" + ext + "')"));
         }
 
         @Override
@@ -122,7 +125,7 @@ NodeFactory<MimeFileImporterNodeModel> {
         checkbox.addActionListener(mimeTypeListender);
         opt.addActionListener(mimeTypeListender);
 
-        // Register the MimeType Listender as Key Listener
+        // Register the MimeType Listener as Key Listener
         opt.addKeyListener(keyListener);
         fileBox.getEditor().getEditorComponent().addKeyListener(keyListener);
         fileBox.addKeyListener(keyListener);
@@ -152,8 +155,12 @@ NodeFactory<MimeFileImporterNodeModel> {
             final int viewIndex, final MimeFileImporterNodeModel nodeModel) {
 
         return new GenericNodeView<MimeFileImporterNodeModel>(nodeModel, (model) -> {
-
-            final JTextArea text = new JTextArea(new String(model.getContent()), 40, 80);
+            String toDisplay = "File does not exist!";
+            if (model.getContent() != null)
+            {
+                toDisplay = new String (model.getContent());
+            }
+            final JTextArea text = new JTextArea(toDisplay, 40, 80);
             text.setFont(new Font("Monospaced", Font.BOLD, 12));
             return new JScrollPane(text);
         });
