@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -48,7 +48,7 @@ import org.knime.core.node.port.PortObjectSpec;
 /**
  * Dialog component to choose multiple files at once, as input for a KNIME
  * workflow.
- * 
+ *
  * @author roettig, aiche
  */
 public class DialogComponentMultiFileChooser extends DialogComponent {
@@ -65,10 +65,10 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
     /**
      * Custom ListModel for the file list.
-     * 
+     *
      * @author aiche
      */
-    private static class FileListModel extends AbstractListModel {
+    private static final class FileListModel extends AbstractListModel<String> {
         /**
          * The serialVersionUID.
          */
@@ -77,10 +77,10 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         /**
          * The resulting files.
          */
-        private List<File> files;
+        private final List<File> files;
 
         @Override
-        public Object getElementAt(final int index) {
+        public String getElementAt(final int index) {
             return files.get(index).getAbsolutePath();
         }
 
@@ -92,7 +92,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         /**
          * Transfers values from the {@link SettingsModelStringArray} into the
          * underlying model.
-         * 
+         *
          * @param model
          *            The data model.
          */
@@ -115,12 +115,13 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         /**
          * Updates the content of the Model based on
          * {@link SettingsModelStringArray}.
-         * 
+         *
          * @param model
          *            The model source to update from.
          */
         private void updateFromSettingsModel(
                 final SettingsModelStringArray model) {
+
             files.clear();
             for (String f : model.getStringArrayValue()) {
                 files.add(new File(f));
@@ -130,7 +131,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         /**
          * Updates the underlying list with new values.
-         * 
+         *
          * @param newFiles
          *            The new files to display.
          */
@@ -143,7 +144,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         /**
          * Gives direct access to the underlying file list.
-         * 
+         *
          * @return The list of stored files.
          */
         public List<File> getFiles() {
@@ -160,7 +161,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
         /**
          * Removes the given values.
-         * 
+         *
          * @param selectedIndices
          *            Indices of the values to remove.
          */
@@ -201,7 +202,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
     /**
      * C'tor.
-     * 
+     *
      * @param model
      *            The model to store the files.
      */
@@ -291,7 +292,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
 
     /**
      * Initializes the {@link SpringLayout} for the content of this pane.
-     * 
+     *
      * @param springLayout
      *            The used {@link SpringLayout}.
      * @param listScroller

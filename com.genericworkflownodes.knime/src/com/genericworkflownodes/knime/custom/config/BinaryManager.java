@@ -2,7 +2,7 @@
  * Copyright (c) 2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -53,12 +53,12 @@ public final class BinaryManager {
     /**
      * Path inside the bundle where the binaries should be located.
      */
-    private static final String BUNDLE_PATH = "payload";    
-    
+    public static final String BUNDLE_PATH = "payload";
+
     /**
      * Path inside the bundle where the descriptors should be located.
      */
-    private static final String DESCRIPTORS_PATH = BUNDLE_PATH + File.separator + "descriptors";
+    private static final String DESCRIPTORS_PATH = "/" + BUNDLE_PATH + File.separator + "descriptors";
 
     /**
      * File that should be present to identify the correct path.
@@ -76,7 +76,7 @@ public final class BinaryManager {
 
     /**
      * C'tor.
-     * 
+     *
      * @param clazzInBundle
      *            A class inside the bundle where the files should be located.
      */
@@ -99,7 +99,7 @@ public final class BinaryManager {
     /**
      * Returns a set of environment variables required by the executable. Will
      * be an empty map if we use the system version of the tool.
-     * 
+     *
      * @param executableName
      *            The name of the executable for which the process environment
      *            should be returned.
@@ -173,20 +173,20 @@ public final class BinaryManager {
             return null;
         }
     }
-    
+
     public File resolveToolDescriptorPath(final String relToolPath) {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
         try {
             return new File(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH + File.separator + relToolPath)).getFile());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            LOGGER.error(e);
             return null;
         }
     }
 
     /**
      * Search the bundle for the given file name.
-     * 
+     *
      * @param fileName
      *            The name of the file to find.
      * @return A File object pointing to the requested file or null if the file
@@ -209,31 +209,56 @@ public final class BinaryManager {
             }
         }
     }
-    
+
+    public boolean fileExists(final String fileName) {
+        return findFileInBundle(fileName) != null;
+    }
+
     /**
      * Search the bundle for CTDs and list them in a List of Files.
-     * 
+     *
      * @return List of CTD Files in the bundle
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public Iterable<String> listTools() {
         Bundle bundle = FrameworkUtil.getBundle(classInBundle);
-        Enumeration<URL> e = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+        Enumeration<URL> ctds = bundle.findEntries(DESCRIPTORS_PATH, "*.ctd", true);
+
+        // findEntries returns null if no entry is found
+        if (ctds == null) {
+            LOGGER.warn("The bundle " + bundle.getSymbolicName() + " does not contain any CTD files.");
+            return Collections.emptyList();
+        }
+
         ArrayList<String> files = new ArrayList<>();
         Path p;
         try {
-            p = Paths.get(FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH)).toString());
-        } catch (Exception ex) {
+            p = Paths.get(new URI(
+                    FileLocator.toFileURL(bundle.getResource(DESCRIPTORS_PATH))
+                            .toString().replaceAll(" ", "%20")));
+            LOGGER.debug("Descriptors location: " + p.toString());
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+            return Collections.emptyList();
+        } catch (URISyntaxException ex) {
+            LOGGER.error(ex);
             return Collections.emptyList();
         }
-        while (e.hasMoreElements()){
+
+        while (ctds.hasMoreElements()){
             try {
-                Path el = Paths.get(FileLocator.toFileURL(e.nextElement()).toString());
+                Path el = Paths
+                        .get(new URI(FileLocator.toFileURL(ctds.nextElement())
+                                .toString().replaceAll(" ", "%20")));
+                LOGGER.info("Loading CTD from " + el.toString());
                 files.add(p.relativize(el).toString());
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            } catch (IOException e) {
+                LOGGER.error(e);
+            } catch (URISyntaxException e) {
+                LOGGER.error(e);
             }
         }
+
         return files;
     }
 }

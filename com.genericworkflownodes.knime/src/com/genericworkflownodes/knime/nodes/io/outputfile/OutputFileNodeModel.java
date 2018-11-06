@@ -2,7 +2,7 @@
  * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,14 +44,15 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of MimeFileExporter.
- * 
- * 
+ *
+ *
  * @author roettig, aiche
  */
 public class OutputFileNodeModel extends NodeModel {
@@ -104,10 +105,10 @@ public class OutputFileNodeModel extends NodeModel {
 
     public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
         String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-                .getStringValue());
+                .getStringValue()).orElse(null);
         String incomingMimeType = MIMETypeHelper
                 .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0));
+                        .getFileExtensions().get(0)).orElse(null);
 
         return incomingMimeType.equals(selectedMimeType);
     }
@@ -125,8 +126,12 @@ public class OutputFileNodeModel extends NodeModel {
 
         String filename = m_filename.getStringValue();
 
-        File in = new File(uris.get(0).getURI());
-        File out = new File(filename);
+        File in = FileUtil.getFileFromURL(uris.get(0).getURI().toURL());
+        File out = FileUtil.getFileFromURL(FileUtil.toURL(filename));
+
+        if (out == null) {
+            throw new InvalidSettingsException("Can only write to local paths.");
+        }
 
         FileUtils.copyFile(in, out);
 

@@ -3,7 +3,7 @@
  * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +22,6 @@ package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -51,9 +50,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -73,7 +70,7 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 
 /**
  * Parameter dialog visualizing the tree like parameter structure.
- * 
+ *
  * @author roettig, aiche, bkahlert, jpfeuffer
  */
 public class ParameterDialog extends JPanel {
@@ -86,7 +83,7 @@ public class ParameterDialog extends JPanel {
 
     /**
      * TreeModelListener for netbeans.swing.Outline .
-     * 
+     *
      * @author aiche
      */
     private final class ParamDialogTreeModelListener implements
@@ -119,7 +116,7 @@ public class ParameterDialog extends JPanel {
 
     /**
      * ListSelectionListener for the NetBeans Outline object.
-     * 
+     *
      * @author aiche
      */
     private final class ParamDialogListSelectionListener implements
@@ -142,7 +139,7 @@ public class ParameterDialog extends JPanel {
 
     /**
      * The high-lighter for the NetBeans Outline object.
-     * 
+     *
      * @author aiche, jpfeuffer
      */
     private final class ParamDialogDataProvider implements RenderDataProvider {
@@ -205,7 +202,7 @@ public class ParameterDialog extends JPanel {
 
     /**
      * Construct dialog from a NodeConfiguration.
-     * 
+     *
      * @param config
      *            The configuration that should be represented by the dialog.
      */
@@ -215,15 +212,15 @@ public class ParameterDialog extends JPanel {
         // create the data model for the table
         treemdl = new ParameterDialogTreeModel(config);
         treemdl.addTreeModelListener(new ParamDialogTreeModelListener());
-        model = DefaultOutlineModel.createOutlineModel(treemdl, 
+        model = DefaultOutlineModel.createOutlineModel(treemdl,
                 new ParameterDialogRowModel(), true, "Parameter");
 
         // create the NetBeans Outline object (basically a TreeTable)
         createTable();
-        
+
         // adjust size of columns initially to fit the screen
         updateTableView();
-        
+
         // create (citation text) header
         if(config.getCitations() != null && !config.getCitations().isEmpty()) {
             createHeader();
@@ -247,15 +244,15 @@ public class ParameterDialog extends JPanel {
             }
             header.setText(sb.toString());
         }
-        
+
         // create the sub controls on the bottom (documentation and toggle for advanced)
         createHelpPane();
         createShowAdvancedToggle();
-        
+
         // set the custom renderer for the first column (the "tree" or "parameter" column)
         TableColumn treecol = table.getColumnModel().getColumn(0);
         treecol.setCellRenderer(treemdl.getCellRenderer());
-        
+
         // finally add controls to panel
         addControlsToPanel();
         updateTableView();
@@ -314,7 +311,7 @@ public class ParameterDialog extends JPanel {
         table.getColumnModel().getColumn(0).setMinWidth(50);
         table.getColumnModel().getColumn(1).setMinWidth(50);
         table.getColumnModel().getColumn(2).setMinWidth(50);
-        
+
         addSelectionListener();
     }
 
@@ -369,7 +366,7 @@ public class ParameterDialog extends JPanel {
 
     private void updateTableView() {
         // expand full tree by default
-        for (int rowid = 0; rowid < model.getRowCount(); rowid++){       
+        for (int rowid = 0; rowid < model.getRowCount(); rowid++){
             model.getLayout().setExpandedState(model.getLayout().getPathForRow(rowid), true);
         }
         // adjust column widths

@@ -21,6 +21,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 /**
  * This is the model implementation of OutputFolder. Writes all the incoming
@@ -62,13 +63,14 @@ public class OutputFolderNodeModel extends NodeModel {
 
         double idx = 1.0;
         for (URIContent uri : uris) {
-            File in = new File(uri.getURI());
+            File in = FileUtil.getFileFromURL(uri.getURI().toURL());
             if (!in.canRead()) {
                 throw new Exception("Cannot read file to export: "
                         + in.getAbsolutePath());
             }
 
-            File target = new File(m_foldername.getStringValue(), in.getName());
+            File folder = FileUtil.getFileFromURL(FileUtil.toURL(m_foldername.getStringValue()));
+            File target = new File(folder, in.getName());
 
             if (target.exists() && !target.canWrite()) {
                 throw new Exception("Cannot write to file: "

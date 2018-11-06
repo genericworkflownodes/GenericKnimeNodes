@@ -85,6 +85,7 @@ public class ParamHandler extends DefaultHandler {
     private static final String TAG_LISTITEM = "LISTITEM"; // value
     private static final String TAG_PARAMETERS = "PARAMETERS";
 
+    private static final String TYPE_BOOL = "bool";
     private static final String TYPE_INT = "int";
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_DOUBLE = "double";
@@ -226,7 +227,10 @@ public class ParamHandler extends DefaultHandler {
                     return;
                 }
 
-                if (TYPE_INT.equals(type)) {
+                if (TYPE_BOOL.equals(type))
+                {
+                	handleBoolType(paramName, paramValue, attributes);
+                } else if (TYPE_INT.equals(type)) {
                     handleIntType(paramName, paramValue, attributes);
                 } else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
                     handleDoubleType(paramName, paramValue, attributes);
@@ -599,6 +603,23 @@ public class ParamHandler extends DefaultHandler {
                             .getUpperBound(restrictions));
         }
     }
+    
+    /**
+     * Convert the current element into a BoolParameter.
+     * 
+     * @param paramName
+     *            The name of the Parameter
+     * @param paramValue
+     *            The value of the Parameter as given in the param file.
+     * @param attributes
+     *            Attributes of the Parameter. Useless for BoolParameters.
+     */
+    private void handleBoolType(final String paramName, final String paramValue,
+            Attributes attributes) {
+    	m_currentParameter = new BoolParameter(paramName, paramValue);
+    }
+    
+    
 
     /**
      * Convert the current element into a DoubleParameter.

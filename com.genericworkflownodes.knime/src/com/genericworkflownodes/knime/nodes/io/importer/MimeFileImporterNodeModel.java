@@ -3,7 +3,7 @@
  * Copyright (c) 2012-2014, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,17 +20,12 @@
 package com.genericworkflownodes.knime.nodes.io.importer;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
@@ -49,48 +44,46 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
+import com.genericworkflownodes.util.ZipUtils;
 
 /**
  * This is the model implementation of MimeFileImporter.
- * 
+ *
  * @author roettig, aiche
  */
-public class MimeFileImporterNodeModel extends NodeModel {
+final class MimeFileImporterNodeModel extends NodeModel {
 
     /**
-     * Config name for file name.
+     * SettingsModel for the filename
      */
-    static final String CFG_FILENAME = "FILENAME";
-    /**
-     * Config name for file extension.
-     */
-    static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
+    static SettingsModelString filename() {
+        return new SettingsModelString("FILENAME", "");
+    }
+    private final SettingsModelString m_filename = filename();
 
-    /**
-     * SettingsModel to the filename and optional extension
-     */
-    private SettingsModelString m_filename = new SettingsModelString(
-            MimeFileImporterNodeModel.CFG_FILENAME, "");
     /**
      * SettingsModel for potential file extension override.
      */
-    private SettingsModelOptionalString m_file_extension = new SettingsModelOptionalString(
-            CFG_FILE_EXTENSION, "", false);
+    static SettingsModelOptionalString fileExtension() {
+        return new SettingsModelOptionalString("FILE_EXTENSION", "", false);
+    }
+    private final SettingsModelOptionalString m_file_extension = fileExtension();
 
     /**
      * Data member.
      */
-    private String data;
+    private byte[] data;
 
     /**
      * Getter for data member.
-     * 
+     *
      * @return The data member.
      */
-    public String getContent() {
+    public byte[] getContent() {
         return data;
     }
 
@@ -114,8 +107,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        m_filename.saveSettingsTo(settings);
-        m_file_extension.saveSettingsTo(settings);
+        this.m_filename.saveSettingsTo(settings);
+        this.m_file_extension.saveSettingsTo(settings);
     }
 
     /**
@@ -124,8 +117,8 @@ public class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        m_filename.loadSettingsFrom(settings);
-        m_file_extension.loadSettingsFrom(settings);
+        this.m_filename.loadSettingsFrom(settings);
+        this.m_file_extension.loadSettingsFrom(settings);
     }
 
     /**
@@ -142,7 +135,7 @@ public class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("No File selected.");
         }
 
-        convertToURL(tmp_filename);
+        convertToURL(tmp_filename.getStringValue());
 
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
@@ -164,10 +157,15 @@ public class MimeFileImporterNodeModel extends NodeModel {
         }
     }
 
+    private static File getDataFile(final File internDir) {
+
+        return new File(internDir, "loadeddata");
+    }
+
     /**
      * Extract a URL from the given SettingsModelString, trying different
      * conversion approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
-     * 
+     *
      * @param filename_settings
      *            The settings object containing the URL to convert.
      * @return A URL object.
@@ -175,16 +173,14 @@ public class MimeFileImporterNodeModel extends NodeModel {
      *             If the string in the given settings object cannot be
      *             converted properly.
      */
-    private URL convertToURL(SettingsModelString filename_settings)
-            throws InvalidSettingsException {
+    private URL convertToURL(String urlS) throws InvalidSettingsException {
         URL url;
 
-        String urlS = filename_settings.getStringValue();
         if (urlS == null) {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = new URL(urlS);
+            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -194,6 +190,9 @@ public class MimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
+        } catch (IOException | URISyntaxException e) {
+            throw new InvalidSettingsException("Invalid URL: "
+                    + e.getMessage(), e);
         }
 
         return url;
@@ -204,33 +203,9 @@ public class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void loadInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-        ZipFile zip = new ZipFile(new File(internDir, "loadeddata"));
+            final ExecutionMonitor exec) throws IOException, CanceledExecutionException {
 
-        @SuppressWarnings("unchecked")
-        Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zip.entries();
-
-        int BUFFSIZE = 2048;
-        byte[] BUFFER = new byte[BUFFSIZE];
-
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-
-            if (entry.getName().equals("rawdata.bin")) {
-                int size = (int) entry.getSize();
-                byte[] data = new byte[size];
-                InputStream in = zip.getInputStream(entry);
-                int len;
-                int totlen = 0;
-                while ((len = in.read(BUFFER, 0, BUFFSIZE)) >= 0) {
-                    System.arraycopy(BUFFER, 0, data, totlen, len);
-                    totlen += len;
-                }
-                this.data = new String(data);
-            }
-        }
-        zip.close();
+        this.data = ZipUtils.read(getDataFile(internDir));
     }
 
     /**
@@ -238,56 +213,56 @@ public class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void saveInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-                new File(internDir, "loadeddata")));
-        ZipEntry entry = new ZipEntry("rawdata.bin");
-        out.putNextEntry(entry);
-        out.write(data.getBytes());
-        out.close();
+            final ExecutionMonitor exec) throws IOException, CanceledExecutionException {
+
+        ZipUtils.write(this.data, getDataFile(internDir));
     }
 
     @Override
     protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
 
+        final String filenameValue = this.m_filename.getStringValue();
+
         /*
          * Upon inserting the node into a workflow, it gets configured, so at
          * least something fundamental like the file name should be checked
          */
-        if (m_filename.getStringValue().isEmpty()) {
+        if (filenameValue.isEmpty()) {
             throw new InvalidSettingsException("No File selected.");
         }
 
-        URIPortObjectSpec uri_spec = null;
-        if (m_file_extension.isActive()) {
-            uri_spec = new URIPortObjectSpec(m_file_extension.getStringValue());
-        } else {
-            uri_spec = new URIPortObjectSpec(
-                    MIMETypeHelper.getMIMEtypeExtension(m_filename
-                            .getStringValue()));
-        }
+        //TODO show warning on node if file does not exist
+        // Determine the file extension
+        final String fileExtension = this.m_file_extension.isActive() ? this.m_file_extension.getStringValue()
+                : MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElseThrow( () ->
+                new InvalidSettingsException(
+                        String.format("Could not determine file type for selected input file: %s", filenameValue)));
 
-        return new PortObjectSpec[] { uri_spec };
+        return new PortObjectSpec[] {
+                new URIPortObjectSpec(fileExtension)
+        };
     }
 
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        File file = new File(convertToURL(m_filename).toURI());
+        File file = new File(convertToURL(m_filename.getStringValue()).toURI());
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
         }
 
         List<URIContent> uris = new ArrayList<URIContent>();
-        uris.add(new URIContent(file.toURI(),
+
+        //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
+        // Since we check during configure, this is minor, but there should be a more general solution
+        uris.add(new URIContent(new File(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
-                        .getMIMEtypeExtension(file.getAbsolutePath()))));
+                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(null))));
 
-        data = Helper.readFileSummary(file, 50);
+        data = Helper.readFileSummary(file, 50).getBytes();
 
         return new PortObject[] { new URIPortObject(uris) };
     }

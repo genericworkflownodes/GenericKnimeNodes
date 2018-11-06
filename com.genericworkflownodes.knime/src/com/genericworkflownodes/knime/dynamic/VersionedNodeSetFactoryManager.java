@@ -48,6 +48,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
             IExtensionRegistry reg = Platform.getExtensionRegistry();
             IConfigurationElement[] elements = reg
                     .getConfigurationElementsFor(EXTENSION_POINT_ID);
+            LOGGER.debug("Loading " + elements.length + " GenericNodeSetFactories whose plugin.xmls registered in the com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory extension point.");
             try {
                 for (IConfigurationElement elem : elements) {
                     final GenericNodeSetFactory o = (GenericNodeSetFactory)elem.createExecutableExtension("class");
@@ -55,6 +56,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
                     // definition
                     m_factories.add(o);
                     String pluginID = o.getPluginConfig().getPluginId();
+                    LOGGER.debug("Checking plugin " + pluginID);
                     if (!pluginIDQueues.containsKey(pluginID)) {
                         pluginIDQueues.put(pluginID, new PriorityQueue<GenericNodeSetFactory>(10, new Comparator<GenericNodeSetFactory>(){
                             @Override
@@ -83,7 +85,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
                     m_nondeprecatedFactories.notifyAll();
                 }
             } catch (CoreException e) {
-                LOGGER.warn(e.getMessage());
+                LOGGER.error("Could not load plugin for extension point " + EXTENSION_POINT_ID, e);
             }
         }
         return m_factories;

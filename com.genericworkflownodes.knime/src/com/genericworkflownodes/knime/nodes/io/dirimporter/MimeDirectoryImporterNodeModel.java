@@ -50,6 +50,9 @@ package com.genericworkflownodes.knime.nodes.io.dirimporter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,6 +84,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.FileUtil;
 import org.knime.core.util.MutableInteger;
 
 /**
@@ -119,7 +123,8 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
         // Create connection monitor
         final ConnectionMonitor<? extends Connection> monitor = new ConnectionMonitor<>();
         // Create output URI container
-        final List<URIContent> uris = new ArrayList<URIContent>();
+        List<URIContent> uris = new ArrayList<URIContent>();
+        String authority = null;
         try {
             URI directoryUri;
             if (m_connectionInformation != null) {
@@ -130,7 +135,11 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
                                 + NodeUtils.encodePath(m_configuration.getDirectory()));
             } else {
                 // Create local URI
-                directoryUri = new File(m_configuration.getDirectory()).toURI();
+                URL url = FileUtil.toURL(m_configuration.getDirectory());
+                if (url.getProtocol().equals("knime")) {
+                    authority = url.getAuthority();
+                }
+                directoryUri = FileUtil.getFileFromURL(url).toURI();
             }
             // Create remote file for directory selection
             final RemoteFile<? extends Connection> file =
@@ -139,6 +148,19 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             exec.setProgress("Retrieving list of files");
             
             listDirectory(file, uris, true, exec, new MutableInteger(0), new MutableInteger(0));
+            
+            // If the user gave a KNIME URI in the input box, we resolve relative to that
+            if (authority != null) {
+                String prefix = "knime://" + authority + "/";
+                URL url = FileUtil.toURL(prefix);
+                Path localPath = FileUtil.resolveToPath(url);
+                final List<URIContent> relUris = new ArrayList<URIContent>();
+                for (URIContent uri : uris) {
+                    Path relative = localPath.relativize(Paths.get(uri.getURI()));
+                    relUris.add(new URIContent(new File(prefix + relative.toString()).toURI(), uri.getExtension()));
+                }
+                uris = relUris;
+            }
         } finally {
             // Close connections
             monitor.closeAll();
@@ -351,6 +373,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
         final ListDirectoryConfiguration config = new ListDirectoryConfiguration();
         config.loadSettingsInModel(settings);
         m_configuration = config;
+        m_extension = config.getExtensionsString();
     }
 
     /**

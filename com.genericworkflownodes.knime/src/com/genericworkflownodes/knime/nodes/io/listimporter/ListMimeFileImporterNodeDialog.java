@@ -19,7 +19,9 @@
 package com.genericworkflownodes.knime.nodes.io.listimporter;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 
@@ -52,5 +54,8 @@ public class ListMimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
                 new SettingsModelOptionalString(
                         ListMimeFileImporterNodeModel.CFG_FILE_EXTENSION, "",
                         false), "File extension (override)"));
+        addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+                ListMimeFileImporterNodeModel.CFG_RESOLVE_WORKFLOW_RELATIVE, false),
+                "Resolve to workflow relative paths"));
     }
 }
