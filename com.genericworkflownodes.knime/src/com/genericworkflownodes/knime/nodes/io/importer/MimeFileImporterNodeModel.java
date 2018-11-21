@@ -22,6 +22,7 @@ package com.genericworkflownodes.knime.nodes.io.importer;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -247,7 +248,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        File file = new File(convertToURL(m_filename.getStringValue()).toURI());
+        URI converted = convertToURL(m_filename.getStringValue()).toURI();
+        File file = new File(converted);
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
@@ -257,7 +259,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
 
         //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
         // Since we check during configure, this is minor, but there should be a more general solution
-        uris.add(new URIContent(new File(m_filename.getStringValue()).toURI(),
+        uris.add(new URIContent(FileUtil.toURL(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
                         .getMIMEtypeExtension(file.getAbsolutePath()).orElse(null))));
