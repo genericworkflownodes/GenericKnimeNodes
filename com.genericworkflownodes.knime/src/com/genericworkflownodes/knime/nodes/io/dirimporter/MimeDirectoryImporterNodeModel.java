@@ -153,7 +153,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             if (authority != null) {
                 String prefix = "knime://" + authority + "/";
                 URL url = FileUtil.toURL(prefix);
-                Path localPath = FileUtil.resolveToPath(url);
+                Path localPath = FileUtil.getFileFromURL(url).toPath();
                 final List<URIContent> relUris = new ArrayList<URIContent>();
                 for (URIContent uri : uris) {
                     Path relative = localPath.relativize(Paths.get(uri.getURI()));
