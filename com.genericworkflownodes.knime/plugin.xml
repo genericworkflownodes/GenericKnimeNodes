@@ -56,6 +56,16 @@
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.cluster.nodes.porttofilestore.PortToFileStoreNodeFactory">
     </node>
+    <node
+          category-path="/community/GenericKnimeNodes/Flow"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.DontSaveEndNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/Flow"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.DontSaveStartNodeFactory">
+    </node>
    </extension>
 
    <extension point="org.knime.product.splashExtension">

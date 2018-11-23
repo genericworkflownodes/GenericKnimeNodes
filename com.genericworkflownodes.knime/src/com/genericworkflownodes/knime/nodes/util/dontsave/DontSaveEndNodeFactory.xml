@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="dontsaveend.png" type="ScopeEnd" xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Don't Save End (URI Port)</name>
+	
+	<shortDescription>
+		Ends a block of a workflow that is reset once this node is executed, deleting all intermediate results.
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+			Indicates that from this node on, data will be saved again when the workflow is saved.
+			Intermediate results from nodes between the corresponding Don't Save Start node and this node
+			are reset when this node is executed. The incoming data from the last node in the block is
+			provided at the output of this node.
+			</p>
+			<p>
+			This node is an adaption of the Don't Save End node from the KNIME Image Processing plugin.
+			If you need the same functionality for tables, use the nodes provided there.
+			</p>
+		</intro>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Input files">Input files.</inPort>
+		<outPort index="0" name="Output files">Same files as on the input.</outPort>
+	</ports>
+</knimeNode>
