@@ -51,9 +51,13 @@ package com.genericworkflownodes.knime.nodes.util.dontsave;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.knime.core.data.uri.IURIPortObject;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -64,9 +68,12 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.workflow.LoopStartNode;
+
+import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
 
 /**
  * @author Christian Dietz, Alexander Fillbrunn, University of Konstanz
@@ -80,18 +87,23 @@ public class DontSaveStartNodeModel extends NodeModel implements LoopStartNode {
      * Default Constructor
      */
     protected DontSaveStartNodeModel() {
-        super(new PortType[] { IURIPortObject.TYPE },
-                new PortType[] { IURIPortObject.TYPE });
+        super(new PortType[] { IURIPortObject.TYPE,
+                PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true),
+                PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true) },
+                new PortType[] { IURIPortObject.TYPE,
+                        PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true),
+                        PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true) });
     }
 
     /** {@inheritDoc} */
     @Override
     protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 
-        final PortObjectSpec[] result = new PortObjectSpec[getNrOutPorts()];
+        PortObjectSpec[] result;
         if (m_firstRun) {
-            result[0] = inSpecs[0];
+            result = inSpecs;
         } else {
+            result = new PortObjectSpec[getNrOutPorts()];
             Arrays.fill(result, InactiveBranchPortObjectSpec.INSTANCE);
         }
 
@@ -114,14 +126,21 @@ public class DontSaveStartNodeModel extends NodeModel implements LoopStartNode {
     @Override
     protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
 
+        PortObject[] result = new PortObject[getNrOutPorts()];
         if (m_firstRun) {
             m_firstRun = false;
-            return inObjects;
-        } else {
-            PortObject[] result = new PortObject[getNrOutPorts()];
-            Arrays.fill(result, InactiveBranchPortObject.INSTANCE);
+            for (int i = 0; i < getNrOutPorts(); i++) {
+                if (inObjects[i] != null) {
+                    result[i] = inObjects[i];
+                } else {
+                    result[i] = new URIPortObject(new ArrayList<URIContent>());
+                }
+            }
             return result;
+        } else {
+            Arrays.fill(result, InactiveBranchPortObject.INSTANCE);
         }
+        return result;
     }
 
     /**

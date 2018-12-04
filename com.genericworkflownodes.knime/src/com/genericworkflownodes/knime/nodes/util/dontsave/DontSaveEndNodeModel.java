@@ -52,8 +52,12 @@ package com.genericworkflownodes.knime.nodes.util.dontsave;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.knime.core.data.uri.IURIPortObject;
+import org.knime.core.data.uri.URIContent;
+import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -64,10 +68,13 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.inactive.InactiveBranchConsumer;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.workflow.LoopEndNode;
+
+import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
 
 /**
  * @author Christian Dietz, Alexander Fillbrunn, University of Konstanz
@@ -78,8 +85,12 @@ public class DontSaveEndNodeModel extends NodeModel implements InactiveBranchCon
      * Default Constructor
      */
     protected DontSaveEndNodeModel() {
-        super(new PortType[] { IURIPortObject.TYPE },
-                new PortType[] { IURIPortObject.TYPE });
+        super(new PortType[] { IURIPortObject.TYPE,
+                PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true),
+                PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true) },
+                new PortType[] { IURIPortObject.TYPE,
+                        PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true),
+                        PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true) });
     }
 
     // specs from first iteration
@@ -113,18 +124,26 @@ public class DontSaveEndNodeModel extends NodeModel implements InactiveBranchCon
 
         if ((inObjects[0] instanceof InactiveBranchPortObject)) {
             // second iteration returns the data && help the garbage collector a bit
-            final PortObject[] tmp = m_resultPortObject;
+            PortObject[] result = new PortObject[inObjects.length];
+            fillArray(m_resultPortObject, result);
             m_resultPortObject = null;
-            return tmp;
-
+            return result;
         } else {
             // first iteration
             // memorize data for later usage
             m_resultPortObject = inObjects;
-
             continueLoop();
-
             return m_resultPortObject;
+        }
+    }
+    
+    private void fillArray(PortObject[] src, PortObject[] dest) {
+        for (int i = 0; i < src.length; i++) {
+            if (src[i] != null) {
+                dest[i] = src[i];
+            } else {
+                dest[i] = new URIPortObject(new ArrayList<URIContent>());
+            }
         }
     }
 
