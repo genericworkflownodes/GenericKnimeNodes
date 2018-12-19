@@ -136,7 +136,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("No File selected.");
         }
 
-        convertToURL(tmp_filename.getStringValue());
+        //convertToURL(tmp_filename.getStringValue());
 
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
@@ -181,7 +181,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
+            url = FileUtil.toURL(urlS);
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -191,9 +191,6 @@ final class MimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
-        } catch (IOException | URISyntaxException e) {
-            throw new InvalidSettingsException("Invalid URL: "
-                    + e.getMessage(), e);
         }
 
         return url;
@@ -248,8 +245,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        URI converted = convertToURL(m_filename.getStringValue()).toURI();
-        File file = new File(converted);
+        URL converted = convertToURL(m_filename.getStringValue());
+        File file = FileUtil.getFileFromURL(converted);
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());
