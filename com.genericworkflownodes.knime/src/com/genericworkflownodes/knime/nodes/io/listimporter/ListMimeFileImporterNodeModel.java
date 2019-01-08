@@ -217,8 +217,8 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             Path localPath;
             try {
                 URL url = FileUtil.toURL("knime://knime.workflow/");
-                localPath = FileUtil.resolveToPath(url);
-            } catch (IOException | InvalidPathException | URISyntaxException e) {
+                localPath = Paths.get(FileUtil.getFileFromURL(url).toURI());
+            } catch (IOException | InvalidPathException e) {
                 throw new InvalidSettingsException("Cannot resolve KNIME workflow URL", e);
             }
             for (int i = 0; i < filenames.length; i++) {
@@ -292,7 +292,8 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
+            url = FileUtil.getFileFromURL(FileUtil.toURL(urlS)).toURI().toURL();
+            //url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -302,9 +303,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
-        } catch (IOException | URISyntaxException e) {
-            throw new InvalidSettingsException("Invalid URL: "
-                    + e.getMessage(), e);
         }
 
         return url;

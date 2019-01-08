@@ -18,10 +18,10 @@
  */
 package com.genericworkflownodes.knime.nodes.io.listimporter;
 
+import java.awt.Dimension;
+
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 
@@ -46,16 +46,16 @@ public class ListMimeFileImporterNodeDialog extends DefaultNodeSettingsPane {
      */
     protected ListMimeFileImporterNodeDialog() {
         super();
-        addDialogComponent(new DialogComponentMultiFileChooser(
-                new SettingsModelStringArray(
-                        ListMimeFileImporterNodeModel.CFG_FILENAME,
-                        new String[] {})));
+        
+        SettingsModelStringArray files = new SettingsModelStringArray(
+                ListMimeFileImporterNodeModel.CFG_FILENAME,
+                new String[] {});
+        DialogComponentMultiFileChooser fileChooser = new DialogComponentMultiFileChooser(files, true);
+        addDialogComponent(fileChooser);
+        fileChooser.getComponentPanel().setPreferredSize(new Dimension(0, 100));
         addDialogComponent(new DialogComponentOptionalString(
                 new SettingsModelOptionalString(
                         ListMimeFileImporterNodeModel.CFG_FILE_EXTENSION, "",
                         false), "File extension (override)"));
-        addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-                ListMimeFileImporterNodeModel.CFG_RESOLVE_WORKFLOW_RELATIVE, false),
-                "Resolve to workflow relative paths"));
     }
 }
