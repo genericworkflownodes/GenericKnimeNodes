@@ -131,8 +131,13 @@ public class FileStoreReferenceURIPortObject extends FileStorePortObject
                     FileStoreReferenceURIPortObject frpo = (FileStoreReferenceURIPortObject) po;
                     relPaths.add(frpo.getRelativePath(count));
                     //get the old fileStore for the current URIContent
-                    fileStores.add(frpo.getFileStore(frpo.getFileStoreIndex(count)));
-                    fsIndices.add(fileStores.size() - 1);
+                    if (frpo.getFileStoreIndex(count) >= 0)
+                    {
+                      fileStores.add(frpo.getFileStore(frpo.getFileStoreIndex(count)));
+                      fsIndices.add(fileStores.size() - 1);
+                    } else {
+                        fsIndices.add(-1);
+                    }
                 } else {
                     // we add a dummy relative path for (non-FileStore-based) URIPortObjects etc.
                     relPaths.add("");
