@@ -1,14 +1,20 @@
 package com.genericworkflownodes.knime.nodes.io.outputfolder;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -37,6 +43,7 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
     private final JPanel m_componentContainer;
     private final JTextField m_textField;
     private final JButton m_searchButton;
+    private final JCheckBox m_createIfNotExistsCb;
 
     /**
      * New pane for configuring the OutputFolder node.
@@ -45,8 +52,8 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
         m_dialogPanel = new JPanel();
         m_componentContainer = new JPanel();
         m_textField = new JTextField();
-        m_textField.setPreferredSize(new Dimension(300, m_textField
-                .getPreferredSize().height));
+        //m_textField.setPreferredSize(new Dimension(300, m_textField
+        //        .getPreferredSize().height));
         m_searchButton = new JButton("Browse");
         m_searchButton.addActionListener(new ActionListener() {
             @Override
@@ -71,6 +78,7 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
                 }
             }
         });
+        m_createIfNotExistsCb = new JCheckBox("Create folder if it does not exist");
         setLayout();
         addComponents();
 
@@ -82,18 +90,28 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
             throws InvalidSettingsException {
         settings.addString(OutputFolderNodeModel.CFG_FOLDER_NAME, m_textField
                 .getText().trim());
+        settings.addBoolean(OutputFolderNodeModel.CFG_CREATE_FOLDER, m_createIfNotExistsCb.isSelected());
     }
 
     private void setLayout() {
-        m_dialogPanel.setLayout(new FlowLayout());
+        m_componentContainer.setLayout(new BorderLayout());
+        m_dialogPanel.setLayout(new GridBagLayout());
     }
 
     private void addComponents() {
-        m_componentContainer.add(m_textField);
-        m_componentContainer.add(m_searchButton);
+        m_componentContainer.add(m_textField, BorderLayout.CENTER);
+        m_componentContainer.add(m_searchButton, BorderLayout.LINE_END);
+        m_componentContainer.add(m_createIfNotExistsCb, BorderLayout.SOUTH);
         m_componentContainer.setBorder(BorderFactory
                 .createTitledBorder("Selected output file:"));
-        m_dialogPanel.add(m_componentContainer);
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        m_dialogPanel.add(m_componentContainer, gbc);
     }
 
     @Override
@@ -102,6 +120,7 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
         // get information from settings and inspec
         m_textField.setText(settings.getString(
                 OutputFolderNodeModel.CFG_FOLDER_NAME, ""));
+        m_createIfNotExistsCb.setSelected(settings.getBoolean(OutputFolderNodeModel.CFG_CREATE_FOLDER, false));
     }
 
 }

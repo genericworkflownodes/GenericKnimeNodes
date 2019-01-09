@@ -16,6 +16,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -35,9 +36,13 @@ public class OutputFolderNodeModel extends NodeModel {
 
     static final String CFG_FOLDER_NAME = "FOLDERNAME";
 
+    static final String CFG_CREATE_FOLDER = "CREATE_IF_NOT_EXISTS";
+    
     SettingsModelString m_foldername = new SettingsModelString(
             OutputFolderNodeModel.CFG_FOLDER_NAME, DEFAULT_FOLDER_NAME_VALUE);
 
+    SettingsModelBoolean m_createIfNotExists = new SettingsModelBoolean(CFG_CREATE_FOLDER, false);
+    
     /**
      * Constructor for the node model.
      */
@@ -60,7 +65,18 @@ public class OutputFolderNodeModel extends NodeModel {
             throw new Exception(
                     "There were no URIs in the supplied URIPortObject");
         }
-
+        File folder = FileUtil.getFileFromURL(FileUtil.toURL(m_foldername.getStringValue()));
+        
+        if (!folder.exists()) {
+            if (m_createIfNotExists.getBooleanValue()) {
+                folder.mkdirs();
+            } else {
+                throw new InvalidSettingsException("The selected folder does not exist. "
+                        + "Check \"Create folder if it does not exist\" in the configuration "
+                        + "or select a different one.");
+            }
+        }
+        
         double idx = 1.0;
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
@@ -69,7 +85,6 @@ public class OutputFolderNodeModel extends NodeModel {
                         + in.getAbsolutePath());
             }
 
-            File folder = FileUtil.getFileFromURL(FileUtil.toURL(m_foldername.getStringValue()));
             File target = new File(folder, in.getName());
 
             if (target.exists() && !target.canWrite()) {
@@ -108,7 +123,7 @@ public class OutputFolderNodeModel extends NodeModel {
         // check the selected file
         if ("".equals(m_foldername.getStringValue())) {
             throw new InvalidSettingsException(
-                    "Please select a target file for the Output Files node.");
+                    "Please select a target folder for the Output Folder node.");
         }
         return new DataTableSpec[] {};
     }
@@ -119,6 +134,7 @@ public class OutputFolderNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_foldername.saveSettingsTo(settings);
+        m_createIfNotExists.saveSettingsTo(settings);
     }
 
     /**
@@ -128,6 +144,9 @@ public class OutputFolderNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_foldername.loadSettingsFrom(settings);
+        if (settings.containsKey(CFG_CREATE_FOLDER)) {
+            m_createIfNotExists.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -137,6 +156,9 @@ public class OutputFolderNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_foldername.validateSettings(settings);
+        if (settings.containsKey(CFG_CREATE_FOLDER)) {
+            m_createIfNotExists.validateSettings(settings);
+        }
     }
 
     /**
