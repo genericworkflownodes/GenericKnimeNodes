@@ -43,7 +43,9 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
     private final JPanel m_componentContainer;
     private final JTextField m_textField;
     private final JButton m_searchButton;
+    private final JPanel m_checkboxes;
     private final JCheckBox m_createIfNotExistsCb;
+    private final JCheckBox m_overwrite;
 
     /**
      * New pane for configuring the OutputFolder node.
@@ -51,6 +53,7 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
     protected OutputFolderNodeDialog() {
         m_dialogPanel = new JPanel();
         m_componentContainer = new JPanel();
+        m_checkboxes = new JPanel();
         m_textField = new JTextField();
         //m_textField.setPreferredSize(new Dimension(300, m_textField
         //        .getPreferredSize().height));
@@ -79,29 +82,25 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
             }
         });
         m_createIfNotExistsCb = new JCheckBox("Create folder if it does not exist");
+        m_overwrite = new JCheckBox("Overwrite existing files");
         setLayout();
         addComponents();
 
         addTab("Choose Output Folder", m_dialogPanel);
     }
 
-    @Override
-    protected void saveSettingsTo(NodeSettingsWO settings)
-            throws InvalidSettingsException {
-        settings.addString(OutputFolderNodeModel.CFG_FOLDER_NAME, m_textField
-                .getText().trim());
-        settings.addBoolean(OutputFolderNodeModel.CFG_CREATE_FOLDER, m_createIfNotExistsCb.isSelected());
-    }
 
     private void setLayout() {
         m_componentContainer.setLayout(new BorderLayout());
         m_dialogPanel.setLayout(new GridBagLayout());
+        m_checkboxes.setLayout(new BoxLayout(m_checkboxes, BoxLayout.Y_AXIS));
     }
 
     private void addComponents() {
         m_componentContainer.add(m_textField, BorderLayout.CENTER);
         m_componentContainer.add(m_searchButton, BorderLayout.LINE_END);
-        m_componentContainer.add(m_createIfNotExistsCb, BorderLayout.SOUTH);
+        m_componentContainer.add(m_checkboxes, BorderLayout.SOUTH);
+        
         m_componentContainer.setBorder(BorderFactory
                 .createTitledBorder("Selected output file:"));
         
@@ -112,6 +111,18 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         m_dialogPanel.add(m_componentContainer, gbc);
+        
+        m_checkboxes.add(m_createIfNotExistsCb);
+        m_checkboxes.add(m_overwrite);
+    }
+
+    @Override
+    protected void saveSettingsTo(NodeSettingsWO settings)
+            throws InvalidSettingsException {
+        settings.addString(OutputFolderNodeModel.CFG_FOLDER_NAME, m_textField
+                .getText().trim());
+        settings.addBoolean(OutputFolderNodeModel.CFG_CREATE_FOLDER, m_createIfNotExistsCb.isSelected());
+        settings.addBoolean(OutputFolderNodeModel.CFG_OVERWRITE, m_overwrite.isSelected());
     }
 
     @Override
@@ -121,6 +132,7 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
         m_textField.setText(settings.getString(
                 OutputFolderNodeModel.CFG_FOLDER_NAME, ""));
         m_createIfNotExistsCb.setSelected(settings.getBoolean(OutputFolderNodeModel.CFG_CREATE_FOLDER, false));
+        m_overwrite.setSelected(settings.getBoolean(OutputFolderNodeModel.CFG_OVERWRITE, false));
     }
 
 }

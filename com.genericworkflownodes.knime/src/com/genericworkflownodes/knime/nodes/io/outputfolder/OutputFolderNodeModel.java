@@ -38,10 +38,14 @@ public class OutputFolderNodeModel extends NodeModel {
 
     static final String CFG_CREATE_FOLDER = "CREATE_IF_NOT_EXISTS";
     
+    static final String CFG_OVERWRITE = "OVERWRITE";
+    
     SettingsModelString m_foldername = new SettingsModelString(
             OutputFolderNodeModel.CFG_FOLDER_NAME, DEFAULT_FOLDER_NAME_VALUE);
 
     SettingsModelBoolean m_createIfNotExists = new SettingsModelBoolean(CFG_CREATE_FOLDER, false);
+    
+    SettingsModelBoolean m_overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
     
     /**
      * Constructor for the node model.
@@ -77,24 +81,23 @@ public class OutputFolderNodeModel extends NodeModel {
             }
         }
         
+              
+        if (!folder.canWrite()) {
+            throw new Exception("Cannot write to target directoy: " + folder.getAbsolutePath());
+        }
+        
+        // Check all files here first
+        for (URIContent uri : uris) {
+            File in = FileUtil.getFileFromURL(uri.getURI().toURL());
+            File target = new File(folder, in.getName());
+            checkBeforeCopy(in, target);
+        }
+        
+        // Now actually copy all the files
         double idx = 1.0;
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
-            if (!in.canRead()) {
-                throw new Exception("Cannot read file to export: "
-                        + in.getAbsolutePath());
-            }
-
             File target = new File(folder, in.getName());
-
-            if (target.exists() && !target.canWrite()) {
-                throw new Exception("Cannot write to file: "
-                        + target.getAbsolutePath());
-            } else if (!target.getParentFile().canWrite()) {
-                throw new Exception("Cannot write to containing directoy: "
-                        + target.getParentFile().getAbsolutePath());
-            }
-
             FileUtils.copyFile(in, target);
             exec.setProgress(idx / uris.size());
             exec.checkCanceled();
@@ -102,6 +105,20 @@ public class OutputFolderNodeModel extends NodeModel {
         return null;
     }
 
+    private void checkBeforeCopy(final File src, final File dest) throws IOException {
+        if (!src.canRead()) {
+            throw new IOException("Cannot read file to export: "
+                    + src.getAbsolutePath());
+        }
+        if (!dest.canWrite()) {                
+            throw new IOException("Cannot write to file: " + dest.getAbsolutePath());
+        }
+        
+        if (dest.exists() && !m_overwrite.getBooleanValue()) {
+            throw new IOException("File " + dest.getAbsolutePath() + " exists and cannot be overwritten.");
+        }
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -135,6 +152,7 @@ public class OutputFolderNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_foldername.saveSettingsTo(settings);
         m_createIfNotExists.saveSettingsTo(settings);
+        m_overwrite.saveSettingsTo(settings);
     }
 
     /**
@@ -147,6 +165,9 @@ public class OutputFolderNodeModel extends NodeModel {
         if (settings.containsKey(CFG_CREATE_FOLDER)) {
             m_createIfNotExists.loadSettingsFrom(settings);
         }
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -158,6 +179,9 @@ public class OutputFolderNodeModel extends NodeModel {
         m_foldername.validateSettings(settings);
         if (settings.containsKey(CFG_CREATE_FOLDER)) {
             m_createIfNotExists.validateSettings(settings);
+        }
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.validateSettings(settings);
         }
     }
 
