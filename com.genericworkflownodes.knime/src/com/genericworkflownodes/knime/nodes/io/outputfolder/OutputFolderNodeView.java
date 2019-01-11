@@ -1,6 +1,5 @@
 package com.genericworkflownodes.knime.nodes.io.outputfolder;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.swt.program.Program;
@@ -23,7 +22,6 @@ public class OutputFolderNodeView extends NodeView<OutputFolderNodeModel> {
      */
     protected OutputFolderNodeView(final OutputFolderNodeModel nodeModel) {
         super(nodeModel);
-        // TODO: generated method stub
     }
 
     /**
