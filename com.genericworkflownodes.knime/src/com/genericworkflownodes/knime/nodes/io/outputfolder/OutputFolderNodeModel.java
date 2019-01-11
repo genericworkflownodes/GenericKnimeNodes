@@ -110,12 +110,12 @@ public class OutputFolderNodeModel extends NodeModel {
             throw new IOException("Cannot read file to export: "
                     + src.getAbsolutePath());
         }
-        if (!dest.canWrite()) {                
-            throw new IOException("Cannot write to file: " + dest.getAbsolutePath());
-        }
-        
-        if (dest.exists() && !m_overwrite.getBooleanValue()) {
-            throw new IOException("File " + dest.getAbsolutePath() + " exists and cannot be overwritten.");
+        if (dest.exists()) {
+            if (!m_overwrite.getBooleanValue()) {
+                throw new IOException("File " + dest.getAbsolutePath() + " exists and cannot be overwritten.");
+            } else if (!dest.canWrite()) {                
+                throw new IOException("Cannot write to file: " + dest.getAbsolutePath());
+            }
         }
     }
     
