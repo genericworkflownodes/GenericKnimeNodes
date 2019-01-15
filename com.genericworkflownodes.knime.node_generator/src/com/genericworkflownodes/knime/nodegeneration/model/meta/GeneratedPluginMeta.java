@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidVersionException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 
 public class GeneratedPluginMeta extends PluginMeta {

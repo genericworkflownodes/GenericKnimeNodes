@@ -2,6 +2,8 @@ package com.genericworkflownodes.knime.nodegeneration.templates.feature;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,9 @@ import com.genericworkflownodes.knime.nodegeneration.templates.Template;
  */
 public class FeatureXMLTemplate extends Template {
 
+    private static final Logger LOGGER = Logger
+            .getLogger(FeatureXMLTemplate.class.getName());
+    
     private final static Pattern VERSION_PATTERN = Pattern
             .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
 
@@ -97,9 +102,9 @@ public class FeatureXMLTemplate extends Template {
         boolean found = m.matches();
         if (!found || m.groupCount() != 4)
         {
+        	LOGGER.log(Level.SEVERE, "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$."
+        			+ "This should not happen since it was checked during reading of the files. Please report as bug.");
         }
-        assert found : "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$";
-        assert m.groupCount() == 4 : "Something went wrong when matching the version.";
 
         return m;
     }
