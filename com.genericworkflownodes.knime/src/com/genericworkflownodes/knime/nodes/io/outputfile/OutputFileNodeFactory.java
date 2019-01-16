@@ -73,7 +73,7 @@ public class OutputFileNodeFactory extends NodeFactory<OutputFileNodeModel> {
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new OutputFileNodeDialog(OutputFileNodeModel.CFG_FILENAME);
+        return new OutputFileNodeDialog(OutputFileNodeModel.CFG_FILENAME, OutputFileNodeModel.CFG_OVERWRITE);
     }
 
 }
