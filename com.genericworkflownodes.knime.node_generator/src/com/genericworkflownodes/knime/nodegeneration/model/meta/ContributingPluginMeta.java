@@ -49,6 +49,16 @@ public class ContributingPluginMeta extends PluginMeta {
                     pluginDirectory.getAbsolutePath()));
         }
     }
+    
+    public static class InvalidMANIFESTException extends
+	    InvalidParameterException {
+
+		private static final long serialVersionUID = 8095404456910978714L;
+
+		public InvalidMANIFESTException(String s) {
+		    super(s);
+		}
+	}
 
     private static final Logger LOGGER = Logger
             .getLogger(ContributingPluginMeta.class.getName());
@@ -101,7 +111,7 @@ public class ContributingPluginMeta extends PluginMeta {
             e.printStackTrace();
         }
 
-        throw new InvalidPluginException(contributingPluginDirectory);
+        throw new InvalidMANIFESTException("Bundle-SymbolicName or Bundle-Version not found in META-INF/MANIFEST.MF or wrong format of them in: " + contributingPluginDirectory);
     }
 
     private final Directory contributingPluginDirectory;
