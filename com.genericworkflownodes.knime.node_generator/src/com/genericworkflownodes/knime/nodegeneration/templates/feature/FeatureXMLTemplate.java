@@ -71,6 +71,8 @@ public class FeatureXMLTemplate extends Template {
         // that the qualifier is properly updated when something changes
         Matcher m = matchVersion(pluginMeta.getVersion());
 
+        // return value is either "" empty string if there is no qualifier in
+        // any fragment or it is ".qualifier" with a dot in front.
         String quali = findLatestQualifier(m.group(4), fragmentMetas,
                 contributingPluginMetas);
         
@@ -78,7 +80,7 @@ public class FeatureXMLTemplate extends Template {
         String newVersion = m.group(1)
                 + (m.group(2) != null ? m.group(2) : ".0")
                 + (m.group(3) != null ? m.group(3) : ".0")
-                + (quali.isEmpty() ? "" : "." + quali);
+                + quali;
 
         replace("@@pluginVersion@@", newVersion);
         replace("@@packageName@@", pluginMeta.getPackageRoot());
