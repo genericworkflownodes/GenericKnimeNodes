@@ -47,7 +47,7 @@
  *
  * Created on Jul 4, 2014 by dietzc
  */
-package com.genericworkflownodes.knime.nodes.util.dontsave;
+package com.genericworkflownodes.knime.nodes.util.dontsave.file;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
