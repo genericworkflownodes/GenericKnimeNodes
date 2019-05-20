@@ -9,6 +9,7 @@
    <extension-point id="com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory" name="VersionedNodeSetFactory" schema="schema/com.genericworkflownodes.knime.dynamic.VersionedNodeSetFactory.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.filesplitter" name="File Splitter" schema="schema/com.genericworkflownodes.knime.filesplitter.exsd"/>
    <extension-point id="com.genericworkflownodes.knime.custom.config.DLLProvider" name="DLLProvider" schema="schema/com.genericworkflownodes.knime.custom.config.DLLProvider.exsd"/>
+   <extension-point id="com.genericworkflownodes.knime.mime.filesuffix.Checker" name="filesuffixChecker" schema="schema/com.genericworkflownodes.knime.mime.filesuffix.Checker.exsd"/>
 
    <extension point="org.knime.workbench.repository.categories">
     <category description="/community/GenericKnimeNodes" icon="icons/category.png" level-id="GenericKnimeNodes" name="GenericKnimeNodes" path="/community"/>
@@ -33,6 +34,7 @@
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfiles.OutputFilesNodeFactory"/>
 	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfolder.OutputFolderNodeFactory"/>
+	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.index.IndexLoaderNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.demangler.DemanglerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/KNIMEConversion" factory-class="com.genericworkflownodes.knime.nodes.io.mangler.ManglerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.flow.beanshell.BeanShellNodeFactory"/>
