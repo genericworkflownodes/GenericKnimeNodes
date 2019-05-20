@@ -114,7 +114,6 @@ public class IndexLoaderNodeModel extends NodeModel {
             uri_spec = new URIPortObjectSpec(m_fileExtensions);
         }
         else {
-            //uri_spec = new URIPortObjectSpec("");
             throw new InvalidSettingsException("No File selected.");
         }
         

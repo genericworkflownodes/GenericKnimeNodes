@@ -30,24 +30,19 @@ import com.genericworkflownodes.knime.nodes.io.index.DialogComponentIndexChooser
 public class IndexLoaderNodeDialog extends DefaultNodeSettingsPane {
 
     /**
-     * New pane for configuring the YaraIndexReader node.
+     * New pane for configuring the YaraIndexLoader node.
      */
     protected IndexLoaderNodeDialog(Object obj) {
     	
         super();
         
+        // Index File selection dependent on available index types
         final SettingsModelString file_selection = IndexLoaderNodeModel.createSettingsModelFileSelection();
         final DialogComponentIndexChooser index_chooser =  new DialogComponentIndexChooser(file_selection, // SettingsModelString
-                "IndexReaderNodeDialog", IndexLoaderNodeModel.available_index_types);
+                "IndexLoaderNodeDialog", IndexLoaderNodeModel.available_index_types);
         
         addDialogComponent(index_chooser); 
 
-        /*
-        final SettingsModelString index_selection = IndexLoaderNodeModel.createSettingsModelSelection();
-
-        addDialogComponent(new DialogComponentStringSelection(index_selection, "Index type", IndexLoaderNodeModel.available_index_types));
-        
-        */
         // add listeners to the Settings model
         // index will be determined by the selected file type
         index_chooser.addChangeListener(new ChangeListener() {

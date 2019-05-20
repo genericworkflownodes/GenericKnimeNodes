@@ -155,8 +155,6 @@ public class IndexTypeHelper {
         
         for (int i = 0; i < types.length; i++) {
             List<String> ext = types[i].getExtensions();
-            // take first one as representative
-            //valid_extensions  = valid_extensions + "|" + "." + ext.get(0);
             String extension = ext.get(0);
             //'lf.drp' : does not search for this extension, only 'drp' works --> cut extension before "."
             int lastDot = extension.lastIndexOf('.') == -1 ? 0 : extension.lastIndexOf('.') + 1;

@@ -1,5 +1,12 @@
 package com.genericworkflownodes.knime.nodes.io.index;
 
+/**
+ * <code>IndexExtensionFilter</code> for the "IndexLoader" Node.
+ * 
+ *
+ * @author Kerstin Neubert, FU Berlin
+ */
+
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;

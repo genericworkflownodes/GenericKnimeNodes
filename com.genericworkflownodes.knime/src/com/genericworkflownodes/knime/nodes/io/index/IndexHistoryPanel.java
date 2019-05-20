@@ -142,7 +142,6 @@ public final class IndexHistoryPanel extends JPanel {
         /** Validate directory output locations. */
         DirectoryOutput(DirectoryWriterCheckLabel.class);
 
-
         private final Class<? extends LocationCheckLabel> m_labelClass;
 
         private LocationValidation(final Class<? extends LocationCheckLabel> labelClass) {
