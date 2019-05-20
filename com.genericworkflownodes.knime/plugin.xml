@@ -232,4 +232,84 @@
             class="com.genericworkflownodes.knime.cluster.filesplitter.impl.LineSplitterFactory">
       </fileSplitter>
    </extension>
+   <extension
+      point="com.genericworkflownodes.knime.mime.filesuffix.Checker">
+   <index-type name="yara">
+      <suffix
+            suffix_string="lf.drp">
+      </suffix>
+      <suffix
+            suffix_string="lf.drs">
+      </suffix>
+      <suffix
+            suffix_string="lf.drv">
+      </suffix>
+      <suffix
+            suffix_string="lf.pst">
+      </suffix>
+      <suffix
+            suffix_string="sa.ind">
+      </suffix>
+      <suffix
+            suffix_string="sa.len">
+      </suffix>
+      <suffix
+            suffix_string="sa.val">
+      </suffix>
+      <suffix
+            suffix_string="txt.concat">
+      </suffix>
+      <suffix
+            suffix_string="txt.limits">
+      </suffix>
+      <suffix
+            suffix_string="txt.size">
+      </suffix>
+   </index-type>
+   <index-type name="bowtie">
+      <suffix
+            suffix_string="1.ebwt">
+      </suffix>
+      <suffix
+            suffix_string="2.ebwt">
+      </suffix>
+      <suffix
+            suffix_string="3.ebwt">
+      </suffix>
+      <suffix
+            suffix_string="4.ebwt">
+      </suffix>
+   </index-type>   
+   <index-type name="bowtie2"> 
+      <suffix
+            suffix_string="1.bt2">            
+      </suffix>
+      <suffix
+            suffix_string="2.bt2">            
+      </suffix>
+      <suffix
+            suffix_string="3.bt2">            
+      </suffix>
+      <suffix
+            suffix_string="4.bt2">            
+      </suffix>          
+   </index-type>   
+   <index-type name="bwa">
+      <suffix 
+      		suffix_string="amb">
+      </suffix>
+      <suffix 
+      		suffix_string="ann">
+      </suffix>
+      <suffix 
+      		suffix_string="bwt">
+      </suffix>
+      <suffix 
+      		suffix_string="pac">
+      </suffix>
+      <suffix 
+      		suffix_string="sa">
+      </suffix>
+   </index-type>
+   </extension>   
 </plugin>
