@@ -79,14 +79,6 @@ public class IndexLoaderNodeModel extends NodeModel {
 	    return new SettingsModelString(IndexLoaderNodeModel.CFGKEY_INDEXTYPE, IndexLoaderNodeModel.DEFAULT_INDEXTYPE);
 	}
 	
-	// optional text field for generic index
-	/*
-	static SettingsModelString createSettingsModelSuffix() {
-	    return new SettingsModelString(IndexReaderNodeModel.CFG_SUFFIX,".suffix");
-	}
-	*/
-
-	
     /**
      * Constructor for the node model.
      */
@@ -233,11 +225,6 @@ public class IndexLoaderNodeModel extends NodeModel {
                     "Index type of the selected file is unknown.");
             }
         }
-    	/*  // this gives error, when file is controlled by a variable
-    	if (tmp_filename.getStringValue().isEmpty()) {
-    		throw new InvalidSettingsException("No file selected.");
-    	}
-    	*/
         
     	m_filename.validateSettings(settings);
     	
