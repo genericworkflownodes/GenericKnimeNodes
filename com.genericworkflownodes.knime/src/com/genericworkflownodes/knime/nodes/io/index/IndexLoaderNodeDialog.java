@@ -42,23 +42,7 @@ public class IndexLoaderNodeDialog extends DefaultNodeSettingsPane {
                 "IndexLoaderNodeDialog", IndexLoaderNodeModel.available_index_types);
         
         addDialogComponent(index_chooser); 
-
-        // add listeners to the Settings model
-        // index will be determined by the selected file type
-        index_chooser.addChangeListener(new ChangeListener() {
-           public void stateChanged(final ChangeEvent e) {
-               String index_type = IndexTypeHelper.getIndextype(file_selection.getStringValue());
-               if (index_type != null) {
-                   index_chooser.setToolTipText(index_type + " Index");
-               }
-               else {
-                   index_chooser.setToolTipText("unknown Index type");
-               }
-      
-           }
- 
-         });
-         
+        
     	
     }
     

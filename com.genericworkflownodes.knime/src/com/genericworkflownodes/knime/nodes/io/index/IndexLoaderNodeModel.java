@@ -105,10 +105,11 @@ public class IndexLoaderNodeModel extends NodeModel {
             String[] m_fileExtensions = get_fileExtensions(file.getName());
             uri_spec = new URIPortObjectSpec(m_fileExtensions);
         }
+        /*
         else {
             throw new InvalidSettingsException("No File selected.");
         }
-        
+        */        
         
         return new PortObjectSpec[]{ uri_spec };
     }
