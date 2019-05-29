@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.nodes.util.dontsave;
+package com.genericworkflownodes.knime.nodes.util.dontsave.table;
 
 /*
  * ------------------------------------------------------------------------
@@ -52,12 +52,12 @@ package com.genericworkflownodes.knime.nodes.util.dontsave;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
-import org.knime.core.data.uri.IURIPortObject;
-import org.knime.core.data.uri.URIContent;
-import org.knime.core.data.uri.URIPortObject;
+import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpecCreator;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -68,16 +68,13 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.inactive.InactiveBranchConsumer;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.workflow.LoopEndNode;
 
-import com.genericworkflownodes.knime.base.data.port.FileStoreReferenceURIPortObject;
-
 /**
- * @author Christian Dietz, Alexander Fillbrunn, University of Konstanz
+ * @author Christian Dietz, University of Konstanz, Alexander Fillbrunn, University of Konstanz
  */
 public class DontSaveEndNodeModel extends NodeModel implements InactiveBranchConsumer, LoopEndNode {
 
@@ -85,12 +82,8 @@ public class DontSaveEndNodeModel extends NodeModel implements InactiveBranchCon
      * Default Constructor
      */
     protected DontSaveEndNodeModel() {
-        super(new PortType[] { IURIPortObject.TYPE,
-                PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true),
-                PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true) },
-                new PortType[] { IURIPortObject.TYPE,
-                        PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true),
-                        PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true) });
+        super(new PortType[] {BufferedDataTable.TYPE, BufferedDataTable.TYPE_OPTIONAL, BufferedDataTable.TYPE_OPTIONAL},
+                new PortType[] {BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE});
     }
 
     // specs from first iteration
@@ -124,27 +117,42 @@ public class DontSaveEndNodeModel extends NodeModel implements InactiveBranchCon
 
         if ((inObjects[0] instanceof InactiveBranchPortObject)) {
             // second iteration returns the data && help the garbage collector a bit
-            PortObject[] result = new PortObject[inObjects.length];
-            fillArray(m_resultPortObject, result);
+            final PortObject[] tmp = m_resultPortObject;
             m_resultPortObject = null;
-            return result;
+            return tmp;
         } else {
-            // first iteration
-            // memorize data for later usage
-            m_resultPortObject = inObjects;
+            m_resultPortObject = new BufferedDataTable[inObjects.length];
+            for (int i = 0; i < inObjects.length; i++) {
+                PortObject po = inObjects[i];
+                if (po == null) {
+                    // Create an empty table
+                    BufferedDataContainer dc = exec.createDataContainer(new DataTableSpecCreator().createSpec());
+                    dc.close();
+                    m_resultPortObject[i] = dc.getTable();
+                } else {
+                    BufferedDataTable table = (BufferedDataTable)inObjects[i];
+                    BufferedDataContainer container = exec.createDataContainer(table.getDataTableSpec());
+
+                    // copy the data (here the data really need to be copied,
+                    // as we will kill the data from the previous node)
+                    for (DataRow row : table) {
+                        container.addRowToTable(new DefaultRow(row.getKey(), row));
+                    }
+                    container.close();
+                    m_resultPortObject[i] = container.getTable();
+                }
+            }
+            
             continueLoop();
-            return m_resultPortObject;
+
+            return new BufferedDataTable[3];
         }
     }
     
-    private void fillArray(PortObject[] src, PortObject[] dest) {
-        for (int i = 0; i < src.length; i++) {
-            if (src[i] != null) {
-                dest[i] = src[i];
-            } else {
-                dest[i] = new URIPortObject(new ArrayList<URIContent>());
-            }
-        }
+    private BufferedDataTable emptyTable(ExecutionContext ec) {
+        BufferedDataContainer dc = ec.createDataContainer(new DataTableSpecCreator().createSpec());
+        dc.close();
+        return dc.getTable();
     }
 
     /**

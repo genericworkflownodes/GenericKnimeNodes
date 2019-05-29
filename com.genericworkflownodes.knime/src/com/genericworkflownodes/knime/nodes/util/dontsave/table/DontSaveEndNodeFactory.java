@@ -1,4 +1,4 @@
-package com.genericworkflownodes.knime.nodes.util.dontsave;
+package com.genericworkflownodes.knime.nodes.util.dontsave.table;
 
 /*
  * ------------------------------------------------------------------------

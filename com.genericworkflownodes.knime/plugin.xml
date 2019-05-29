@@ -59,12 +59,22 @@
     <node
           category-path="/community/GenericKnimeNodes/Flow"
           deprecated="false"
-          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.DontSaveEndNodeFactory">
+          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.file.DontSaveEndNodeFactory">
     </node>
     <node
           category-path="/community/GenericKnimeNodes/Flow"
           deprecated="false"
-          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.DontSaveStartNodeFactory">
+          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.file.DontSaveStartNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/Flow"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.table.DontSaveEndNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/Flow"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.util.dontsave.table.DontSaveStartNodeFactory">
     </node>
    </extension>
 
