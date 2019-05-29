@@ -1,3 +1,21 @@
+/**
+ * Copyright (c) by GKN team
+ *
+ * This file is part of GenericKnimeNodes.
+ *
+ * GenericKnimeNodes is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.genericworkflownodes.knime.nodes.io.index;
 
 import java.io.File;
@@ -34,8 +52,6 @@ import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.knime.base.data.port.PrefixURIPortObject;
 import com.genericworkflownodes.util.MIMETypeHelper;
-
-
 
 
 /**
@@ -88,8 +104,6 @@ public class IndexLoaderNodeModel extends NodeModel {
         super(new PortType[] { }, 
         	  new PortType[] { PortTypeRegistry.getInstance().getPortType(IURIPortObject.class) });
     }
-
-    
     
     /**
      * {@inheritDoc}
@@ -105,13 +119,12 @@ public class IndexLoaderNodeModel extends NodeModel {
             String[] m_fileExtensions = get_fileExtensions(file.getName());
             uri_spec = new URIPortObjectSpec(m_fileExtensions);
         }
-        /*
         else {
-            throw new InvalidSettingsException("No File selected.");
+            throw new InvalidSettingsException("No file selected.");
         }
-        */        
         
         return new PortObjectSpec[]{ uri_spec };
+        
     }
 
 
@@ -119,10 +132,13 @@ public class IndexLoaderNodeModel extends NodeModel {
         
         String index_type = IndexTypeHelper.getIndextype(filename);
         String[] file_extensions = IndexTypeHelper.getExtensionsByIndexType(index_type);
+        if (file_extensions.length == 0) {
+            throw new InvalidSettingsException("File " + filename + " has an unregistered extension.");
+        }
         
-        return file_extensions;    
+        return file_extensions;
+        
     }
-    
     
     /**
      * {@inheritDoc}
@@ -134,7 +150,7 @@ public class IndexLoaderNodeModel extends NodeModel {
         File file = new File(m_filename.getStringValue());
         String fileName = m_filename.getStringValue();
         String[] m_fileExtensions = get_fileExtensions(fileName);
-        
+               
         // file prefix is the prefix in front of the first "." in a file name 
         String prefix = fileName;
         String filename_prefix = file.getName().toString();
@@ -170,10 +186,7 @@ public class IndexLoaderNodeModel extends NodeModel {
     	return new PortObject[] { (URIPortObject) uri_prefix_object };
 
     }
-    
-
-
-    
+        
     /**
      * {@inheritDoc}
      */
@@ -181,8 +194,6 @@ public class IndexLoaderNodeModel extends NodeModel {
     protected void reset() {
         // TODO: generated method stub
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -192,7 +203,7 @@ public class IndexLoaderNodeModel extends NodeModel {
          m_filename.saveSettingsTo(settings);
     	 
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -215,8 +226,7 @@ public class IndexLoaderNodeModel extends NodeModel {
         File file = new File(tmp_filename.getStringValue());
         
         // check, if file has a known index type
-   
-        if (!tmp_filename.getStringValue().isEmpty()) {
+        if (tmp_filename.getStringValue() != null && !tmp_filename.getStringValue().isEmpty()) {
             if (!file.exists() ) {
                 throw new InvalidSettingsException("File not found " + tmp_filename.getStringValue());
             }
@@ -227,8 +237,7 @@ public class IndexLoaderNodeModel extends NodeModel {
             }
         }
         
-    	m_filename.validateSettings(settings);
-    	
+    	m_filename.validateSettings(settings);    	
 
     }
     
@@ -252,5 +261,6 @@ public class IndexLoaderNodeModel extends NodeModel {
         // TODO: generated method stub
     }
 
+    
 }
 
