@@ -61,6 +61,10 @@ public class Main {
             buildDir.mkdirs();
         }
 
+        //TODO ACTUALLY you should have the option of an own qualifier,
+        // a qualifier replaceable by buckminster ("qualifier") or tycho ("SNAPSHOT")
+        // and no qualifier
+        
         // check if we have a third argument -> last change date
         String lastChangeDate = "";
         if (args.length > 2) {

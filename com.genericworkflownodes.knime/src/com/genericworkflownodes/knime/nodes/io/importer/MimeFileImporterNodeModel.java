@@ -279,8 +279,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
-        URI converted = convertToURL(m_filename.getStringValue()).toURI();
-        File file = new File(converted);
+        URL converted = convertToURL(m_filename.getStringValue());
+        File file = FileUtil.getFileFromURL(converted);
         if (!file.exists()) {
             throw new Exception("File does not exist: "
                     + file.getAbsolutePath());

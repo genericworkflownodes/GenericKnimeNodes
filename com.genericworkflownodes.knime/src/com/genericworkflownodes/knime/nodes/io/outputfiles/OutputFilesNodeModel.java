@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -33,6 +34,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -50,10 +52,13 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 public class OutputFilesNodeModel extends NodeModel {
 
     static final String CFG_FILENAME = "FILENAME";
+    static final String CFG_OVERWRITE = "OVERWRITE";
 
     SettingsModelString m_filename = new SettingsModelString(
             OutputFilesNodeModel.CFG_FILENAME, "");
 
+    SettingsModelBoolean m_overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
+    
     /**
      * Constructor for the node model.
      */
@@ -67,8 +72,6 @@ public class OutputFilesNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // set string value to ""
-        m_filename.setStringValue("");
     }
 
     /**
@@ -77,6 +80,7 @@ public class OutputFilesNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_filename.saveSettingsTo(settings);
+        m_overwrite.saveSettingsTo(settings);
     }
 
     /**
@@ -86,6 +90,9 @@ public class OutputFilesNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.loadSettingsFrom(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -95,6 +102,9 @@ public class OutputFilesNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.validateSettings(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.validateSettings(settings);
+        }
     }
 
     /**
@@ -146,28 +156,37 @@ public class OutputFilesNodeModel extends NodeModel {
                     "There were no URIs in the supplied IURIPortObject");
         }
 
+        List<File> outputs = new ArrayList<>();
         int idx = 1;
         int c = 0;
+        for (int i = 0; i < uris.size(); i++) {
+            String outfilename = insertIndex(m_filename.getStringValue(), obj
+                    .getSpec().getFileExtensions().get(c), idx++);
+            File out = FileUtil.getFileFromURL(FileUtil.toURL(outfilename));
+            if (out.exists()) {
+                if (!m_overwrite.getBooleanValue()) {
+                    throw new InvalidSettingsException("File " + out.getAbsolutePath() + " exists and cannot be overwritten.");
+                }
+                if (!out.canWrite()) {
+                    throw new Exception("Cannot write to file: "
+                            + out.getAbsolutePath());
+                } else if (!out.getParentFile().canWrite()) {
+                    throw new Exception("Cannot write to containing directoy: "
+                            + out.getParentFile().getAbsolutePath());
+                }
+            }
+            outputs.add(out);
+            c++;
+        }
+      
+        idx = 0
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
             if (!in.canRead()) {
                 throw new Exception("Cannot read file to export: "
                         + in.getAbsolutePath());
             }
-
-            String outfilename = insertIndex(m_filename.getStringValue(), obj
-                    .getSpec().getFileExtensions().get(c), idx++);
-            File out = FileUtil.getFileFromURL(FileUtil.toURL(outfilename));
-
-            if (out.exists() && !out.canWrite()) {
-                throw new Exception("Cannot write to file: "
-                        + out.getAbsolutePath());
-            } else if (!out.getParentFile().canWrite()) {
-                throw new Exception("Cannot write to containing directoy: "
-                        + out.getParentFile().getAbsolutePath());
-            }
-            c++;
-
+            File out = outputs.get(idx++);
             FileUtils.copyFile(in, out);
         }
         return null;

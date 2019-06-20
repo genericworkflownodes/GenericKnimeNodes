@@ -18,8 +18,11 @@
  */
 package com.genericworkflownodes.knime.nodes.io;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,6 +31,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -61,19 +65,23 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 
     private final JPanel dialogPanel;
     private final JPanel componentContainer;
+    private final JCheckBox overwrite;
     private final JTextField textField;
     private final JButton searchButton;
     private String incomingFileExtension;
     private FileNameExtensionFilter extensionFilter;
-    private final String settingsName;
+    private final String fileSettingsName;
+    private final String overwriteSettingsName;
 
     /**
      * New pane for configuring MimeFileExporter node dialog.
      */
-    public OutputFileNodeDialog(final String settingsName) {
-        this.settingsName = settingsName;
+    public OutputFileNodeDialog(final String settingsName, final String overwriteSettingsName) {
+        this.fileSettingsName = settingsName;
+        this.overwriteSettingsName = overwriteSettingsName;
         dialogPanel = new JPanel();
         componentContainer = new JPanel();
+        overwrite = new JCheckBox("Overwrite file(s) if it/they exist");
         textField = new JTextField();
         textField.setPreferredSize(new Dimension(300, textField
                 .getPreferredSize().height));
@@ -120,23 +128,42 @@ public class OutputFileNodeDialog extends NodeDialogPane {
 
         addTab("Choose File", dialogPanel);
     }
+    
+    public OutputFileNodeDialog(final String settingsName) {
+        this(settingsName, null);
+    }
 
     private void setLayout() {
-        dialogPanel.setLayout(new FlowLayout());
+        componentContainer.setLayout(new BorderLayout());
+        dialogPanel.setLayout(new GridBagLayout());
     }
 
     private void addComponents() {
-        componentContainer.add(textField);
-        componentContainer.add(searchButton);
+        componentContainer.add(textField, BorderLayout.CENTER);
+        componentContainer.add(searchButton, BorderLayout.LINE_END);
+        if (this.overwriteSettingsName != null) {
+            componentContainer.add(overwrite, BorderLayout.SOUTH);
+        }
         componentContainer.setBorder(BorderFactory
                 .createTitledBorder("Selected output file:"));
         dialogPanel.add(componentContainer);
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        dialogPanel.add(componentContainer, gbc);
     }
 
     @Override
     protected void saveSettingsTo(NodeSettingsWO settings)
             throws InvalidSettingsException {
-        settings.addString(settingsName, textField.getText().trim());
+        settings.addString(fileSettingsName, textField.getText().trim());
+        if (this.overwriteSettingsName != null) {
+            settings.addBoolean(overwriteSettingsName, overwrite.isSelected());
+        }
     }
 
     @Override
@@ -149,10 +176,12 @@ public class OutputFileNodeDialog extends NodeDialogPane {
         }
 
         // get information from settings and inspec
-        textField.setText(settings.getString(settingsName, ""));
+        textField.setText(settings.getString(fileSettingsName, ""));
         incomingFileExtension = ((URIPortObjectSpec) specs[0])
                 .getFileExtensions().get(0);
-
+        if (this.overwriteSettingsName != null) {
+            overwrite.setSelected(settings.getBoolean(this.overwriteSettingsName, false));
+        }
         // infer the valid extensions for this file type
         createFileExtensionFilter();
     }

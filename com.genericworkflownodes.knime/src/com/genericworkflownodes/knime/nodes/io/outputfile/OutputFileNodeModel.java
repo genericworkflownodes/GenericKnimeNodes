@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.nio.file.InvalidPathException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -40,6 +42,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -60,9 +63,13 @@ public class OutputFileNodeModel extends NodeModel {
 
     static final String CFG_FILENAME = "FILENAME";
 
+    static final String CFG_OVERWRITE = "OVERWRITE";
+    
     SettingsModelString m_filename = new SettingsModelString(
             OutputFileNodeModel.CFG_FILENAME, "");
 
+    SettingsModelBoolean m_overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
+    
     private String data;
 
     public String getContent() {
@@ -99,6 +106,21 @@ public class OutputFileNodeModel extends NodeModel {
         if (!selectedExtensionIsValid) {
             this.getLogger().warn(
                     "The selected output file and the incoming file have different mime types.");
+        }
+        
+        File out;
+        try {
+            out = FileUtil.getFileFromURL(FileUtil.toURL(m_filename.getStringValue()));
+        } catch (InvalidPathException | MalformedURLException e) {
+            throw new InvalidSettingsException("The given file name is not a valid output destination.");
+        }
+        
+        if (out.exists()) {
+            if (!m_overwrite.getBooleanValue()) {
+                throw new InvalidSettingsException("File " + out.getAbsolutePath() + " already exists and cannot be overwritten.");
+            } else {
+                setWarningMessage("File " + out.getAbsolutePath() + " exists and will be overwritten.");
+            }
         }
 
         return new PortObjectSpec[] {};
@@ -143,7 +165,7 @@ public class OutputFileNodeModel extends NodeModel {
         if (out == null) {
             throw new InvalidSettingsException("Can only write to local paths.");
         }
-
+        
         FileUtils.copyFile(in, out);
 
         data = Helper.readFileSummary(in, 50);
@@ -165,6 +187,7 @@ public class OutputFileNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_filename.saveSettingsTo(settings);
+        m_overwrite.saveSettingsTo(settings);
     }
 
     /**
@@ -174,6 +197,9 @@ public class OutputFileNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.loadSettingsFrom(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -183,6 +209,9 @@ public class OutputFileNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.validateSettings(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.validateSettings(settings);
+        }
     }
 
     /**

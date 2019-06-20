@@ -998,6 +998,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             
             // skip optional and unconnected inport ports
             if (inData[i] == null) {
+                //TODO evaluate if we need the distinction between empty (either by defaulting or setting) and unconnected (= null)
                 p.setValue(null);
                 continue;
             }

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool status="external">
-	<name>CopyFASTAFile</name>
+<tool status="external" name="CopyFASTAFile" version="1.0" category="community">
 	<version>0.1</version>
 	<description><![CDATA[copyfasta.]]></description>
 	<manual><![CDATA[CopyFasta is a tool that does not exists and is only used to test the NodeGenerator. Therefore this also contains some <b>formatting</b>.]]></manual>
 	<docurl>http://www.google.com/</docurl>
 	<category>Test Nodes</category>
-	<foobarbaz>
 	<cli>
 		<clielement optionIdentifier="--double" isList="false">
 			<mapping referenceName="copyfasta.double" />
