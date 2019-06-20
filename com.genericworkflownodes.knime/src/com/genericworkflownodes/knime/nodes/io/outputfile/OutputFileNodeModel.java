@@ -31,6 +31,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -92,7 +93,7 @@ public class OutputFileNodeModel extends NodeModel {
         // check the incoming port
         if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
             throw new InvalidSettingsException(
-                    "No URIPortObjectSpec compatible port object");
+                    "No URIPortObjectSpec compatible port object at the input port.");
         }
 
         // check the selected file
@@ -103,7 +104,7 @@ public class OutputFileNodeModel extends NodeModel {
 
         boolean selectedExtensionIsValid = compareMIMETypes(inSpecs);
         if (!selectedExtensionIsValid) {
-            throw new InvalidSettingsException(
+            this.getLogger().warn(
                     "The selected output file and the incoming file have different mime types.");
         }
         
@@ -125,12 +126,16 @@ public class OutputFileNodeModel extends NodeModel {
         return new PortObjectSpec[] {};
     }
 
-    public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
+    private boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
+        String chosenName = m_filename
+                .getStringValue();
+        //fallback: shortest extension
         String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-                .getStringValue()).orElse(null);
+                .getStringValue()).orElse(FilenameUtils.getExtension(chosenName));
+        //we know that it is a single file during configure
+        String ext = ((URIPortObjectSpec) inSpecs[0]).getFileExtensions().get(0);
         String incomingMimeType = MIMETypeHelper
-                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0)).orElse(null);
+                .getMIMEtypeByExtension(ext).orElse(ext);
 
         return incomingMimeType.equals(selectedMimeType);
     }
@@ -145,6 +150,12 @@ public class OutputFileNodeModel extends NodeModel {
             throw new Exception(
                     "There were no URIs in the supplied IURIPortObject at port 0");
         }
+        
+        if (uris.size() > 1) {
+            throw new Exception(
+                    "There were more than one URI supplied IURIPortObject at port 0. Please use the Output Files or Output Folder node.");
+        }
+
 
         String filename = m_filename.getStringValue();
 

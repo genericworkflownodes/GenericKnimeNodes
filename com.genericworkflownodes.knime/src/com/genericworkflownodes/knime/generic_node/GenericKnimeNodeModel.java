@@ -26,12 +26,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
+import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -70,6 +71,7 @@ import com.genericworkflownodes.knime.parameter.InvalidParameterValueException;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.util.Helper;
+import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * The GenericKnimeNodeModel is the base class for all derived classes within
@@ -82,11 +84,15 @@ import com.genericworkflownodes.util.Helper;
  * <li> {@link MIMEType}s of these ports</li>
  * </ul>
  * 
+ * @todo add a UUID that we can use for writing outputfiles
  * @author
  */
 public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
-    static final String GENERIC_KNIME_NODES_OUTTYPE_PREFIX = "GENERIC_KNIME_NODES_outtype#";
-
+    static final String GENERIC_KNIME_NODES_OUT_TYPE = "GENERIC_KNIME_NODES_outtype#";
+    static final String GENERIC_KNIME_NODES_OUT_ACTIVE = "GENERIC_KNIME_NODES_active#";
+    static final String GENERIC_KNIME_NODES_OUT_LINKEDINPUT = "GENERIC_KNIME_NODES_linkedinput#";
+    static final String GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME = "GENERIC_KNIME_NODES_custombasename#";
+    
     private static final NodeLogger LOGGER = NodeLogger
             .getLogger(GenericKnimeNodeModel.class);
 
@@ -94,12 +100,30 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * Short-cut for optional ports.
      */
     public static final PortType OPTIONAL_PORT_TYPE = PortTypeRegistry.getInstance().getPortType(IURIPortObject.class, true);
-
+    
+    
     /**
      * Contains information on which of the available output types is selected
      * for each output port.
      */
-    protected int[] m_selectedOutputType;
+    protected int[] m_selectedOutPortTypes;
+    
+    /**
+     * Contains information on which output ports are active.
+     */
+    protected boolean[] m_activeOutPorts;
+
+    /**
+     * Contains information on what input to use for
+     * outputname inference at the outports
+     */
+    protected int[] m_linkedInPorts;
+    
+    /**
+     * Contains information on which custom basename
+     * was set by a user for the outports
+     */
+    protected String[] m_customBasenames; 
 
     /**
      * stores the node configuration (i.e. parameters, ports, ..)
@@ -150,22 +174,28 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         Helper.array2dcopy(fileEndingsInPorts, m_fileEndingsInPorts);
 
         m_fileEndingsOutPorts = new String[fileEndingsOutPorts.length][];
-        //Special treatment of outports. If they are optional, an inactive mimetype is allowed.
-        for (int i = 0; i < fileEndingsOutPorts.length; ++i) {
-            int array_length = fileEndingsOutPorts[i].length;
-            if (nodeConfig.getOutputPorts().get(i).isOptional()) {
-                array_length++;
+        //Helper.array2dcopy(fileEndingsOutPorts, m_fileEndingsOutPorts);
+        //TODO THIS IS FOR BACKWARDS COMPATIBILITY ONLY. CAN BE REMOVED AT A MAJOR VERSION BUMP
+        for (int i = 0; i < m_fileEndingsOutPorts.length; i++){
+            int endCount = fileEndingsOutPorts[i].length;
+            if (m_nodeConfig.getOutputPorts().get(i).isOptional() && fileEndingsOutPorts[i][fileEndingsOutPorts[i].length-1] == "inactive")
+            {
+                endCount--;
             }
-            
-            m_fileEndingsOutPorts[i] = new String[array_length];
-            System.arraycopy(fileEndingsOutPorts[i], 0, m_fileEndingsOutPorts[i], 0, fileEndingsOutPorts[i].length);
-            if (nodeConfig.getOutputPorts().get(i).isOptional()) {
-                m_fileEndingsOutPorts[i][array_length-1] = "Inactive";
+            m_fileEndingsOutPorts[i] = new String[endCount];
+            for (int j = 0; j < endCount; j++)
+            {
+                m_fileEndingsOutPorts[i][j] = fileEndingsOutPorts[i][j];
             }
-            
         }
 
-        m_selectedOutputType = new int[m_nodeConfig.getNumberOfOutputPorts()];
+        m_selectedOutPortTypes = new int[m_nodeConfig.getNumberOfOutputPorts()];
+        m_linkedInPorts = new int[m_nodeConfig.getNumberOfOutputPorts()];
+        m_customBasenames = new String[m_nodeConfig.getNumberOfOutputPorts()];
+        m_activeOutPorts = new boolean[m_nodeConfig.getNumberOfOutputPorts()];
+        for (int i = 0; i < m_activeOutPorts.length; i++){
+            m_activeOutPorts[i] = m_nodeConfig.getOutputPorts().get(i).isActive();
+        }
     }
 
     /**
@@ -177,7 +207,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      */
     public String getOutputType(int idx) {
         return m_nodeConfig.getOutputPorts().get(idx).getMimeTypes()
-                .get(m_selectedOutputType[idx]);
+                .get(m_selectedOutPortTypes[idx]);
     }
 
     /**
@@ -189,7 +219,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return The selected output type index.
      */
     protected int getOutputTypeIndex(int idx) {
-        return m_selectedOutputType[idx];
+        return m_selectedOutPortTypes[idx];
     }
     
     /**
@@ -200,8 +230,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      * @return If the port is inactive.
      */
     protected boolean isInactive(int idx) {
-        return this.getOutputType(idx).toLowerCase().equals("inactive");
+        return !m_activeOutPorts[idx];
     }
+
+
 
     /**
      * Creates a list of output port types for the nodes.
@@ -304,21 +336,24 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-
         for (String key : m_nodeConfig.getParameterKeys()) {
             Parameter<?> param = m_nodeConfig.getParameter(key);
-
             // skip file parameters
             if (param instanceof IFileParameter) {
                 continue;
             }
-
             settings.addString(key, param.getStringRep());
         }
 
         for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
-            settings.addInt(GENERIC_KNIME_NODES_OUTTYPE_PREFIX + i,
-                    getOutputTypeIndex(i));
+            settings.addInt(GENERIC_KNIME_NODES_OUT_TYPE
+                            + i, m_selectedOutPortTypes[i]);
+            settings.addBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE
+                            + i, m_activeOutPorts[i]);
+            settings.addInt(GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+                            + i, m_linkedInPorts[i]);
+            settings.addString(GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+                            + i, m_customBasenames[i]);
         }
     }
 
@@ -339,15 +374,84 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             try {
                 m_nodeConfig.getParameter(key).fillFromString(value);
             } catch (InvalidParameterValueException e) {
+                //TODO I think we could hard fail here and throw an InvalidSettingsException
                 LOGGER.warn(
                         "Caught InvalidParameterValueException in loadValidatedSettingsFrom()",
                         e);
             }
         }
 
-        for (int i = 0; i < m_nodeConfig.getNumberOfOutputPorts(); i++) {
-            int idx = settings.getInt(GENERIC_KNIME_NODES_OUTTYPE_PREFIX + i);
-            m_selectedOutputType[i] = idx;
+        //TODO this is fully  copied from the load settings in the Dialog
+        // there has to be sth that we can do about that duplications
+        //TODO Shouldn't this also be done in the validateSettings method?
+        int nP = m_nodeConfig.getNumberOfOutputPorts();
+        m_selectedOutPortTypes = new int[nP];
+        m_activeOutPorts = new boolean[nP];
+        m_linkedInPorts = new int[nP];
+        m_customBasenames = new String[nP];
+        
+        for (int i = 0; i < nP; i++) {
+            Port p = m_nodeConfig.getOutputPorts().get(i);
+            int idx = 0; // default mimetype is the first
+            try{
+                idx = settings.getInt(GENERIC_KNIME_NODES_OUT_TYPE + i);
+                m_selectedOutPortTypes[i] = idx;
+            } catch (InvalidSettingsException e) {
+                //TODO Warning that we fell back to defaults?
+            }
+
+            boolean idxOOR = (idx < 0 || idx >= p.getMimeTypes().size());
+            if (idxOOR && !p.isOptional()) // invalid required port setting read
+            {
+                idx = 0;
+                //TODO Best would be to also deactivate this port to show the user that they have to reconfigure.
+                // But currently I disabled the editing of the activeness checkbox for required ports, so it would get
+                // initialized with an unchecked checkbox and you could not reactivate.
+                // You could do a function that, when the OutputTypes tab is clicked, that it resets to active
+                // for all required ports, because we assume the user has seen/thought about the new settings.
+                // But then, anyways a loaded unchanged workflow would fail due to inactiveness of the port, so no general best solution
+                // for it.
+                // Maybe provide better defaults (e.g. by looking at a mapping from old to new versions, if available). But
+                // that is a lot of work and does not work if the invalidness didnt come from a version change.
+                LOGGER.warn("Invalid mime-type index in settings.xml for required port #" + i + ". Using default (first).");
+            }
+            
+            try{
+                // A found activeness setting always takes precedence
+                boolean active = settings
+                         .getBoolean(GENERIC_KNIME_NODES_OUT_ACTIVE
+                                + i);
+                m_activeOutPorts[i] = active;
+            } catch (InvalidSettingsException e) {
+                // else check if index is invalid otherwise default to active. This is also to cope
+                // with old versions that encoded invalidness in an additional mimetype that is either present as inactive
+                // in old generated NodeFactories or out of range in newer ones/dynamic factories.
+                m_activeOutPorts[i] = !(idxOOR || p.getMimeTypes().get(m_selectedOutPortTypes[i]).toLowerCase() == "inactive");
+            }
+            
+            try{ //get linked inport
+                int linked = settings
+                        .getInt(GENERIC_KNIME_NODES_OUT_LINKEDINPUT
+                                + i);
+                m_linkedInPorts[i] = linked;
+            } catch (InvalidSettingsException e) {
+                // probably an older version then. Index 0 is auto.
+                m_linkedInPorts[i] = 0;
+            }
+            
+            try{ //get custom basename
+                String bn = settings
+                        .getString(GENERIC_KNIME_NODES_OUT_CUSTOMBASENAME
+                                + i);
+                m_customBasenames[i] = bn;
+            } catch (InvalidSettingsException e) {
+                // probably an older version then.
+                m_customBasenames[i] = "";
+            }
+            
+            p.setActive(m_activeOutPorts[i]);
+            p.setLinkedPortIndex(m_linkedInPorts[i]);
+            p.setUserBasename(m_customBasenames[i]);
         }
     }
 
@@ -420,17 +524,17 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             }
 
             URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[i];
+            String firstExt = spec.getFileExtensions().get(0);
 
             // get MIMEType from incoming port
-            // TODO: we should check all file extensions, if its more then one (e.g. last node outputs mixed list of txt and jpg)
-            String mt = MIMEMap.getMIMEType(spec.getFileExtensions().get(0));
+            // TODO: we should check all file extensions, if its more than one (e.g. last node outputs mixed list of txt and jpg)
+            String mt = MIMETypeHelper.getMIMEtypeByExtension(firstExt).orElse(firstExt);
 
             // check whether input MIMEType is in list of allowed MIMETypes
             boolean ok = false;
             if (m_fileEndingsInPorts[i].length > 0) {
                 for (int j = 0; j < m_fileEndingsInPorts[i].length && !ok; j++) {
-                    if (mt.equals(MIMEMap
-                            .getMIMEType(m_fileEndingsInPorts[i][j]))) {
+                    if (mt.equals(MIMETypeHelper.getMIMEtypeByExtension(m_fileEndingsInPorts[i][j]).orElse(m_fileEndingsInPorts[i][j]))){
                         ok = true;
                     }
                 }
@@ -443,7 +547,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             // we require consistent file endings for non prefix ports
             if (!ok && !m_nodeConfig.getInputPorts().get(i).isPrefix()) {
                 String mismatch = String.format(
-                        "has extension: [%s]; expected one of:[%s]", mt,
+                        "has extension: '%s'; expected one of: %s", firstExt,
                         Arrays.toString(m_fileEndingsInPorts[i]));
                 throw new InvalidSettingsException(
                         "Invalid MIMEtype at port number " + i + " : "
@@ -471,15 +575,32 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
 
         // set selected MIMEURIPortObjectSpecs at output ports
         for (int i = 0; i < nOut; i++) {
+            if (isInactive(i))
+            {
+                out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
+                continue;
+            }
             // selected output MIMEType
             int selectedMIMETypeIndex = getOutputTypeIndex(i);
-            // TODO: check
-            String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
-            if (!mt.toLowerCase().equals("inactive")) {
-                out_spec[i] = new URIPortObjectSpec(mt);
-            } else {
-                out_spec[i] = InactiveBranchPortObjectSpec.INSTANCE;
+            
+            // should never happen. Currently an empty file ending restriction in CTD
+            // will be read as a list of length 1 with "" as entry.
+            if (selectedMIMETypeIndex >= m_fileEndingsOutPorts[i].length)
+            {
+                out_spec[i] = new URIPortObjectSpec(FilenameUtils.getExtension(m_customBasenames[i]));
+                continue;
             }
+            String mt = m_fileEndingsOutPorts[i][selectedMIMETypeIndex];
+            if (mt.isEmpty()) // this is the case in empty restrictions
+            {
+                //TODO: we could make the OutType dropdown menu to a text box in that case.
+                //but requires some changes, since we assume all rows have this dropdown
+                //so for now, you can only go for the custom basename (where you can now include
+                //an extension, because only the empty string will be added
+                out_spec[i] = new URIPortObjectSpec(FilenameUtils.getExtension(m_customBasenames[i]));
+                continue;
+            }
+            out_spec[i] = new URIPortObjectSpec(mt);
         }
 
         return out_spec;
@@ -570,114 +691,93 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         final int nOut = m_nodeConfig.getOutputPorts().size();
         List<PortObject> outPorts = new ArrayList<PortObject>(nOut);
 
+        int nrListPortsBefore = 0;
         for (int i = 0; i < nOut; i++) {
             Port port = m_nodeConfig.getOutputPorts().get(i);
-            //Before we know about its extension, a port is reset to active
-            port.setActive(true);
-            String name = port.getName();
-            String ext = "";
-            boolean isPrefix = port.isPrefix();
-            if (!isPrefix){
-                ext = getOutputType(i);
-            }
-            if (ext.toLowerCase().equals("inactive")) {
-                port.setActive(false);
-                outPorts.add(InactiveBranchPortObject.INSTANCE);
-                continue;
-            }
-            Parameter<?> p = m_nodeConfig.getParameter(name);
 
-            // basenames and number of output files guessed from input
-            List<String> basenames = getOutputBaseNames();
+            if (port.isActive())
+            {
+                String portname = port.getName();
+                String ext = "";
+                boolean isPrefix = port.isPrefix();
+                // Create a folder/filestore generated by KNIME in its temp folder
+                FileStore filestore = exec.createFileStore(m_nodeConfig.getName() + "_" + i);
+                Parameter<?> p = m_nodeConfig.getParameter(portname);
+                // filenames on the filesystem in the filestore (to save)
+                List<String> filenames = new ArrayList<String>();
 
-            if (p instanceof FileListParameter && port.isMultiFile()) {
-                // we currently do not support lists of prefixes
-                if (isPrefix) {
-                    throw new InvalidSettingsException(
-                            "GKN currently does not support lists of prefixes as output.");
-                }
-
-                FileListParameter flp = (FileListParameter) p;
-                List<String> fileNames = new ArrayList<String>();
-
-                if (basenames.size() == 0) {
-                    throw new Exception(
-                            "Cannot determine number of output files if no input file is given.");
-                }
-
-
-                PortObject fsupo = new FileStoreURIPortObject(
-                        exec.createFileStore(m_nodeConfig.getName() + "_" + i));
-
-                for (int f = 0; f < basenames.size(); ++f) {
-                    // create basename: <base_name>_<port_nr>_<outfile_nr>
-                    String file_basename = String.format("%s_%d",
-                            basenames.get(f), f);
-                    File file = ((FileStoreURIPortObject) fsupo).registerFile(file_basename + "." + ext);
-                    fileNames.add(file.getAbsolutePath());
-                }
-                
-                // add filled portobject
-                outPorts.add(fsupo);
-
-                // overwrite existing settings with new values generated by the
-                // stash
-                flp.setValue(fileNames);
-
-            } else if (p instanceof FileParameter && !port.isMultiFile()) {
+                // The object to add later
                 PortObject po;
-                // if we have no basename to use (e.g., Node without input-file)
-                // we use the nodename
-                String basename;
-                if (basenames.isEmpty()) {
-                    basename = m_nodeConfig.getName();
+
+                if (p instanceof FileListParameter && port.isMultiFile()) {
+                    // we currently do not support lists of prefixes
+                    if (isPrefix) {
+                        throw new InvalidSettingsException(
+                                "GKN currently does not support lists of prefixes as output.");
+                    }
+                    FileListParameter flp = (FileListParameter) p;
+                    
+                    // basenames and number of output files guessed from input
+                    List<String> basenames = getOutputBaseNameList(nrListPortsBefore);
+
+                    // Create the folder (i.e. file store) in KNIME's temp dir
+                    po = new FileStoreURIPortObject(filestore);
+                    ext = getOutputType(i);
+                    for (int f = 0; f < basenames.size(); ++f) {
+                        File file = ((FileStoreURIPortObject) po).registerFile(basenames.get(f) + "." + ext);
+                        filenames.add(file.getAbsolutePath());
+                    }
+                    
+                    // overwrite existing settings with new values generated by the
+                    // stash
+                    flp.setValue(filenames);
+                    
+                    ++nrListPortsBefore;
+                }
+                else if (p instanceof FileParameter && !port.isMultiFile())
+                {
+                    // Now it is either a single output file or a file prefix
+                    String basename = getOutputBaseName(i);
+                    if (isPrefix) {
+                        // we do not append the file extension if we have a prefix
+                        po = new FileStorePrefixURIPortObject(filestore, basename);
+                        ((FileParameter) p).setValue(((FileStorePrefixURIPortObject) po).getPrefix());
+                        LOGGER.debug("> setting param " + portname + "->"
+                                + ((FileStorePrefixURIPortObject) po).getPrefix());
+                    } else {
+                        ext = getOutputType(i);
+                        basename += '.' + ext;
+                        po = new FileStoreURIPortObject(filestore);
+                        File file = ((FileStoreURIPortObject)po).registerFile(basename);
+                        ((FileParameter) p).setValue(file.getAbsolutePath());
+                        LOGGER.debug("> setting param " + portname + "->" + file);
+                    }
                 } else {
-                    basename = basenames.get(0);
+                    //TODO better message?
+                    throw new Exception("Invalid connection between ports and parameters.");
                 }
-
-                // create basename: <base_name>_<outfile_nr>
-                String fileName = basename;
-                if (!isPrefix){
-                    fileName += '.' + ext;
-                }
-                if (isPrefix) {
-                    po = new FileStorePrefixURIPortObject(
-                            exec.createFileStore(m_nodeConfig.getName() + "_"
-                                    + i), fileName);
-                    ((FileParameter) p).setValue(((FileStorePrefixURIPortObject) po).getPrefix());
-                    LOGGER.debug("> setting param " + name + "->"
-                            + ((FileStorePrefixURIPortObject) po).getPrefix());
-
-
-                } else {
-                    po = new FileStoreURIPortObject(
-                            exec.createFileStore(m_nodeConfig.getName() + "_"
-                                    + i));
-
-                    // we do not append the file extension if we have a prefix
-                    File file = ((FileStoreURIPortObject)po).registerFile(fileName);
-                    ((FileParameter) p).setValue(file.getAbsolutePath());
-                    LOGGER.debug("> setting param " + name + "->" + file);
-                }
-                // remember output file
+                // add filled portobject with registered files
                 outPorts.add(po);
-            } else {
-                throw new Exception(
-                        "Invalid connection between ports and parameters.");
+            }
+            else
+            {
+                outPorts.add(InactiveBranchPortObject.INSTANCE);
             }
         }
         return outPorts;
     }
-
+    
     /**
-     * Tries to guess the optimal output file names given all the input edges.
+     * Deprecated: Tries to guess the optimal output file names given all the input edges.
      * The file names will be extracted from the configuration, hence the file
      * names need to be transferred into config prior to using this method. See
      * {@link GenericKnimeNodeModel#transferIncomingPorts2Config(PortObject[])}.
      * 
      * @return A list of base names for the output files.
      * @throws Exception
+     * @Deprecated true
      */
+    @SuppressWarnings("unused")
     private List<String> getOutputBaseNames() throws Exception {
 
         // 1. we select always the list with the highest number of files.
@@ -747,8 +847,129 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                         .getValue()));
             }
         }
-
         return basenames;
+    }
+    
+    /**
+     * Gets output name for Single output and output prefix (keep in mind that suffixes are up to the tool itself)
+     * @param outputIndex index of the output port to generate a name for
+     *  (based on the input files in the input ports)
+     * @return outputname to use for registering an output file
+     */
+    private String getOutputBaseName(int outputIndex) throws InvalidSettingsException{
+        if (m_customBasenames[outputIndex] != null && !m_customBasenames[outputIndex].isEmpty())
+        {
+            //TODO replace variables in that string
+            return m_customBasenames[outputIndex];
+        }
+        String iterationSuffix = "";
+        try {
+          iterationSuffix = "_iter" + Integer.toString(peekFlowVariableInt("currentIteration"));
+        } catch (NoSuchElementException e) {}
+        
+        // if it is not set to "auto"
+        if (m_linkedInPorts[outputIndex] != 0)
+        {
+            Port linked = m_nodeConfig.getInputPorts().get(m_linkedInPorts[outputIndex]-1);
+            Object portVal = m_nodeConfig.getParameter(linked.getName()).getValue();
+            if (portVal != null)
+            {
+                if (!linked.isMultiFile())
+                {
+                    return FilenameUtils.getBaseName((String) portVal)
+                            + "_out" + outputIndex + iterationSuffix;
+                }
+                else
+                {
+                    LOGGER.warn("Linked input to single ouput is a list. Taking first element.");
+                    return FilenameUtils.getBaseName(((List<String>) portVal).get(0))
+                            + "_out" + outputIndex + iterationSuffix;
+                }
+            }
+            else
+            {
+                throw new InvalidSettingsException("Linked input port " + linked.getName() + " for output port " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " is unconnected.");
+            }
+        }
+        else
+        {
+            // look for first connected! non multifile inport
+            for (Port p : m_nodeConfig.getInputPorts())
+            {
+                if (!p.isMultiFile() && m_nodeConfig.getParameter(p.getName()).getValue() != null)
+                {
+                    return FilenameUtils.getBaseName((String) m_nodeConfig.getParameter(p.getName()).getValue())
+                            + "_out" + outputIndex + iterationSuffix;
+                }
+            }
+            // If everything fails, use the nodename
+            return m_nodeConfig.getName() + "_out" + outputIndex;
+        }
+    }
+    
+    /**
+     * Gets output basename for a multifile output (keep in mind that suffixes are up to the tool itself)
+     * @param outputIndex index of the output port to generate a name for
+     *  (based on the input files in the input ports)
+     * @return outputname to use for registering an output file
+     */
+    private List<String> getOutputBaseNameList(int outputIndex) throws InvalidSettingsException {
+        if (m_customBasenames[outputIndex] != null && !m_customBasenames[outputIndex].isEmpty())
+        {
+            //TODO replace variables in that string
+            return Arrays.asList(m_customBasenames[outputIndex].split(","));
+        }
+        
+        // See if we are in an obvious loop context
+        String iterationSuffix = "";
+        try {
+          iterationSuffix = "_iter" + Integer.toString(peekFlowVariableInt("currentIteration"));
+        } catch (NoSuchElementException e) {}
+        
+        // if it is not set to "auto"
+        if (m_linkedInPorts[outputIndex] != 0)
+        {
+            Port linked = m_nodeConfig.getInputPorts().get(m_linkedInPorts[outputIndex]-1);
+            Object portVal = m_nodeConfig.getParameter(linked.getName()).getValue();
+            if (portVal != null)
+            {
+                if (linked.isMultiFile())
+                {
+                    List<String> inputnames = (List<String>) portVal;
+                    List<String> basenames = new ArrayList<String>();
+                    for (String inputname : inputnames)
+                    {
+                        basenames.add(FilenameUtils.getBaseName(inputname) + "_out" + outputIndex + iterationSuffix);
+                    }
+                    return basenames;
+                }
+                else
+                {
+                    throw new InvalidSettingsException("Linked input port " + linked.getName() + " for output port " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " is not a multi-file input port.");
+                }
+            }
+            else
+            {
+                throw new InvalidSettingsException("Linked input port " + linked.getName() + " for output port " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " is unconnected.");
+            }
+        }
+        else
+        {
+            // look for first connected! multifile inport
+            for (Port p : m_nodeConfig.getInputPorts())
+            {
+                if (p.isMultiFile() && m_nodeConfig.getParameter(p.getName()).getValue() != null)
+                {
+                    List<String> inputnames = (List<String>) m_nodeConfig.getParameter(p.getName()).getValue();
+                    List<String> basenames = new ArrayList<String>();
+                    for (String inputname : inputnames)
+                    {
+                        basenames.add(FilenameUtils.getBaseName(inputname) + "_out" + outputIndex + iterationSuffix);
+                    }
+                }
+            }
+            throw new InvalidSettingsException("For multifile outport " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " no linkable multifile input could be found. Please specify own output basenames as a comma seperated list.");
+        }
     }
 
     /**
@@ -767,7 +988,6 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             Port port = m_nodeConfig.getInputPorts().get(i);
 
             IURIPortObject po = (IURIPortObject) inData[i];
-            
 
             String name = port.getName();
             // find the associated parameter in the configuration
@@ -789,8 +1009,8 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             // check validity of subtypes with actual inputs
             if (uris.size() > 1 && (!isMultiFile && !isPrefix)) {
                 throw new Exception(
-                        "IURIPortObject with multiple URIs supplied at single URI port #"
-                                + i);
+                        "IURIPortObject with list of multiple URIs supplied at single URI port #"
+                                + i + ". Use Loops/FileSplitter to branch/iterate or somehow merge the files.");
             }
 
             // check that we are actually referencing a file parameter from this

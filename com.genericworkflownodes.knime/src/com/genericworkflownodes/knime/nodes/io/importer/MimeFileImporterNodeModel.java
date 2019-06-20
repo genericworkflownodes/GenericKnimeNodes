@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -73,6 +74,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
         return new SettingsModelOptionalString("FILE_EXTENSION", "", false);
     }
     private final SettingsModelOptionalString m_file_extension = fileExtension();
+    
+    
 
     /**
      * Data member.
@@ -131,9 +134,10 @@ final class MimeFileImporterNodeModel extends NodeModel {
 
         SettingsModelString tmp_filename = m_filename
                 .createCloneWithValidatedValue(settings);
-
+        
         if (tmp_filename.getStringValue().isEmpty()) {
-            throw new InvalidSettingsException("No File selected.");
+            this.getLogger().warn("No File selected.");
+            //throw new InvalidSettingsException("No File selected.");
         }
 
         //convertToURL(tmp_filename.getStringValue());
@@ -143,18 +147,10 @@ final class MimeFileImporterNodeModel extends NodeModel {
 
         if (tmp_file_extension.isActive()) {
             if (tmp_file_extension.getStringValue().equals("")) {
-                throw new InvalidSettingsException(
-                        "No File extension (override) provided.");
-            } else if (MIMETypeHelper.getMIMEtypeByExtension(tmp_file_extension
-                    .getStringValue()) == null) {
-                throw new InvalidSettingsException(
-                        "No MIME type registered for file extension: "
-                                + tmp_file_extension.getStringValue());
+                this.getLogger().warn("No File extension (override) provided.");
+                //throw new InvalidSettingsException(
+                //        "No File extension (override) provided.");
             }
-        } else if (MIMETypeHelper.getMIMEtype(tmp_filename.getStringValue()) == null) {
-            throw new InvalidSettingsException(
-                    "File of unknown MIME type selected: "
-                            + tmp_filename.getStringValue());
         }
     }
 
@@ -226,17 +222,55 @@ final class MimeFileImporterNodeModel extends NodeModel {
          * Upon inserting the node into a workflow, it gets configured, so at
          * least something fundamental like the file name should be checked
          */
-        if (filenameValue.isEmpty()) {
+        if (filenameValue.isEmpty() || filenameValue == null) {
             throw new InvalidSettingsException("No File selected.");
         }
+        
+        File f;
+        try {
+         f = FileUtil.getFileFromURL(convertToURL(m_filename.getStringValue()));
+        } catch (IllegalArgumentException e)
+        {
+            throw new InvalidSettingsException("Illegal URI given.");
+        }
+        
+        if (!f.exists())
+        {
+            throw new InvalidSettingsException("File does not exist.");
+        }
+        
+        if (!f.isFile())
+        {
+            throw new InvalidSettingsException("Path is not a file.");
+        }
+    
+        if (!f.canRead())
+        {
+            throw new InvalidSettingsException("File not readable.");
+        }
 
-        //TODO show warning on node if file does not exist
         // Determine the file extension
-        final String fileExtension = this.m_file_extension.isActive() ? this.m_file_extension.getStringValue()
-                : MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElseThrow( () ->
-                new InvalidSettingsException(
-                        String.format("Could not determine file type for selected input file: %s", filenameValue)));
-
+        String fileExtension = "";
+        
+        if (this.m_file_extension.isActive())
+        {
+            fileExtension = this.m_file_extension.getStringValue();
+            if (MIMETypeHelper.getMIMEtypeByExtension(fileExtension).orElse(null) == null)
+            {
+                this.getLogger().warn("Extension of unknown/unregistered MIME type selected: "
+                        + filenameValue); 
+            }
+        }
+        else
+        {
+            fileExtension = MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElse(null);
+            if (fileExtension == null)
+            {
+                this.getLogger().warn("File of unknown/unregistered MIME type selected: "
+                        + filenameValue);
+                fileExtension = FilenameUtils.getExtension(filenameValue);
+            }
+        }
         return new PortObjectSpec[] {
                 new URIPortObjectSpec(fileExtension)
         };
@@ -259,7 +293,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
         uris.add(new URIContent(FileUtil.toURL(m_filename.getStringValue()).toURI(),
                 (m_file_extension.isActive() ? m_file_extension
                         .getStringValue() : MIMETypeHelper
-                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(null))));
+                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(FilenameUtils.getExtension(file.getAbsolutePath())))));
 
         data = Helper.readFileSummary(file, 50).getBytes();
 

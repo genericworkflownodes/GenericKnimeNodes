@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.filestore.FileStorePortObject;
 import org.knime.core.data.uri.IURIPortObject;
@@ -132,7 +133,7 @@ public abstract class AbstractFileStoreURIPortObject extends
         String ext = MIMETypeHelper.getMIMEtypeExtension(filename).orElse(null);
         if (ext == null)
         {
-            ext = filename.substring(filename.indexOf('.'), filename.length());
+            ext = FilenameUtils.getExtension(filename);
             LOGGER.warn("MIMEType not registered for extension '" + ext + "'. Proceeding, but this might lead to problems connecting to the affected FileStoreURIPort.");
         }
         URIContent uric = new URIContent(child.toURI(), ext);
