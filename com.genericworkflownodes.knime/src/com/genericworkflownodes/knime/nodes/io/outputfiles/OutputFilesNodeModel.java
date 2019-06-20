@@ -179,7 +179,7 @@ public class OutputFilesNodeModel extends NodeModel {
             c++;
         }
       
-        idx = 0
+        idx = 0;
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
             if (!in.canRead()) {
