@@ -2,7 +2,7 @@
  * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,8 +38,8 @@ import com.genericworkflownodes.util.ui.ChoiceDialogListener;
 
 /**
  * <code>NodeDialog</code> for the "IDemangler" Node.
- * 
- * 
+ *
+ *
  * @author aiche, roettig
  */
 public class DemanglerNodeDialog extends NodeDialogPane implements
@@ -104,8 +104,8 @@ public class DemanglerNodeDialog extends NodeDialogPane implements
             configuredFileExtension = settings
                     .getString(DemanglerNodeModel.CONFIGURED_FILE_EXTENSION_SETTINGNAME);
 
-            String mimeType = MIMETypeHelper.getMIMEtypeByExtension(configuredFileExtension);
-            
+            String mimeType = MIMETypeHelper.getMIMEtypeByExtension(configuredFileExtension).orElse(null);
+
             availableDemangler = DemanglerRegistry.getDemanglerRegistry()
                     .getDemangler(mimeType);
         } catch (InvalidSettingsException e) {

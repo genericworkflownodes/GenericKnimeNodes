@@ -111,8 +111,14 @@ public final class SplitterFactoryManager {
      * @return a list of matching factories
      */
     public List<SplitterFactory> getFactories(String... mimetypes) {
+
         Set<String> factoryIds = new HashSet<String>();
         List<SplitterFactory> factories = new ArrayList<SplitterFactory>();
+        if (mimetypes == null)
+        {
+            return factories;
+        }
+        
         for (SplitterFactory fac : m_factories) {
             for (String mimetype : mimetypes) {
                 if (fac.isApplicable(mimetype) && !factoryIds.contains(fac.getID())) {

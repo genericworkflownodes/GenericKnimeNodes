@@ -121,12 +121,13 @@ public class GeneratedPluginMeta extends PluginMeta {
      * @param qualifier
      *            The potentially higher qualifier.
      */
-    protected String updateVersion(String qualifier) {
+    protected String updateVersion(String qualifier){
         final Pattern p = Pattern
                 .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
         Matcher m = p.matcher(getVersion());
         boolean found = m.find();
-        assert found : "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$";
+        if (!found)
+        	throw new InvalidParameterException("Version " + getVersion() + " should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$");
 
         // version has no qualifier
         String newVersion = m.group(1)
@@ -136,7 +137,10 @@ public class GeneratedPluginMeta extends PluginMeta {
         if (m.group(4) == null
                 || qualifier.compareTo(m.group(4).substring(1)) > 0) {
             // external qualifier
-            newVersion += "." + qualifier;
+        	if (!qualifier.isEmpty())
+        	{
+        		newVersion += "." + qualifier;
+        	}
         } else {
             // our own
             newVersion += m.group(4);

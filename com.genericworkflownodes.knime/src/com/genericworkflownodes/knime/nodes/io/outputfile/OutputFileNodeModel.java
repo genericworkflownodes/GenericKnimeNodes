@@ -2,7 +2,7 @@
  * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.nio.file.InvalidPathException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -29,6 +31,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -39,6 +42,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -51,17 +55,21 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of MimeFileExporter.
- * 
- * 
+ *
+ *
  * @author roettig, aiche
  */
 public class OutputFileNodeModel extends NodeModel {
 
     static final String CFG_FILENAME = "FILENAME";
 
+    static final String CFG_OVERWRITE = "OVERWRITE";
+    
     SettingsModelString m_filename = new SettingsModelString(
             OutputFileNodeModel.CFG_FILENAME, "");
 
+    SettingsModelBoolean m_overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
+    
     private String data;
 
     public String getContent() {
@@ -85,7 +93,7 @@ public class OutputFileNodeModel extends NodeModel {
         // check the incoming port
         if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
             throw new InvalidSettingsException(
-                    "No URIPortObjectSpec compatible port object");
+                    "No URIPortObjectSpec compatible port object at the input port.");
         }
 
         // check the selected file
@@ -96,19 +104,38 @@ public class OutputFileNodeModel extends NodeModel {
 
         boolean selectedExtensionIsValid = compareMIMETypes(inSpecs);
         if (!selectedExtensionIsValid) {
-            throw new InvalidSettingsException(
+            this.getLogger().warn(
                     "The selected output file and the incoming file have different mime types.");
+        }
+        
+        File out;
+        try {
+            out = FileUtil.getFileFromURL(FileUtil.toURL(m_filename.getStringValue()));
+        } catch (InvalidPathException | MalformedURLException e) {
+            throw new InvalidSettingsException("The given file name is not a valid output destination.");
+        }
+        
+        if (out.exists()) {
+            if (!m_overwrite.getBooleanValue()) {
+                throw new InvalidSettingsException("File " + out.getAbsolutePath() + " already exists and cannot be overwritten.");
+            } else {
+                setWarningMessage("File " + out.getAbsolutePath() + " exists and will be overwritten.");
+            }
         }
 
         return new PortObjectSpec[] {};
     }
 
-    public boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
+    private boolean compareMIMETypes(PortObjectSpec[] inSpecs) {
+        String chosenName = m_filename
+                .getStringValue();
+        //fallback: shortest extension
         String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-                .getStringValue());
+                .getStringValue()).orElse(FilenameUtils.getExtension(chosenName));
+        //we know that it is a single file during configure
+        String ext = ((URIPortObjectSpec) inSpecs[0]).getFileExtensions().get(0);
         String incomingMimeType = MIMETypeHelper
-                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0));
+                .getMIMEtypeByExtension(ext).orElse(ext);
 
         return incomingMimeType.equals(selectedMimeType);
     }
@@ -123,12 +150,18 @@ public class OutputFileNodeModel extends NodeModel {
             throw new Exception(
                     "There were no URIs in the supplied IURIPortObject at port 0");
         }
+        
+        if (uris.size() > 1) {
+            throw new Exception(
+                    "There were more than one URI supplied IURIPortObject at port 0. Please use the Output Files or Output Folder node.");
+        }
+
 
         String filename = m_filename.getStringValue();
 
         File in = FileUtil.getFileFromURL(uris.get(0).getURI().toURL());
         File out = FileUtil.getFileFromURL(FileUtil.toURL(filename));
-        
+
         if (out == null) {
             throw new InvalidSettingsException("Can only write to local paths.");
         }
@@ -154,6 +187,7 @@ public class OutputFileNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_filename.saveSettingsTo(settings);
+        m_overwrite.saveSettingsTo(settings);
     }
 
     /**
@@ -163,6 +197,9 @@ public class OutputFileNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.loadSettingsFrom(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -172,6 +209,9 @@ public class OutputFileNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.validateSettings(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.validateSettings(settings);
+        }
     }
 
     /**

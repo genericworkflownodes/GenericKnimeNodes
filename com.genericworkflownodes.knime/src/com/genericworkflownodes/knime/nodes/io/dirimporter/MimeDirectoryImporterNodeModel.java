@@ -152,12 +152,14 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             // If the user gave a KNIME URI in the input box, we resolve relative to that
             if (authority != null) {
                 String prefix = "knime://" + authority + "/";
+                String prefixWithDouble = "knime:////" + authority + "/";
                 URL url = FileUtil.toURL(prefix);
-                Path localPath = FileUtil.resolveToPath(url);
+                Path localPath = FileUtil.getFileFromURL(url).toPath();
                 final List<URIContent> relUris = new ArrayList<URIContent>();
                 for (URIContent uri : uris) {
                     Path relative = localPath.relativize(Paths.get(uri.getURI()));
-                    relUris.add(new URIContent(new File(prefix + relative.toString()).toURI(), uri.getExtension()));
+                    URI u = new URI("knime", authority, "/"+relative.toString(), null, null);
+                    relUris.add(new URIContent(u, uri.getExtension()));
                 }
                 uris = relUris;
             }
@@ -373,6 +375,7 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
         final ListDirectoryConfiguration config = new ListDirectoryConfiguration();
         config.loadSettingsInModel(settings);
         m_configuration = config;
+        m_extension = config.getExtensionsString();
     }
 
     /**

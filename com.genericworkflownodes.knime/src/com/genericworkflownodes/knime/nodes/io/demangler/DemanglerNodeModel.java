@@ -2,7 +2,7 @@
  * Copyright (c) 2011-2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -50,8 +50,8 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of DemanglerNodeModel.
- * 
- * 
+ *
+ *
  * @author roettig
  */
 public class DemanglerNodeModel extends NodeModel {
@@ -113,7 +113,7 @@ public class DemanglerNodeModel extends NodeModel {
                 SELECTED_DEMANGLER_SETTINGNAME, "");
         fileExtension = settings
                 .getString(CONFIGURED_FILE_EXTENSION_SETTINGNAME);
-        String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension);
+        String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension).orElse(null);
         List<IDemangler> availableDemangler = DemanglerRegistry
                 .getDemanglerRegistry().getDemangler(mimeType);
 
@@ -154,7 +154,7 @@ public class DemanglerNodeModel extends NodeModel {
 
         URIPortObjectSpec spec = (URIPortObjectSpec) inSpecs[0];
         fileExtension = spec.getFileExtensions().get(0);
-        String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension);
+        String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension).orElse(null);
         // try to find a demangler for the data type ...
 
         List<IDemangler> availableDemanglers = DemanglerRegistry
@@ -176,7 +176,7 @@ public class DemanglerNodeModel extends NodeModel {
 
     /**
      * Retrieves the {@link DataTableSpec} from the selected {@link IDemangler}.
-     * 
+     *
      * @return A configured {@link DataTableSpec}.
      * @throws InvalidSettingsException
      *             If the requested configuration can not be created.
