@@ -63,6 +63,7 @@ import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
  */
 public class ParamHandler extends DefaultHandler {
 
+    private static final String TRUE = "true";
     private static final String FALSE = "false";
 
     /**
@@ -515,11 +516,22 @@ public class ParamHandler extends DefaultHandler {
             createPort(paramName, attributes, false);
         } else {
             String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
+            
             if (restrictions != null && restrictions.length() > 0) {
-                m_currentParameter = new StringChoiceParameter(paramName,
-                        restrictions.split(","));
+              String[] restrictionsSplit = restrictions.split(",");
+              // check for Boolean hidden as String parameter
+              if (restrictionsSplit.length == 2 &&
+            		  ((TRUE.equals(restrictionsSplit[0]) && FALSE.equals(restrictionsSplit[1]))
+            		  || (FALSE.equals(restrictionsSplit[0]) && TRUE.equals(restrictionsSplit[1]))))
+              {
+                  m_currentParameter = new BoolParameter(paramName, paramValue, false);
+              } 
+              else
+              {
+                m_currentParameter = new StringChoiceParameter(paramName,restrictionsSplit);
                 ((StringChoiceParameter) m_currentParameter)
                         .setValue(paramValue);
+              }
             } else {
                 m_currentParameter = new StringParameter(paramName,
                         paramValue);
@@ -587,7 +599,7 @@ public class ParamHandler extends DefaultHandler {
      */
     private void handleBoolType(final String paramName, final String paramValue,
             Attributes attributes) {
-    	m_currentParameter = new BoolParameter(paramName, paramValue);
+    	m_currentParameter = new BoolParameter(paramName, paramValue, true);
     }
     
     

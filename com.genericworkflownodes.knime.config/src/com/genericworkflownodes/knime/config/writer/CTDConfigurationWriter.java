@@ -286,6 +286,8 @@ public class CTDConfigurationWriter {
             addNumberRestrictions(item, p);
         } else if (p instanceof StringChoiceParameter) {
             addStringChoices(item, p);
+        } else if (p instanceof BoolParameter) {
+        	addBoolChoicesIfNoFlag(item, p);
         } else if (p instanceof FileParameter) {
             addMimeTypeRestrictions(item, p);
         }
@@ -294,7 +296,7 @@ public class CTDConfigurationWriter {
         streamPut(item.toString());
     }
 
-    private void writeItemList(String key, Parameter<?> p) throws IOException {
+	private void writeItemList(String key, Parameter<?> p) throws IOException {
     	if (p instanceof FileListParameter) {
     		// Omit complete parameter when its value is null (e.g. not connected)
     		if (ignoreUnusedParameters && p.isNull()) {
@@ -352,7 +354,11 @@ public class CTDConfigurationWriter {
         } else if (p instanceof DoubleParameter) {
             item.append("double");
         } else if (p instanceof BoolParameter) {
-        	item.append("bool");
+        	if (((BoolParameter) p).isFlag) {
+        		item.append("bool");
+        	} else {
+        		item.append("string");
+        	}
         } else if (p instanceof IntegerParameter) {
             item.append("int");
         }
@@ -432,6 +438,13 @@ public class CTDConfigurationWriter {
         }
         item.append('\"');
     }
+    
+    private void addBoolChoicesIfNoFlag(StringBuffer item, Parameter<?> p) {
+    	if (!((BoolParameter) p).isFlag)
+    	{
+    		item.append(" restrictions=\"true,false\"");
+    	}
+	}
 
     private void addNumberRestrictions(StringBuffer item, Parameter<?> p) {
         StringBuffer restriction = new StringBuffer();

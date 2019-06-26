@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.uri.IURIPortObject;

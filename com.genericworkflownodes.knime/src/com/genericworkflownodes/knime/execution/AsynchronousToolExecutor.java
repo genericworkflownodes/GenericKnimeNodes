@@ -108,7 +108,7 @@ public class AsynchronousToolExecutor implements IWaitable {
         try {
             return m_executor.execute();
         } finally {
-            // regardless of what hapenned, make sure to decrease the count in
+            // regardless of what happened, make sure to decrease the count in
             // the latch
             countdownLatch.countDown();
         }
