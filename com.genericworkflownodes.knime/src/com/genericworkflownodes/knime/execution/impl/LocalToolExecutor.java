@@ -22,19 +22,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
-
-import com.genericworkflownodes.knime.nodes.exttool.ViewUpdateNotice;
-import com.genericworkflownodes.knime.nodes.exttool.ExtToolOutputNodeModel;
+import org.knime.core.util.ThreadUtils;
+import org.knime.base.node.util.exttool.*;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
@@ -42,6 +44,7 @@ import com.genericworkflownodes.knime.custom.config.NoBinaryAvailableException;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 import com.genericworkflownodes.util.StringUtils;
 
 /**
@@ -249,6 +252,23 @@ public class LocalToolExecutor implements IToolExecutor {
             boolean done = false;
             boolean stdoutclosed = false;
             boolean stderrclosed = false;
+            
+            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+            //Constructor<?> ctor = enumClass.getDeclaredConstructor();
+
+            //Enum enumInstance = (Enum) ctor.newInstance();
+            //Class e = enumInstance.getClass();
+            /*Class<?> noticeclass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice");
+            Field f = noticeclass.getDeclaredField("$ViewType");
+            f.setAccessible(true);
+            Class e =  (Class) f.get(this);*/
+            Object[] enumElements = enumClass.getEnumConstants();
+            Object stdouttype = enumElements[0];
+            Object stderrtype = enumElements[1];
+            Constructor<ViewUpdateNotice> ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+            ctor.setAccessible(true);
+            
             while (!done){
                 boolean readSomething = false;
                 // read from the process's standard output
@@ -259,10 +279,10 @@ public class LocalToolExecutor implements IToolExecutor {
                         stdoutclosed = true;
                     } else {
                         m_stdOut.add(read);
-                        ViewUpdateNotice v = new ViewUpdateNotice(ViewUpdateNotice.ViewType.stdout);
+                        ViewUpdateNotice v = ctor.newInstance(stdouttype);
                         v.setNewLine(read);
-                        m_model.setExternalOutput(m_stdOut);
-                        m_model.update(v);
+                        ((GenericKnimeNodeModel) m_model).setStdOut(m_stdOut);
+                        m_model.update(new Observable(),v);
                     }
                 }
                 // read from the process's standard error
@@ -273,10 +293,10 @@ public class LocalToolExecutor implements IToolExecutor {
                         stderrclosed = true;
                     } else {
                         m_stdErr.add(read);
-                        ViewUpdateNotice v = new ViewUpdateNotice(ViewUpdateNotice.ViewType.stderr);
+                        ViewUpdateNotice v = ctor.newInstance(stderrtype);
                         v.setNewLine(read);
-                        m_model.setExternalErrorOutput(m_stdErr);
-                        m_model.update(v);
+                        ((GenericKnimeNodeModel) m_model).setStdErr(m_stdOut);
+                        m_model.update(new Observable(),v);
                     }
                 }
                 // Check the exit status only we haven't read anything,

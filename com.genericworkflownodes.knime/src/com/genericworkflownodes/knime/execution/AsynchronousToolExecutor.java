@@ -26,6 +26,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.knime.core.util.ThreadUtils;
+
 /**
  * Handles asynchronous execution of IToolExecutor.
  * 
@@ -74,12 +76,14 @@ public class AsynchronousToolExecutor implements IWaitable {
         m_executor = executor;
         countdownLatch = new CountDownLatch(1);
         invokeAlreadyCalled = new AtomicBoolean(false);
-        futureTask = new FutureTask<Integer>(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return doCall();
-            }
-        });
+        futureTask = new FutureTask<Integer>(
+            ThreadUtils.callableWithContext(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    return doCall();
+                }
+            })
+        );
     }
 
     /**

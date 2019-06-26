@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.genericworkflownodes.knime.nodes.exttool.ExtToolOutputNodeModel;
+import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;

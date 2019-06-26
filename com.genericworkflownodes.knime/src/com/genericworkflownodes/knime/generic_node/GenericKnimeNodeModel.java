@@ -21,12 +21,13 @@ package com.genericworkflownodes.knime.generic_node;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream.GetField;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
@@ -49,7 +50,9 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import com.genericworkflownodes.knime.nodes.exttool.ExtToolOutputNodeModel;
+import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
+import org.knime.base.node.util.exttool.ViewUpdateNotice;
+
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
@@ -855,6 +858,22 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 .getCommandGenerator();
         return commandGenerator.generateCommands(m_nodeConfig, m_pluginConfig,
                 workingDirectory);
+    }
+    
+    public void setStdOut(LinkedList<String> str)
+    {
+        this.setExternalOutput(str);
+    }
+
+    public void setStdErr(LinkedList<String> str)
+    {
+        this.setExternalErrorOutput(str);
+    }
+    
+    @Override
+    public void update(Observable o, Object arg) {
+        // TODO Auto-generated method stub
+        super.update(o, arg);
     }
     
 }
