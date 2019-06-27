@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.util.ThreadUtils;
 import org.knime.base.node.util.exttool.*;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -101,9 +99,9 @@ public class LocalToolExecutor implements IToolExecutor {
      * The NodeModel from which this Executor was generated
      * TODO This is more a hack. I think we should use the
      * Observer pattern and synchronize the fields stdErr and stdOut
-     * with the model.
+     * with the ExtToolOutputNodeModel that the GKNModel extends.
      */
-    private ExtToolOutputNodeModel m_model;
+    private GenericKnimeNodeModel m_model;
 
     /**
      * @return the m_environmentVariables
@@ -454,7 +452,7 @@ public class LocalToolExecutor implements IToolExecutor {
     }
 
     @Override
-    public void setModel(ExtToolOutputNodeModel model) {
+    public void setModel(GenericKnimeNodeModel model) {
           m_model = model;
     }
 }

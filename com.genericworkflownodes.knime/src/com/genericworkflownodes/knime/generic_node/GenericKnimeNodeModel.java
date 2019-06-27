@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.knime.base.filehandling.mime.MIMEMap;
+
 import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.uri.IURIPortObject;
@@ -53,9 +53,6 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.GenericNodesPlugin;
-import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
-import org.knime.base.node.util.exttool.ViewUpdateNotice;
-
 import com.genericworkflownodes.knime.base.data.port.FileStorePrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;

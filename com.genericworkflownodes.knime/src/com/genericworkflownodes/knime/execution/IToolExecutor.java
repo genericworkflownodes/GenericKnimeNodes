@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
+//import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 
 /**
  * Defines a tool executor for generic tools.
@@ -78,7 +78,7 @@ public interface IToolExecutor {
      * 
      * @param model The NodeModel e.g. used to update Views
      */
-    void setModel(ExtToolOutputNodeModel model);
+    void setModel(GenericKnimeNodeModel model);
 
     /**
      * Kills the running process.

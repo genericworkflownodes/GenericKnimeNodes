@@ -123,7 +123,7 @@ public final class MIMETypeHelper {
      *         If the provided {@code filename} is null.
      */
     public static Optional<String> getMIMEtypeExtension(String filename) {
-        // Ensure lowecase comparison
+        // Ensure lowercase comparison
         filename = filename.toLowerCase();
 
         // check existing mimetypes
