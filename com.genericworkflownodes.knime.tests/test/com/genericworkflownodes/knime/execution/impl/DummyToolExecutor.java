@@ -28,6 +28,8 @@ import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.execution.ICommandGenerator;
 import com.genericworkflownodes.knime.execution.IToolExecutor;
 import com.genericworkflownodes.knime.execution.ToolExecutionFailedException;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
+//import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 
 /**
  * Class useful for unit testing.
@@ -175,4 +177,11 @@ public class DummyToolExecutor implements IToolExecutor {
     public boolean isKilled() {
         return killed;
     }
+
+	@Override
+	public void setModel(GenericKnimeNodeModel model) {
+		// TODO Auto-generated method stub		
+	}
+
+
 }
