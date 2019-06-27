@@ -22,18 +22,18 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 
 import com.genericworkflownodes.knime.custom.config.BinaryManager;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 
 /**
  * Default implementation of {@link IPluginConfiguration}.
- * 
+ *
  * @author aiche
- * 
+ *
  */
 public class PluginConfiguration implements IPluginConfiguration {
 
@@ -61,25 +61,35 @@ public class PluginConfiguration implements IPluginConfiguration {
      * The tool properties
      */
     private final Properties m_toolProps;
-    
+
     /**
      * The tool specific properties
      */
     private final Map<String, Properties> m_specifcToolProps;
-    
+
    /**
     * The docker machine if specified, else 'default'
     */
     private final String m_dockerMachine;
-    
+
     /**
      * The version
      */
      private final String m_version;
-    
+
+    /**
+     * The raw version
+     */
+    private final Version m_raw_version;
+
+    /**
+     * The version display layer.
+     */
+    private VersionDisplayLayer m_version_display = VersionDisplayLayer.NONE;
+
     /**
      * C'tor for {@link PluginConfiguration}.
-     * 
+     *
      * @param pluginId
      *            The id of the plugin.
      * @param pluginName
@@ -97,10 +107,11 @@ public class PluginConfiguration implements IPluginConfiguration {
         m_pluginName = pluginName;
         m_props = props;
         Bundle bundle = FrameworkUtil.getBundle(classFromPlugin);
-        m_version = bundle.getVersion().toString();
+        m_raw_version = bundle.getVersion();
+        m_version = m_raw_version.toString();
         m_binaryManager = new BinaryManager(classFromPlugin);
         Properties p = new Properties();
-        Map<String,Properties> toolMap = new Hashtable<String,Properties>(); 
+        Map<String,Properties> toolMap = new Hashtable<String,Properties>();
         for (String key: m_props.stringPropertyNames()) {
             if (key.startsWith("tool.")) {
                 String value = m_props.getProperty(key);
@@ -124,8 +135,19 @@ public class PluginConfiguration implements IPluginConfiguration {
         m_toolProps = p;
         m_specifcToolProps = toolMap;
         m_dockerMachine = props.getProperty("dockerMachine","default");
+
+        // Set the version display from the plugin.properties
+        try {
+            String fromString = props.getProperty("versionDisplayLayer");
+            if (fromString != null && !fromString.isEmpty()) {
+                m_version_display = VersionDisplayLayer
+                        .valueOf(fromString.toUpperCase().trim());
+            }
+        } catch (IllegalArgumentException e) {
+            m_version_display = VersionDisplayLayer.NONE;
+        }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -134,7 +156,13 @@ public class PluginConfiguration implements IPluginConfiguration {
         return m_version;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final Version getRawPluginVersion() {
+        return m_raw_version;
+    }
     /**
      * {@inheritDoc}
      */
@@ -177,6 +205,11 @@ public class PluginConfiguration implements IPluginConfiguration {
     @Override
     public String getDockerMachine() {
         return m_dockerMachine;
+    }
+
+    @Override
+    public VersionDisplayLayer getVersionDisplayLayer() {
+        return m_version_display;
     }
 
 }

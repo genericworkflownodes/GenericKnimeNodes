@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +18,12 @@
  */
 package com.genericworkflownodes.knime.toolfinderservice;
 
+import java.util.Objects;
+
 /**
  * ExternalTool holds the information for each individual tool that is
  * encapsulated into the generic KNIME nodes.
- * 
+ *
  * @author aiche
  */
 public final class ExternalTool {
@@ -29,21 +31,21 @@ public final class ExternalTool {
     /**
      * The name of the external tool.
      */
-    private String m_toolName;
+    private final String toolName;
 
     /**
      * The name of the plugin containing this tool.
      */
-    private String m_pluginName;
+    private final String pluginName;
 
     /**
      * The expected name of the executable file of the tool.
      */
-    private String m_executableName;
+    private final String executableName;
 
     /**
      * C'tor.
-     * 
+     *
      * @param pluginName
      *            Name of the plugin.
      * @param toolName
@@ -53,45 +55,45 @@ public final class ExternalTool {
      */
     public ExternalTool(String pluginName, String toolName,
             String executableName) {
-        m_pluginName = pluginName;
-        m_toolName = toolName;
-        m_executableName = executableName;
+        this.pluginName = pluginName;
+        this.toolName = toolName;
+        this.executableName = executableName;
     }
 
     /**
      * Get the tool name.
-     * 
+     *
      * @return The name of the tool.
      */
     public String getToolName() {
-        return m_toolName;
+        return this.toolName;
     }
 
     /**
      * Get the plugin name.
-     * 
+     *
      * @return The name of the plugin.
      */
     public String getPluginName() {
-        return m_pluginName;
+        return this.pluginName;
     }
 
     /**
      * Get the executable name.
-     * 
+     *
      * @return The name of the executable.
      */
     public String getExecutableName() {
-        return m_executableName;
+        return this.executableName;
     }
 
     /**
      * Get the key, which represents the tool (<pluginname>_<toolname>).
-     * 
+     *
      * @return The key.
      */
     public String getKey() {
-        return String.format("%s_%s", m_pluginName, m_toolName);
+        return String.format("%s_%s", this.pluginName, this.toolName);
     }
 
     @Override
@@ -99,25 +101,22 @@ public final class ExternalTool {
         if (obj == this) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        } else if (!(obj instanceof ExternalTool)) {
+        if (!(obj instanceof ExternalTool)) {
             return false;
         }
-        ExternalTool eTool = (ExternalTool) obj;
-        return (m_pluginName.equals(eTool.m_pluginName)
-                && m_toolName.equals(eTool.m_toolName) && m_executableName
-                    .equals(eTool.m_executableName));
+        final ExternalTool other = (ExternalTool) obj;
+        return     this.pluginName.equals(other.pluginName)
+                && this.toolName.equals(other.toolName)
+                && this.executableName.equals(other.executableName);
     }
 
     @Override
     public int hashCode() {
-        return m_pluginName.hashCode() ^ m_toolName.hashCode()
-                ^ m_executableName.hashCode();
+        return Objects.hash(this.pluginName, this.toolName, this.executableName);
     }
 
     @Override
     public String toString() {
-        return String.format("%s_%s", m_pluginName, m_toolName);
+        return String.format("%s_%s", this.pluginName, this.toolName);
     }
 }

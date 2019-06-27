@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Marc Röttig.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
@@ -38,6 +38,7 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -53,11 +54,14 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of ListMimeFileImporter.
- * 
+ *
  * @author roettig, aiche
  */
 public class ListMimeFileImporterNodeModel extends NodeModel {
 
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(ListMimeFileImporterNodeModel.class);
+    
     /**
      * ID for the filename configuration.
      */
@@ -66,7 +70,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
      * Config name for file extension.
      */
     static final String CFG_FILE_EXTENSION = "FILE_EXTENSION";
-    
+
     /**
      * Config name for the option to resolve all paths relative to the workflow.
      */
@@ -84,7 +88,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             CFG_FILE_EXTENSION, "", false);
 
     private SettingsModelBoolean m_resolveWorkflowRel = new SettingsModelBoolean(CFG_RESOLVE_WORKFLOW_RELATIVE, false);
-    
+
     /**
      * Constructor for the node model.
      */
@@ -117,7 +121,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throws InvalidSettingsException {
         m_filenames.loadSettingsFrom(settings);
         m_file_extension.loadSettingsFrom(settings);
-        
+
         // This is a new feature so we have to check if the key exists
         if (settings.containsKey(CFG_RESOLVE_WORKFLOW_RELATIVE)) {
             m_resolveWorkflowRel.loadSettingsFrom(settings);
@@ -135,7 +139,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         if (settings.containsKey(CFG_RESOLVE_WORKFLOW_RELATIVE)) {
             m_resolveWorkflowRel.validateSettings(settings);
         }
-        
+
         SettingsModelStringArray tmp_filenames = m_filenames
                 .createCloneWithValidatedValue(settings);
 
@@ -147,33 +151,40 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         SettingsModelOptionalString tmp_file_extension = m_file_extension
                 .createCloneWithValidatedValue(settings);
 
+        //TODO if we want to allow flow variables here at some point,
+        // we should not hard fail/throw here, because the variable
+        // is first known during the configure method
         if (tmp_file_extension.isActive()) {
             if (tmp_file_extension.getStringValue().equals("")) {
                 throw new InvalidSettingsException(
                         "No File extension (override) provided.");
             } else if (MIMETypeHelper.getMIMEtypeByExtension(tmp_file_extension
                     .getStringValue()) == null) {
-                throw new InvalidSettingsException(
+                this.getLogger().warn(
                         "No MIMEtype registered for file extension: "
                                 + tmp_file_extension.getStringValue());
             }
         } else {
             List<String> mts = new ArrayList<String>();
             String mt = null;
+            String lastMt = null;
+            boolean first = true;
             for (String filename : tmp_filenames.getStringArrayValue()) {
-                mt = MIMETypeHelper.getMIMEtype(filename);
-                if (mt == null) {
-                    throw new InvalidSettingsException(
-                            "Files of unknown MIMEtype selected: " + filename);
+                mt = MIMETypeHelper.getMIMEtype(filename).orElse(null);
+                if (mt == null)
+                {
+                    this.getLogger().warn(
+                            "Files of unknown MIMEtype selected.");
+                    mt = FilenameUtils.getExtension(filename);
                 }
+                if (!first && (lastMt != mt)) {
+                    throw new InvalidSettingsException(
+                            "Files with mixed MIMEType loaded. This is currently not supported.");
+                } else {
+                    first = false;
+                }
+                lastMt = mt;
                 mts.add(mt);
-            }
-
-            for (String mimeType : mts) {
-                if (!mimeType.equals(mt)) {
-                    throw new InvalidSettingsException(
-                            "Files with mixed MIMEType loaded");
-                }
             }
         }
     }
@@ -212,10 +223,11 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
         if (m_resolveWorkflowRel.getBooleanValue()) {
             String[] newFilenames = new String[filenames.length];
             Path localPath;
+            //TODO allow different mountpoint except knime.workflow here (e.g. with a text box)
             try {
                 URL url = FileUtil.toURL("knime://knime.workflow/");
-                localPath = FileUtil.resolveToPath(url);
-            } catch (IOException | InvalidPathException | URISyntaxException e) {
+                localPath = Paths.get(FileUtil.getFileFromURL(url).toURI());
+            } catch (IOException | InvalidPathException e) {
                 throw new InvalidSettingsException("Cannot resolve KNIME workflow URL", e);
             }
             for (int i = 0; i < filenames.length; i++) {
@@ -224,15 +236,22 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             }
             m_filenames.setStringArrayValue(newFilenames);
         }
-        
+
         URIPortObjectSpec uri_spec = null;
 
         if (m_file_extension.isActive()) {
             uri_spec = new URIPortObjectSpec(m_file_extension.getStringValue());
         } else {
-            uri_spec = new URIPortObjectSpec(
-                    MIMETypeHelper.getMIMEtypeExtension(m_filenames
-                            .getStringArrayValue()[0]));
+            String ref_filename = m_filenames
+                    .getStringArrayValue()[0];
+            String ext = MIMETypeHelper.getMIMEtypeExtension(ref_filename).orElse(null);
+            if (ext == null){
+                ext = FilenameUtils.getExtension(ref_filename);
+                LOGGER.warn("MIMEType not registered for extension '" + ext + "'. Proceeding with unknown.");
+                
+            }
+            uri_spec = new URIPortObjectSpec(ext);
+                    
         }
 
         return new PortObjectSpec[] { uri_spec };
@@ -251,12 +270,12 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                 throw new Exception("Cannot read from input file: "
                         + in.getAbsolutePath());
             }
-
+            
             // FileUtil.toURL(filename) should not throw anymore because it was already called in convertToURL(filename)
             uris.add(new URIContent(FileUtil.toURL(filename).toURI(),
                     (m_file_extension.isActive() ? m_file_extension
                             .getStringValue() : MIMETypeHelper
-                            .getMIMEtypeExtension(filename))));
+                            .getMIMEtypeExtension(filename).orElse(FilenameUtils.getExtension(filename)))));
         }
 
         return new PortObject[] { new URIPortObject(uris) };
@@ -265,7 +284,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
     /**
      * Extract a URL from the given String, trying different conversion
      * approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
-     * 
+     *
      * @param urlS
      *            The string containing the URL.
      * @return A URL object.
@@ -279,7 +298,8 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
             throw new InvalidSettingsException("URL must not be null");
         }
         try {
-            url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
+            url = FileUtil.getFileFromURL(FileUtil.toURL(urlS)).toURI().toURL();
+            //url = FileUtil.resolveToPath(FileUtil.toURL(urlS)).toUri().toURL();
         } catch (MalformedURLException e) {
             // might be a file, bug fix 3477
             File file = new File(urlS);
@@ -289,9 +309,6 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                 throw new InvalidSettingsException("Invalid URL: "
                         + e.getMessage(), e);
             }
-        } catch (IOException | URISyntaxException e) {
-            throw new InvalidSettingsException("Invalid URL: "
-                    + e.getMessage(), e);
         }
 
         return url;

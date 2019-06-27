@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tool xsi:noNamespaceSchemaLocation="http://page.mi.fu-berlin.de/aiche/schemas/CTD.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<name>BLAST</name>
-	<version>2.2.1</version>
+<tool name="BLAST" version="2.2.1" category="Sequence Tools" docurl="http://www.google.de" ctdVersion="1.7">
 	<description><![CDATA[BLAST.]]></description>
 	<manual><![CDATA[BLAST.]]></manual>
-	<docurl>http://www.google.de</docurl>
-	<category>Sequence Tools</category>
+	
 	<cli>
 		<clielement optionIdentifier="-i" isList="false">
 			<mapping referenceName="blastall.i" />

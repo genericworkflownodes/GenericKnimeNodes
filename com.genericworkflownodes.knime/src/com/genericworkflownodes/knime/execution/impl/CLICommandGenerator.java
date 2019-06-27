@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -47,7 +47,7 @@ import com.genericworkflownodes.knime.parameter.StringParameter;
 /**
  * Generates the command line call given a {@link INodeConfiguration} containing
  * CLI information.
- * 
+ *
  * @author aiche
  */
 public class CLICommandGenerator implements ICommandGenerator {
@@ -86,7 +86,7 @@ public class CLICommandGenerator implements ICommandGenerator {
     /**
      * Converts the CLI part of the configuration to a list of commands that can
      * be send to the shell.
-     * 
+     *
      * @return A configured list of commands.
      * @throws Exception
      *             Is thrown if the configuration values are invalid.
@@ -133,7 +133,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 
     /**
      * Add the extracted parameter values to the command line.
-     * 
+     *
      * @param extractedParameterValues
      * @param cliElement
      * @param commands
@@ -144,19 +144,42 @@ public class CLICommandGenerator implements ICommandGenerator {
             final List<CommandLineElement> commands) {
         // in each iteration we expand the value(s) of the mapped parameters
         for (final List<? extends CommandLineElement> innerList : extractedParameterValues) {
-            // add the command prefix in each iteration
-            if (!StringUtils.isBlank(cliElement.getOptionIdentifier())) {
-                commands.add(new CommandLineFixedString(
-                        cliElement.getOptionIdentifier()));
+            // if the cliElement is a list parameter, then prefix each parameter
+            // value with the respective option name.
+            // e.g.: --opt arg1 --opt arg2 --opt arg3
+            if (cliElement.isList()) {
+                for (final CommandLineElement cliValue : innerList) {
+                    prefixParameter(cliElement, commands);
+                    commands.add(cliValue);
+                }
+            } else { // otherwise use one prefix for all parameter values e.g:
+                     // --opt arg1 arg2 arg3
+                prefixParameter(cliElement, commands);
+                commands.addAll(innerList);
             }
-            commands.addAll(innerList);
+        }
+    }
+
+    /**
+     * Adds the option identifier as a prefix for the respective extracted
+     * parameter value to the passed commands list.
+     *
+     * @param cliElement
+     * @param commands
+     */
+    private void prefixParameter(final CLIElement cliElement,
+            final List<CommandLineElement> commands) {
+        // add the command prefix to the command line parameter
+        if (!StringUtils.isBlank(cliElement.getOptionIdentifier())) {
+            commands.add(new CommandLineFixedString(
+                    cliElement.getOptionIdentifier()));
         }
     }
 
     /**
      * Given the provided list of parameter values this method should ensure
      * that all mapped lists have the same length.
-     * 
+     *
      * @param extractedParameterValues
      * @throws Exception
      *             If not all contained lists have the same size.
@@ -178,7 +201,7 @@ public class CLICommandGenerator implements ICommandGenerator {
     /**
      * Given the cliElement create a list containing for each mapped parameter a
      * list with the mapped values.
-     * 
+     *
      * @param cliElement
      *            The current cliElement.
      * @return
@@ -259,7 +282,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 
     /**
      * Returns true if the given CLIElement maps to a boolean parameter.
-     * 
+     *
      * @param cliElement
      * @return
      */
@@ -272,7 +295,7 @@ public class CLICommandGenerator implements ICommandGenerator {
     /**
      * Interpret boolean parameter on the command line -> if true, add text
      * field, if false, do not add text field.
-     * 
+     *
      * @param commands
      *            The list of commands that will be executed later.
      * @param cliElement
@@ -290,7 +313,7 @@ public class CLICommandGenerator implements ICommandGenerator {
 
     /**
      * Exports all configuration settings to the working directory.
-     * 
+     *
      * @param configStore
      * @throws IOException
      */

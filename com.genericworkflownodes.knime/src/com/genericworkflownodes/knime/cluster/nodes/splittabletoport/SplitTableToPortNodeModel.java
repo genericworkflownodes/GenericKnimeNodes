@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,13 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
-import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -51,14 +51,14 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * This is the model implementation of FileMerger. This nodes takes two files
  * (file lists) as input and outputs a merged list of both inputs.
- * 
+ *
  * @author Alexander Fillbrunn
  */
 public class SplitTableToPortNodeModel extends NodeModel {
 
     /**
      * Static method that provides the incoming {@link PortType}s.
-     * 
+     *
      * @return The incoming {@link PortType}s of this node.
      */
     private static PortType[] getIncomingPorts() {
@@ -67,7 +67,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
 
     /**
      * Static method that provides the outgoing {@link PortType}s.
-     * 
+     *
      * @return The outgoing {@link PortType}s of this node.
      */
     private static PortType[] getOutgoing() {
@@ -88,19 +88,19 @@ public class SplitTableToPortNodeModel extends NodeModel {
     public static SettingsModelColumnName createFileColumnSettingsModel() {
         return new SettingsModelColumnName("fileColumn", null);
     }
-    
+
     private SettingsModelColumnName m_fileCol = createFileColumnSettingsModel();
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
-        
+
         BufferedDataTable input = (BufferedDataTable)inData[0];
         int index = input.getDataTableSpec().findColumnIndex(m_fileCol.getColumnName());
-        
+
         // For multiple rows, we need to collect all the URIContents and put them in a single port object.
         // Otherwise we retrieve the port object from the only cell we have.
         if (input.size() > 1) {
@@ -113,11 +113,11 @@ public class SplitTableToPortNodeModel extends NodeModel {
 
                 List<URIContent> uriContents = po.getURIContents();
                 for (URIContent uc : uriContents) {
-                    String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension());
+                    String mt = MIMETypeHelper.getMIMEtypeByExtension(uc.getExtension()).orElse(uc.getExtension());
                     if (mimetype == null) {
                         mimetype = mt;
                     } else if (!mt.equals(mimetype)) {
-                        throw new InvalidSettingsException("File ports do not support mixed mimetypes.");
+                        throw new InvalidSettingsException("File ports do not support mixed mimetypes, yet.");
                     }
                     contents.add(uc);
                 }
@@ -136,7 +136,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
     @Override
     protected void reset() {
     }
-    
+
     private PortObjectSpec createSpec() {
         return null;
     }
@@ -166,7 +166,7 @@ public class SplitTableToPortNodeModel extends NodeModel {
                         + "Please reconfigure the node.");
             }
         }
-        
+
         return new PortObjectSpec[] {createSpec()};
     }
 

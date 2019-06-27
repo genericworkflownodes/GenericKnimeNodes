@@ -2,9 +2,12 @@ package com.genericworkflownodes.knime.nodegeneration.templates.feature;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
@@ -21,6 +24,9 @@ import com.genericworkflownodes.knime.nodegeneration.templates.Template;
  */
 public class FeatureXMLTemplate extends Template {
 
+    private static final Logger LOGGER = Logger
+            .getLogger(FeatureXMLTemplate.class.getName());
+    
     private final static Pattern VERSION_PATTERN = Pattern
             .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
 
@@ -65,12 +71,16 @@ public class FeatureXMLTemplate extends Template {
         // that the qualifier is properly updated when something changes
         Matcher m = matchVersion(pluginMeta.getVersion());
 
+        // return value is either "" empty string if there is no qualifier in
+        // any fragment or it is ".qualifier" with a dot in front.
+        String quali = findLatestQualifier(m.group(4), fragmentMetas,
+                contributingPluginMetas);
+        
         // assemble a complete version
         String newVersion = m.group(1)
                 + (m.group(2) != null ? m.group(2) : ".0")
                 + (m.group(3) != null ? m.group(3) : ".0")
-                + findLatestQualifier(m.group(4), fragmentMetas,
-                        contributingPluginMetas);
+                + quali;
 
         replace("@@pluginVersion@@", newVersion);
         replace("@@packageName@@", pluginMeta.getPackageRoot());
@@ -91,9 +101,12 @@ public class FeatureXMLTemplate extends Template {
         Matcher m = VERSION_PATTERN.matcher(version);
 
         // via definition this has to be true
-        boolean found = m.find();
-        assert found : "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$";
-        assert m.groupCount() == 4 : "Something went wrong when matching the version.";
+        boolean found = m.matches();
+        if (!found || m.groupCount() != 4)
+        {
+        	LOGGER.log(Level.SEVERE, "Version should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$."
+        			+ "This should not happen since it was checked during reading of the files. Please report as bug.");
+        }
 
         return m;
     }

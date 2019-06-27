@@ -145,6 +145,10 @@ public class StringListParameter extends Parameter<List<String>> implements
     @Override
     public List<String> getStrings() {
         List<String> ret = new ArrayList<String>();
+        if (getValue() == null)
+        {
+        	return ret;
+        }
         for (String s : getValue()) {
             ret.add(s);
         }
