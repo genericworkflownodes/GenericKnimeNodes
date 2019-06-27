@@ -25,12 +25,15 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
 import org.knime.base.node.util.exttool.ExtToolOutputNodeModel;
 import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.uri.IURIPortObject;
@@ -167,6 +170,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             String[][] fileEndingsOutPorts) {
         super(createOPOs(nodeConfig.getInputPorts()), createOPOs(nodeConfig
                 .getOutputPorts()));
+        this.
         m_nodeConfig = nodeConfig;
         m_pluginConfig = pluginConfig;
 
@@ -669,6 +673,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
 
         executor.setWorkingDirectory(jobdir);
         executor.prepareExecution(m_nodeConfig, m_pluginConfig);
+        executor.setModel(this);
 
         return executor;
     }
@@ -1074,4 +1079,21 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         return commandGenerator.generateCommands(m_nodeConfig, m_pluginConfig,
                 workingDirectory);
     }
+    
+    public void setStdOut(LinkedList<String> str)
+    {
+        this.setExternalOutput(str);
+    }
+
+    public void setStdErr(LinkedList<String> str)
+    {
+        this.setExternalErrorOutput(str);
+    }
+    
+    @Override
+    public void update(Observable o, Object arg) {
+        // TODO Auto-generated method stub
+        super.update(o, arg);
+    }
+    
 }

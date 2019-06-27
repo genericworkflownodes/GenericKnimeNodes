@@ -19,13 +19,13 @@
 package com.genericworkflownodes.knime.generic_node;
 
 import java.io.InputStream;
+import java.util.LinkedList;
 
-import org.knime.base.node.util.exttool.ExtToolStderrNodeView;
-import org.knime.base.node.util.exttool.ExtToolStdoutNodeView;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
+import org.knime.base.node.util.exttool.*;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 
@@ -80,7 +80,7 @@ public abstract class GenericKnimeNodeFactory extends
         }
         return null;
     }
-
+    
     /**
      * {@inheritDoc}
      */

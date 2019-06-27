@@ -39,6 +39,7 @@ import com.genericworkflownodes.knime.config.reader.InvalidCTDFileException;
 import com.genericworkflownodes.knime.custom.config.BinaryManager;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration.VersionDisplayLayer;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
@@ -123,7 +124,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             
             return new DynamicGenericNodeModel(tmpConfig, getPluginConfig(), inputs, outputs);
         } catch (Exception e) {
-            logger.error("Dynamic node model instantiation failed", e);
+            logger.error("Generic node model instantiation failed", e);
         }
         return null;
     }
