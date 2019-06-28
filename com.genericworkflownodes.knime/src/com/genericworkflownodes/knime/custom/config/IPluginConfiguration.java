@@ -21,23 +21,34 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.util.Properties;
 
+import org.osgi.framework.Version;
+
 /**
  * Provides all plugin specific configuration settings.
- * 
+ *
  * @author aiche, schubert
  */
 public interface IPluginConfiguration {
 
     /**
+     * Declares the possible layers for adding the version information of the
+     * plug-in. This can be either in the category pane of the node explorer or
+     * on the node level within the node name or nowhere.
+     */
+    enum VersionDisplayLayer {
+    NONE, NODE, CATEGORY
+    }
+
+    /**
      * The id of the plugin.
-     * 
+     *
      * @return The name of the configured plugin.
      */
     String getPluginId();
 
     /**
      * General properties of the plugin.
-     * 
+     *
      * @return A {@link Properties} object containing additional properties of
      *         the plugin.
      */
@@ -45,44 +56,58 @@ public interface IPluginConfiguration {
 
     /**
      * The name of the plugin as it would be shown in the GUI.
-     * 
+     *
      * @return
      */
     String getPluginName();
 
     /**
      * Gives access to the binary manager, responsible for the current plugin.
-     * 
+     *
      * @return The binary manager for this plugin.
      */
     BinaryManager getBinaryManager();
-    
+
     /**
      *  The tool specific properties
-     *  
+     *
      *  @return
      */
-    Properties getToolProperties(); 
-    
+    Properties getToolProperties();
+
     /**
      * Specific tool properties
-     * 
+     *
      * @param toolName - The name of the tool
-     * @return 
+     * @return
      */
     Properties getToolProperty(String toolName);
-    
+
     /**
      *  The name of the docker-machine to use
-     *  
+     *
      * @return
      */
     String getDockerMachine();
 
     /**
      *  The version of the plugin
-     *  
+     *
      * @return
      */
     String getPluginVersion();
+
+    /**
+     * The raw version of the plugin.
+     *
+     * @return {@link Version}
+     */
+    Version getRawPluginVersion();
+
+    /**
+     * An enum representing the version display layer.
+     *
+     * @return {
+     */
+    VersionDisplayLayer getVersionDisplayLayer();
 }

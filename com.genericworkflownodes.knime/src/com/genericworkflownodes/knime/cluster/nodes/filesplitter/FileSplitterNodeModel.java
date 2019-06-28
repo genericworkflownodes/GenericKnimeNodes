@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -49,7 +49,6 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.util.FileUtil;
 
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
-import com.genericworkflownodes.knime.base.data.port.PortObjectHandlerCell;
 import com.genericworkflownodes.knime.base.data.port.SerializableFileStoreCell;
 import com.genericworkflownodes.knime.base.data.port.SimpleFileStoreCell;
 import com.genericworkflownodes.knime.cluster.filesplitter.Splitter;
@@ -60,7 +59,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * This is the model implementation of FileMerger. This nodes takes two files
  * (file lists) as input and outputs a merged list of both inputs.
- * 
+ *
  * @author aiche
  */
 public class FileSplitterNodeModel extends NodeModel {
@@ -70,26 +69,26 @@ public class FileSplitterNodeModel extends NodeModel {
      */
     // private static final NodeLogger logger = NodeLogger
     // .getLogger(FileMergerNodeModel.class);
-    
+
     private static final String FACTORY_ID_KEY = "factoryID";
 
     private static final String NUM_PARTS_KEY = "numParts";
-    
+
     public static SettingsModelString createFactoryIDSettingsModel() {
         return new SettingsModelString(FACTORY_ID_KEY, null);
     }
-    
+
     public static SettingsModelInteger createNumPartsSettingsModel() {
         return new SettingsModelInteger(NUM_PARTS_KEY, 2);
     }
-    
+
     private Splitter m_splitter;
     private SettingsModelString m_factoryID = createFactoryIDSettingsModel();
     private SettingsModelInteger m_numParts = createNumPartsSettingsModel();
 
     /**
      * Static method that provides the incoming {@link PortType}s.
-     * 
+     *
      * @return The incoming {@link PortType}s of this node.
      */
     private static PortType[] getIncomingPorts() {
@@ -98,7 +97,7 @@ public class FileSplitterNodeModel extends NodeModel {
 
     /**
      * Static method that provides the outgoing {@link PortType}s.
-     * 
+     *
      * @return The outgoing {@link PortType}s of this node.
      */
     private static PortType[] getOutgoing() {
@@ -119,22 +118,22 @@ public class FileSplitterNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
         IURIPortObject input = (IURIPortObject) inData[0];
-        
+
         if (input.getURIContents().size() != 1) {
             throw new InvalidSettingsException("This node can only split a single file");
         }
-        
+
         // The factory for creating the splitter
         String factoryID = m_factoryID.getStringValue();
         SplitterFactory factory = SplitterFactoryManager.getInstance().getFactory(factoryID);
-         
+
         if (factory == null) {
             throw new InvalidSettingsException("No splitter configured for the input files.");
         }
         m_splitter = factory.createSplitter();
-        
+
         File f = FileUtil.getFileFromURL(input.getURIContents().get(0).getURI().toURL());
-        
+
         // File Store in which we store the files
         FileStore fs = exec.createFileStore("FileSplitter");
 
@@ -153,7 +152,7 @@ public class FileSplitterNodeModel extends NodeModel {
             outputs[i] = Paths.get(fs.getFile().toString()).resolve(name + i + ext).toFile();
             outputs[i].getParentFile().mkdirs();
         }
-        
+
         m_splitter.split(f, outputs);
         DataContainer dc = exec.createDataContainer(createSpec());
 
@@ -164,12 +163,12 @@ public class FileSplitterNodeModel extends NodeModel {
                                 .toString();
             po.registerFile(relPath);
             SimpleFileStoreCell cell = new SimpleFileStoreCell(fs, Collections.singletonList(relPath));
-            
+
             dc.addRowToTable(new DefaultRow(new RowKey("Row" + i), cell));
         }
-        
+
         dc.close();
-        
+
         return new PortObject[] {(BufferedDataTable)dc.getTable()};
     }
 
@@ -179,7 +178,7 @@ public class FileSplitterNodeModel extends NodeModel {
     @Override
     protected void reset() {
     }
-    
+
     private DataTableSpec createSpec() {
         DataTableSpecCreator specCreator = new DataTableSpecCreator();
         specCreator.addColumns(new DataColumnSpecCreator("files", SerializableFileStoreCell.TYPE).createSpec());
@@ -194,12 +193,12 @@ public class FileSplitterNodeModel extends NodeModel {
             throws InvalidSettingsException {
         String factoryID = m_factoryID.getStringValue();
         URIPortObjectSpec spec = (URIPortObjectSpec)inSpecs[0];
-        
+
         // If no factory has been selected in the dialog, we take the first one that matches
         if (factoryID == null) {
             String ext = spec.getFileExtensions().get(0);
-            String mime = MIMETypeHelper.getMIMEtypeByExtension(ext);
-            
+            String mime = MIMETypeHelper.getMIMEtypeByExtension(ext).orElse(null);
+
             Iterator<SplitterFactory> factories = SplitterFactoryManager
                                                     .getInstance()
                                                     .getFactories(mime)

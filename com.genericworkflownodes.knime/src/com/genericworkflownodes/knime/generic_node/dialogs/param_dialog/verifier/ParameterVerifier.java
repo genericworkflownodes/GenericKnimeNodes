@@ -2,7 +2,7 @@
  * Copyright (c) 2012, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.verifier;
 
-import java.awt.Color;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
@@ -26,7 +25,6 @@ import javax.swing.JTextField;
 
 import org.knime.core.node.NodeLogger;
 
-import com.genericworkflownodes.knime.generic_node.dialogs.param_dialog.ParamCellEditor;
 import com.genericworkflownodes.knime.parameter.DoubleListParameter;
 import com.genericworkflownodes.knime.parameter.DoubleParameter;
 import com.genericworkflownodes.knime.parameter.IntegerListParameter;
@@ -36,11 +34,11 @@ import com.genericworkflownodes.knime.parameter.Parameter;
 /**
  * Component verifier to ensure that the values entered in the param dialogs are
  * valid.
- * 
+ *
  * @author aiche
  */
 public class ParameterVerifier extends InputVerifier {
-    
+
     /**
      * Logger instance.
      */
@@ -76,7 +74,7 @@ public class ParameterVerifier extends InputVerifier {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.swing.InputVerifier#verify(javax.swing.JComponent)
      */
     @Override
@@ -105,9 +103,9 @@ public class ParameterVerifier extends InputVerifier {
             } else {
                 returnVal = true;
             }
-            
-            if (!returnVal) 
-            {  
+
+            if (!returnVal)
+            {
               //TODO we currently just show a message box in the ParamCellEditor (that uses the verify function).
               //input.setBackground(Color.PINK);
               LOGGER.debug("Tried to set Parameter to an invalid value. Please see the restrictrions of the parameter.");

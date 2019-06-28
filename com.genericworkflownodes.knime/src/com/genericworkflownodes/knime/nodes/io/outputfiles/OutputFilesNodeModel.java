@@ -2,7 +2,7 @@
  * Copyright (c) 2011-2013, Marc Röttig, Stephan Aiche.
  *
  * This file is part of GenericKnimeNodes.
- * 
+ *
  * GenericKnimeNodes is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.nodes.io.outputfiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -33,6 +34,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -44,16 +46,19 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
  * This is the model implementation of OutputFiles Node.
- * 
+ *
  * @author roettig, aiche
  */
 public class OutputFilesNodeModel extends NodeModel {
 
     static final String CFG_FILENAME = "FILENAME";
+    static final String CFG_OVERWRITE = "OVERWRITE";
 
     SettingsModelString m_filename = new SettingsModelString(
             OutputFilesNodeModel.CFG_FILENAME, "");
 
+    SettingsModelBoolean m_overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
+    
     /**
      * Constructor for the node model.
      */
@@ -67,8 +72,6 @@ public class OutputFilesNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // set string value to ""
-        m_filename.setStringValue("");
     }
 
     /**
@@ -77,6 +80,7 @@ public class OutputFilesNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_filename.saveSettingsTo(settings);
+        m_overwrite.saveSettingsTo(settings);
     }
 
     /**
@@ -86,6 +90,9 @@ public class OutputFilesNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.loadSettingsFrom(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.loadSettingsFrom(settings);
+        }
     }
 
     /**
@@ -95,6 +102,9 @@ public class OutputFilesNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_filename.validateSettings(settings);
+        if (settings.containsKey(CFG_OVERWRITE)) {
+            m_overwrite.validateSettings(settings);
+        }
     }
 
     /**
@@ -120,37 +130,19 @@ public class OutputFilesNodeModel extends NodeModel {
             throws InvalidSettingsException {
         if (!(inSpecs[0] instanceof URIPortObjectSpec)) {
             throw new InvalidSettingsException(
-                    "No URIPortObjectSpec compatible port object");
+                    "No URIPortObjectSpec compatible port object at the input port.");
         }
 
         // check the selected file
         if ("".equals(m_filename.getStringValue())) {
             throw new InvalidSettingsException(
-                    "Please select a target file for the Output Files node.");
+                    "Please select a basename for the Output Files.");
         }
-
-        if (!mimeTypeCompatible(inSpecs)) {
-            throw new InvalidSettingsException(
-                    "The selected output files and the incoming files have incompatible mime types.");
-        }
+        
+        //we do not need to check extension since the extension from the input
+        // is taken over anyways
 
         return new PortObjectSpec[] {};
-    }
-
-    /**
-     * Checks if incoming and outgoing mime types are compatible.
-     * 
-     * @param inSpecs
-     *            The incoming port spec.
-     * @return True if the mime types are compatible, false otherwise.
-     */
-    private boolean mimeTypeCompatible(PortObjectSpec[] inSpecs) {
-        String selectedMimeType = MIMETypeHelper.getMIMEtype(m_filename
-                .getStringValue());
-        String incomingMimeType = MIMETypeHelper
-                .getMIMEtypeByExtension(((URIPortObjectSpec) inSpecs[0])
-                        .getFileExtensions().get(0));
-        return incomingMimeType.equals(selectedMimeType);
     }
 
     @Override
@@ -164,26 +156,37 @@ public class OutputFilesNodeModel extends NodeModel {
                     "There were no URIs in the supplied IURIPortObject");
         }
 
+        List<File> outputs = new ArrayList<>();
         int idx = 1;
+        int c = 0;
+        for (int i = 0; i < uris.size(); i++) {
+            String outfilename = insertIndex(m_filename.getStringValue(), obj
+                    .getSpec().getFileExtensions().get(c), idx++);
+            File out = FileUtil.getFileFromURL(FileUtil.toURL(outfilename));
+            if (out.exists()) {
+                if (!m_overwrite.getBooleanValue()) {
+                    throw new InvalidSettingsException("File " + out.getAbsolutePath() + " exists and cannot be overwritten.");
+                }
+                if (!out.canWrite()) {
+                    throw new Exception("Cannot write to file: "
+                            + out.getAbsolutePath());
+                } else if (!out.getParentFile().canWrite()) {
+                    throw new Exception("Cannot write to containing directoy: "
+                            + out.getParentFile().getAbsolutePath());
+                }
+            }
+            outputs.add(out);
+            c++;
+        }
+      
+        idx = 0;
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
             if (!in.canRead()) {
                 throw new Exception("Cannot read file to export: "
                         + in.getAbsolutePath());
             }
-
-            String outfilename = insertIndex(m_filename.getStringValue(), obj
-                    .getSpec().getFileExtensions().get(0), idx++);
-            File out = FileUtil.getFileFromURL(FileUtil.toURL(outfilename));
-
-            if (out.exists() && !out.canWrite()) {
-                throw new Exception("Cannot write to file: "
-                        + out.getAbsolutePath());
-            } else if (!out.getParentFile().canWrite()) {
-                throw new Exception("Cannot write to containing directoy: "
-                        + out.getParentFile().getAbsolutePath());
-            }
-
+            File out = outputs.get(idx++);
             FileUtils.copyFile(in, out);
         }
         return null;

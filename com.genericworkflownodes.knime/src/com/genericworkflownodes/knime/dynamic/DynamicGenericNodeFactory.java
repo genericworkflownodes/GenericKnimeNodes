@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.knime.base.node.preproc.columnTrans.BinaryCellFactory;
 import org.knime.base.node.util.exttool.ExtToolStderrNodeView;
 import org.knime.base.node.util.exttool.ExtToolStdoutNodeView;
 import org.knime.core.node.InvalidSettingsException;
@@ -28,33 +28,38 @@ import org.knime.node.v28.KnimeNodeDocument.KnimeNode;
 import org.knime.node.v28.OptionDocument.Option;
 import org.knime.node.v28.OutPortDocument.OutPort;
 import org.knime.node.v28.PortsDocument.Ports;
+import org.knime.node.v28.ViewDocument.View;
+import org.knime.node.v28.ViewsDocument.Views;
+import org.osgi.framework.Version;
 import org.w3c.dom.Document;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 import com.genericworkflownodes.knime.config.reader.InvalidCTDFileException;
 import com.genericworkflownodes.knime.custom.config.BinaryManager;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration.VersionDisplayLayer;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeDialog;
+import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;
 import com.genericworkflownodes.knime.parameter.Parameter;
 import com.genericworkflownodes.knime.port.Port;
 
 /**
  * <code>NodeFactory</code> for Generic KNIME Nodes that are loaded dynamically.
- * 
+ *
  * @author Fillbrunn, Alexander
  */
 public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
-    
+
     /**
      * The configuration key for the ctd file.
      */
     public static final String CTD_FILE_CFG_KEY = "ctdFile";
-    
+
     /**
      * The configuration key for the node id.
      */
     public static final String ID_CFG_KEY = "id";
-    
+
     /**
      * The configuration key for the node set factory id.
      */
@@ -64,37 +69,39 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
      * The key for storing whether the factory is deprecated.
      */
     public static final String DEPRECATION_CFG_KEY = "deprecated";
-    
+
     private static final NodeLogger logger = NodeLogger.getLogger(DynamicGenericNodeFactory.class);
-    
+
     private String m_filename;
     private String m_nsfid;
     private String m_id;
     private String m_ctdFile;
     private INodeConfiguration m_config;
     private boolean m_deprecated;
-    
+
     /**
      * @return The icon path relative to the payload folder.
      */
+    @Override
     protected String getIconPath() {
         return "";
     }
-    
+
     /**
      * @return the file name of the tool.
      */
     public String getFileName() {
         return m_filename;
     }
-    
+
     /**
      * @return the tool ID.
      */
+    @Override
     public String getId() {
         return m_id;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -117,7 +124,7 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             
             return new DynamicGenericNodeModel(tmpConfig, getPluginConfig(), inputs, outputs);
         } catch (Exception e) {
-            logger.error("Dynamic node model instantiation failed", e);
+            logger.error("Generic node model instantiation failed", e);
         }
         return null;
     }
@@ -190,18 +197,35 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
         config.addString(NSFID_CFG_KEY, m_nsfid);
         super.saveAdditionalFactorySettings(config);
     }
-    
+
     @Override
     protected NodeDescription createNodeDescription() {
         try {
             INodeConfiguration cfg = getNodeConfiguration();
             KnimeNodeDocument doc = org.knime.node.v28.KnimeNodeDocument.Factory.newInstance();
             Document domDoc = (Document)doc.getDomNode();
-            
+
             // Node
             KnimeNode node = doc.addNewKnimeNode();
             node.setDeprecated(m_deprecated);
-            node.setName(cfg.getName());
+
+            // Add version to the node description if set in plug-in properties.
+
+            if (getPluginConfig()
+                    .getVersionDisplayLayer() == VersionDisplayLayer.NODE) {
+                Version version = getPluginConfig().getRawPluginVersion();
+                String node_version = version.getMajor() + "."
+                        + version.getMinor() + "." + version.getMicro();
+
+                if (version.getQualifier().contains("nightly")) {
+                    node_version = node_version
+                            .concat("." + version.getQualifier());
+                }
+
+                node.setName(cfg.getName() + " [" + node_version + "]");
+            } else {
+                node.setName(cfg.getName());
+            }
             String iconPath = getIconPath();
             if (!getPluginConfig().getBinaryManager().fileExists(iconPath)) {
                 logger.debug("Icon for tool " + getId() + " not found.");
@@ -213,6 +237,15 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             node.setType(KnimeNode.Type.MANIPULATOR);
             
             node.setShortDescription(cfg.getDescription());
+            Views views = node.addNewViews();
+            View v0 = views.addNewView();
+            v0.setName("Standard output");
+            v0.setIndex(new BigInteger("0"));
+            v0.getDomNode().appendChild(domDoc.createTextNode("The output channel of the tool as seen on the command line."));
+            View v1 = views.addNewView();
+            v1.setName("Standard error");
+            v1.setIndex(new BigInteger("1"));
+            v1.getDomNode().appendChild(domDoc.createTextNode("The error channel of the tool as seen on the command line."));
             
             FullDescription fullDescr = node.addNewFullDescription();
             
@@ -220,17 +253,12 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             Intro intro = fullDescr.addNewIntro();
             intro.addNewP().getDomNode().appendChild(domDoc.createTextNode(cfg.getManual()));
             
-            // Options
-            for (Parameter<?> p : cfg.getParameters()) {
-                Option option = fullDescr.addNewOption();
-                option.setName(p.getKey());
-                option.getDomNode().appendChild(domDoc.createTextNode(p.getDescription()));
-            }
-            
             // Ports
+            ArrayList<String> portParamsToSkip = new ArrayList<String>();
             Ports ports = node.addNewPorts();
             int index = 0;
             for (Port p : cfg.getInputPorts()) {
+                portParamsToSkip.add(p.getName());
                 InPort ip = ports.addNewInPort();
                 ip.setIndex(new BigInteger(Integer.toString(index++)));
                 String mimetypes = mimetypes2String(p.getMimeTypes());
@@ -240,11 +268,23 @@ public abstract class DynamicGenericNodeFactory extends GenericNodeFactory {
             
             index = 0;
             for (Port p : cfg.getOutputPorts()) {
+                portParamsToSkip.add(p.getName());
                 OutPort op = ports.addNewOutPort();
                 op.setIndex(new BigInteger(Integer.toString(index++)));
                 String mimetypes = mimetypes2String(p.getMimeTypes());
-                op.setName(p.getName() + mimetypes);
+                String optional = p.isOptional() ? "(Optional) " : "";
+                op.setName(optional + p.getName() + mimetypes);
                 op.getDomNode().appendChild(domDoc.createTextNode(p.getDescription() + mimetypes));
+            }
+            
+            // Options (skip ports)
+            for (Parameter<?> p : cfg.getParameters()) {
+                if (!portParamsToSkip.contains(p.getKey()))
+                {
+                    Option option = fullDescr.addNewOption();
+                    option.setName(p.getKey());
+                    option.getDomNode().appendChild(domDoc.createTextNode(p.getDescription()));
+                }
             }
             
             return new NodeDescription28Proxy(doc);

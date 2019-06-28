@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
 import com.genericworkflownodes.knime.cliwrapper.CLIMapping;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
@@ -63,7 +64,6 @@ import com.genericworkflownodes.util.ranges.IntegerRangeExtractor;
 public class ParamHandler extends DefaultHandler {
 
     private static final String TRUE = "true";
-
     private static final String FALSE = "false";
 
     /**
@@ -84,6 +84,7 @@ public class ParamHandler extends DefaultHandler {
     private static final String TAG_LISTITEM = "LISTITEM"; // value
     private static final String TAG_PARAMETERS = "PARAMETERS";
 
+    private static final String TYPE_BOOL = "bool";
     private static final String TYPE_INT = "int";
     private static final String TYPE_FLOAT = "float";
     private static final String TYPE_DOUBLE = "double";
@@ -225,7 +226,10 @@ public class ParamHandler extends DefaultHandler {
                     return;
                 }
 
-                if (TYPE_INT.equals(type)) {
+                if (TYPE_BOOL.equals(type))
+                {
+                	handleBoolType(paramName, paramValue, attributes);
+                } else if (TYPE_INT.equals(type)) {
                     handleIntType(paramName, paramValue, attributes);
                 } else if (TYPE_DOUBLE.equals(type) || TYPE_FLOAT.equals(type)) {
                     handleDoubleType(paramName, paramValue, attributes);
@@ -355,21 +359,31 @@ public class ParamHandler extends DefaultHandler {
         p.setOptional(isOptional(attributes));
         p.setActive(true);
         
-        List<String> mimetypes = extractMIMETypes(attributes);
-        for (String mt : mimetypes) {
+        List<String> exts = extractSupportedExtensions(attributes);
+        for (String mt : exts) {
+        	//TODO think about adding a custom mimetype to the registry
+        	// with the same
+        	// name as the extension in case of unknown mimetypes so that they
+        	// are at least usable without errors if they do not have
+        	// successor nodes or if those successors do not care.
             p.addMimeType(mt);
+            //TODO This naming is flawed.
+            // We are actually adding possible extensions here!
+            // Not MimeTypes (which consists of sets of extensions)!
+        }
+        
+        // extensions are empty if they could be anything -> no restrictions
+        if (exts.isEmpty()) 
+        {
+        	// as an "extension" probably an empty extension is best
+        	// user needs to choose in the dialog
+        	p.addMimeType("");
         }
         
         String attr_type = attributes.getValue(ATTR_TYPE);
         boolean isInputPort = TYPE_INPUT_FILE.equals(attr_type)
         		|| getTags(attributes).contains(INPUTFILE_TAG)
         		|| TYPE_INPUT_PREFIX.equals(attr_type);
-        
-        // TODO maybe this is a misuse of MimeTypes. But otherwise we need to change the objects and methods
-        // to save/load settings.
-        if (p.isOptional() && !isInputPort) {
-        	p.addMimeType("Inactive");
-        }
 
         String description = attributes.getValue(ATTR_DESCRIPTION);
         p.setDescription(description);
@@ -413,7 +427,7 @@ public class ParamHandler extends DefaultHandler {
      *            The attributes containing the FileExtension information.
      * @return A list of supported FileExtensions.
      */
-    private List<String> extractMIMETypes(Attributes attributes) {
+    private List<String> extractSupportedExtensions(Attributes attributes) {
         ArrayList<String> mimeTypes = new ArrayList<String>();
 
         // always prefer supported_formats
@@ -501,42 +515,26 @@ public class ParamHandler extends DefaultHandler {
         if (isPort(attributes)) {
             createPort(paramName, attributes, false);
         } else {
-            // check if we have a boolean
             String restrictions = attributes.getValue(ATTR_RESTRICTIONS);
-            if (isBooleanParameter(restrictions)) {
-                m_currentParameter = new BoolParameter(paramName, paramValue);
+            
+            if (restrictions != null && restrictions.length() > 0) {
+              String[] restrictionsSplit = restrictions.split(",");
+              // check for Boolean hidden as String parameter
+              if (restrictionsSplit.length == 2 &&
+            		  ((TRUE.equals(restrictionsSplit[0]) && FALSE.equals(restrictionsSplit[1]))
+            		  || (FALSE.equals(restrictionsSplit[0]) && TRUE.equals(restrictionsSplit[1]))))
+              {
+                  m_currentParameter = new BoolParameter(paramName, paramValue, false);
+              } 
+              else
+              {
+                m_currentParameter = new StringChoiceParameter(paramName,restrictionsSplit);
+                ((StringChoiceParameter) m_currentParameter)
+                        .setValue(paramValue);
+              }
             } else {
-                if (restrictions != null && restrictions.length() > 0) {
-                    m_currentParameter = new StringChoiceParameter(paramName,
-                            restrictions.split(","));
-                    ((StringChoiceParameter) m_currentParameter)
-                            .setValue(paramValue);
-                } else {
-                    m_currentParameter = new StringParameter(paramName,
-                            paramValue);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns true if the Parameter is a BoolParameter.
-     * 
-     * @param restrictions
-     *            The restrictions encoding the bool restrictions.
-     * @return True if the parameter is a BoolParameter, false otherwise.
-     */
-    private boolean isBooleanParameter(final String restrictions) {
-        if (restrictions == null || restrictions.trim().length() == 0) {
-            return false;
-        } else {
-            // tokenize restrictions
-            String[] tokens = restrictions.split(",");
-            if (tokens.length != 2) {
-                return false;
-            } else {
-                return ((TRUE.equals(tokens[0]) && FALSE.equals(tokens[1])) || (FALSE
-                        .equals(tokens[0]) && TRUE.equals(tokens[1])));
+                m_currentParameter = new StringParameter(paramName,
+                        paramValue);
             }
         }
     }
@@ -588,6 +586,23 @@ public class ParamHandler extends DefaultHandler {
                             .getUpperBound(restrictions));
         }
     }
+    
+    /**
+     * Convert the current element into a BoolParameter.
+     * 
+     * @param paramName
+     *            The name of the Parameter
+     * @param paramValue
+     *            The value of the Parameter as given in the param file.
+     * @param attributes
+     *            Attributes of the Parameter. Useless for BoolParameters.
+     */
+    private void handleBoolType(final String paramName, final String paramValue,
+            Attributes attributes) {
+    	m_currentParameter = new BoolParameter(paramName, paramValue, true);
+    }
+    
+    
 
     /**
      * Convert the current element into a DoubleParameter.

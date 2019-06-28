@@ -1,11 +1,13 @@
 GenericKnimeNodes is licensed under the 
 
  GNU LESSER GENERAL PUBLIC LICENSE V3
+ with an exception of the com.genericworkflownodes.knime.gpl3nodes bundle
+ which uses more than the standard API of the KNIME source code and is therefore GPL3 instead of LGPL3.
 
 (see LGPL.LICENSE and GPL.LICENSE).
 
 
-Authors: Marc Röttig (2011), Stephan Aiche (2012), Björn Kahlert (2012)
+Authors: Marc Röttig (2011), Stephan Aiche (2012), Björn Kahlert (2012), Julianus Pfeuffer (2016)
 
 
 ## Dependencies:
@@ -14,8 +16,25 @@ Authors: Marc Röttig (2011), Stephan Aiche (2012), Björn Kahlert (2012)
 GenericKnimeNodes depends upon
 
 - KNIME plugin functionality which is considered to be GNU LESSER GENERAL PUBLIC LICENSE V3-compatible
-  (see http://knime.org/downloads/license)
-- SwingX which is also licensed under the GNU LESSER GENERAL PUBLIC LICENSE V3
+  due to its API usage exception:
+  "Additional permission relating to nodes for KNIME that extend the Node
+  Extension (and in particular that are based on subclasses of NodeModel,
+  NodeDialog, and NodeView) and that only interoperate with KNIME through
+  standard APIs ("Nodes"):
+  Nodes are deemed to be separate and independent programs and to not be
+  covered works.  Notwithstanding anything to the contrary in the License,
+  the License does not apply to Nodes, you are not required to license Nodes
+  under the License, and you are granted a license to prepare and propagate
+  Nodes, in each case even if such Nodes are propagated with or for
+  interoperation with KNIME.  The owner of a Node may freely choose the
+  license terms applicable to such Node, including when such Node is
+  propagated with or for interoperation with KNIME."
+- SwingX which is licensed under the GNU LESSER GENERAL PUBLIC LICENSE V2
+- Netbeans Outline library which is in its used version
+  dual-licensed under CDDL 1.0 and GNU GENERAL PUBLIC LICENSE V2-only with classpath exception
+  (see https://netbeans.org/cddl-gplv2.html). It is assumed that it is used here in compliance with the classpath exception.
+  @TODO: If we upgrade, the newest version is Apache-2 licensed (although we THINK due to the classpath exception,
+  it is fine in its current state)
 - BeanShell which is also licensed under the GNU LESSER GENERAL PUBLIC LICENSE V3
 - for our Apache Xerces binary dependecies please notice the Apache License 2.0 (APACHE.LICENSE)
 - for our JAXEN binary dependencies please notice the following

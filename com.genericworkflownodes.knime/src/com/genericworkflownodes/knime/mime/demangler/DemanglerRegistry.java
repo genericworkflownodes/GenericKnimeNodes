@@ -76,6 +76,10 @@ public class DemanglerRegistry implements IDemanglerRegistry {
     public List<IDemangler> getDemangler(final String mType) {
         List<IDemangler> availableDemangler = getAvailableDemangler();
         List<IDemangler> candidateDemangler = new ArrayList<IDemangler>();
+        if (mType == null)
+        {
+            return candidateDemangler;
+        }
 
         for (IDemangler demangler : availableDemangler) {
             if (demangler.getMIMEType().equals(mType)) {

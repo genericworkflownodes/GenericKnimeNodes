@@ -17,11 +17,12 @@ import org.osgi.framework.Version;
 
 import com.genericworkflownodes.knime.config.reader.CTDConfigurationReader;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
+import com.genericworkflownodes.knime.custom.config.IPluginConfiguration.VersionDisplayLayer;
 
 public abstract class DynamicGenericNodeSetFactory implements GenericNodeSetFactory {
 
     private static final NodeLogger logger = NodeLogger.getLogger(DynamicGenericNodeSetFactory.class);
-    
+
     /**
      * Creates a new <code>DynamicGenericNodeSetFactory</code>
      * that loads nodes from CTD files in the given source folder.
@@ -31,26 +32,27 @@ public abstract class DynamicGenericNodeSetFactory implements GenericNodeSetFact
         Version v = getVersion();
         m_versionSuffix = String.format("_%d_%d_%d", v.getMajor(), v.getMinor(), v.getMicro());
     }
-    
+
     private String m_versionSuffix;
     private Map<String, String> m_idToFile;
-    
+
     /**
      * @return The class of the node factory to use.
      */
     protected abstract Class<? extends GenericNodeFactory> getNodeFactory();
-    
+
     /**
      * Implement this method and return the configuration of the plugin
      * the nodes are hosted in.
      * @return the plugin configuration.
      */
+    @Override
     public abstract IPluginConfiguration getPluginConfig();
-    
+
     protected abstract String getCategoryPath();
-    
+
     protected abstract String getIdForTool(String relPath);
-    
+
     @Override
     public Collection<String> getNodeFactoryIds() {
         if (m_idToFile == null) {
@@ -77,7 +79,13 @@ public abstract class DynamicGenericNodeSetFactory implements GenericNodeSetFact
             logger.error("Could not read node category from CTD, using '/' instead.", e);
             category = "";
         }
-        return getCategoryPath() + "/" + getPluginConfig().getPluginVersion() + "/" + category;
+
+        if (getPluginConfig()
+                .getVersionDisplayLayer() == VersionDisplayLayer.CATEGORY) {
+            return getCategoryPath() + "/" + getPluginConfig().getPluginVersion() + "/" + category;
+        } else {
+            return getCategoryPath() + "/" + category;
+        }
     }
 
     @Override

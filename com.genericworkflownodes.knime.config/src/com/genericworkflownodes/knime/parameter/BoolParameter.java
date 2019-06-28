@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2012, Marc Röttig
+ * Copyright (c) 2019, Julianus Pfeuffer.
  *
  * This file is part of GenericKnimeNodes.
  * 
@@ -21,10 +22,21 @@ package com.genericworkflownodes.knime.parameter;
 /**
  * The BoolParameter class is used to store boolean values.
  * 
- * @author roettig
+ * @author roettig, jpfeuffer
  * 
  */
 public class BoolParameter extends Parameter<Boolean> {
+	
+	/**
+	 * A boolean parameter can be a flag (bool type in ParamXML) or
+	 * a String parameter with restrictions true/false (in case a
+	 * default value of true is desired on the command line
+	 * Nonetheless in views and in the code and in the KNIME settings.xml
+	 * we treat both as booleans to be backwards-compatible.
+	 * Only when writing we want to correctly
+	 * preserve the original type.
+	 */
+	public boolean isFlag = true;
 
     /**
      * The serial version UID.
@@ -53,6 +65,19 @@ public class BoolParameter extends Parameter<Boolean> {
      */
     public BoolParameter(final String key, final String value) {
         super(key, Boolean.valueOf(value.toLowerCase()));
+    }
+    
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            The unique key of the parameter.
+     * @param value
+     *            The value of the parameter as {@link String}.
+     */
+    public BoolParameter(final String key, final String value, final boolean isFlag) {
+        super(key, Boolean.valueOf(value.toLowerCase()));
+        this.isFlag = isFlag;
     }
 
     @Override

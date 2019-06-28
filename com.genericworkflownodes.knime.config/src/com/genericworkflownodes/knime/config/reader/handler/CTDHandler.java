@@ -107,8 +107,22 @@ public class CTDHandler extends DefaultHandler {
                     this, m_config));
         } else if (TAG_TOOL.equals(name)) {
             // root tag -> parse out the attribute values
-            m_config.setName(attributes.getValue(ATTR_NAME));
-            m_config.setVersion(attributes.getValue(ATTR_VERSION));
+        	String nm = attributes.getValue(ATTR_NAME);
+        	if (nm != null)
+        	{
+        		m_config.setName(nm);
+        	} else {
+        		throw new SAXException("Required attribute 'name' for tag 'tool' missing.");
+        	}
+        	
+        	String v = attributes.getValue(ATTR_VERSION);
+        	if (v != null)
+        	{
+        		m_config.setVersion(v);
+        	} else {
+        		throw new SAXException("Required attribute 'version' for tag 'tool' missing.");
+        	}
+        	
             if (attributes.getValue(ATTR_DOCURL) != null) {
                 m_config.setDocUrl(attributes.getValue(ATTR_DOCURL));
             }
