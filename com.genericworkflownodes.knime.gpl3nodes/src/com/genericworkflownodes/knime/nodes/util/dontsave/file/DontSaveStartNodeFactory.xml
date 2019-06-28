@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="dontsavestart.png" type="ScopeStart" xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Don't Save Start (URI Port)</name>
+	<shortDescription>
+		Starts a workflow block that is reset automatically once the corresponding Don't Save End is executed.
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+		<p>
+		Starting from this node, no data will be saved until the next Don't Save End node.
+		When the workflow is executed, the nodes between this node and the corresponding
+		Don't Save End node are reset as soon as the Don't Save End is executed, causing the
+		data at any output port to be discarded.
+		</p>
+		<p>
+		This node is an adaption of the Don't Save Start node from the KNIME Image Processing plugin.
+		If you need the same functionality for tables, use the nodes provided there.
+		</p>
+		</intro>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Input files (1)">Input files 1</inPort>
+		<inPort index="1" name="Input files (2)">Input files 2</inPort>
+		<inPort index="2" name="Input files (3)">Input files 3</inPort>
+		<outPort index="0" name="Output files (1)">Files from input port 1.</outPort>
+		<outPort index="1" name="Output files (2)">Files from input port 2.</outPort>
+		<outPort index="2" name="Output files (3)">Files from input port 3.</outPort>
+	</ports>
+</knimeNode>
