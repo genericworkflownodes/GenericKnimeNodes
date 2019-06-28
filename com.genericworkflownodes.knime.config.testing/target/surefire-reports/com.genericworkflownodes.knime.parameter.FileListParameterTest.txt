@@ -1,7 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.genericworkflownodes.knime.parameter.FileListParameterTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 sec - in com.genericworkflownodes.knime.parameter.FileListParameterTest
-testFileListParameter(com.genericworkflownodes.knime.parameter.FileListParameterTest)  Time elapsed: 0 sec
-testGetPort(com.genericworkflownodes.knime.parameter.FileListParameterTest)  Time elapsed: 0 sec
-testSetPort(com.genericworkflownodes.knime.parameter.FileListParameterTest)  Time elapsed: 0 sec

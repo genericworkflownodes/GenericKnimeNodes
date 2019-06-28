@@ -1,8 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.genericworkflownodes.knime.os.ArchitectureTest
--------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 sec - in com.genericworkflownodes.knime.os.ArchitectureTest
-testGetArchitecture(com.genericworkflownodes.knime.os.ArchitectureTest)  Time elapsed: 0.001 sec
-testToString(com.genericworkflownodes.knime.os.ArchitectureTest)  Time elapsed: 0 sec
-testFromString(com.genericworkflownodes.knime.os.ArchitectureTest)  Time elapsed: 0 sec
-testToOsgiArch(com.genericworkflownodes.knime.os.ArchitectureTest)  Time elapsed: 0 sec
