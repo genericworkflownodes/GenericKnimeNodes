@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.config.wrapper.GenericToolWrapperTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 sec - in com.genericworkflownodes.knime.config.wrapper.GenericToolWrapperTest
-testCTDLoading(com.genericworkflownodes.knime.config.wrapper.GenericToolWrapperTest)  Time elapsed: 0.018 sec
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 sec - in com.genericworkflownodes.knime.config.wrapper.GenericToolWrapperTest
+testCTDLoading(com.genericworkflownodes.knime.config.wrapper.GenericToolWrapperTest)  Time elapsed: 0.06 sec

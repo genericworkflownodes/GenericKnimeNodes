@@ -1,31 +1,335 @@
-2018-08-28 13:09:15,570 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Welcome to the KNIME Analytics Platform v1.0.0.000000 (Build April 04, 2018)          #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Based on Eclipse, http://www.eclipse.org                                              #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Copyright by KNIME AG, Zurich, Switzerland and others.                                #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Website: http://www.knime.com                                                         #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : # E-mail: contact@knime.com                                                             #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
-2018-08-28 13:09:15,571 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
-2018-08-28 13:09:15,572 : INFO  : WorkbenchTestable : NodeLogger :  :  : # For more details see the KNIME log file:                                              #
-2018-08-28 13:09:15,572 : INFO  : WorkbenchTestable : NodeLogger :  :  : # /Users/pfeuffer/git/GKN_dev/com.genericworkflownodes.knime.tests/target/work/data/.metadata/knime/knime.log
-2018-08-28 13:09:15,572 : INFO  : WorkbenchTestable : NodeLogger :  :  : #---------------------------------------------------------------------------------------#
-2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # logging date=Tue Aug 28 13:09:15 CEST 2018
-2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.version=1.8.0_05
-2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.vm.version=25.5-b02
-2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.vendor=Oracle Corporation
-2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # os.name=Mac OS X
-2018-08-28 13:09:15,576 : INFO  : WorkbenchTestable : NodeLogger :  :  : # os.arch=x86_64
-2018-08-28 13:09:15,577 : INFO  : WorkbenchTestable : NodeLogger :  :  : # number of CPUs=4
-2018-08-28 13:09:15,577 : INFO  : WorkbenchTestable : NodeLogger :  :  : # assertions=off
-2018-08-28 13:09:15,577 : INFO  : WorkbenchTestable : NodeLogger :  :  : # host=homosapiens
-2018-08-28 13:09:15,583 : INFO  : WorkbenchTestable : NodeLogger :  :  : # username=pfeuffer
-2018-08-28 13:09:15,583 : INFO  : WorkbenchTestable : NodeLogger :  :  : # max mem=1820MB
-2018-08-28 13:09:15,584 : INFO  : WorkbenchTestable : NodeLogger :  :  : # application=org.eclipse.tycho.surefire.osgibooter.uitest
-2018-08-28 13:09:15,602 : INFO  : WorkbenchTestable : NodeLogger :  :  : # ID=01-8ed91c18556d6381
-2018-08-28 13:09:15,603 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
-2018-08-28 13:09:15,620 : DEBUG : WorkbenchTestable : GenericNodesPlugin :  :  : Setting GKN dockerInstallationDir: /usr/local/bin
-2018-08-28 13:09:15,620 : DEBUG : WorkbenchTestable : GenericNodesPlugin :  :  : Setting GKN vmInstllationDir: /usr/local/bin
+2019-06-28 22:03:01,082 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Welcome to KNIME Analytics Platform v3.7.1.v201901281154 (Build January 29, 2019)     #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Based on Eclipse, http://www.eclipse.org                                              #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Copyright by KNIME AG, Zurich, Switzerland and others.                                #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # Website: http://www.knime.com                                                         #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # E-mail: contact@knime.com                                                             #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #                                                                                       #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # For more details see the KNIME log file:                                              #
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : # /Users/pfeuffer/git/GKN_dev/com.genericworkflownodes.knime.tests/target/work/data/.metadata/knime/knime.log
+2019-06-28 22:03:01,083 : INFO  : WorkbenchTestable : NodeLogger :  :  : #---------------------------------------------------------------------------------------#
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # logging date=Fri Jun 28 22:03:01 CEST 2019
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.version=1.8.0_191
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.vm.version=25.191-b12
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # java.vendor=Oracle Corporation
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # os.name=Mac OS X
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # os.arch=x86_64
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # number of CPUs=4
+2019-06-28 22:03:01,084 : INFO  : WorkbenchTestable : NodeLogger :  :  : # assertions=off
+2019-06-28 22:03:01,089 : INFO  : WorkbenchTestable : NodeLogger :  :  : # host=homosapiens
+2019-06-28 22:03:01,093 : INFO  : WorkbenchTestable : NodeLogger :  :  : # username=pfeuffer
+2019-06-28 22:03:01,094 : INFO  : WorkbenchTestable : NodeLogger :  :  : # max mem=1820MB
+2019-06-28 22:03:01,094 : INFO  : WorkbenchTestable : NodeLogger :  :  : # application=org.eclipse.tycho.surefire.osgibooter.uitest
+2019-06-28 22:03:01,100 : INFO  : WorkbenchTestable : NodeLogger :  :  : # ID=01-8ed91c18556d6381
+2019-06-28 22:03:01,100 : INFO  : WorkbenchTestable : NodeLogger :  :  : #########################################################################################
+2019-06-28 22:03:01,119 : DEBUG : WorkbenchTestable : GenericNodesPlugin :  :  : Setting GKN dockerInstallationDir: /usr/local/bin
+2019-06-28 22:03:01,119 : DEBUG : WorkbenchTestable : GenericNodesPlugin :  :  : Setting GKN vmInstllationDir: /usr/local/bin
+2019-06-28 22:03:01,608 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:01,626 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:01,731 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:01,734 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:01,736 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:03,744 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:05,748 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)
+2019-06-28 22:03:05,751 : DEBUG : WorkbenchTestable : ThreadUtils :  :  : Unnecessary call to callableWithContext, because no context is available
+org.knime.core.util.ThreadUtils$UnnecessaryCallException
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:425)
+	at org.knime.core.util.ThreadUtils.callableWithContext(ThreadUtils.java:399)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutor.<init>(AsynchronousToolExecutor.java:80)
+	at com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest.setUp(AsynchronousToolExecutorTest.java:45)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray2(ReflectionUtils.java:202)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:155)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:81)
+	at org.eclipse.tycho.surefire.osgibooter.OsgiSurefireBooter.run(OsgiSurefireBooter.java:107)
+	at org.eclipse.tycho.surefire.osgibooter.AbstractUITestApplication.runTests(AbstractUITestApplication.java:44)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Testable.lambda$0(E4Testable.java:73)
+	at java.lang.Thread.run(Thread.java:748)

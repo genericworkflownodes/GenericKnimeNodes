@@ -23,6 +23,12 @@ repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.fe
 repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.feature_target/provider=
 repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.feature_target/suffix=p2artifacts.xml
 repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.feature_target/uri=file\:/Users/pfeuffer/git/GKN_dev/com.genericworkflownodes.knime.feature/target/
+repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.gpl3nodes_target/description=
+repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.gpl3nodes_target/enabled=true
+repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.gpl3nodes_target/isSystem=false
+repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.gpl3nodes_target/provider=
+repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.gpl3nodes_target/suffix=p2artifacts.xml
+repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.gpl3nodes_target/uri=file\:/Users/pfeuffer/git/GKN_dev/com.genericworkflownodes.knime.gpl3nodes/target/
 repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.testing.feature_target/description=
 repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.testing.feature_target/enabled=true
 repositories/file\:_Users_pfeuffer_git_GKN_dev_com.genericworkflownodes.knime.testing.feature_target/isSystem=false

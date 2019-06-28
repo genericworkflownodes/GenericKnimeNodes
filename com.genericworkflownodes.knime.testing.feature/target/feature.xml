@@ -2,7 +2,7 @@
 <feature
       id="com.genericworkflownodes.knime.testing.feature"
       label="GenericKnimeNodes-Testing"
-      version="0.8.100.v201808281108"
+      version="1.0.0.v201906282002"
       provider-name="Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team">
 
    <description url="http://www.genericworkflownodes.com">
@@ -189,14 +189,14 @@ Library.
          id="com.genericworkflownodes.knime.tests"
          download-size="334"
          install-size="363"
-         version="0.8.100.v201808281108"
+         version="1.0.0.v201906282002"
          fragment="true"/>
 
    <plugin
          id="com.genericworkflownodes.knime.config.testing"
          download-size="52"
          install-size="59"
-         version="0.8.100.v201808281108"
+         version="1.0.0.v201906282002"
          fragment="true"/>
 
 </feature>

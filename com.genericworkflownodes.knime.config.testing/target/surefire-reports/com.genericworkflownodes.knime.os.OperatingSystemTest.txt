@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.os.OperatingSystemTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 sec - in com.genericworkflownodes.knime.os.OperatingSystemTest
-testGetOS(com.genericworkflownodes.knime.os.OperatingSystemTest)  Time elapsed: 0.005 sec
-testToOsgiOs(com.genericworkflownodes.knime.os.OperatingSystemTest)  Time elapsed: 0 sec
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 sec - in com.genericworkflownodes.knime.os.OperatingSystemTest
+testGetOS(com.genericworkflownodes.knime.os.OperatingSystemTest)  Time elapsed: 0.001 sec
+testToOsgiOs(com.genericworkflownodes.knime.os.OperatingSystemTest)  Time elapsed: 0.001 sec
 testToString(com.genericworkflownodes.knime.os.OperatingSystemTest)  Time elapsed: 0 sec
 testFromString(com.genericworkflownodes.knime.os.OperatingSystemTest)  Time elapsed: 0 sec

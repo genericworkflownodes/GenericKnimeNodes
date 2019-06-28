@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.19 sec - in com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest
-testAsynchronousToolExecutorIsNotReusable(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.007 sec
-testNormalExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.106 sec
-testKill(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0 sec
-testFaultyExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.053 sec
-testSeveralThreadsWaitingForNormalExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 2.007 sec
-testWaitForNormalExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 2 sec
-testSeveralThreadsWaitingForFaultyExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.002 sec
-testWaitForFaultyExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0 sec
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.2 sec - in com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest
+testAsynchronousToolExecutorIsNotReusable(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.022 sec
+testNormalExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.105 sec
+testKill(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.002 sec
+testFaultyExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.001 sec
+testSeveralThreadsWaitingForNormalExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 2.009 sec
+testWaitForNormalExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 2.003 sec
+testSeveralThreadsWaitingForFaultyExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.003 sec
+testWaitForFaultyExecution(com.genericworkflownodes.knime.execution.AsynchronousToolExecutorTest)  Time elapsed: 0.002 sec

@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.custom.config.PluginConfigurationTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 sec - in com.genericworkflownodes.knime.custom.config.PluginConfigurationTest
-testPluginConfiguration(com.genericworkflownodes.knime.custom.config.PluginConfigurationTest)  Time elapsed: 0.006 sec
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.176 sec - in com.genericworkflownodes.knime.custom.config.PluginConfigurationTest
+testPluginConfiguration(com.genericworkflownodes.knime.custom.config.PluginConfigurationTest)  Time elapsed: 0.004 sec

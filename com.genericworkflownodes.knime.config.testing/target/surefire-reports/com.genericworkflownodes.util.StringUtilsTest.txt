@@ -1,9 +1,9 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.util.StringUtilsTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 sec - in com.genericworkflownodes.util.StringUtilsTest
-testJoin(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0 sec
-testLowerBoundExtractionInteger(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0 sec
-testUpperBoundExtractionDouble(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0 sec
-testUpperBoundExtractionInteger(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0 sec
-testLowerBoundExtractionDouble(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0 sec
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 sec - in com.genericworkflownodes.util.StringUtilsTest
+testJoin(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0.001 sec
+testLowerBoundExtractionInteger(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0.001 sec
+testUpperBoundExtractionDouble(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0.001 sec
+testUpperBoundExtractionInteger(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0.001 sec
+testLowerBoundExtractionDouble(com.genericworkflownodes.util.StringUtilsTest)  Time elapsed: 0.001 sec

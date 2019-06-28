@@ -4,7 +4,7 @@
   <artifactId>com.genericworkflownodes.maven</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<knime.version>3.5</knime.version>
+		<knime.version>3.7</knime.version>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
 		<tycho.version>1.2.0</tycho.version>
 		<tycho.extras.version>1.2.0</tycho.extras.version>
@@ -13,57 +13,42 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho.scmUrl>scm:git:https://github.com/genericworkflownodes/GenericKnimeNodes.git</tycho.scmUrl>
 	</properties>
-	<repositories>
+	<!--<repositories>
 		<repository>
 			<id>knime</id>
 			<layout>p2</layout>
 			<url>${knime.update.site}</url>
 		</repository>
-	</repositories>
+	</repositories>-->
 	<build>
 		<plugins>
+			<plugin>
+			    <groupId>org.eclipse.tycho</groupId>
+			    <artifactId>target-platform-configuration</artifactId>
+			    <version>${tycho.version}</version>
+			    <configuration>
+			        <target>
+			            <artifact>
+			                <groupId>org.knime.sdk.setup</groupId>
+			                <artifactId>org.knime.sdk.setup</artifactId>
+			                <version>3.7.0-SNAPSHOT</version>
+			            </artifact>
+			        </target>
+			    </configuration>
+			</plugin>
+			<plugin>
+		   		<groupId>org.eclipse.tycho</groupId>
+		   		<artifactId>tycho-compiler-plugin</artifactId>
+		   		<version>${tycho.version}</version>
+		   		<configuration>
+		   			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
+		   		</configuration>
+		   	</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<extensions>true</extensions>
-			</plugin>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<resolver>p2</resolver>
-					<pomDependencies>consider</pomDependencies>
-					<ignoreTychoRepositories>true</ignoreTychoRepositories>
-					<environments>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -158,6 +143,9 @@
   	<module>
   		../../../git/GKN_dev/com.genericworkflownodes.knime.feature
   	</module>
+  	<module>
+  		../../../git/GKN_dev/com.genericworkflownodes.knime.gpl3nodes
+  	</module>
   	<!--<module>
   		../../../git/GKN_dev/com.genericworkflownodes.knime.node_generator
   	</module>  -->
@@ -170,5 +158,6 @@
   	<module>
   		../../../git/GKN_dev/com.genericworkflownodes.knime.update
   	</module>
+  	<module>../../knime-sdk-setup/org.knime.sdk.setup</module>
   </modules>
 </project>

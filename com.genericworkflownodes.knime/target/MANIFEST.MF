@@ -2,30 +2,32 @@ Manifest-Version: 1.0
 Eclipse-RegisterBuddy: org.knime.core
 Bundle-SymbolicName: com.genericworkflownodes.knime;singleton:=true
 Require-Bundle: org.eclipse.ui;bundle-version="[3.107.0,4.0.0)",org.kn
- ime.base;bundle-version="[3.0.0,4.0.0)",org.knime.core.data.uritype;b
- undle-version="[3.0.0,4.0.0)",com.genericworkflownodes.knime.config;b
+ ime.base;bundle-version="[3.0.0,5.0.0)",org.knime.core.data.uritype;b
+ undle-version="[3.0.0,5.0.0)",com.genericworkflownodes.knime.config;b
  undle-version="0.8.0",org.knime.base.filehandling;bundle-version="[3.
- 1.0,4.0.0)",org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)"
+ 1.0,5.0.0)",org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)",or
+ g.apache.commons.httpclient;bundle-version="3.1.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-SourceReferences: scm:git:https://github.com/genericworkflowno
  des/GenericKnimeNodes.git;path="com.genericworkflownodes.knime";commi
- tId=5ef9b4ab4bd7783216b28c34f6947a29b0c02fa1
+ tId=6e841e27e8bc358e7a0c546a3da5a5aec36d8db3
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and 
  the GenericWorkflowNodes Team
-Export-Package: com.genericworkflownodes.knime.commandline,com.generic
- workflownodes.knime.commandline.impl,com.genericworkflownodes.knime.c
- ustom,com.genericworkflownodes.knime.custom.config,com.genericworkflo
- wnodes.knime.custom.config.impl,com.genericworkflownodes.knime.dynami
- c,com.genericworkflownodes.knime.execution,com.genericworkflownodes.k
- nime.generic_node,com.genericworkflownodes.knime.mime.demangler,com.g
- enericworkflownodes.knime.nodes.io.importer,com.genericworkflownodes.
- knime.nodes.io.listimporter,com.genericworkflownodes.knime.nodes.io.o
- utputfile,com.genericworkflownodes.knime.preferences,com.genericworkf
- lownodes.knime.toolfinderservice
+Export-Package: com.genericworkflownodes.knime.base.data.port,com.gene
+ ricworkflownodes.knime.commandline,com.genericworkflownodes.knime.com
+ mandline.impl,com.genericworkflownodes.knime.custom,com.genericworkfl
+ ownodes.knime.custom.config,com.genericworkflownodes.knime.custom.con
+ fig.impl,com.genericworkflownodes.knime.dynamic,com.genericworkflowno
+ des.knime.execution,com.genericworkflownodes.knime.generic_node,com.g
+ enericworkflownodes.knime.mime.demangler,com.genericworkflownodes.kni
+ me.nodes.io.importer,com.genericworkflownodes.knime.nodes.io.listimpo
+ rter,com.genericworkflownodes.knime.nodes.io.outputfile,com.genericwo
+ rkflownodes.knime.preferences,com.genericworkflownodes.knime.toolfind
+ erservice
 Bundle-Name: GenericKnimeNodes
-Bundle-Version: 0.8.100.v201808281108
+Bundle-Version: 1.0.0.v201906282002
 Bundle-ClassPath: genericnodes.jar,lib/swingx-all-1.6.4.jar,lib/bsh-2.
  0b4.jar,lib/org-netbeans-swing-outline.jar
 Bundle-Activator: com.genericworkflownodes.knime.GenericNodesPlugin

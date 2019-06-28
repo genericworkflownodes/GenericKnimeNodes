@@ -18,7 +18,7 @@
    </copyright>
 
    <license url="http://www.gnu.org/licenses/gpl-3.0.html">
-    GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+      GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 
      Copyright (C) 2007 Free Software Foundation, Inc. &lt;https://fsf.org/&gt;
      Everyone is permitted to copy and distribute verbatim copies
@@ -705,13 +705,13 @@
          id="com.genericworkflownodes.knime"
          download-size="0"
          install-size="0"
-         version="0.8.100.qualifier"/>
+         version="1.0.0.qualifier"/>
 
    <plugin
          id="com.genericworkflownodes.knime.config"
          download-size="0"
          install-size="0"
-         version="0.8.0.qualifier"/>
+         version="1.0.0.qualifier"/>
 
    <plugin
          id="com.genericworkflownodes.knime.gpl3nodes"

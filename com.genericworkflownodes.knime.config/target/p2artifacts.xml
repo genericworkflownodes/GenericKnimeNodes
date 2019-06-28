@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository version='1.1.0'?>
 <artifacts size='2'>
-  <artifact classifier='osgi.bundle' id='com.genericworkflownodes.knime.config' version='0.8.0.v201808281108'>
+  <artifact classifier='osgi.bundle' id='com.genericworkflownodes.knime.config' version='1.0.0.v201906282002'>
     <properties size='5'>
-      <property name='artifact.size' value='1771126'/>
-      <property name='download.size' value='1771126'/>
+      <property name='artifact.size' value='669258'/>
+      <property name='download.size' value='669258'/>
       <property name='maven-groupId' value='com.genericworkflownodes.knime.config'/>
       <property name='maven-artifactId' value='com.genericworkflownodes.knime.config'/>
-      <property name='maven-version' value='0.8.0-SNAPSHOT'/>
+      <property name='maven-version' value='1.0.0-SNAPSHOT'/>
     </properties>
   </artifact>
-  <artifact classifier='osgi.bundle' id='com.genericworkflownodes.knime.config.source' version='0.8.0.v201808281108'>
+  <artifact classifier='osgi.bundle' id='com.genericworkflownodes.knime.config.source' version='1.0.0.v201906282002'>
     <properties size='6'>
-      <property name='artifact.size' value='82975'/>
-      <property name='download.size' value='82975'/>
+      <property name='artifact.size' value='84016'/>
+      <property name='download.size' value='84016'/>
       <property name='maven-groupId' value='com.genericworkflownodes.knime.config'/>
       <property name='maven-artifactId' value='com.genericworkflownodes.knime.config'/>
-      <property name='maven-version' value='0.8.0-SNAPSHOT'/>
+      <property name='maven-version' value='1.0.0-SNAPSHOT'/>
       <property name='maven-classifier' value='sources'/>
     </properties>
   </artifact>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <units size='2'>
-  <unit id='com.genericworkflownodes.knime.testing.feature.feature.group' version='0.8.100.v201808281108' singleton='false'>
-    <update id='com.genericworkflownodes.knime.testing.feature.feature.group' range='[0.0.0,0.8.100.v201808281108)' severity='0'/>
+  <unit id='com.genericworkflownodes.knime.testing.feature.feature.group' version='1.0.0.v201906282002' singleton='false'>
+    <update id='com.genericworkflownodes.knime.testing.feature.feature.group' range='[0.0.0,1.0.0.v201906282002)' severity='0'/>
     <properties size='8'>
       <property name='org.eclipse.equinox.p2.name' value='GenericKnimeNodes-Testing'/>
       <property name='org.eclipse.equinox.p2.description' value='Test feature for com.genericworkflownodes.knime'/>
@@ -10,16 +10,16 @@
       <property name='org.eclipse.equinox.p2.type.group' value='true'/>
       <property name='maven-groupId' value='com.genericworkflownodes.knime.testing.feature'/>
       <property name='maven-artifactId' value='com.genericworkflownodes.knime.testing.feature'/>
-      <property name='maven-version' value='0.8.100-SNAPSHOT'/>
+      <property name='maven-version' value='1.0.0-SNAPSHOT'/>
     </properties>
     <provides size='1'>
-      <provided namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.group' version='0.8.100.v201808281108'/>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.group' version='1.0.0.v201906282002'/>
     </provides>
     <requires size='4'>
       <required namespace='org.eclipse.equinox.p2.iu' name='org.knime.features.testingapplication.feature.group' range='2.9.0'/>
-      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.tests' range='[0.8.100.v201808281108,0.8.100.v201808281108]'/>
-      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.config.testing' range='[0.8.100.v201808281108,0.8.100.v201808281108]'/>
-      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.jar' range='[0.8.100.v201808281108,0.8.100.v201808281108]'>
+      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.tests' range='[1.0.0.v201906282002,1.0.0.v201906282002]'/>
+      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.config.testing' range='[1.0.0.v201906282002,1.0.0.v201906282002]'/>
+      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.jar' range='[1.0.0.v201906282002,1.0.0.v201906282002]'>
         <filter>
           (org.eclipse.update.install.features=true)
         </filter>
@@ -35,7 +35,7 @@
       Copyright (c) 2011-2014, Marc Röttig, Stephan Aiche, and Björn Kahlert.
     </copyright>
   </unit>
-  <unit id='com.genericworkflownodes.knime.testing.feature.feature.jar' version='0.8.100.v201808281108'>
+  <unit id='com.genericworkflownodes.knime.testing.feature.feature.jar' version='1.0.0.v201906282002'>
     <properties size='7'>
       <property name='org.eclipse.equinox.p2.name' value='GenericKnimeNodes-Testing'/>
       <property name='org.eclipse.equinox.p2.description' value='Test feature for com.genericworkflownodes.knime'/>
@@ -43,18 +43,18 @@
       <property name='org.eclipse.equinox.p2.provider' value='Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team'/>
       <property name='maven-groupId' value='com.genericworkflownodes.knime.testing.feature'/>
       <property name='maven-artifactId' value='com.genericworkflownodes.knime.testing.feature'/>
-      <property name='maven-version' value='0.8.100-SNAPSHOT'/>
+      <property name='maven-version' value='1.0.0-SNAPSHOT'/>
     </properties>
     <provides size='3'>
-      <provided namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.jar' version='0.8.100.v201808281108'/>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.jar' version='1.0.0.v201906282002'/>
       <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
-      <provided namespace='org.eclipse.update.feature' name='com.genericworkflownodes.knime.testing.feature' version='0.8.100.v201808281108'/>
+      <provided namespace='org.eclipse.update.feature' name='com.genericworkflownodes.knime.testing.feature' version='1.0.0.v201906282002'/>
     </provides>
     <filter>
       (org.eclipse.update.install.features=true)
     </filter>
     <artifacts size='1'>
-      <artifact classifier='org.eclipse.update.feature' id='com.genericworkflownodes.knime.testing.feature' version='0.8.100.v201808281108'/>
+      <artifact classifier='org.eclipse.update.feature' id='com.genericworkflownodes.knime.testing.feature' version='1.0.0.v201906282002'/>
     </artifacts>
     <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
     <touchpointData size='1'>

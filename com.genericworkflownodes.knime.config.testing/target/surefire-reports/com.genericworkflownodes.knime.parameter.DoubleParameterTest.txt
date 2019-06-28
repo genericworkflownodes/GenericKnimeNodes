@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.parameter.DoubleParameterTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 sec - in com.genericworkflownodes.knime.parameter.DoubleParameterTest
-testValidateDouble(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.001 sec
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 sec - in com.genericworkflownodes.knime.parameter.DoubleParameterTest
+testValidateDouble(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec
 testFillFromString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec
-testToString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.006 sec
-testDoubleParameterStringDouble(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec
+testToString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec
+testDoubleParameterStringDouble(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.001 sec
 testDoubleParameterStringString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec
-testGetMnemonic(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.002 sec
-testFillFromInvalidString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.021 sec
-testFromOutOfBoundsString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.001 sec
+testGetMnemonic(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec
+testFillFromInvalidString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0.012 sec
+testFromOutOfBoundsString(com.genericworkflownodes.knime.parameter.DoubleParameterTest)  Time elapsed: 0 sec

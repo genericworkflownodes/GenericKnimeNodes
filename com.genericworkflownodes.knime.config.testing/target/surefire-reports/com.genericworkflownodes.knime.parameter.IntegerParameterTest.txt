@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.parameter.IntegerParameterTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 sec - in com.genericworkflownodes.knime.parameter.IntegerParameterTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 sec - in com.genericworkflownodes.knime.parameter.IntegerParameterTest
 testFillFromString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
-testToString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0.001 sec
-testGetMnemonic(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
+testToString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
+testGetMnemonic(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0.001 sec
 testIntegerParameterStringString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
-testFillFromInvalidString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
+testFillFromInvalidString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0.001 sec
 testFromOutOfBoundsString(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
 testIntegerParameterStringInteger(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec
 testValidateInteger(com.genericworkflownodes.knime.parameter.IntegerParameterTest)  Time elapsed: 0 sec

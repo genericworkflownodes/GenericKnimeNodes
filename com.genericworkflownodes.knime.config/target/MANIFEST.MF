@@ -13,7 +13,7 @@ Export-Package: com.genericworkflownodes.knime.cliwrapper,com.genericw
  ricworkflownodes.knime.port,com.genericworkflownodes.knime.schemas;us
  es:="org.xml.sax",com.genericworkflownodes.util
 Bundle-Name: GenericKnimeNodes-Config
-Bundle-Version: 0.8.0.v201808281108
+Bundle-Version: 1.0.0.v201906282002
 Bundle-ClassPath: genericnodes.config.jar,lib/dom4j-1.6.1.jar,lib/jaxe
  n-1.1-beta-6.jar
 Require-Bundle: org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)"
@@ -21,7 +21,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-SourceReferences: scm:git:https://github.com/genericworkflowno
  des/GenericKnimeNodes.git;path="com.genericworkflownodes.knime.config
- ";commitId=5ef9b4ab4bd7783216b28c34f6947a29b0c02fa1
+ ";commitId=6e841e27e8bc358e7a0c546a3da5a5aec36d8db3
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and 
  the GenericWorkflowNodes Team
 

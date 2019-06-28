@@ -279,18 +279,18 @@
       </instructions>
     </touchpointData>
   </unit>
-  <unit id='v201808281108.Default' version='1.0.0.07UCEcQVL76_kE7Ac7cEcAA7c'>
+  <unit id='v201906282002.Default' version='1.0.0.4--cQVL76_kE7Ag7UEcE77E'>
     <properties size='3'>
       <property name='org.eclipse.equinox.p2.name' value='Uncategorized'/>
       <property name='org.eclipse.equinox.p2.description' value='Default category for otherwise uncategorized features'/>
       <property name='org.eclipse.equinox.p2.type.category' value='true'/>
     </properties>
     <provides size='1'>
-      <provided namespace='org.eclipse.equinox.p2.iu' name='v201808281108.Default' version='1.0.0.07UCEcQVL76_kE7Ac7cEcAA7c'/>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='v201906282002.Default' version='1.0.0.4--cQVL76_kE7Ag7UEcE77E'/>
     </provides>
     <requires size='2'>
-      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.feature.feature.group' range='[0.8.100.v201808281108,0.8.100.v201808281108]'/>
-      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.group' range='[0.8.100.v201808281108,0.8.100.v201808281108]'/>
+      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.feature.feature.group' range='[1.0.0.v201906282002,1.0.0.v201906282002]'/>
+      <required namespace='org.eclipse.equinox.p2.iu' name='com.genericworkflownodes.knime.testing.feature.feature.group' range='[1.0.0.v201906282002,1.0.0.v201906282002]'/>
     </requires>
     <touchpoint id='null' version='0.0.0'/>
   </unit>

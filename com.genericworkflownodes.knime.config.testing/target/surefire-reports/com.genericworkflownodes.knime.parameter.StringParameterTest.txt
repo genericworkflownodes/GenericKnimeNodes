@@ -1,9 +1,9 @@
 -------------------------------------------------------------------------------
 Test set: com.genericworkflownodes.knime.parameter.StringParameterTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 sec - in com.genericworkflownodes.knime.parameter.StringParameterTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 sec - in com.genericworkflownodes.knime.parameter.StringParameterTest
 testFillFromString(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0 sec
 testValidateString(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0 sec
 testToString(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0 sec
-testGetMnemonic(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0 sec
-testStringParameter(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0 sec
+testGetMnemonic(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0.001 sec
+testStringParameter(com.genericworkflownodes.knime.parameter.StringParameterTest)  Time elapsed: 0.007 sec
