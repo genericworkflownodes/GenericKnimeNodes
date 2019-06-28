@@ -36,7 +36,7 @@
   	<groupId>com.genericworkflownodes.maven</groupId>
   	<artifactId>com.genericworkflownodes.maven</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
-  	<relativePath>../../../IDE_Workspaces/KNIME_SDK_3.1/com.genericworkflownodes.maven</relativePath>
+  	<relativePath>../com.genericworkflownodes.maven</relativePath>
   </parent>
   <dependencies>
   	<dependency>
