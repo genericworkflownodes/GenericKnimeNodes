@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.dynamic;
 
-
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.custom.config.IPluginConfiguration;
 import com.genericworkflownodes.knime.generic_node.GenericKnimeNodeModel;

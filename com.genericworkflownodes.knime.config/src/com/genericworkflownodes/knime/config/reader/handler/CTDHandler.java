@@ -25,7 +25,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.genericworkflownodes.knime.config.INodeConfiguration;
 import com.genericworkflownodes.knime.config.NodeConfiguration;
-import com.genericworkflownodes.knime.config.reader.InvalidCTDFileException;
 
 /**
  * The main {@link ContentHandler} for the CTD.

@@ -219,8 +219,8 @@ public class CTDConfigurationWriter {
 
         currentNodeState = new ArrayList<String>();
 
-        streamPut("<PARAMETERS version=\"1.6.2\" "
-                + "xsi:noNamespaceSchemaLocation=\"http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd\" "
+        streamPut("<PARAMETERS version=\"1.7.0\" "
+                + "xsi:noNamespaceSchemaLocation=\"https://raw.githubusercontent.com/WorkflowConversion/CTDSchema/master/Param_1_7_0.xsd\" "
                 + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
         indent();
 
@@ -281,13 +281,13 @@ public class CTDConfigurationWriter {
         addParameterAttributes(p, item);
 
         // restrictions
-        if (p instanceof BoolParameter) {
-            addBoolRestrictions(item);
-        } else if (p instanceof DoubleParameter
-                || p instanceof IntegerParameter) {
+        if (p instanceof DoubleParameter
+            || p instanceof IntegerParameter) {
             addNumberRestrictions(item, p);
         } else if (p instanceof StringChoiceParameter) {
             addStringChoices(item, p);
+        } else if (p instanceof BoolParameter) {
+        	addBoolChoicesIfNoFlag(item, p);
         } else if (p instanceof FileParameter) {
             addMimeTypeRestrictions(item, p);
         }
@@ -296,7 +296,7 @@ public class CTDConfigurationWriter {
         streamPut(item.toString());
     }
 
-    private void writeItemList(String key, Parameter<?> p) throws IOException {
+	private void writeItemList(String key, Parameter<?> p) throws IOException {
     	if (p instanceof FileListParameter) {
     		// Omit complete parameter when its value is null (e.g. not connected)
     		if (ignoreUnusedParameters && p.isNull()) {
@@ -348,11 +348,17 @@ public class CTDConfigurationWriter {
         item.append(" type=\"");
         if (p instanceof FileParameter) {
             addFileType(key, item);
-        } else if (p instanceof BoolParameter || p instanceof StringParameter
+        } else if (p instanceof StringParameter
                 || p instanceof StringChoiceParameter) {
             item.append("string");
         } else if (p instanceof DoubleParameter) {
             item.append("double");
+        } else if (p instanceof BoolParameter) {
+        	if (((BoolParameter) p).isFlag) {
+        		item.append("bool");
+        	} else {
+        		item.append("string");
+        	}
         } else if (p instanceof IntegerParameter) {
             item.append("int");
         }
@@ -432,6 +438,13 @@ public class CTDConfigurationWriter {
         }
         item.append('\"');
     }
+    
+    private void addBoolChoicesIfNoFlag(StringBuffer item, Parameter<?> p) {
+    	if (!((BoolParameter) p).isFlag)
+    	{
+    		item.append(" restrictions=\"true,false\"");
+    	}
+	}
 
     private void addNumberRestrictions(StringBuffer item, Parameter<?> p) {
         StringBuffer restriction = new StringBuffer();
@@ -530,10 +543,6 @@ public class CTDConfigurationWriter {
                     .replaceAll(REMOVE_TRAILING_0_RE, "")
                     .replaceAll(REMOVE_TRAILING_DOT_RE, ""));
         }
-    }
-
-    private void addBoolRestrictions(StringBuffer item) {
-        item.append(" restrictions=\"true,false\"");
     }
 
     private void closeRemainingNodes() throws IOException {

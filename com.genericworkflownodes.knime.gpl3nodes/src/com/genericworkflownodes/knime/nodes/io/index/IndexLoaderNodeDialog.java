@@ -19,18 +19,11 @@
 package com.genericworkflownodes.knime.nodes.io.index;
 
 
-import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
-import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
-import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
-import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-
-import com.genericworkflownodes.knime.nodes.io.index.DialogComponentIndexChooser;
 
 /**
  * <code>NodeDialog</code> for the "IndexLoader" Node.

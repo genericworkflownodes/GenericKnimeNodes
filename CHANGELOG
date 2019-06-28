@@ -1,0 +1,15 @@
+--- new in 1.0.0 ---
+
+- Support of ParamXML 1.7.0 in CTD files.
+WARNING: If you used parameters of type string with restrictions "true,false" as substitution for boolean flags,
+in conjunction with the CLICommandGenerator, then you need to upgrade your CTD files to use the new boolean type!
+
+- Dynamic node generation.
+See Readme.
+
+- Improvements in loading workflows with older versions of the same node.
+- Deactivating optional outputs
+- KNIME Relative filepaths for Input and Output nodes
+- New splitter and merger nodes
+- New Port to FileStoreCell Table Node
+- Some fixes
