@@ -126,5 +126,17 @@ Try our [dynamicPluginGeneration](https://github.com/genericworkflownodes/dynami
 process in a CMake script.
 
 ## Maven tycho
-If buckminster does not work for you, there is a beta branch for bulding with maven tycho [here](https://github.com/jpfeuffer/GenericKnimeNodes/tree/feature/maven-tycho).
+If buckminster does not work for you, we have beta support for bulding with maven tycho.
+1) Clone this repo to your git folder let's say $GIT. So you have $GIT/GenericKnimeNodes
+1) Clone our fork of KNIME's SDK target platform (only tag 2018-03 was converted by us for now, so check it out) to $GIT as well ($GIT/org.knime.sdk)
+1) If using eclipse, install the Maven2Eclipse (m2e) extension and the tycho configuration helper and import the plugins (make sure they are both recognized as PDE plugins and maven plugins). Or on the command line you probably just need maven.
+1) Cd to $GIT/GenericKnimeNodes/org.genericworkflownodes.maven
+1) Run `mvn clean verify` or run the Eclipse maven build configuration and add `clean verify` as "goals".
+1) Hope that everything builds. 
+
+### Convert your own knime target platform
+If our fork of org.knime.sdk does not have the right target platform converted to a maven tycho project, just copy over the pom.xml
+from another branch, rename all target platforms that you do NOT need to have another suffix than .target. And rename the one that
+you want to use to the same name as in the artifactID of the pom.xml plus the .target (usually org.knime.sdk.setup.target). Adapt the version in the pom.xml. TODO Make it easier and use profiles.
+
 

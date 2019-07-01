@@ -1,6 +1,7 @@
 bin/*
 */bin/*
 build/*
+**/target/*
 *.class
 generated_plugin/
 /bin
