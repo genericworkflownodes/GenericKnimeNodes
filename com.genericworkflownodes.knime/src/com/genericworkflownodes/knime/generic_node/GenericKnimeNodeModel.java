@@ -925,7 +925,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             return Arrays.asList(m_customBasenames[outputIndex].split(","));
         }
         
-        // See if we are in an obvious loop context
+        // See if we are in an obvious loop context (will not work correctly if in a wrapped meta node on nested loops I guess)
         String iterationSuffix = "";
         try {
           iterationSuffix = "_iter" + Integer.toString(peekFlowVariableInt("currentIteration"));
@@ -940,6 +940,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             {
                 if (linked.isMultiFile())
                 {
+                    @SuppressWarnings("unchecked")
                     List<String> inputnames = (List<String>) portVal;
                     List<String> basenames = new ArrayList<String>();
                     for (String inputname : inputnames)
@@ -971,8 +972,10 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                     {
                         basenames.add(FilenameUtils.getBaseName(inputname) + "_out" + outputIndex + iterationSuffix);
                     }
+                    return basenames;
                 }
             }
+            
             throw new InvalidSettingsException("For multifile outport " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " no linkable multifile input could be found. Please specify own output basenames as a comma seperated list.");
         }
     }
