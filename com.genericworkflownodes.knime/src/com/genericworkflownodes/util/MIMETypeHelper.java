@@ -21,6 +21,8 @@ package com.genericworkflownodes.util;
 import java.io.File;
 import java.util.Optional;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
 
@@ -58,6 +60,9 @@ public final class MIMETypeHelper {
         // check existing mimetypes
         String type = null;
         String foundExtension = "";
+        
+        
+        Logger.getLogger(org.knime.base.filehandling.mime.MIMEMap.class.getName()).setLevel(Level.OFF);
 
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
             for (String ext : entry.getExtensions()) {
@@ -99,6 +104,8 @@ public final class MIMETypeHelper {
         // Ensure Lowercase comparison
         extension = extension.toLowerCase();
 
+        Logger.getLogger(org.knime.base.filehandling.mime.MIMEMap.class.getName()).setLevel(Level.OFF);
+        
         // check existing mimetypes
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
             for (String ext : entry.getExtensions()) {
@@ -126,6 +133,8 @@ public final class MIMETypeHelper {
         // Ensure lowercase comparison
         filename = filename.toLowerCase();
 
+        Logger.getLogger(org.knime.base.filehandling.mime.MIMEMap.class.getName()).setLevel(Level.OFF);
+        
         // check existing mimetypes
         String type = null;
         String foundExtension = "";
