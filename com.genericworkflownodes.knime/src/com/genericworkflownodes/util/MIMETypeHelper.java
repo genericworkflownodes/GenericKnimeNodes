@@ -23,8 +23,6 @@ import java.util.Optional;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Appender;
-import org.apache.log4j.BasicConfigurator;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
 
