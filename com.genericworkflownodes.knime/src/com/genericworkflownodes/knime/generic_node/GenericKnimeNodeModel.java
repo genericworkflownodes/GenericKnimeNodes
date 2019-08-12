@@ -881,14 +881,14 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             {
                 if (!linked.isMultiFile())
                 {
-                    return FilenameUtils.getBaseName((String) portVal)
-                            + "_out" + outputIndex + iterationSuffix;
+                    return FilenameUtils.getBaseName((String) portVal);
+                            //+ "_out" + outputIndex + iterationSuffix;
                 }
                 else
                 {
                     LOGGER.warn("Linked input to single ouput is a list. Taking first element.");
-                    return FilenameUtils.getBaseName(((List<String>) portVal).get(0))
-                            + "_out" + outputIndex + iterationSuffix;
+                    return FilenameUtils.getBaseName(((List<String>) portVal).get(0));
+                            //+ "_out" + outputIndex + iterationSuffix;
                 }
             }
             else
@@ -898,17 +898,26 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
         }
         else
         {
-            // look for first connected! non multifile inport
+            // look for first connected! non multifile inport (transforming type of nodes)
             for (Port p : m_nodeConfig.getInputPorts())
             {
                 if (!p.isMultiFile() && m_nodeConfig.getParameter(p.getName()).getValue() != null)
                 {
-                    return FilenameUtils.getBaseName((String) m_nodeConfig.getParameter(p.getName()).getValue())
-                            + "_out" + outputIndex + iterationSuffix;
+                    return FilenameUtils.getBaseName((String) m_nodeConfig.getParameter(p.getName()).getValue());
+                            //+ "_out" + outputIndex + iterationSuffix;
                 }
             }
-            // If everything fails, use the nodename
-            return m_nodeConfig.getName() + "_out" + outputIndex;
+            // else take first element of first connected! multifile inport (merging type nodes)
+            for (Port p : m_nodeConfig.getInputPorts())
+            {
+                if (p.isMultiFile() && m_nodeConfig.getParameter(p.getName()).getValue() != null)
+                {
+                    return FilenameUtils.getBaseName(((List<String>) m_nodeConfig.getParameter(p.getName()).getValue()).get(0));
+                            //+ "_out" + outputIndex + iterationSuffix;
+                }
+            }
+            // If everything fails, use the nodename (generating type of nodes)
+            return m_nodeConfig.getName(); // + "_out" + outputIndex + iterationSuffix;
         }
     }
     
@@ -925,7 +934,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             return Arrays.asList(m_customBasenames[outputIndex].split(","));
         }
         
-        // See if we are in an obvious loop context (will not work correctly if in a wrapped meta node on nested loops I guess)
+        // See if we are in an obvious loop context (will not work correctly if in a wrapped meta node or nested loops I guess)
         String iterationSuffix = "";
         try {
           iterationSuffix = "_iter" + Integer.toString(peekFlowVariableInt("currentIteration"));
@@ -945,7 +954,8 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                     List<String> basenames = new ArrayList<String>();
                     for (String inputname : inputnames)
                     {
-                        basenames.add(FilenameUtils.getBaseName(inputname) + "_out" + outputIndex + iterationSuffix);
+                        // without suffix this might lead to duplicate output file names though
+                        basenames.add(FilenameUtils.getBaseName(inputname)); // + "_out" + outputIndex + iterationSuffix);
                     }
                     return basenames;
                 }
@@ -970,13 +980,14 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                     List<String> basenames = new ArrayList<String>();
                     for (String inputname : inputnames)
                     {
-                        basenames.add(FilenameUtils.getBaseName(inputname) + "_out" + outputIndex + iterationSuffix);
+                        basenames.add(FilenameUtils.getBaseName(inputname));// + "_out" + outputIndex + iterationSuffix);
                     }
                     return basenames;
                 }
             }
             
-            throw new InvalidSettingsException("For multifile outport " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " no linkable multifile input could be found. Please specify own output basenames as a comma seperated list.");
+            // we don't know the number of outputs if this is not specified and no prefix port is used
+            throw new InvalidSettingsException("For multifile outport " + m_nodeConfig.getOutputPorts().get(outputIndex).getName() + " no linkable multifile input could be found. Cannot infer number of output files. Please specify own output basenames as a comma seperated list.");
         }
     }
 
