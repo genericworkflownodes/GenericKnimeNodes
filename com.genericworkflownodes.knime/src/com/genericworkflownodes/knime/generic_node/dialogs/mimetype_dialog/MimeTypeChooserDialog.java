@@ -173,8 +173,8 @@ public class MimeTypeChooserDialog extends JPanel implements ActionListener {
                 inports[j] = Integer.toString(j);
             }
             JComboBox cblink = new JComboBox(inports);
-            // the first choice is always "auto" -> use > 2 
-            cblink.setEnabled(inports.length > 2 && port.isActive());
+            // the first choice is always "auto" -> use >= 2 
+            cblink.setEnabled(inports.length >= 2 && port.isActive());
             cbsLink[i] = cblink;
             c.gridx++;
             c.weightx = xWeights[3];

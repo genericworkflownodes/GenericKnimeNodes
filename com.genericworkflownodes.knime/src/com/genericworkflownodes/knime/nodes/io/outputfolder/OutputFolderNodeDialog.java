@@ -102,7 +102,7 @@ public class OutputFolderNodeDialog extends NodeDialogPane {
         m_componentContainer.add(m_checkboxes, BorderLayout.SOUTH);
         
         m_componentContainer.setBorder(BorderFactory
-                .createTitledBorder("Selected output file:"));
+                .createTitledBorder("Selected output folder:"));
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1;

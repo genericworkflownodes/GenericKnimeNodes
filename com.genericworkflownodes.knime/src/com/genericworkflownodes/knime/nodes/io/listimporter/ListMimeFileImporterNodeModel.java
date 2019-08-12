@@ -177,7 +177,7 @@ public class ListMimeFileImporterNodeModel extends NodeModel {
                             "Files of unknown MIMEtype selected.");
                     mt = FilenameUtils.getExtension(filename);
                 }
-                if (!first && (lastMt != mt)) {
+                if (!first && (!lastMt.equals(mt))) {
                     throw new InvalidSettingsException(
                             "Files with mixed MIMEType loaded. This is currently not supported.");
                 } else {

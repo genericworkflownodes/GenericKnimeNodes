@@ -2,9 +2,12 @@ package com.genericworkflownodes.knime.nodes.io.outputfolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIContent;
@@ -86,21 +89,41 @@ public class OutputFolderNodeModel extends NodeModel {
             throw new Exception("Cannot write to target directoy: " + folder.getAbsolutePath());
         }
         
+        HashMap<String,Integer> basename_nr = new HashMap<String,Integer>();
+        ArrayList<File> targets = new ArrayList<File>();
         // Check all files here first
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
-            File target = new File(folder, in.getName());
+            Integer count = basename_nr.get(in.getName());
+            File target;
+            if (count == null)
+            {
+                count = 1;
+                target = new File(folder, in.getName());
+            }
+            else
+            {
+                count++;
+                //TODO check if this works with double extensions like .tar.gz
+                // maybe we need to use the MimeType helper
+                target = new File(folder, FilenameUtils.getBaseName(in.getName())+"_"+count+"."+FilenameUtils.getExtension(in.getName()));
+            }
+            basename_nr.put(in.getName(), count);
+            
             checkBeforeCopy(in, target);
+            targets.add(target);
         }
         
         // Now actually copy all the files
         double idx = 1.0;
+        int i = 0;
         for (URIContent uri : uris) {
             File in = FileUtil.getFileFromURL(uri.getURI().toURL());
-            File target = new File(folder, in.getName());
+            File target = targets.get(i);
             FileUtils.copyFile(in, target);
             exec.setProgress(idx / uris.size());
             exec.checkCanceled();
+            i++;
         }
         return null;
     }
