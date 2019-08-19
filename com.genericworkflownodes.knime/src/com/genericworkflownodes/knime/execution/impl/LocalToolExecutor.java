@@ -276,10 +276,10 @@ public class LocalToolExecutor implements IToolExecutor {
                     if (read == null){
                         stdoutclosed = true;
                     } else {
+                        m_model.setStdOut(m_stdOut);
                         m_stdOut.add(read);
                         ViewUpdateNotice v = ctor.newInstance(stdouttype);
                         v.setNewLine(read);
-                        ((GenericKnimeNodeModel) m_model).setStdOut(m_stdOut);
                         m_model.update(new Observable(),v);
                     }
                 }
@@ -290,10 +290,10 @@ public class LocalToolExecutor implements IToolExecutor {
                     if (read == null){
                         stderrclosed = true;
                     } else {
+                        m_model.setStdErr(m_stdErr);
                         m_stdErr.add(read);
                         ViewUpdateNotice v = ctor.newInstance(stderrtype);
                         v.setNewLine(read);
-                        ((GenericKnimeNodeModel) m_model).setStdErr(m_stdOut);
                         m_model.update(new Observable(),v);
                     }
                 }
