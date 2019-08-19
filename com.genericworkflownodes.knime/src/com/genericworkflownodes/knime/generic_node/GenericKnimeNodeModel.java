@@ -273,6 +273,12 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
      */
     private void executeTool(IToolExecutor executor,
             final ExecutionContext execContext) throws ExecutionFailedException {
+        
+        setFailedExternalOutput(new LinkedList<String>());
+        setFailedExternalErrorOutput(new LinkedList<String>());
+        setExternalOutput(new LinkedList<String>());
+        setExternalErrorOutput(new LinkedList<String>());
+        notifyViews(null); //reset
 
         final AsynchronousToolExecutor asyncExecutor = new AsynchronousToolExecutor(
                 executor);
@@ -301,30 +307,31 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
             throw new ExecutionFailedException(m_nodeConfig.getName(), ex);
         } catch (InterruptedException iex) {
             throw new ExecutionFailedException(m_nodeConfig.getName(), iex);
+        } finally {
+            LOGGER.debug("COMMAND:  " + executor.getCommand());
+            
+            if (retcode != 0) {
+                LOGGER.error("Failing process stdout: " + executor.getToolOutput());
+                LOGGER.error("Failing process stderr: "
+                        + executor.getToolErrorOutput());
+                LOGGER.error("Return code: " + retcode);
+                // process failed, so we will send the stdout/stderr messages into
+                // the dialogs
+                setFailedExternalOutput(executor.getToolOutput());
+                setFailedExternalErrorOutput(executor.getToolErrorOutput());
+
+                throw new ExecutionFailedException(m_nodeConfig.getName());
+            }
+            else
+            {
+                LOGGER.debug("STDOUT:  " + executor.getToolOutput());
+                LOGGER.debug("STDERR:  " + executor.getToolErrorOutput());
+                
+                // finally fill the stdout/stderr messages into the dialogs
+                setExternalOutput(executor.getToolOutput());
+                setExternalErrorOutput(executor.getToolErrorOutput());
+            }
         }
-
-        LOGGER.debug("COMMAND:  " + executor.getCommand());
-        LOGGER.debug("STDOUT:  " + executor.getToolOutput());
-        LOGGER.debug("STDERR:  " + executor.getToolErrorOutput());
-        LOGGER.debug("RETCODE: " + retcode);
-
-        if (retcode != 0) {
-            LOGGER.error("Failing process stdout: " + executor.getToolOutput());
-            LOGGER.error("Failing process stderr: "
-                    + executor.getToolErrorOutput());
-
-            // process failed, so we will send the stdout/stderr messages into
-            // the dialogs
-            setFailedExternalOutput(executor.getToolOutput());
-            setFailedExternalErrorOutput(executor.getToolErrorOutput());
-
-            throw new ExecutionFailedException(m_nodeConfig.getName());
-        }
-
-        // finally fill the stdout/stderr messages into the dialogs
-        setExternalOutput(executor.getToolOutput());
-        setExternalErrorOutput(executor.getToolErrorOutput());
-
     }
 
     /**
@@ -1094,14 +1101,14 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 workingDirectory);
     }
     
-    public void setStdOut(LinkedList<String> str)
+    public synchronized void setStdOut(LinkedList<String> str)
     {
-        this.setExternalOutput(str);
+        setFailedExternalOutput(str);
     }
 
-    public void setStdErr(LinkedList<String> str)
+    public synchronized void setStdErr(LinkedList<String> str)
     {
-        this.setExternalErrorOutput(str);
+        setFailedExternalErrorOutput(str);
     }
     
     @Override
