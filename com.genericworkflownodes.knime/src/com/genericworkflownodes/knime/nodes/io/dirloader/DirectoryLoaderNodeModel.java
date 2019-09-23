@@ -102,11 +102,11 @@ public class DirectoryLoaderNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
         throws InvalidSettingsException {
 
-        SettingsModelString tmp_filename = m_directory_name
+        SettingsModelString tmp_directoryname = m_directory_name
                 .createCloneWithValidatedValue(settings);
 
-        if (tmp_filename == null
-                || tmp_filename.equals("")) {
+        if (tmp_directoryname == null
+                || tmp_directoryname.equals("")) {
             throw new InvalidSettingsException("No Files selected.");
         }
 
@@ -139,9 +139,9 @@ public class DirectoryLoaderNodeModel extends NodeModel {
          * Upon inserting the node into a workflow, it gets configured, so at
          * least something fundamental like the file name should be checked
          */
-        String filename = m_directory_name.getStringValue();
-        if (filename == null || filename.equals("")) {
-            throw new InvalidSettingsException("No Files selected.");
+        String directoryname = m_directory_name.getStringValue();
+        if (directoryname == null || directoryname.equals("")) {
+            throw new InvalidSettingsException("No Directory selected.");
         }
 
         URIPortObjectSpec uri_spec = null;
@@ -154,24 +154,24 @@ public class DirectoryLoaderNodeModel extends NodeModel {
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
     	      
-        String filename = m_directory_name.getStringValue();
+        String directoryname = m_directory_name.getStringValue();
         List<URIContent> uris = new ArrayList<URIContent>();
-        File in = new File(convertToURL(filename).toURI());
+        File in = new File(convertToURL(directoryname).toURI());
             
         if (!in.canRead()) {
             throw new Exception("Cannot read from input file: "
                   + in.getAbsolutePath());
         }
 
-        String prefix = filename;
-        if (filename.contains(".")) {
+        String prefix = directoryname;
+        if (directoryname.contains(".")) {
             prefix = prefix.split("\\.",2)[0];
         }  
   
-        List<File> files_list_ext = listf(filename);
+        List<File> files_list_ext = listf(directoryname);
             
         if (files_list_ext.isEmpty()) {
-            throw new Exception("Could not find files");
+            throw new Exception("Could not find any files in the selected directory");
         }
         for (File file : files_list_ext) {
             uris.add(new URIContent(file.toURI(), FilenameUtils.getExtension(file.toString())));
