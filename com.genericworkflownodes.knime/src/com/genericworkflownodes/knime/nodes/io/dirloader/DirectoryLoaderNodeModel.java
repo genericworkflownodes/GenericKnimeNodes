@@ -107,7 +107,7 @@ public class DirectoryLoaderNodeModel extends NodeModel {
 
         if (tmp_directoryname == null
                 || tmp_directoryname.equals("")) {
-            throw new InvalidSettingsException("No Files selected.");
+            throw new InvalidSettingsException("No Directory selected.");
         }
 
 
