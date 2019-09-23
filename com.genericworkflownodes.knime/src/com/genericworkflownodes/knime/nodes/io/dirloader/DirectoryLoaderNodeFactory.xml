@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="loader.png" type="Source" xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+    <name>Directory Loader</name>
+    
+    <shortDescription>
+      Load a directory. 
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>An input directory is loaded into a port object.</intro>  
+        <option name="Selected folder">Specifies the full name of a directory.</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Loaded directory [*]">Directory prefix port</outPort>                
+        <!-- possibly more output ports here-->
+    </ports>    
+</knimeNode>
