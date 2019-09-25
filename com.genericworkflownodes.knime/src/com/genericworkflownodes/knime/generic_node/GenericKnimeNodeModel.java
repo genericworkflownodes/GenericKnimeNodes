@@ -629,7 +629,7 @@ public abstract class GenericKnimeNodeModel extends ExtToolOutputNodeModel {
                 // if we have no basename to use (e.g., Node without input-file)
                 // we use the nodename
                 String basename;
-                if (basenames.isEmpty()) {
+                if (basenames.isEmpty() || basenames.get(0) == null) {
                     basename = m_nodeConfig.getName();
                 } else {
                     basename = basenames.get(0);
