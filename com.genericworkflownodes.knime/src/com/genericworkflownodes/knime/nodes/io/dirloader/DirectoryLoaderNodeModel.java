@@ -41,8 +41,9 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.util.FileUtil;
 
-import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
+//import com.genericworkflownodes.knime.base.data.port.IPrefixURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.PrefixURIPortObject;
 
 /**
@@ -155,21 +156,17 @@ public class DirectoryLoaderNodeModel extends NodeModel {
             throws Exception {
     	      
         String directoryname = m_directory_name.getStringValue();
-        List<URIContent> uris = new ArrayList<URIContent>();
-        File in = new File(convertToURL(directoryname).toURI());
-            
-        if (!in.canRead()) {
+        URL url_directory = convertToURL(directoryname);
+        File directory = FileUtil.getFileFromURL(url_directory);
+        String prefix = directory.getAbsolutePath();
+        List<File> files_list_ext = listf(directory);
+        
+        if (!directory.canRead()) {
             throw new Exception("Cannot read from input file: "
-                  + in.getAbsolutePath());
+                  + directory.getAbsolutePath());
         }
 
-        String prefix = directoryname;
-        if (directoryname.contains(".")) {
-            prefix = prefix.split("\\.",2)[0];
-        }  
-  
-        List<File> files_list_ext = listf(directoryname);
-            
+        List<URIContent> uris = new ArrayList<URIContent>();    
         if (files_list_ext.isEmpty()) {
             throw new Exception("Could not find any files in the selected directory");
         }
@@ -177,25 +174,41 @@ public class DirectoryLoaderNodeModel extends NodeModel {
             uris.add(new URIContent(file.toURI(), FilenameUtils.getExtension(file.toString())));
         }
         
-     	IPrefixURIPortObject uri_prefix_object = null;
+     	PrefixURIPortObject uri_prefix_object = null;
      	uri_prefix_object = new PrefixURIPortObject(uris, prefix);
      	
      	return new PortObject[] { (URIPortObject) uri_prefix_object };     	     	
     }
 
-    public static List<File> listf(String directoryName) {
-        File directory = new File(directoryName);
+    
+    /**
+     * List files in a given directory
+     * 
+     * @param dirctory
+     *            Directory file handle.
+     * @return list
+     *            List of Files.
+     * @throws Exception
+     *             If there are no files found in the given directory.
+     */
+    public static List<File> listf(File directory) 
+        throws Exception {
 
         List<File> resultList = new ArrayList<File>();
 
         // get all the files from a directory
-        File[] fList = directory.listFiles();
+        File[] fList;
+        if (directory.list() == null) {
+            throw new Exception("Could not find any files in the selected directory ".concat(directory.getAbsolutePath()));
+        }
+        else { 
+            fList = directory.listFiles();
+        }
+        
         resultList.addAll(Arrays.asList(fList));
         for (File file : fList) {
-            if (file.isFile()) {
-                System.out.println(file.getAbsolutePath());
-            } else if (file.isDirectory()) {
-                resultList.addAll(listf(file.getAbsolutePath()));
+            if (file.isDirectory()) {
+                resultList.addAll(listf(file));
             }
         }
 
