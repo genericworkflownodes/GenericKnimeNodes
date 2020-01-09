@@ -693,14 +693,6 @@
     &lt;https://www.gnu.org/licenses/why-not-lgpl.html&gt;.
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.knime.workbench.core"/>
-      <import plugin="org.knime.workbench.repository"/>
-      <import plugin="org.knime.base"/>
-      <import plugin="org.knime.core.data.uritype" version="2.7.0" match="greaterOrEqual"/>
-   </requires>
-
    <plugin
          id="com.genericworkflownodes.knime"
          download-size="0"
