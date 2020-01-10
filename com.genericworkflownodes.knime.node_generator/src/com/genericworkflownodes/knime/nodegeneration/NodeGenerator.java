@@ -99,6 +99,7 @@ public class NodeGenerator {
     }
 
     private final String nodeGeneratorLastChangeDate;
+    private final bool nodeGeneratorCreateTestingFeature;
 
     private final NodesSourceDirectory srcDir;
     private final GeneratedPluginMeta generatedPluginMeta;
@@ -125,13 +126,14 @@ public class NodeGenerator {
      *            Last change date of the node generator / GKN.
      * @throws NodeGeneratorException
      */
-    public NodeGenerator(File sourceDir, File buildDir, String lastChangeDate)
+    public NodeGenerator(File sourceDir, File buildDir, String lastChangeDate, bool createTestingFeature)
             throws NodeGeneratorException {
         try {
             if (buildDir == null)
                 throw new NodeGeneratorException("buildDir must not be null");
 
             nodeGeneratorLastChangeDate = lastChangeDate;
+            nodeGeneratorCreateTestingFeature = createTestingFeature;
 
             baseBinaryDirectory = new Directory(buildDir);
             baseBinaryDirectory.mkdir();
@@ -248,8 +250,11 @@ public class NodeGenerator {
             // create feature
             generateFeature();
 
-            // create testing feature
-            generateTestingFeature();
+            if (nodeGeneratorCreateTestingFeature)
+            {
+                // create testing feature
+                generateTestingFeature();
+            }
 
             LOGGER.info("KNIME plugin sources successfully created in:\n\t"
                     + pluginBuildDir);
