@@ -181,10 +181,6 @@ permanent authorization for you to choose that version for the
 Library.
    </license>
 
-   <requires>
-      <import feature="org.knime.features.testingapplication" version="2.9.0" match="greaterOrEqual"/>
-   </requires>
-
    <plugin
          id="com.genericworkflownodes.knime.tests"
          download-size="0"

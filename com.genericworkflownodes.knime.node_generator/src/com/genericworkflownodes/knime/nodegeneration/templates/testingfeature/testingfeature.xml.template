@@ -16,8 +16,4 @@
     @@license@@
     </license>
 
-    <requires>
-        <import feature="org.knime.features.testingapplication" version="2.9.0" match="greaterOrEqual"/>
-    </requires>
-
 </feature>

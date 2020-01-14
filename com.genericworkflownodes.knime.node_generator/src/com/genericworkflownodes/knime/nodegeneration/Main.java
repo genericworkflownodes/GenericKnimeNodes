@@ -20,6 +20,7 @@ public class Main {
      *            <li>#1: directory in which the plugin's sources reside;</li>
      *            <li>#2: directory to where to put the plugins (base + payload
      *            fragments)</li>
+     *            <li>#3: (optional) last change date, otherwise an unspecified "qualifier" is used</li>
      *            <p>
      *            Note: The built plugin will neither be compiled nor be
      *            packaged to a jar file.
@@ -71,9 +72,17 @@ public class Main {
             lastChangeDate = args[2];
         }
 
+        // check for a fourth argument if you want to generate a testing feature
+        // Caution: this is in beta stage. It does not collect anything yet.
+        // see
+        bool createTestingFeature = false;
+        if (args.length > 3) {
+            createTestingFeature = args[3] == "withTests";
+        }
+
         try {
             NodeGenerator nodeGenerator = new NodeGenerator(srcDir, buildDir,
-                    lastChangeDate);
+                    lastChangeDate, createTestingFeature);
             nodeGenerator.generate();
         } catch (NodeGeneratorException e) {
             e.printStackTrace();
