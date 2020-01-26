@@ -75,7 +75,7 @@ public class Main {
         // check for a fourth argument if you want to generate a testing feature
         // Caution: this is in beta stage. It does not collect anything yet.
         // see
-        bool createTestingFeature = false;
+        boolean createTestingFeature = false;
         if (args.length > 3) {
             createTestingFeature = args[3] == "withTests";
         }
