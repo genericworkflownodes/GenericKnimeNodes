@@ -99,7 +99,7 @@ public class NodeGenerator {
     }
 
     private final String nodeGeneratorLastChangeDate;
-    private final bool nodeGeneratorCreateTestingFeature;
+    private final boolean nodeGeneratorCreateTestingFeature;
 
     private final NodesSourceDirectory srcDir;
     private final GeneratedPluginMeta generatedPluginMeta;
@@ -126,7 +126,7 @@ public class NodeGenerator {
      *            Last change date of the node generator / GKN.
      * @throws NodeGeneratorException
      */
-    public NodeGenerator(File sourceDir, File buildDir, String lastChangeDate, bool createTestingFeature)
+    public NodeGenerator(File sourceDir, File buildDir, String lastChangeDate, boolean createTestingFeature)
             throws NodeGeneratorException {
         try {
             if (buildDir == null)
