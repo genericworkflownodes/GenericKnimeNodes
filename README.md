@@ -80,6 +80,13 @@ You have two options to make the target system (KNIME) execute your code:
 2) You extend the extension point "org.eclipse.ui.startup" if you need to do additional things during startup of your plugin (like checking
 existance of another tool or library).
 
+Since KNIME 4.2 the testing feature is disabeled by default. If you want to enable the testing feature you can provide
+an additional command to the ant call by:
+```
+ant -Dplugin.dir=[your_path] -Dgenerate.test.feature="enabled"
+```
+This will then generate the necessary testing features for your plugin.
+
 ### What is generated?
 An  installable feature that bundles the GKN base plugin as well as the plugin generated from your CTDs
 plus any potential contributing plugins that you specified. This feature can then be added to an update site which can be shipped or hosted

@@ -77,7 +77,7 @@ public class Main {
         // see
         boolean createTestingFeature = false;
         if (args.length > 3) {
-            createTestingFeature = args[3] == "withTests";
+            createTestingFeature = args[3].equals("enabled");
         }
 
         try {
