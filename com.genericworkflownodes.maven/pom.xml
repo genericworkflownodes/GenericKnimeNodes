@@ -22,6 +22,7 @@
 	</repositories>
 	<build>
 		<plugins>
+			<!--
 			<plugin>
 			    <groupId>org.eclipse.tycho</groupId>
 			    <artifactId>target-platform-configuration</artifactId>
@@ -35,7 +36,7 @@
 			            </artifact>
 			        </target>
 			    </configuration>
-			</plugin>
+			</plugin> -->
 			<plugin>
 		   		<groupId>org.eclipse.tycho</groupId>
 		   		<artifactId>tycho-compiler-plugin</artifactId>
