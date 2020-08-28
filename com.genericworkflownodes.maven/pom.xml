@@ -132,32 +132,34 @@
   <packaging>pom</packaging>
   <modules>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime
+  		../com.genericworkflownodes.knime
   	</module>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.config
+  		../com.genericworkflownodes.knime.config
   	</module>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.config.testing
+  		../com.genericworkflownodes.knime.config.testing
   	</module>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.feature
+  		../com.genericworkflownodes.knime.feature
   	</module>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.gpl3nodes
+  		../com.genericworkflownodes.knime.gpl3nodes
   	</module>
   	<!--<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.node_generator
+  		../com.genericworkflownodes.knime.node_generator
   	</module>  -->
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.testing.feature
+  		../com.genericworkflownodes.knime.testing.feature
   	</module>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.tests
+  		../com.genericworkflownodes.knime.tests
   	</module>
   	<module>
-  		../../../git/GKN_dev/com.genericworkflownodes.knime.update
+  		../com.genericworkflownodes.knime.update
   	</module>
-  	<module>../../knime-sdk-setup/org.knime.sdk.setup</module>
+  	<module>
+  		../org.knime.sdk.setup
+  	</module>
   </modules>
 </project>
