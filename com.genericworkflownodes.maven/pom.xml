@@ -6,9 +6,9 @@
 	<properties>
 		<knime.version>4.1</knime.version>
 		<!--<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>-->
-		<tycho.version>1.2.0</tycho.version>
-		<tycho.extras.version>1.2.0</tycho.extras.version>
-		<tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>
+		<tycho.version>1.4.0</tycho.version>
+		<tycho.extras.version>1.4.0</tycho.extras.version>
+		<tycho.test.jvmArgs>-Xmx1024m</tycho.test.jvmArgs>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho.scmUrl>scm:git:https://github.com/genericworkflownodes/GenericKnimeNodes.git</tycho.scmUrl>
