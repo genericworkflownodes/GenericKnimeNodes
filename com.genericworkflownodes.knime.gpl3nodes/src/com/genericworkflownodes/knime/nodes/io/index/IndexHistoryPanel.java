@@ -967,7 +967,7 @@ public final class IndexHistoryPanel extends JPanel {
      * If set to <code>true</code>, the path may contain system properties such as "${user.home}/file.txt". The file
      * existence checks as per {@link #setMarkIfNonexisting(boolean)} will then resolve the full path. The
      * {@link #getSelectedFile()} method will return the path as entered by the user (incl. placeholders) so the caller
-     * needs to resolve them also (see for instance {@link org.apache.commons.lang3.text.StrSubstitutor}).
+     * needs to resolve them also (see for instance org.apache.commons.lang3.text.StrSubstitutor).
      *
      * <p>This method should be called right after construction.
      *
