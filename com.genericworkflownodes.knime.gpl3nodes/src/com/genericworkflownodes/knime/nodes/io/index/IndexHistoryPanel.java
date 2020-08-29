@@ -71,7 +71,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.text.StringSubstitutor;
+//import org.apache.commons.text.StringSubstitutor;
 import org.knime.core.node.FlowVariableModel;
 import org.knime.core.node.FlowVariableModelButton;
 import org.knime.core.node.KNIMEConstants;
@@ -681,7 +681,10 @@ public final class IndexHistoryPanel extends JPanel {
     private String getSelectedFileWithPropertiesReplaced() {
         String selectedFile = getSelectedFile();
         if (m_allowSystemPropertySubstitution) {
-            selectedFile = StringSubstitutor.replaceSystemProperties(selectedFile);
+            //TODO we cannot depend on org.apache.commons.lang3 (this method is not in the API anymore there)
+            // and we cannot depend on org.apache.commons.text (since we would need to include it ourselves)
+            // Currently system property substitution in paths in this IndexLoader node is deactivated anyway.
+            //selectedFile = StringSubstitutor.replaceSystemProperties(selectedFile);
         }
         return selectedFile;
     }
