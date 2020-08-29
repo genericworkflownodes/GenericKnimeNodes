@@ -71,7 +71,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.knime.core.node.FlowVariableModel;
 import org.knime.core.node.FlowVariableModelButton;
 import org.knime.core.node.KNIMEConstants;
@@ -681,7 +681,7 @@ public final class IndexHistoryPanel extends JPanel {
     private String getSelectedFileWithPropertiesReplaced() {
         String selectedFile = getSelectedFile();
         if (m_allowSystemPropertySubstitution) {
-            selectedFile = StrSubstitutor.replaceSystemProperties(selectedFile);
+            selectedFile = StringSubstitutor.replaceSystemProperties(selectedFile);
         }
         return selectedFile;
     }
