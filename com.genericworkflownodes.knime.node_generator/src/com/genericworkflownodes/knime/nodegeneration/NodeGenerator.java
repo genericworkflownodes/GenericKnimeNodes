@@ -40,6 +40,7 @@ import com.genericworkflownodes.knime.nodegeneration.exceptions.UnknownMimeTypeE
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.FragmentDirectory;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.MavenParentDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesBuildDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
@@ -53,19 +54,25 @@ import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTe
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.PomXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureBuildPropertiesTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeaturePomXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.feature.FeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentBuildPropertiesTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentP2InfTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentPomXmlTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.fragment.FragmentProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeDialogTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeFactoryXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.knime_node.NodeModelTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.mavenparent.MavenParentPomXMLTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.mavenparent.MavenParentProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureBuildPropertiesTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeaturePomXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureProjectTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.testingfeature.TestingFeatureXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.util.UnZipFailureException;
@@ -178,6 +185,10 @@ public class NodeGenerator {
             new ManifestMFTemplate(generatedPluginMeta).write(pluginBuildDir
                     .getManifestMf());
 
+            // pom.xml
+            new PomXMLTemplate(generatedPluginMeta).write(pluginBuildDir
+                    .getPomXml());
+
             // src/[PACKAGE]/knime/plugin.properties
             final Properties toolProperites = srcDir.getToolProperites();
             new PropertiesWriter(new File(pluginBuildDir.getKnimeDirectory(),
@@ -249,6 +260,9 @@ public class NodeGenerator {
 
             // create feature
             generateFeature();
+            
+            // create Maven parent plugin
+            generateMavenParent();
 
             if (nodeGeneratorCreateTestingFeature)
             {
@@ -264,7 +278,31 @@ public class NodeGenerator {
         }
     }
 
-    private void copyContributingPlugins() {
+    /**
+     * Creates a maven parent directory with pom.xml to build everything
+     * 
+     * @throws NodeGeneratorException
+     * @throws PathnameIsNoDirectoryException
+     * @throws IOException
+     */
+    private void generateMavenParent()
+            throws NodeGeneratorException, PathnameIsNoDirectoryException,
+            IOException 
+    {
+
+            MavenParentDirectory mavenDir = new MavenParentDirectory(
+                    baseBinaryDirectory, generatedPluginMeta);
+
+            // create project file
+            new MavenParentProjectTemplate(generatedPluginMeta.getId()).write(mavenDir
+                    .getProjectFile());
+
+            // pom.xml
+            new MavenParentPomXMLTemplate(generatedPluginMeta,fragmentMetas, contributingPluginMetas, nodeGeneratorCreateTestingFeature).write(mavenDir
+                    .getPomXml());
+    }
+
+	private void copyContributingPlugins() {
         for (ContributingPluginMeta contributingPluginMeta : contributingPluginMetas) {
             try {
                 // TODO: Handle compiled classes in bin/ or build/ (maybe check
@@ -316,6 +354,10 @@ public class NodeGenerator {
             new FragmentManifestMFTemplate(fragmentMeta).write(fragmentDir
                     .getManifestMf());
 
+            // pom.xml
+            new FragmentPomXmlTemplate(fragmentMeta).write(fragmentDir
+                    .getPomXml());
+
             new FragmentProjectTemplate(fragmentMeta.getId()).write(new File(
                     fragmentDir, ".project"));
 
@@ -347,6 +389,10 @@ public class NodeGenerator {
                 fragmentMetas, contributingPluginMetas).write(new File(
                 featureDir, "feature.xml"));
 
+        // pom.xml
+        new TestingFeaturePomXMLTemplate(generatedPluginMeta).write(new File(
+                featureDir, "pom.xml"));
+
         new TestingFeatureProjectTemplate(generatedPluginMeta.getPackageRoot())
                 .write(new File(featureDir, ".project"));
     }
@@ -365,6 +411,10 @@ public class NodeGenerator {
         new FeatureXMLTemplate(generatedPluginMeta, featureMeta, fragmentMetas,
                 contributingPluginMetas).write(new File(featureDir,
                 "feature.xml"));
+
+        // pom.xml
+        new FeaturePomXMLTemplate(generatedPluginMeta).write(new File(
+                featureDir, "pom.xml"));
 
         new FeatureProjectTemplate(generatedPluginMeta.getPackageRoot())
                 .write(new File(featureDir, ".project"));

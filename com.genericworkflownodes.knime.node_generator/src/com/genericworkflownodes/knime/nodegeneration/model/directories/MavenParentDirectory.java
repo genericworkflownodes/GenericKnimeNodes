@@ -20,60 +20,27 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories;
 
 import java.io.File;
 
+import com.genericworkflownodes.knime.nodegeneration.model.meta.PluginMeta;
+
 /**
- * @author aiche, bkahlert
+ * @author jpfeuffer
  * 
  */
-public class PluginDirectory extends Directory {
+public class MavenParentDirectory extends Directory {
 
     /**
      * 
      */
     private static final long serialVersionUID = -8934613520286247501L;
 
-    private File buildProperties;
-    private File pluginXml;
-    private File manifestMf;
     private File projectFile;
     private File pomXml;
 
-    public PluginDirectory(File directory)
+    public MavenParentDirectory(File directory, PluginMeta pluginMeta)
             throws PathnameIsNoDirectoryException {
-        super(directory);
-
-        buildProperties = new File(this, "build.properties");
-        pluginXml = new File(this, "plugin.xml");
-        File metaInf = new File(this, "META-INF");
-        manifestMf = new File(metaInf, "MANIFEST.MF");
+        super(new File(directory, pluginMeta.getId() + ".maven"));
         projectFile = new File(this, ".project");
         pomXml = new File(this, "pom.xml");
-    }
-
-    /**
-     * Returns the build.properties file.
-     * 
-     * @return
-     */
-    public File getBuildProperties() {
-        return buildProperties;
-    }
-
-    /**
-     * Returns plugin.xml file.
-     * 
-     * @return
-     */
-    public File getPluginXml() {
-        return pluginXml;
-    }
-
-    /**
-     * Returns the META-INF/MANIFEST.MF file.
-     * 
-     * @return
-     */
-    public File getManifestMf() {
-        return manifestMf;
     }
 
     /**
@@ -94,11 +61,4 @@ public class PluginDirectory extends Directory {
         return pomXml;
     }
 
-    /**
-     * 
-     * @return
-     */
-    public boolean isValidBundle() {
-        return manifestMf.exists();
-    }
 }

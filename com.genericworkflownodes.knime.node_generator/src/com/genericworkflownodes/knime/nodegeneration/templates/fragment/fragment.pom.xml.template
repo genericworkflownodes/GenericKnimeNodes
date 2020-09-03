@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>@@fragmentId@@</groupId>
+  <artifactId>@@fragmentId@@</artifactId>
+  <version>@@fragmentVersion@@-SNAPSHOT</version>
+  
+  <parent>
+  	<groupId>@@packageName@@.maven</groupId>
+  	<artifactId>@@packageName@@.maven</artifactId>
+  	<version>0.0.1-SNAPSHOT</version>
+  	<relativePath>../@@packageName@@.maven</relativePath>
+  </parent>
+  <packaging>eclipse-plugin</packaging>
+  
+  <build>
+    <plugins>
+      <!-- From https://github.com/knime/knime-r/blob/e7e2d672cb654937eb5bd9aff16b1879fdaa0996/org.knime.ext.r3.bin.win32.x86/pom.xml : tycho is not able to automatically determine os/ws/arch of this bundle -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <resolver>p2</resolver>
+          <environments>
+            <environment>
+              <os>@@os@@</os>
+              <arch>@@arch@@</arch>
+            </environment>
+          </environments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
