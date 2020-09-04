@@ -20,8 +20,6 @@
 			<layout>p2</layout>
 			<url>${knime.update.site}</url>
 		</repository>
-	</repositories>
-	<repositories>
 		<repository>
 			<id>gkn</id>
 			<layout>p2</layout>
