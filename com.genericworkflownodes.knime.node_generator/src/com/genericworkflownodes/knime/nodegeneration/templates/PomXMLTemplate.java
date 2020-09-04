@@ -13,7 +13,19 @@ public class PomXMLTemplate extends Template {
                 .getResourceAsStream("templates/pom.xml.template"));
 
         String[] versionParts = pluginMeta.getGeneratedPluginVersion().split("\\.");
-        replace("@@packageVersion@@", versionParts[0]+"."+versionParts[1]+"."+versionParts[2]);
+        String qualifier = "";
+        if (versionParts.length > 3)
+        {
+        	if (versionParts[3] == "qualifier")
+        	{
+        		qualifier = "-SNAPSHOT";
+        	}
+        	else
+        	{
+        		qualifier = ".versionParts[3]";
+        	}
+        }
+        replace("@@packageVersion@@", versionParts[0]+"."+versionParts[1]+"."+versionParts[2]+qualifier);
         replace("@@packageName@@", pluginMeta.getPackageRoot());
     }
 

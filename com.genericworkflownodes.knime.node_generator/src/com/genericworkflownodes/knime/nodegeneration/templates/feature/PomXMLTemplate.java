@@ -7,9 +7,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.ContributingPluginMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FeatureMeta;
@@ -20,7 +17,7 @@ import com.genericworkflownodes.knime.nodegeneration.templates.Template;
 /**
  * Template file for the feature.xml file of the feature.
  * 
- * @author aiche
+ * @author jpfeuffer
  */
 public class PomXMLTemplate extends Template {
 
@@ -76,6 +73,11 @@ public class PomXMLTemplate extends Template {
         String quali = findLatestQualifier(m.group(4), fragmentMetas,
                 contributingPluginMetas);
         
+        if (quali == ".qualifier")
+        {
+        	quali = "-SNAPSHOT";
+        }
+        
         // assemble a complete version
         String newVersion = m.group(1)
                 + (m.group(2) != null ? m.group(2) : ".0")
@@ -84,17 +86,6 @@ public class PomXMLTemplate extends Template {
 
         replace("@@pluginVersion@@", newVersion);
         replace("@@packageName@@", pluginMeta.getPackageRoot());
-
-        replace("@@description@@",
-                StringEscapeUtils.escapeXml(featureMeta.getDescription()));
-        replace("@@copyright@@",
-                StringEscapeUtils.escapeXml(featureMeta.getCopyright()));
-        replace("@@license@@",
-                StringEscapeUtils.escapeXml(featureMeta.getLicense()));
-
-        registerGeneratedPlugin(pluginMeta);
-        registerFragments(fragmentMetas);
-        registerContributingPlugins(contributingPluginMetas);
     }
 
     private Matcher matchVersion(final String version) {
@@ -109,44 +100,5 @@ public class PomXMLTemplate extends Template {
         }
 
         return m;
-    }
-
-    private void registerGeneratedPlugin(GeneratedPluginMeta pluginMeta) {
-        String pluginList = String.format("\t<plugin\n" + "\t\tid=\"%s\"\n"
-                + "\t\tdownload-size=\"0\"\n" + "\t\tinstall-size=\"0\"\n"
-                + "\t\tversion=\"0.0.0\"\n" + "\t\tunpack=\"false\"/>\n\n",
-                pluginMeta.getId());
-
-        replace("@@PLUGIN@@", pluginList);
-    }
-
-    private void registerFragments(List<FragmentMeta> fragmentMetas) {
-        String fragmentList = "";
-        for (FragmentMeta fragmentMeta : fragmentMetas) {
-            fragmentList += String.format(
-                    "\t<plugin id=\"%s\"\n" + "\t\tos=\"%s\"\n"
-                            + "\t\tarch=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
-                            + "\t\tinstall-size=\"0\"\n"
-                            + "\t\tversion=\"0.0.0\"\n"
-                            + "\t\tfragment=\"true\"/>\n\n",
-                    fragmentMeta.getId(), fragmentMeta.getOs().toOsgiOs(),
-                    fragmentMeta.getArch().toOsgiArch());
-        }
-
-        replace("@@FRAGMENTS@@", fragmentList);
-    }
-
-    private void registerContributingPlugins(
-            List<ContributingPluginMeta> contributingPluginMetas) {
-        String contributingPluginList = "";
-        for (ContributingPluginMeta contributingPluginMeta : contributingPluginMetas) {
-            contributingPluginList += String.format("\t<plugin\n"
-                    + "\t\tid=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
-                    + "\t\tinstall-size=\"0\"\n" + "\t\tversion=\"0.0.0\"\n"
-                    + "\t\tunpack=\"false\"/>\n\n",
-                    contributingPluginMeta.getId());
-        }
-
-        replace("@@CONTRIBUTING_PLUGINS@@", contributingPluginList);
     }
 }

@@ -2,12 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>@@packageName@@</groupId>
   <artifactId>@@packageName@@</artifactId>
-  <version>@@packageVersion@@-SNAPSHOT</version>
-  <packaging>eclipse-plugin</packaging>
+  <version>@@packageVersion@@</version>
+  
   <parent>
   	<groupId>@@packageName@@.maven</groupId>
   	<artifactId>@@packageName@@.maven</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
   	<relativePath>../@@packageName@@.maven</relativePath>
   </parent>
+  <packaging>eclipse-plugin</packaging>
 </project>

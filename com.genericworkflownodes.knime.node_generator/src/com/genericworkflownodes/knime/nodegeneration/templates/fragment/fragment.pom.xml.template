@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>@@fragmentId@@</groupId>
   <artifactId>@@fragmentId@@</artifactId>
-  <version>@@fragmentVersion@@-SNAPSHOT</version>
+  <version>@@fragmentVersion@@</version>
   
   <parent>
   	<groupId>@@packageName@@.maven</groupId>
