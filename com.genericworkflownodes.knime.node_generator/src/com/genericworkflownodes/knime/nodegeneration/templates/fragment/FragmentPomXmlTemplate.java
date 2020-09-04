@@ -24,7 +24,7 @@ public class FragmentPomXmlTemplate extends Template {
         	}
         	else
         	{
-        		qualifier = ".versionParts[3]";
+        		qualifier = "." + versionParts[3];
         	}
         }
         this.replace("@@fragmentVersion@@", versionParts[0]+"."+versionParts[1]+"."+versionParts[2]+qualifier);

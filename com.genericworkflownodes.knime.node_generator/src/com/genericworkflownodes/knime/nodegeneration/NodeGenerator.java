@@ -413,7 +413,8 @@ public class NodeGenerator {
                 "feature.xml"));
 
         // pom.xml
-        new FeaturePomXMLTemplate(generatedPluginMeta).write(new File(
+        new FeaturePomXMLTemplate(generatedPluginMeta, featureMeta, fragmentMetas,
+                contributingPluginMetas).write(new File(
                 featureDir, "pom.xml"));
 
         new FeatureProjectTemplate(generatedPluginMeta.getPackageRoot())
