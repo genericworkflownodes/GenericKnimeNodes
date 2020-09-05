@@ -77,10 +77,13 @@ public class PayloadDirectory {
                 containedFragments.add(new FragmentMeta(generatedPluginMeta,
                         arch, os, payload));
             } else {
-                // generate dummy fragment .. will allow users to link their
+                // TODO this is removed for now, since maven is stricter with
+            	// non-existing plugins of a feature. Could be added back with
+            	// a flag.
+            	// generate dummy fragment .. will allow users to link their
                 // own stuff into the fragment
-                containedFragments.add(new FragmentMeta(generatedPluginMeta,
-                        arch, os, null));
+                //containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                //        arch, os, null));
             }
         }
 
