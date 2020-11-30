@@ -156,7 +156,7 @@ public class PortToFileStoreNodeModel extends NodeModel {
     }
     
     private DataTableSpec createSpec() {
-        DataColumnSpec spec = new DataColumnSpecCreator("files", SerializableFileStoreCell.TYPE).createSpec();
+        DataColumnSpec spec = new DataColumnSpecCreator("files", SimpleFileStoreCell.TYPE).createSpec();
         return new DataTableSpecCreator()
                 .addColumns(spec)
                 .createSpec();
