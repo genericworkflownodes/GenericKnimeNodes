@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.knime.core.data.DataCellDataInput;
 import org.knime.core.data.DataCellDataOutput;
+import org.knime.core.data.DataType;
 import org.knime.core.data.filestore.FileStore;
 
 /**
@@ -15,6 +16,11 @@ import org.knime.core.data.filestore.FileStore;
  */
 public class SimpleFileStoreCell extends SerializableFileStoreCell {
 
+    /**
+     * The cell type.
+     */
+    public static final DataType TYPE = DataType.getType(SimpleFileStoreCell.class);
+    
     private static final long serialVersionUID = 1L;
     private List<String> m_relativePaths;
     
