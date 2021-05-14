@@ -93,7 +93,7 @@ public class StringChoiceParameterTest {
     @Test
     public void testStringChoiceParameterStringStringArray() {
         StringChoiceParameter scp = new StringChoiceParameter(key,
-                (String[]) choices.toArray());
+                (String[]) choices.toArray(new String[choices.size()]));
         assertEquals("", scp.getValue());
         assertEquals(4, scp.getAllowedValues().size());
         assertEquals("", scp.getAllowedValues().get(0));
@@ -117,7 +117,7 @@ public class StringChoiceParameterTest {
     @Test
     public void testStringChoiceParameterStringStringArrayStringArray() {
         StringChoiceParameter scp = new StringChoiceParameter(key,
-                (String[]) choices.toArray(), (String[]) labels.toArray());
+                (String[]) choices.toArray(new String[choices.size()]), (String[]) labels.toArray(new String[choices.size()]));
         assertEquals(null, scp.getValue());
         assertEquals(4, scp.getAllowedValues().size());
         assertEquals("", scp.getAllowedValues().get(0));
