@@ -21,9 +21,6 @@ package com.genericworkflownodes.knime.nodes.io.index;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.activation.FileTypeMap;
-import javax.activation.MimetypesFileTypeMap;
-
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -43,21 +40,8 @@ public final class IndexMap {
 
     private static final String EXTENSIONPOINT_ID = "com.genericworkflownodes.knime.mime.filesuffix.Checker";
 
-    static {
-        // Add -Types defined by other plugins
-        addFromExtensions();
-    }
-
     private IndexMap() {
         // Disable default constructor
-    }
-
-    /**
-     * @param fileextension The file extension to search for
-     * @return MIME-Type for the given file extension
-     */
-    public static String getIndexType(final String fileextension) {
-        return FileTypeMap.getDefaultFileTypeMap().getContentType("." + fileextension.toLowerCase());
     }
    
     /**
@@ -104,17 +88,6 @@ public final class IndexMap {
         IndexTypeEntry[] result = Arrays.copyOf(fromExtension, fromExtension.length);
 
         return result;
-    }
-
-    /**
-     * Adds Index-Types added through the extension point into the Index map.
-     */
-    private static void addFromExtensions() {
-        IndexTypeEntry[] types = getTypesFromExtensions();
-        for (int i = 0; i < types.length; i++) {
-            // org.knime.core sets the default map to a MimetypesFileTypeMap
-            ((MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap()).addMimeTypes(types[i].toString());
-        }
     }
 
 }
