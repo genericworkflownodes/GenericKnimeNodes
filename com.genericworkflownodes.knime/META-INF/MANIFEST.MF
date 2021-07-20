@@ -35,3 +35,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.genericworkflownodes.knime.GenericNodesPlugin
 Eclipse-RegisterBuddy: org.knime.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: com.genericworkflownodes.knime
