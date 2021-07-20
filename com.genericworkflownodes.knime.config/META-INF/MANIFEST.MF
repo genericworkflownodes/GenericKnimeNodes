@@ -21,3 +21,4 @@ Export-Package: com.genericworkflownodes.knime.cliwrapper,
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
 Require-Bundle: org.apache.commons.lang;bundle-version="[2.4.0,3.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Automatic-Module-Name: com.genericworkflownodes.knime.config

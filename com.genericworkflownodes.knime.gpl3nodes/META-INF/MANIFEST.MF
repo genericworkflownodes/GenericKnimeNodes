@@ -18,3 +18,4 @@ Export-Package: com.genericworkflownodes.knime.nodes.io.dirimporter,
  com.genericworkflownodes.knime.nodes.io.index,
  com.genericworkflownodes.knime.nodes.util.dontsave.file,
  com.genericworkflownodes.knime.nodes.util.dontsave.table
+Automatic-Module-Name: com.genericworkflownodes.knime.gpl3nodes
