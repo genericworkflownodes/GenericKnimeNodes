@@ -5,6 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<knime.version>4.1</knime.version>
+		<java.majorversion>11</java.majorversion>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
 		<tycho.version>1.4.0</tycho.version>
 		<tycho.extras.version>1.4.0</tycho.extras.version>
