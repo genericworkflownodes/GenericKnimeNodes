@@ -113,4 +113,27 @@ public enum OperatingSystem {
         }
         return osgiOSString;
     }
+    
+    /**
+     * Return the OS in OSGI like string (e.g., windows = win32).
+     * 
+     * @return The OS as OSGI like string.
+     */
+    public String getOsgiWs() {
+        String osgiOSString = "unknown";
+        switch (this) {
+        case WIN:
+            osgiOSString = "win32";
+            break;
+        case UNIX:
+            osgiOSString = "gtk";
+            break;
+        case MAC:
+            osgiOSString = "cocoa";
+            break;
+        default:
+            break;
+        }
+        return osgiOSString;
+    }
 }

@@ -31,6 +31,7 @@ public class FragmentPomXmlTemplate extends Template {
         this.replace("@@fragmentId@@", fragmentMeta.getId());
         this.replace("@@packageName@@", fragmentMeta.getHostMeta().getId());
         this.replace("@@os@@", fragmentMeta.getOs().toOsgiOs());
+        this.replace("@@ws@@", fragmentMeta.getOs().getOsgiWs());
         this.replace("@@arch@@", fragmentMeta.getArch().toOsgiArch());
     }
 }
