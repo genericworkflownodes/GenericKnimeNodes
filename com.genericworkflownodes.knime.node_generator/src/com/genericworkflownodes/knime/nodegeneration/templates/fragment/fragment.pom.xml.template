@@ -24,6 +24,7 @@
           <environments>
             <environment>
               <os>@@os@@</os>
+              <ws>@@ws@@</ws>
               <arch>@@arch@@</arch>
             </environment>
           </environments>
