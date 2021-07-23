@@ -7,3 +7,4 @@ Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the @@host
 Fragment-Host: @@hostId@@;bundle-version="@@hostVersion@@"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-PlatformFilter: (& (osgi.arch=@@arch@@) (osgi.os=@@os@@))
+Eclipse-BundleShape: dir
