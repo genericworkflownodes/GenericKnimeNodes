@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.knime.core.node.NodeLogger;
 
 import com.genericworkflownodes.knime.cliwrapper.CLIElement;
@@ -97,7 +96,7 @@ public class CLICommandGenerator implements ICommandGenerator {
                 .getCLIElement()) {
             logger.info("CLIElement: " + cliElement.getOptionIdentifier());
 
-            if (!StringUtils.isBlank(cliElement.getOptionIdentifier())
+            if ((cliElement.getOptionIdentifier().trim().length() > 0)
                     && cliElement.getMapping().size() == 0) {
                 // simple fixed argument for the command line, no mapping to
                 // params given
@@ -170,7 +169,7 @@ public class CLICommandGenerator implements ICommandGenerator {
     private void prefixParameter(final CLIElement cliElement,
             final List<CommandLineElement> commands) {
         // add the command prefix to the command line parameter
-        if (!StringUtils.isBlank(cliElement.getOptionIdentifier())) {
+        if (cliElement.getOptionIdentifier().trim().length() > 0) {
             commands.add(new CommandLineFixedString(
                     cliElement.getOptionIdentifier()));
         }

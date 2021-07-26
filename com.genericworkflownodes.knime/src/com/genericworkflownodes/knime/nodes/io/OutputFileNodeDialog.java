@@ -20,7 +20,6 @@ package com.genericworkflownodes.knime.nodes.io;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -38,7 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.commons.lang.StringUtils;
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -112,8 +110,7 @@ public class OutputFileNodeDialog extends NodeDialogPane {
                                     + extensionFilter.getExtensions()[0];
                         } else {
                             message += "Please choose a file with on of the following extensions: ";
-                            message += StringUtils.join(
-                                    extensionFilter.getExtensions(), ", ");
+                            message += String.join(", ", extensionFilter.getExtensions());
                         }
                         JOptionPane.showMessageDialog(getPanel(), message,
                                 "Selected Output File is invalid.",
