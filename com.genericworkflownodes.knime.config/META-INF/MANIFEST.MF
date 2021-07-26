@@ -17,7 +17,8 @@ Export-Package: com.genericworkflownodes.knime.cliwrapper,
  com.genericworkflownodes.knime.parameter;uses:="com.genericworkflownodes.knime.port",
  com.genericworkflownodes.knime.port,
  com.genericworkflownodes.knime.schemas;uses:="org.xml.sax",
- com.genericworkflownodes.util
+ com.genericworkflownodes.util,
+ org.apache.commons.lang
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Automatic-Module-Name: com.genericworkflownodes.knime.config
