@@ -51,6 +51,7 @@
 		   		<artifactId>tycho-compiler-plugin</artifactId>
 		   		<version>${tycho.version}</version>
 		   		<configuration>
+					<release>${java.majorversion}</release>
 		   			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		   		</configuration>
 		   	</plugin>
