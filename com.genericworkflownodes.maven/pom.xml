@@ -7,8 +7,8 @@
 		<knime.version>4.1</knime.version>
 		<java.majorversion>11</java.majorversion>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
-		<tycho.version>1.4.0</tycho.version>
-		<tycho.extras.version>1.4.0</tycho.extras.version>
+		<tycho.version>2.3.0</tycho.version>
+		<tycho.extras.version>2.3.0</tycho.extras.version>
 		<tycho.test.jvmArgs>-Xmx1024m</tycho.test.jvmArgs>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
