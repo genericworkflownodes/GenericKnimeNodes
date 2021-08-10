@@ -21,8 +21,10 @@ package com.genericworkflownodes.knime.execution.impl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -52,6 +54,109 @@ import com.genericworkflownodes.util.StringUtils;
  * @author aiche
  */
 public class LocalToolExecutor implements IToolExecutor {
+    
+    private class StreamGobbler extends Thread
+    {
+        InputStream is;
+        String type;
+        
+        public void run()
+        {
+            try
+            {
+                //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+                Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+                //Constructor<?> ctor = enumClass.getDeclaredConstructor();
+
+                //Enum enumInstance = (Enum) ctor.newInstance();
+                //Class e = enumInstance.getClass();
+                /*Class<?> noticeclass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice");
+                Field f = noticeclass.getDeclaredField("$ViewType");
+                f.setAccessible(true);
+                Class e =  (Class) f.get(this);*/
+                Object[] enumElements = enumClass.getEnumConstants();
+                Object streamtype;
+                if (type == "OUT")
+                {
+                    streamtype = enumElements[0];
+                }
+                else
+                {
+                    streamtype = enumElements[1];
+                }
+                Constructor<ViewUpdateNotice> ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+                ctor.setAccessible(true);
+
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String line=null;
+                if (type == "OUT")
+                {
+                    while ( (line = br.readLine()) != null)
+                    {
+                        // TODO this is rather inefficient. Unfortunately adding just a line is not possible with the API
+                        // However, I think we need to set this member. 
+                        m_model.setStdOut(m_stdOut);
+                        m_stdOut.add(line);
+                        ViewUpdateNotice v = ctor.newInstance(streamtype);
+                        v.setNewLine(line);
+                        m_model.update(new Observable(),v);
+                    }
+                }
+                else
+                {
+                    while ( (line = br.readLine()) != null)
+                    {
+                        // TODO this is rather inefficient. Unfortunately adding just a line is not possible with the API
+                        // However, I think we need to set this member. 
+                        m_model.setStdErr(m_stdErr);
+                        m_stdErr.add(line);
+                        ViewUpdateNotice v = ctor.newInstance(streamtype);
+                        v.setNewLine(line);
+                        m_model.update(new Observable(),v);
+                    }
+                }
+            }
+            catch (IOException ioe)
+            {
+               ioe.printStackTrace();  
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        StreamGobbler(InputStream is, String type)
+        {
+            this.is = is;
+            this.type = type;
+        }
+    }
 
     /**
      * NodeLogger used for this executor.
@@ -238,86 +343,14 @@ public class LocalToolExecutor implements IToolExecutor {
             if (m_workingDirectory != null) {
                 builder.directory(m_workingDirectory);
             }
-            
-            BufferedReader stdout;
-            BufferedReader stderr;
 
             // execute
             m_process = builder.start();
-            stdout = new BufferedReader(new InputStreamReader(m_process.getInputStream(), "UTF-8"));
-            stderr = new BufferedReader(new InputStreamReader(m_process.getErrorStream(), "UTF-8"));
-     
-            boolean done = false;
-            boolean stdoutclosed = false;
-            boolean stderrclosed = false;
-            
-            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
-            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
-            //Constructor<?> ctor = enumClass.getDeclaredConstructor();
+            StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
+            StreamGobbler stderr = new StreamGobbler(m_process.getInputStream(), "ERR");
+            stdout.start();
+            stderr.start();
 
-            //Enum enumInstance = (Enum) ctor.newInstance();
-            //Class e = enumInstance.getClass();
-            /*Class<?> noticeclass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice");
-            Field f = noticeclass.getDeclaredField("$ViewType");
-            f.setAccessible(true);
-            Class e =  (Class) f.get(this);*/
-            Object[] enumElements = enumClass.getEnumConstants();
-            Object stdouttype = enumElements[0];
-            Object stderrtype = enumElements[1];
-            Constructor<ViewUpdateNotice> ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
-            ctor.setAccessible(true);
-            
-            while (!done){
-                boolean readSomething = false;
-                // read from the process's standard output
-                if (!stdoutclosed && stdout.ready()){
-                    readSomething = true;
-                    String read = stdout.readLine();
-                    if (read == null){
-                        stdoutclosed = true;
-                    } else {
-                        m_model.setStdOut(m_stdOut);
-                        m_stdOut.add(read);
-                        ViewUpdateNotice v = ctor.newInstance(stdouttype);
-                        v.setNewLine(read);
-                        m_model.update(new Observable(),v);
-                    }
-                }
-                // read from the process's standard error
-                if (!stderrclosed && stderr.ready()){
-                    readSomething = true;
-                    String read = stderr.readLine();
-                    if (read == null){
-                        stderrclosed = true;
-                    } else {
-                        m_model.setStdErr(m_stdErr);
-                        m_stdErr.add(read);
-                        ViewUpdateNotice v = ctor.newInstance(stderrtype);
-                        v.setNewLine(read);
-                        m_model.update(new Observable(),v);
-                    }
-                }
-                // Check the exit status only we haven't read anything,
-                // if something has been read, the process is obviously not dead yet.
-                if (!readSomething){
-                    try {
-                        m_process.exitValue();
-                        done = true;
-                    } catch (IllegalThreadStateException itx){
-                        // Exit status not ready yet.
-                        // Give the process a little breathing room.
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException ix){
-                            m_process.destroy();
-                            throw new IOException("Interrupted - processes killed");
-                        }
-                    }
-                }
-            }
-
-            stdout.close();
-            stderr.close();
             // fetch return code
             m_returnCode = m_process.waitFor();
 
