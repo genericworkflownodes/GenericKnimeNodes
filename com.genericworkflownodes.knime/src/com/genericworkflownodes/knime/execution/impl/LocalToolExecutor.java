@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.ThreadUtils.ThreadWithContext;
 import org.knime.base.node.util.exttool.*;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -55,12 +56,13 @@ import com.genericworkflownodes.util.StringUtils;
  */
 public class LocalToolExecutor implements IToolExecutor {
     
-    private class StreamGobbler extends Thread
+    private class StreamGobbler extends ThreadWithContext
     {
         InputStream is;
         String type;
         
-        public void run()
+        @Override
+        protected void runWithContext()
         {
             try
             {
@@ -344,12 +346,16 @@ public class LocalToolExecutor implements IToolExecutor {
                 builder.directory(m_workingDirectory);
             }
 
+            File logFile = File.createTempFile("GKN-", ".log.tmp");
+            builder.redirectErrorStream(true);
+            builder.redirectOutput(logFile);
             // execute
             m_process = builder.start();
-            StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
+            
+            /*StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
             StreamGobbler stderr = new StreamGobbler(m_process.getInputStream(), "ERR");
             stdout.start();
-            stderr.start();
+            stderr.start();*/
 
             // fetch return code
             m_returnCode = m_process.waitFor();

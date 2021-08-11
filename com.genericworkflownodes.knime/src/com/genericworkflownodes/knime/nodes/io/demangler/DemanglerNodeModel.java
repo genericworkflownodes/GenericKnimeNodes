@@ -89,8 +89,6 @@ public class DemanglerNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        demangler = null;
-        fileExtension = null;
     }
 
     /**
@@ -99,7 +97,7 @@ public class DemanglerNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
         settings.addString(CONFIGURED_FILE_EXTENSION_SETTINGNAME, fileExtension);
-        settings.addStringArray(SELECTED_DEMANGLER_SETTINGNAME, demangler
+        settings.addString(SELECTED_DEMANGLER_SETTINGNAME, demangler
                 .getClass().getName());
     }
 
@@ -157,18 +155,25 @@ public class DemanglerNodeModel extends NodeModel {
         String mimeType = MIMETypeHelper.getMIMEtypeByExtension(fileExtension).orElse(null);
         // try to find a demangler for the data type ...
 
-        List<IDemangler> availableDemanglers = DemanglerRegistry
-                .getDemanglerRegistry().getDemangler(mimeType);
-
-        if (availableDemanglers == null || availableDemanglers.size() == 0) {
+        if (demangler == null)
+        {
             throw new InvalidSettingsException(
-                    "No IDemangler found for "
-                            + fileExtension
-                            + ". Please register before transforming the a file with this MIMEType to a KNIME table.");
+                    "No conversion method chosen.");
         }
+        if (!demangler.getMIMEType().equals(mimeType))
+        {
+            List<IDemangler> availableDemanglers = DemanglerRegistry
+                    .getDemanglerRegistry().getDemangler(mimeType);
 
-        if (demangler == null) {
+            if (availableDemanglers == null || availableDemanglers.size() == 0) {
+                throw new InvalidSettingsException(
+                        "No IDemangler found for "
+                                + fileExtension
+                                + ". Please register before transforming the a file with this MIMEType to a KNIME table.");
+            }
             demangler = availableDemanglers.get(0);
+            setWarningMessage("Previously chosen conversion method is not valid for the current filetype from input port. Choosing the first available: " + demangler.getClass().getName());
+            
         }
 
         return new DataTableSpec[] { getDataTableSpec() };
