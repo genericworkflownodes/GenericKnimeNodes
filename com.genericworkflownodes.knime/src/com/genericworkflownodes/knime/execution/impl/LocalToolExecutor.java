@@ -20,6 +20,7 @@ package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,7 +37,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.ThreadUtils;
 import org.knime.core.util.ThreadUtils.ThreadWithContext;
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListenerAdapter;
 import org.knime.base.node.util.exttool.*;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -157,6 +161,49 @@ public class LocalToolExecutor implements IToolExecutor {
         {
             this.is = is;
             this.type = type;
+        }
+    }
+    
+    public class MyTailerListener extends TailerListenerAdapter {
+        private Constructor<ViewUpdateNotice> ctor;
+        private Object streamtype;
+        public MyTailerListener() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+            Object[] enumElements = enumClass.getEnumConstants();
+            if (true)//(type == "OUT")
+            {
+                streamtype = enumElements[0];
+            }
+            else
+            {
+                streamtype = enumElements[1];
+            }
+            ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+            ctor.setAccessible(true);
+        }
+        public void handle(String line) {
+            
+            m_stdOut.add(line);
+            m_model.setStdOut(m_stdOut);
+            ViewUpdateNotice v;
+            try {
+                v = ctor.newInstance(streamtype);
+                v.setNewLine(line);
+                m_model.update(new Observable(),v);
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -349,7 +396,14 @@ public class LocalToolExecutor implements IToolExecutor {
             File logFile = File.createTempFile("GKN-", ".log.tmp");
             builder.redirectErrorStream(true);
             builder.redirectOutput(logFile);
+            MyTailerListener listener = new MyTailerListener();
+            Tailer tailer = new Tailer(logFile, listener, 250);
+            Thread thread = ThreadUtils.threadWithContext(tailer);
+            thread.setDaemon(true); // optional
+            thread.start();
+            
             // execute
+            
             m_process = builder.start();
             
             /*StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
@@ -359,6 +413,7 @@ public class LocalToolExecutor implements IToolExecutor {
 
             // fetch return code
             m_returnCode = m_process.waitFor();
+            tailer.stop();
 
         } catch (final Exception e) {
             LOGGER.warn("Failed to execute tool " + m_executable.getName(), e);
