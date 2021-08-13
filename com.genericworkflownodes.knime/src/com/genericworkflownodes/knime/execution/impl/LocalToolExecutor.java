@@ -432,7 +432,6 @@ public class LocalToolExecutor implements IToolExecutor {
             LOGGER.debug("Created log file: " + logFile.getAbsolutePath());
             LOGGER.debug("Created errlog file: " + errLogFile.getAbsolutePath());
             
-            builder.redirectErrorStream(true);
             builder.redirectOutput(logFile);
             builder.redirectError(errLogFile);
             MyTailerOutListener listener = new MyTailerOutListener();
