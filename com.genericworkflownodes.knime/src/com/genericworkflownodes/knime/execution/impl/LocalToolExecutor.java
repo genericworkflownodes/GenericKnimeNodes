@@ -164,21 +164,14 @@ public class LocalToolExecutor implements IToolExecutor {
         }
     }
     
-    public class MyTailerListener extends TailerListenerAdapter {
+    public class MyTailerOutListener extends TailerListenerAdapter {
         private Constructor<ViewUpdateNotice> ctor;
         private Object streamtype;
-        public MyTailerListener() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+        public MyTailerOutListener() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
             //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
             Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
             Object[] enumElements = enumClass.getEnumConstants();
-            if (true)//(type == "OUT")
-            {
-                streamtype = enumElements[0];
-            }
-            else
-            {
-                streamtype = enumElements[1];
-            }
+            streamtype = enumElements[0]; // out stream
             ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
             ctor.setAccessible(true);
         }
@@ -186,6 +179,42 @@ public class LocalToolExecutor implements IToolExecutor {
             
             m_stdOut.add(line);
             m_model.setStdOut(m_stdOut);
+            ViewUpdateNotice v;
+            try {
+                v = ctor.newInstance(streamtype);
+                v.setNewLine(line);
+                m_model.update(new Observable(),v);
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public class MyTailerErrListener extends TailerListenerAdapter {
+        private Constructor<ViewUpdateNotice> ctor;
+        private Object streamtype;
+        public MyTailerErrListener() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+            Object[] enumElements = enumClass.getEnumConstants();
+            streamtype = enumElements[1]; // err stream
+            ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+            ctor.setAccessible(true);
+        }
+        public void handle(String line) {
+            
+            m_stdOut.add(line);
+            m_model.setStdErr(m_stdOut);
             ViewUpdateNotice v;
             try {
                 v = ctor.newInstance(streamtype);
@@ -389,24 +418,42 @@ public class LocalToolExecutor implements IToolExecutor {
             final ProcessBuilder builder = new ProcessBuilder(commands);
             setupProcessEnvironment(builder);
 
+            File logFile;
+            File errLogFile;
             if (m_workingDirectory != null) {
                 builder.directory(m_workingDirectory);
+                logFile = new File(m_workingDirectory,"lastLog.txt");
+                errLogFile = new File(m_workingDirectory,"lastErrLog.txt");
+            } else {
+                logFile = File.createTempFile("GKN-", ".log.tmp");
+                errLogFile = File.createTempFile("GKN-", "err.log.tmp");
             }
-
-            File logFile = File.createTempFile("GKN-", ".log.tmp");
+            
+            LOGGER.debug("Created log file: " + logFile.getAbsolutePath());
+            LOGGER.debug("Created errlog file: " + errLogFile.getAbsolutePath());
+            
             builder.redirectErrorStream(true);
             builder.redirectOutput(logFile);
-            MyTailerListener listener = new MyTailerListener();
+            builder.redirectError(errLogFile);
+            MyTailerOutListener listener = new MyTailerOutListener();
+            MyTailerErrListener errlistener = new MyTailerErrListener();
             Tailer tailer = new Tailer(logFile, listener, 250);
+            Tailer errtailer = new Tailer(errLogFile, errlistener, 250);
             Thread thread = ThreadUtils.threadWithContext(tailer);
+            Thread errthread = ThreadUtils.threadWithContext(errtailer);
             thread.setDaemon(true); // optional
+            errthread.setDaemon(true); // optional
             thread.start();
+            errthread.start();
             
             // execute
             
             m_process = builder.start();
             
-            /*StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
+            /* Old streamgobbler implementation that had problems on windows 
+             * (probably the stream buffer went full and it did not read on time
+             * and then you got a deadlock)
+            StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
             StreamGobbler stderr = new StreamGobbler(m_process.getInputStream(), "ERR");
             stdout.start();
             stderr.start();*/
@@ -414,6 +461,7 @@ public class LocalToolExecutor implements IToolExecutor {
             // fetch return code
             m_returnCode = m_process.waitFor();
             tailer.stop();
+            logFile.delete();
 
         } catch (final Exception e) {
             LOGGER.warn("Failed to execute tool " + m_executable.getName(), e);
