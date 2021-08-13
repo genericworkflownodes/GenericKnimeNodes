@@ -213,8 +213,8 @@ public class LocalToolExecutor implements IToolExecutor {
         }
         public void handle(String line) {
             
-            m_stdOut.add(line);
-            m_model.setStdErr(m_stdOut);
+            m_stdErr.add(line);
+            m_model.setStdErr(m_stdErr);
             ViewUpdateNotice v;
             try {
                 v = ctor.newInstance(streamtype);
