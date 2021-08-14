@@ -460,8 +460,13 @@ public class LocalToolExecutor implements IToolExecutor {
             // fetch return code
             m_returnCode = m_process.waitFor();
             tailer.stop();
-            logFile.delete();
-
+            errtailer.stop();
+            try {
+              logFile.delete();
+              errlogFile.delete();
+            } catch (final Exception e){
+                LOGGER.warn("Warning: Could not delete log files: " + logFile.getAbsolutePath() + " or " + errLogFile.getAbsolutePath());
+            }
         } catch (final Exception e) {
             LOGGER.warn("Failed to execute tool " + m_executable.getName(), e);
             throw new ToolExecutionFailedException(
