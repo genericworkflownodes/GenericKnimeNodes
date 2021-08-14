@@ -463,7 +463,7 @@ public class LocalToolExecutor implements IToolExecutor {
             errtailer.stop();
             try {
               logFile.delete();
-              errlogFile.delete();
+              errLogFile.delete();
             } catch (final Exception e){
                 LOGGER.warn("Warning: Could not delete log files: " + logFile.getAbsolutePath() + " or " + errLogFile.getAbsolutePath());
             }
