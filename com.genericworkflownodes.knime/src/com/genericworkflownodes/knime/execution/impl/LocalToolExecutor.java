@@ -406,6 +406,7 @@ public class LocalToolExecutor implements IToolExecutor {
             
             final List<String> commands = new ArrayList<String>();
             commands.add(m_executable.getCanonicalPath());
+
             // this is a local execution, we need the values of all of the
             // command line elements
             // so we need the string representation of each element
@@ -459,8 +460,12 @@ public class LocalToolExecutor implements IToolExecutor {
 
             // fetch return code
             m_returnCode = m_process.waitFor();
+            m_process.destroy();
+            Thread.sleep(300); //wait at least a bit more than the wait in the Tailers (in case the tool fails immediately)
             tailer.stop();
             errtailer.stop();
+            thread.join();
+            errthread.join();
             try {
               logFile.delete();
               errLogFile.delete();
