@@ -20,9 +20,12 @@ package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,6 +37,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.ThreadUtils;
+import org.knime.core.util.ThreadUtils.ThreadWithContext;
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListenerAdapter;
 import org.knime.base.node.util.exttool.*;
 import com.genericworkflownodes.knime.commandline.CommandLineElement;
 import com.genericworkflownodes.knime.config.INodeConfiguration;
@@ -52,6 +59,182 @@ import com.genericworkflownodes.util.StringUtils;
  * @author aiche
  */
 public class LocalToolExecutor implements IToolExecutor {
+    
+    private class StreamGobbler extends ThreadWithContext
+    {
+        InputStream is;
+        String type;
+        
+        @Override
+        protected void runWithContext()
+        {
+            try
+            {
+                //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+                Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+                //Constructor<?> ctor = enumClass.getDeclaredConstructor();
+
+                //Enum enumInstance = (Enum) ctor.newInstance();
+                //Class e = enumInstance.getClass();
+                /*Class<?> noticeclass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice");
+                Field f = noticeclass.getDeclaredField("$ViewType");
+                f.setAccessible(true);
+                Class e =  (Class) f.get(this);*/
+                Object[] enumElements = enumClass.getEnumConstants();
+                Object streamtype;
+                if (type == "OUT")
+                {
+                    streamtype = enumElements[0];
+                }
+                else
+                {
+                    streamtype = enumElements[1];
+                }
+                Constructor<ViewUpdateNotice> ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+                ctor.setAccessible(true);
+
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String line=null;
+                if (type == "OUT")
+                {
+                    while ( (line = br.readLine()) != null)
+                    {
+                        // TODO this is rather inefficient. Unfortunately adding just a line is not possible with the API
+                        // However, I think we need to set this member. 
+                        m_model.setStdOut(m_stdOut);
+                        m_stdOut.add(line);
+                        ViewUpdateNotice v = ctor.newInstance(streamtype);
+                        v.setNewLine(line);
+                        m_model.update(new Observable(),v);
+                    }
+                }
+                else
+                {
+                    while ( (line = br.readLine()) != null)
+                    {
+                        // TODO this is rather inefficient. Unfortunately adding just a line is not possible with the API
+                        // However, I think we need to set this member. 
+                        m_model.setStdErr(m_stdErr);
+                        m_stdErr.add(line);
+                        ViewUpdateNotice v = ctor.newInstance(streamtype);
+                        v.setNewLine(line);
+                        m_model.update(new Observable(),v);
+                    }
+                }
+            }
+            catch (IOException ioe)
+            {
+               ioe.printStackTrace();  
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        StreamGobbler(InputStream is, String type)
+        {
+            this.is = is;
+            this.type = type;
+        }
+    }
+    
+    public class MyTailerOutListener extends TailerListenerAdapter {
+        private Constructor<ViewUpdateNotice> ctor;
+        private Object streamtype;
+        public MyTailerOutListener() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+            Object[] enumElements = enumClass.getEnumConstants();
+            streamtype = enumElements[0]; // out stream
+            ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+            ctor.setAccessible(true);
+        }
+        public void handle(String line) {
+            
+            m_stdOut.add(line);
+            m_model.setStdOut(m_stdOut);
+            ViewUpdateNotice v;
+            try {
+                v = ctor.newInstance(streamtype);
+                v.setNewLine(line);
+                m_model.update(new Observable(),v);
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public class MyTailerErrListener extends TailerListenerAdapter {
+        private Constructor<ViewUpdateNotice> ctor;
+        private Object streamtype;
+        public MyTailerErrListener() throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
+            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
+            Object[] enumElements = enumClass.getEnumConstants();
+            streamtype = enumElements[1]; // err stream
+            ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
+            ctor.setAccessible(true);
+        }
+        public void handle(String line) {
+            
+            m_stdErr.add(line);
+            m_model.setStdErr(m_stdErr);
+            ViewUpdateNotice v;
+            try {
+                v = ctor.newInstance(streamtype);
+                v.setNewLine(line);
+                m_model.update(new Observable(),v);
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * NodeLogger used for this executor.
@@ -223,6 +406,7 @@ public class LocalToolExecutor implements IToolExecutor {
             
             final List<String> commands = new ArrayList<String>();
             commands.add(m_executable.getCanonicalPath());
+
             // this is a local execution, we need the values of all of the
             // command line elements
             // so we need the string representation of each element
@@ -235,92 +419,59 @@ public class LocalToolExecutor implements IToolExecutor {
             final ProcessBuilder builder = new ProcessBuilder(commands);
             setupProcessEnvironment(builder);
 
+            File logFile;
+            File errLogFile;
             if (m_workingDirectory != null) {
                 builder.directory(m_workingDirectory);
+                logFile = new File(m_workingDirectory,"lastLog.txt");
+                errLogFile = new File(m_workingDirectory,"lastErrLog.txt");
+            } else {
+                logFile = File.createTempFile("GKN-", ".log.tmp");
+                errLogFile = File.createTempFile("GKN-", "err.log.tmp");
             }
             
-            BufferedReader stdout;
-            BufferedReader stderr;
-
+            LOGGER.debug("Created log file: " + logFile.getAbsolutePath());
+            LOGGER.debug("Created errlog file: " + errLogFile.getAbsolutePath());
+            
+            builder.redirectOutput(logFile);
+            builder.redirectError(errLogFile);
+            MyTailerOutListener listener = new MyTailerOutListener();
+            MyTailerErrListener errlistener = new MyTailerErrListener();
+            Tailer tailer = new Tailer(logFile, listener, 250);
+            Tailer errtailer = new Tailer(errLogFile, errlistener, 250);
+            Thread thread = ThreadUtils.threadWithContext(tailer);
+            Thread errthread = ThreadUtils.threadWithContext(errtailer);
+            thread.setDaemon(true); // optional
+            errthread.setDaemon(true); // optional
+            thread.start();
+            errthread.start();
+            
             // execute
+            
             m_process = builder.start();
-            stdout = new BufferedReader(new InputStreamReader(m_process.getInputStream(), "UTF-8"));
-            stderr = new BufferedReader(new InputStreamReader(m_process.getErrorStream(), "UTF-8"));
-     
-            boolean done = false;
-            boolean stdoutclosed = false;
-            boolean stderrclosed = false;
             
-            //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
-            Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
-            //Constructor<?> ctor = enumClass.getDeclaredConstructor();
+            /* Old streamgobbler implementation that had problems on windows 
+             * (probably the stream buffer went full and it did not read on time
+             * and then you got a deadlock)
+            StreamGobbler stdout = new StreamGobbler(m_process.getInputStream(), "OUT");
+            StreamGobbler stderr = new StreamGobbler(m_process.getInputStream(), "ERR");
+            stdout.start();
+            stderr.start();*/
 
-            //Enum enumInstance = (Enum) ctor.newInstance();
-            //Class e = enumInstance.getClass();
-            /*Class<?> noticeclass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice");
-            Field f = noticeclass.getDeclaredField("$ViewType");
-            f.setAccessible(true);
-            Class e =  (Class) f.get(this);*/
-            Object[] enumElements = enumClass.getEnumConstants();
-            Object stdouttype = enumElements[0];
-            Object stderrtype = enumElements[1];
-            Constructor<ViewUpdateNotice> ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
-            ctor.setAccessible(true);
-            
-            while (!done){
-                boolean readSomething = false;
-                // read from the process's standard output
-                if (!stdoutclosed && stdout.ready()){
-                    readSomething = true;
-                    String read = stdout.readLine();
-                    if (read == null){
-                        stdoutclosed = true;
-                    } else {
-                        m_model.setStdOut(m_stdOut);
-                        m_stdOut.add(read);
-                        ViewUpdateNotice v = ctor.newInstance(stdouttype);
-                        v.setNewLine(read);
-                        m_model.update(new Observable(),v);
-                    }
-                }
-                // read from the process's standard error
-                if (!stderrclosed && stderr.ready()){
-                    readSomething = true;
-                    String read = stderr.readLine();
-                    if (read == null){
-                        stderrclosed = true;
-                    } else {
-                        m_model.setStdErr(m_stdErr);
-                        m_stdErr.add(read);
-                        ViewUpdateNotice v = ctor.newInstance(stderrtype);
-                        v.setNewLine(read);
-                        m_model.update(new Observable(),v);
-                    }
-                }
-                // Check the exit status only we haven't read anything,
-                // if something has been read, the process is obviously not dead yet.
-                if (!readSomething){
-                    try {
-                        m_process.exitValue();
-                        done = true;
-                    } catch (IllegalThreadStateException itx){
-                        // Exit status not ready yet.
-                        // Give the process a little breathing room.
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException ix){
-                            m_process.destroy();
-                            throw new IOException("Interrupted - processes killed");
-                        }
-                    }
-                }
-            }
-
-            stdout.close();
-            stderr.close();
             // fetch return code
             m_returnCode = m_process.waitFor();
-
+            m_process.destroy();
+            Thread.sleep(300); //wait at least a bit more than the wait in the Tailers (in case the tool fails immediately)
+            tailer.stop();
+            errtailer.stop();
+            thread.join();
+            errthread.join();
+            try {
+              logFile.delete();
+              errLogFile.delete();
+            } catch (final Exception e){
+                LOGGER.warn("Warning: Could not delete log files: " + logFile.getAbsolutePath() + " or " + errLogFile.getAbsolutePath());
+            }
         } catch (final Exception e) {
             LOGGER.warn("Failed to execute tool " + m_executable.getName(), e);
             throw new ToolExecutionFailedException(
