@@ -20,9 +20,9 @@ package com.genericworkflownodes.util;
 
 import java.io.File;
 import java.util.Optional;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
 
