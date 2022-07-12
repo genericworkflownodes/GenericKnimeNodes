@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.genericworkflownodes.knime;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: genericnodes.jar,
  lib/swingx-all-1.6.4.jar,
- lib/bsh-2.0b4.jar,
+ lib/bsh-2.0b6.jar,
  lib/org-netbeans-swing-outline.jar
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
 Require-Bundle: org.eclipse.ui;bundle-version="[3.107.0,4.0.0)",
