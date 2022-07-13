@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.genericworkflownodes.knime;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: genericnodes.jar,
  lib/swingx-all-1.6.4.jar,
- lib/bsh-2.0b4.jar,
+ lib/bsh-2.0b6.jar,
  lib/org-netbeans-swing-outline.jar
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team
 Require-Bundle: org.eclipse.ui;bundle-version="[3.107.0,4.0.0)",
@@ -13,8 +13,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="[3.107.0,4.0.0)",
  org.knime.core.data.uritype;bundle-version="[3.0.0,5.0.0)",
  com.genericworkflownodes.knime.config;bundle-version="1.0.0",
  org.knime.base.filehandling;bundle-version="[3.1.0,5.0.0)",
- org.apache.commons.httpclient;bundle-version="[3.1.0,4.0.0)",
- org.apache.log4j;bundle-version="[1.2.14,2.0.0)"
+ org.apache.log4j;bundle-version="[1.2.18,2.0.0)"
 Export-Package: com.genericworkflownodes.knime.base.data.port,
  com.genericworkflownodes.knime.commandline,
  com.genericworkflownodes.knime.commandline.impl,

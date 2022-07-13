@@ -4,15 +4,16 @@
   <artifactId>com.genericworkflownodes.maven</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<knime.version>4.1</knime.version>
-		<java.majorversion>11</java.majorversion>
+		<knime.version>4.6</knime.version>
+		<java.majorversion>17</java.majorversion>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
-		<tycho.version>1.7.0</tycho.version>
-		<tycho.extras.version>1.7.0</tycho.extras.version>
+		<tycho.version>2.7.4</tycho.version>
+		<tycho.extras.version>2.7.4</tycho.extras.version>
 		<tycho.test.jvmArgs>-Xmx1024m</tycho.test.jvmArgs>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho.scmUrl>scm:git:https://github.com/genericworkflownodes/GenericKnimeNodes.git</tycho.scmUrl>
+        <maven-compiler-plugin-version>3.10.1</maven-compiler-plugin-version>
 	</properties>
 	<repositories>
 		<repository>
@@ -41,7 +42,7 @@
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-compiler-plugin</artifactId>
-			    <version>3.8.0</version>
+			    <version>${maven-compiler-plugin-version}</version>
 			    <configuration>
 			        <release>${java.majorversion}</release>  <!--or <release>10</release>-->
 			    </configuration>

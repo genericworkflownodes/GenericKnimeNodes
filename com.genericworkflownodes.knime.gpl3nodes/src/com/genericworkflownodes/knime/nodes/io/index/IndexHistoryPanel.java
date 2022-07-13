@@ -35,9 +35,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -69,9 +71,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
-//import org.apache.commons.text.StringSubstitutor;
 import org.knime.core.node.FlowVariableModel;
 import org.knime.core.node.FlowVariableModelButton;
 import org.knime.core.node.KNIMEConstants;
@@ -919,12 +918,12 @@ public final class IndexHistoryPanel extends JPanel {
                             // spaces)
                             // so try to decode it
                             try {
-                                file = new File(URIUtil.decode(selFile, "UTF-8"));
+                                file = new File(URLDecoder.decode(selFile, "UTF-8"));
                                 if (file.exists()) {
                                     editorComponent.setBackground(Color.WHITE);
                                     return;
                                 }
-                            } catch (URIException ex) {
+                            } catch (UnsupportedEncodingException ex) {
                                 // ignore it
                             }
                         }
