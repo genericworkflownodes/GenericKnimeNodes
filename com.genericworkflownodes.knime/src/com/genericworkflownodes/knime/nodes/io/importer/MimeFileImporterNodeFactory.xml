@@ -23,7 +23,7 @@
       </option>
     </fullDescription>
     <ports>
-     <outPort index="0" name="loaded file ">selected file file </outPort>   
+     <outPort index="0" name="loaded file">selected file file </outPort>   
     </ports>    
     <views>
         <view index="0" name="First lines of file">View the first 50 lines of the selected file</view>
