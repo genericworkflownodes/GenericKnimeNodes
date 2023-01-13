@@ -25,13 +25,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.knime.core.data.uri.IURIPortObject;
@@ -45,7 +40,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
@@ -53,24 +47,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.util.FileUtil;
-import org.knime.core.util.URIUtil;
-import org.knime.filehandling.core.connections.FSCategory;
-import org.knime.filehandling.core.connections.FSConnection;
-import org.knime.filehandling.core.connections.FSFileSystem;
-import org.knime.filehandling.core.connections.FSFileSystemProvider;
-import org.knime.filehandling.core.connections.FSFiles;
-import org.knime.filehandling.core.connections.FSLocation;
-import org.knime.filehandling.core.connections.FSPath;
-import org.knime.filehandling.core.connections.RelativeTo;
-import org.knime.filehandling.core.connections.uriexport.URIExporter;
-import org.knime.filehandling.core.connections.uriexport.URIExporterConfig;
-import org.knime.filehandling.core.connections.uriexport.URIExporterFactory;
-import org.knime.filehandling.core.connections.uriexport.URIExporterIDs;
-import org.knime.filehandling.core.data.location.FSLocationValueMetaData;
-import org.knime.filehandling.core.defaultnodesettings.FileSystemHelper;
-import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.ReadPathAccessor;
-import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusConsumer;
-import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
 
 import com.genericworkflownodes.util.Helper;
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -81,7 +57,24 @@ import com.genericworkflownodes.util.ZipUtils;
  *
  * @author roettig, aiche
  */
-final class MimeFileImporterNodeModel extends NodeModel {    
+final class MimeFileImporterNodeModel extends NodeModel {
+
+    /**
+     * SettingsModel for the filename
+     */
+    static SettingsModelString filename() {
+        return new SettingsModelString("FILENAME", "");
+    }
+    private final SettingsModelString m_filename = filename();
+
+    /**
+     * SettingsModel for potential file extension override.
+     */
+    static SettingsModelOptionalString fileExtension() {
+        return new SettingsModelOptionalString("FILE_EXTENSION", "", false);
+    }
+    private final SettingsModelOptionalString m_file_extension = fileExtension();
+    
     
 
     /**
@@ -89,12 +82,6 @@ final class MimeFileImporterNodeModel extends NodeModel {
      */
     private byte[] data;
 
-    private final boolean m_hasInputPorts;
-    
-    private final NodeModelStatusConsumer m_statusConsumer;
-    
-    private final MimeFileImporterNodeConfiguration m_config;
-    
     /**
      * Getter for data member.
      *
@@ -107,14 +94,9 @@ final class MimeFileImporterNodeModel extends NodeModel {
     /**
      * Constructor for the node model.
      */
-    protected MimeFileImporterNodeModel(final PortsConfiguration portsConfig,
-            final MimeFileImporterNodeConfiguration config) {
-        //super(new PortType[] {}, new PortType[] { PortTypeRegistry.getInstance().getPortType(
-        //        IURIPortObject.class) });
-        super(portsConfig.getInputPorts(), portsConfig.getOutputPorts());
-        m_hasInputPorts = portsConfig.getInputPorts().length > 0;
-        m_config = config;
-        m_statusConsumer = new NodeModelStatusConsumer(EnumSet.of(MessageType.ERROR, MessageType.WARNING));
+    protected MimeFileImporterNodeModel() {
+        super(new PortType[] {}, new PortType[] { PortTypeRegistry.getInstance().getPortType(
+                IURIPortObject.class) });
     }
 
     /**
@@ -129,7 +111,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        m_config.saveSettingsForModel(settings);
+        this.m_filename.saveSettingsTo(settings);
+        this.m_file_extension.saveSettingsTo(settings);
     }
 
     /**
@@ -138,7 +121,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        m_config.loadSettingsForModel(settings);
+        this.m_filename.loadSettingsFrom(settings);
+        this.m_file_extension.loadSettingsFrom(settings);
     }
 
     /**
@@ -147,7 +131,27 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        m_config.validateSettingsForModel(settings);
+
+        SettingsModelString tmp_filename = m_filename
+                .createCloneWithValidatedValue(settings);
+        
+        if (tmp_filename.getStringValue().isEmpty()) {
+            this.getLogger().warn("No File selected.");
+            //throw new InvalidSettingsException("No File selected.");
+        }
+
+        //convertToURL(tmp_filename.getStringValue());
+
+        SettingsModelOptionalString tmp_file_extension = m_file_extension
+                .createCloneWithValidatedValue(settings);
+
+        if (tmp_file_extension.isActive()) {
+            if (tmp_file_extension.getStringValue().equals("")) {
+                this.getLogger().warn("No File extension (override) provided.");
+                //throw new InvalidSettingsException(
+                //        "No File extension (override) provided.");
+            }
+        }
     }
 
     private static File getDataFile(final File internDir) {
@@ -211,43 +215,68 @@ final class MimeFileImporterNodeModel extends NodeModel {
     @Override
     protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
             throws InvalidSettingsException {
-        m_config.getFileChooserSettings().configureInModel(inSpecs, m_statusConsumer);
-        m_statusConsumer.setWarningsIfRequired(this::setWarningMessage);
+
+        final String filenameValue = this.m_filename.getStringValue();
+
+        /*
+         * Upon inserting the node into a workflow, it gets configured, so at
+         * least something fundamental like the file name should be checked
+         */
+        if (filenameValue.isEmpty() || filenameValue == null) {
+            throw new InvalidSettingsException("No File selected.");
+        }
+        
+        File f;
+        try {
+         f = FileUtil.getFileFromURL(convertToURL(m_filename.getStringValue()));
+        } catch (IllegalArgumentException e)
+        {
+            throw new InvalidSettingsException("Illegal URI given.");
+        }
+        
+        if (!f.exists())
+        {
+            throw new InvalidSettingsException("File does not exist.");
+        }
+        
+        if (!f.isFile())
+        {
+            throw new InvalidSettingsException("Path is not a file.");
+        }
+    
+        if (!f.canRead())
+        {
+            throw new InvalidSettingsException("File not readable.");
+        }
 
         // Determine the file extension
         String fileExtension = "";
         
-        if (m_config.overwriteFileExtension().isActive())
+        if (this.m_file_extension.isActive())
         {
-            fileExtension = m_config.overwriteFileExtension().getStringValue();
+            fileExtension = this.m_file_extension.getStringValue();
             if (MIMETypeHelper.getMIMEtypeByExtension(fileExtension).orElse(null) == null)
             {
-                this.getLogger().warn("Extension of unknown/unregistered MIME type overwritten: "
-                        + fileExtension); 
+                this.getLogger().warn("Extension of unknown/unregistered MIME type selected: "
+                        + filenameValue); 
             }
         }
         else
         {
-            try {
-                Path firstFilePath = m_config.getFileChooserSettings().createReadPathAccessor().getPaths(new NodeModelStatusConsumer(EnumSet.of(MessageType.ERROR, MessageType.WARNING))).get(0);
-                fileExtension = MIMETypeHelper.getMIMEtypeExtension(firstFilePath.toString()).orElse(null);
-                if (fileExtension == null)
-                {
-                    this.getLogger().warn("File of unknown/unregistered MIME type selected: "
-                            + fileExtension);
-                    fileExtension = FilenameUtils.getExtension(firstFilePath.toString());
-                }
-            } catch (Exception e) {
-                // TODO: handle exception
+            fileExtension = MIMETypeHelper.getMIMEtypeExtension(filenameValue).orElse(null);
+            if (fileExtension == null)
+            {
+                this.getLogger().warn("File of unknown/unregistered MIME type selected: "
+                        + filenameValue);
+                fileExtension = FilenameUtils.getExtension(filenameValue);
             }
         }
         return new PortObjectSpec[] {
-                //TODO if not local, it will be a FileStoreURIPortObject
                 new URIPortObjectSpec(fileExtension)
         };
     }
 
-    /*@Override
+    @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
         URL converted = convertToURL(m_filename.getStringValue());
@@ -267,58 +296,6 @@ final class MimeFileImporterNodeModel extends NodeModel {
                         .getMIMEtypeExtension(file.getAbsolutePath()).orElse(FilenameUtils.getExtension(file.getAbsolutePath())))));
 
         data = Helper.readFileSummary(file, 50).getBytes();
-
-        return new PortObject[] { new URIPortObject(uris) };
-    }*/
-    
-    @Override
-    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-            throws Exception {
-        
-        List<URIContent> uris = new ArrayList<URIContent>();
-        final FSLocation location = m_config.getFileChooserSettings().getLocation();
-        final FSLocationValueMetaData metaData = new FSLocationValueMetaData(location.getFileSystemCategory(),
-            location.getFileSystemSpecifier().orElse(null));
-        
-        try (final ReadPathAccessor accessor = m_config.getFileChooserSettings().createReadPathAccessor()) {
-            final List<FSPath> fsPaths = accessor.getFSPaths(m_statusConsumer);
-            for (final FSPath p : fsPaths) {
-                URI u = p.toUri();
-                if (u.getScheme().equals("file") || u.getScheme().equals("knime"))
-                {
-                    // do nothing
-                }
-                else if (u.getScheme().equals("local"))
-                {
-                    u = new URI(u.toString().replace("local:", "file:"));
-                }
-                else
-                {
-                    Optional<FSConnection> fsc = FileSystemHelper.retrieveFSConnection(null, new FSLocation(FSCategory.RELATIVE, RelativeTo.WORKFLOW_DATA.getSettingsValue(), "/"));
-                    FSPath tgt = fsc.get().getFileSystem().getPath(p.getFileName().toString());
-                    
-                    Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);
-                    final URIExporterFactory factory = fsc.get().getURIExporterFactory(URIExporterIDs.DEFAULT); // default exporter is fine, since we just need to handle KNIME relative paths.
-                    final URIExporterConfig config = factory.initConfig();
-                    u = factory.createExporter(config).toUri(tgt);
-                }
-                uris.add(new URIContent(u,
-                        (m_config.overwriteFileExtension().isActive() ? 
-                                m_config.overwriteFileExtension().getStringValue() :
-                                MIMETypeHelper.getMIMEtypeExtension(p.toAbsolutePath().toString()).orElse(FilenameUtils.getExtension(p.toAbsolutePath().toString())))));
-
-            }
-        
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-        }
-        
-
-        //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
-        // Since we check during configure, this is minor, but there should be a more general solution
-
-        //data = Helper.readFileSummary(file, 50).getBytes();
 
         return new PortObject[] { new URIPortObject(uris) };
     }
