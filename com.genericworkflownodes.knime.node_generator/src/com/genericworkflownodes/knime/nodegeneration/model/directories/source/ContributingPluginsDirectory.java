@@ -54,9 +54,9 @@ public class ContributingPluginsDirectory extends Directory {
      * 
      * @return
      */
-    public List<ContributingPluginMeta> getContributingPluginMetas() {
+    public ArrayList<ContributingPluginMeta> getContributingPluginMetas() {
 
-        List<ContributingPluginMeta> contributingPluginMetas = new ArrayList<ContributingPluginMeta>();
+        ArrayList<ContributingPluginMeta> contributingPluginMetas = new ArrayList<ContributingPluginMeta>();
 
         if (!this.exists())
             return contributingPluginMetas;

@@ -86,7 +86,7 @@ public class PluginDirectory extends Directory {
     }
 
     /**
-     * Returns the .project file.
+     * Returns the pom.xml file.
      * 
      * @return
      */

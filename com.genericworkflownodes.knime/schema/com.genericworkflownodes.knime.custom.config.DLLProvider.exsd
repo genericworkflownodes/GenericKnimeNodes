@@ -6,7 +6,8 @@
          <meta.schema plugin="com.genericworkflownodes.knime" id="com.genericworkflownodes.custom.config.DLLProvider" name="DLLProvider"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point allows registering shared libaries and resources for ALL tools wrapped with a GenericKNIMENodes-generated
+KNIME plugin.
       </documentation>
    </annotation>
 
@@ -48,6 +49,11 @@
    </element>
 
    <element name="dllprovider">
+      <annotation>
+         <documentation>
+            The class in this bundle that implements the IDLLProvider interface.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="class" type="string">
             <annotation>
@@ -59,6 +65,13 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of this dllprovider, providing shared resources. Does not have to be its package name, just a unique identifier. This can be used by consuming plugins when querying the GKN DLLProvider to only load shared resources from a certain extension.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -67,7 +80,7 @@
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         1.0.0
       </documentation>
    </annotation>
 

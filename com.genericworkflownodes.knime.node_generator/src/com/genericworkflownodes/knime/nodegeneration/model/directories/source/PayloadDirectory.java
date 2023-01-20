@@ -20,13 +20,11 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories.source;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.os.Architecture;
@@ -37,29 +35,25 @@ import com.genericworkflownodes.knime.os.OperatingSystem;
  * 
  * @author bkahlert, aiche
  */
-public class PayloadDirectory {
-    private static final Logger LOGGER = Logger
+public class PayloadDirectory extends Directory{
+	private static final long serialVersionUID = 834321069639260384L;
+
+	private static final Logger LOGGER = Logger
             .getLogger(PayloadDirectory.class.getCanonicalName());
 
     private static final Pattern payloadFormat = Pattern
             .compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
 
-    private final List<FragmentMeta> containedFragments;
-    private Directory payloadDirectory = null;
 
     public PayloadDirectory(File payloadDirectory)
             throws PathnameIsNoDirectoryException {
-        containedFragments = new ArrayList<FragmentMeta>();
-        try {
-            this.payloadDirectory = new Directory(payloadDirectory);
-        } catch (Exception e) {
-            LOGGER.warning("No payload directory available.");
-        }
+    	super(payloadDirectory);
     }
 
-    public List<FragmentMeta> getFragmentMetas(
+    public ArrayList<FragmentMeta> getFragmentMetas(
             GeneratedPluginMeta generatedPluginMeta) {
 
+    	ArrayList<FragmentMeta> containedFragments = new ArrayList<FragmentMeta>();
         String[] expectedFragments = new String[] { "binaries_mac_64.zip",
                 "binaries_lnx_64.zip", "binaries_lnx_32.zip",
                 "binaries_win_64.zip", "binaries_win_32.zip" };
@@ -71,7 +65,7 @@ public class PayloadDirectory {
             OperatingSystem os = OperatingSystem.fromString(m.group(1));
             Architecture arch = Architecture.fromString(m.group(2));
 
-            File payload = new File(payloadDirectory, potentialFragment);
+            File payload = new File(this, potentialFragment);
 
             if (payload.exists()) {
                 containedFragments.add(new FragmentMeta(generatedPluginMeta,

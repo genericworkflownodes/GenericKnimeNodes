@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.importer;
+package com.genericworkflownodes.knime.nodes.io.nioimporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,9 +82,9 @@ import com.genericworkflownodes.util.ZipUtils;
 /**
  * This is the model implementation of MimeFileImporter.
  *
- * @author roettig, aiche
+ * @author jpfeuffer
  */
-final class MimeFileImporterNodeModel extends NodeModel {    
+final class MimeFileNioImporterNodeModel extends NodeModel {    
     
 
     /**
@@ -96,7 +96,9 @@ final class MimeFileImporterNodeModel extends NodeModel {
     
     private final NodeModelStatusConsumer m_statusConsumer;
     
-    private final MimeFileImporterNodeConfiguration m_config;
+    private final MimeFileNioImporterNodeConfiguration m_config;
+    
+    private List<FSLocation> files;
     
     /**
      * Getter for data member.
@@ -110,8 +112,8 @@ final class MimeFileImporterNodeModel extends NodeModel {
     /**
      * Constructor for the node model.
      */
-    protected MimeFileImporterNodeModel(final PortsConfiguration portsConfig,
-            final MimeFileImporterNodeConfiguration config) {
+    protected MimeFileNioImporterNodeModel(final PortsConfiguration portsConfig,
+            final MimeFileNioImporterNodeConfiguration config) {
         //super(new PortType[] {}, new PortType[] { PortTypeRegistry.getInstance().getPortType(
         //        IURIPortObject.class) });
         super(portsConfig.getInputPorts(), portsConfig.getOutputPorts());
@@ -153,44 +155,6 @@ final class MimeFileImporterNodeModel extends NodeModel {
         m_config.validateSettingsForModel(settings);
     }
 
-    private static File getDataFile(final File internDir) {
-
-        return new File(internDir, "loadeddata");
-    }
-
-    /**
-     * Extract a URL from the given SettingsModelString, trying different
-     * conversion approaches. Inspired by CSVReaderConfig#loadSettingsInModel().
-     *
-     * @param filename_settings
-     *            The settings object containing the URL to convert.
-     * @return A URL object.
-     * @throws InvalidSettingsException
-     *             If the string in the given settings object cannot be
-     *             converted properly.
-     */
-    private URL convertToURL(String urlS) throws InvalidSettingsException {
-        URL url;
-
-        if (urlS == null) {
-            throw new InvalidSettingsException("URL must not be null");
-        }
-        try {
-            url = FileUtil.toURL(urlS);
-        } catch (MalformedURLException e) {
-            // might be a file, bug fix 3477
-            File file = new File(urlS);
-            try {
-                url = file.toURI().toURL();
-            } catch (Exception fileURLEx) {
-                throw new InvalidSettingsException("Invalid URL: "
-                        + e.getMessage(), e);
-            }
-        }
-
-        return url;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -198,7 +162,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException, CanceledExecutionException {
 
-        this.data = ZipUtils.read(getDataFile(internDir));
+        //this.data = ZipUtils.read(getDataFile(internDir));
     }
 
     /**
@@ -208,7 +172,7 @@ final class MimeFileImporterNodeModel extends NodeModel {
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException, CanceledExecutionException {
 
-        ZipUtils.write(this.data, getDataFile(internDir));
+        //ZipUtils.write(this.data, getDataFile(internDir));
     }
 
     @Override
@@ -249,30 +213,6 @@ final class MimeFileImporterNodeModel extends NodeModel {
                 new URIPortObjectSpec(fileExtension)
         };
     }
-
-    /*@Override
-    protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-            throws Exception {
-        URL converted = convertToURL(m_filename.getStringValue());
-        File file = FileUtil.getFileFromURL(converted);
-        if (!file.exists()) {
-            throw new Exception("File does not exist: "
-                    + file.getAbsolutePath());
-        }
-
-        List<URIContent> uris = new ArrayList<URIContent>();
-
-        //TODO URIContent could throw NUllPointerException if mimetype could not be looked up.
-        // Since we check during configure, this is minor, but there should be a more general solution
-        uris.add(new URIContent(FileUtil.toURL(m_filename.getStringValue()).toURI(),
-                (m_file_extension.isActive() ? m_file_extension
-                        .getStringValue() : MIMETypeHelper
-                        .getMIMEtypeExtension(file.getAbsolutePath()).orElse(FilenameUtils.getExtension(file.getAbsolutePath())))));
-
-        data = Helper.readFileSummary(file, 50).getBytes();
-
-        return new PortObject[] { new URIPortObject(uris) };
-    }*/
     
     // TODO safe tgt as member and delete at reset
     @Override

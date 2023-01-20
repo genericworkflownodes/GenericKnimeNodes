@@ -4,39 +4,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
 import com.genericworkflownodes.knime.nodegeneration.exceptions.DuplicateNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.exceptions.InvalidNodeNameException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.source.ContributingPluginsDirectory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.source.DescriptorsDirectory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.source.IconsDirectory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.source.PayloadDirectory;
-import com.genericworkflownodes.knime.nodegeneration.model.files.CTDFile;
-import com.genericworkflownodes.knime.nodegeneration.model.files.MimeTypesFile.MIMETypeEntry;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 
-public class NodesSourceDirectory extends Directory {
+public class FeatureSourceDirectory extends Directory {
 
     public static final String CONTRIBUTING_PLUGINS_DIRECTORY = "contributing-plugins";
     public static final String LICENSE_FILE = "LICENSE";
     public static final String COPYRIGHT_FILE = "COPYRIGHT";
     public static final String DESCRIPTION_FILE = "DESCRIPTION";
-    public static final String PLUGIN_PROPERTIES_FILE = "plugin.properties";
-    public static final String ICONS_DIRECTORY = "icons";
-    public static final String PAYLOAD_DIRECTORY = "payload";
-    public static final String DESCRIPTORS_DIRECTORY = "descriptors";
-    
-	private static final Logger LOGGER = Logger
-            .getLogger(NodesSourceDirectory.class.getCanonicalName());
+    public static final String FEATURE_PROPERTIES_FILE = "feature.properties";
     
     private static final long serialVersionUID = -2772836144406225644L;
-    private DescriptorsDirectory descriptorsDirectory = null;
-    private PayloadDirectory payloadDirectory = null;
-    private IconsDirectory iconsDirectory = null;
     private ContributingPluginsDirectory contributingPluginsDirectory = null;
 
     private File descriptionFile;
@@ -45,35 +31,9 @@ public class NodesSourceDirectory extends Directory {
 
     private Properties properties = null;
 
-    public NodesSourceDirectory(File nodeSourceDirectory)
-            throws PathnameIsNoDirectoryException, IOException,
-            DocumentException, InvalidNodeNameException,
-            DuplicateNodeNameException {
+    public FeatureSourceDirectory(File nodeSourceDirectory)
+            throws PathnameIsNoDirectoryException, IOException {
         super(nodeSourceDirectory);
-
-        try {
-            descriptorsDirectory = new DescriptorsDirectory(new File(
-                    nodeSourceDirectory, DESCRIPTORS_DIRECTORY));
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(
-                    "Could not find descriptors directory "
-                            + new File(nodeSourceDirectory, DESCRIPTORS_DIRECTORY)
-                                    .getPath());
-        }
-
-        try {
-            payloadDirectory = new PayloadDirectory(new File(
-                    nodeSourceDirectory, PAYLOAD_DIRECTORY));
-        } catch (PathnameIsNoDirectoryException e) {
-        	LOGGER.warning("No payload dir found in " + this.getName());
-        }
-
-        try {
-            iconsDirectory = new IconsDirectory(new File(nodeSourceDirectory,
-                    ICONS_DIRECTORY));
-        } catch (FileNotFoundException e) {
-        	LOGGER.info("No icons dir found in " + this.getName());
-        }
 
         try {
             contributingPluginsDirectory = new ContributingPluginsDirectory(
@@ -81,7 +41,7 @@ public class NodesSourceDirectory extends Directory {
         } catch (PathnameIsNoDirectoryException e) {
         }
 
-        File propertyFile = new File(nodeSourceDirectory, PLUGIN_PROPERTIES_FILE);
+        File propertyFile = new File(nodeSourceDirectory, FEATURE_PROPERTIES_FILE);
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream(propertyFile));
@@ -116,18 +76,6 @@ public class NodesSourceDirectory extends Directory {
 
     }
 
-    public DescriptorsDirectory getDescriptorsDirectory() {
-        return descriptorsDirectory;
-    }
-
-    public PayloadDirectory getPayloadDirectory() {
-        return payloadDirectory;
-    }
-
-    public IconsDirectory getIconsDirectory() {
-        return iconsDirectory;
-    }
-
     public ContributingPluginsDirectory getContributingPluginsDirectory() {
         return contributingPluginsDirectory;
     }
@@ -150,14 +98,6 @@ public class NodesSourceDirectory extends Directory {
     	return p;
     }
     
-    public List<CTDFile> getCtdFiles() {
-        return descriptorsDirectory.getCTDFiles();
-    }
-
-    public List<MIMETypeEntry> getMIMETypes() {
-        return descriptorsDirectory.getMimeTypesFile().getMIMETypeEntries();
-    }
-
     public File getDescriptionFile() {
         return descriptionFile;
     }
@@ -168,6 +108,21 @@ public class NodesSourceDirectory extends Directory {
 
     public File getLicenseFile() {
         return licenseFile;
+    }
+    
+    public ArrayList<GeneratedPluginMeta> getGeneratedSubPluginMetas(String nodeGeneratorLastChangeDate)
+    		throws PathnameIsNoDirectoryException, IOException, DocumentException, InvalidNodeNameException, DuplicateNodeNameException
+    {
+		ArrayList<GeneratedPluginMeta> pmetas = new ArrayList<GeneratedPluginMeta>();
+		for (File dir2 : this.listFiles())
+		{
+    		if (dir2.isDirectory() && ! dir2.getName().equals(this.getContributingPluginsDirectory().getName()))
+    		{
+    			NodesSourceDirectory pdir = new NodesSourceDirectory(dir2);
+    			pmetas.add(new GeneratedPluginMeta(pdir, nodeGeneratorLastChangeDate));
+    		}
+		}
+		return pmetas;
     }
 
 }

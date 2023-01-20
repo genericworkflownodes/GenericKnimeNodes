@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.importer;
+package com.genericworkflownodes.knime.nodes.io.nioimporter;
 
 /**
  * <code>NodeConfiguration</code> for the "MimeFileImporter" Node.
@@ -27,10 +27,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
 
-final class MimeFileImporterNodeConfiguration {
+final class MimeFileNioImporterNodeConfiguration {
 
     private static final String CFG_OVERWRITE_EXT = "FILE_EXTENSION";
 
@@ -38,7 +37,7 @@ final class MimeFileImporterNodeConfiguration {
     
     private final SettingsModelReaderFileChooser m_fileChooserSettings;
 
-    MimeFileImporterNodeConfiguration(final SettingsModelReaderFileChooser fileChooserSettings) {
+    MimeFileNioImporterNodeConfiguration(final SettingsModelReaderFileChooser fileChooserSettings) {
         m_fileChooserSettings = fileChooserSettings;
         m_overwriteFileExtension = new SettingsModelOptionalString(CFG_OVERWRITE_EXT, "", false);
     }

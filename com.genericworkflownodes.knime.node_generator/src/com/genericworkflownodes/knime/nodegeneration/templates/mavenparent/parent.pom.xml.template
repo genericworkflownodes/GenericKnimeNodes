@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>@@packageName@@.maven</groupId>
-  <artifactId>@@packageName@@.maven</artifactId>
+  <groupId>@@groupId@@</groupId>
+  <artifactId>project</artifactId>
   <!-- For now we fix the version of the parent pom to 0.0.1 since it has nothing to do with the plugin versions -->
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<knime.version>4.1</knime.version>
+		<knime.version>4.7</knime.version>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
-		<gkn.update.site>https://abibuilder.informatik.uni-tuebingen.de/archive/gkn/updateSite/${knime.version}/</gkn.update.site>
+		<gkn.update.site>https://abibuilder.cs.uni-tuebingen.de/archive/gkn/updateSite/${knime.version}/</gkn.update.site>
 		<tycho.version>1.4.0</tycho.version>
 		<tycho.extras.version>1.4.0</tycho.extras.version>
 		<tycho.test.jvmArgs>-Xmx1024m</tycho.test.jvmArgs>
@@ -134,8 +134,6 @@
 	</profiles>
   <packaging>pom</packaging>
   <modules>
-@@PLUGIN@@
-@@FRAGMENTS@@
-@@CONTRIBUTING_PLUGINS@@
+@@MODULES@@
   </modules>
 </project>

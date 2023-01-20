@@ -1,117 +1,13 @@
 package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
 import java.security.InvalidParameterException;
-import java.util.Properties;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 
 public class GeneratedPluginMeta extends PluginMeta {
-
-    private static final String PLUGIN_VERSION_REGEX = "^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$";
-
-    /**
-     * Returns the plugin name.
-     * <p>
-     * If no configuration could be found, the name is created based on the
-     * given package name. e.g. org.roettig.foo will result in foo
-     * 
-     * @param packageName
-     * @return
-     */
-    private static String getPluginName(Properties props, String packageName) {
-        String pluginname = props.getProperty("pluginName");
-        if (pluginname != null && !pluginname.isEmpty()) {
-            return pluginname;
-        }
-
-        int idx = packageName.lastIndexOf(".");
-        if (idx == -1) {
-            return packageName;
-        }
-        return packageName.substring(idx + 1);
-    }
-
-    /**
-     * Checks if the plugin name is valid.
-     * 
-     * @param obj
-     * @param id
-     */
-    private static boolean isPluginNameValid(final String pluginName) {
-        return pluginName != null && pluginName.matches("^\\w+$");
-    }
-
-    /**
-     * Returns the plugin version.
-     * 
-     * @param packageName
-     * @return
-     */
-    private static String getPluginVersion(final Properties props) {
-        return props.getProperty("pluginVersion");
-    }
-
-    /**
-     * Checks whether a given package version is a proper OSGI version, i.e., it
-     * should match ^\d+(\.\d+(\.\d+(.[a-zA-Z0-9]+)?)?)?$.
-     * 
-     * @param pluginVersion
-     *            The plugin version as string which should be tested.
-     * @return True if it is a valid version, false otherwise.
-     */
-    private static boolean isPluginVersionValid(final String pluginVersion) {
-        return pluginVersion.matches(PLUGIN_VERSION_REGEX);
-    }
-
-    /**
-     * Returns the package name the generated plugin uses. (e.g.
-     * org.roettig.foo).
-     * 
-     * @param props
-     * @return
-     */
-    private static String getPackageRoot(final Properties props) {
-        return props.getProperty("pluginPackage");
-    }
-
-    /**
-     * Checks whether a given package name is valid.
-     * 
-     * @param packageName
-     * @param id
-     * @return true if package name is valid; false otherwise
-     */
-    public static boolean isValidPackageRoot(final String packageName) {
-        return packageName != null
-                && packageName
-                        .matches("^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$");
-    }
-
-    /**
-     * Returns the package name the generated plugin uses. (e.g.
-     * org.roettig.foo).
-     * 
-     * @param props
-     * @return
-     */
-    private static String getNodeRepositoyPath(final Properties props) {
-        return props.getProperty("nodeRepositoyRoot");
-    }
-
-    /**
-     * Checks whether a given package name is valid.
-     * 
-     * @param nodeRepositoryPath
-     * @param id
-     * @return true if package name is valid; false otherwise
-     */
-    public static boolean isNodeRepositoyPathValid(
-            final String nodeRepositoryPath) {
-        // TODO
-        return true;
-    }
 
     /**
      * Updates the version qualifier of the plug-in meta. Update the qualifier
@@ -151,6 +47,8 @@ public class GeneratedPluginMeta extends PluginMeta {
     private final String name;
     private final String nodeRepositoyPath;
     private final String generatedPluginVersion;
+    public final NodesSourceDirectory sourceDir;
+    public final ArrayList<FragmentMeta> generatedFragmentMetas;
 
     /**
      * Creates a Meta info object for the generated plug-in based on the
@@ -163,9 +61,9 @@ public class GeneratedPluginMeta extends PluginMeta {
      */
     public GeneratedPluginMeta(NodesSourceDirectory sourceDirectory,
             String nodeGeneratorQualifier) {
-        super(getPackageRoot(sourceDirectory.getProperties()),
-                getPluginVersion(sourceDirectory.getProperties()));
+        super(sourceDirectory);
 
+        sourceDir = sourceDirectory;
         // update the version qualifier based on the version of the node
         // generator
         if (nodeGeneratorQualifier != null) {
@@ -210,6 +108,14 @@ public class GeneratedPluginMeta extends PluginMeta {
             throw new InvalidParameterException("The node repository path \""
                     + nodeRepositoyPath + "\" is not valid");
         }
+        
+        if (sourceDirectory.getPayloadDirectory() != null)
+        {
+        	generatedFragmentMetas = sourceDirectory.getPayloadDirectory().getFragmentMetas(this);
+        } else {
+        	generatedFragmentMetas = new ArrayList<FragmentMeta>();
+        }
+        
     }
 
     /**

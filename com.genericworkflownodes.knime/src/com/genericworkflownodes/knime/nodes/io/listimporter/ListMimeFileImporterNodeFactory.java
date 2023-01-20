@@ -28,6 +28,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author roettig
  */
+@Deprecated
 public class ListMimeFileImporterNodeFactory extends
         NodeFactory<ListMimeFileImporterNodeModel> {
 

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.genericworkflownodes.knime.nodes.io.importer;
+package com.genericworkflownodes.knime.nodes.io.nioimporter;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -74,10 +74,10 @@ import com.genericworkflownodes.util.MIMETypeHelper;
 /**
  * <code>NodeFactory</code> for the "MimeFileImporter" Node.
  *
- * @author roettig
+ * @author jpfeuffer
  */
-public final class MimeFileImporterNodeFactory extends
-ConfigurableNodeFactory<MimeFileImporterNodeModel> {
+public final class MimeFileNioImporterNodeFactory extends
+ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
     
     private static final String FS_PORT_ID = "File System Connection";
 
@@ -266,17 +266,17 @@ ConfigurableNodeFactory<MimeFileImporterNodeModel> {
     }
     
     @Override
-    protected MimeFileImporterNodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
+    protected MimeFileNioImporterNodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
         PortsConfiguration portsConfiguration = creationConfig.getPortConfig().orElseThrow(IllegalStateException::new);
-        return new MimeFileImporterNodeModel(portsConfiguration, createSettings(portsConfiguration));
+        return new MimeFileNioImporterNodeModel(portsConfiguration, createSettings(portsConfiguration));
     }
     
-    private static MimeFileImporterNodeConfiguration createSettings(final PortsConfiguration portsConfiguration) {
-        return new MimeFileImporterNodeConfiguration(
+    private static MimeFileNioImporterNodeConfiguration createSettings(final PortsConfiguration portsConfiguration) {
+        return new MimeFileNioImporterNodeConfiguration(
                 new SettingsModelReaderFileChooser(
                         "file_chooser",
                         portsConfiguration,
-                        MimeFileImporterNodeFactory.FS_PORT_ID,
+                        MimeFileNioImporterNodeFactory.FS_PORT_ID,
                         EnumConfig.create(FilterMode.FILE, FilterMode.FILES_IN_FOLDERS),
                         EnumSet.of(FSCategory.LOCAL, FSCategory.MOUNTPOINT, FSCategory.RELATIVE)));
 
@@ -302,10 +302,10 @@ ConfigurableNodeFactory<MimeFileImporterNodeModel> {
      * {@inheritDoc}
      */
     @Override
-    public NodeView<MimeFileImporterNodeModel> createNodeView(
-            final int viewIndex, final MimeFileImporterNodeModel nodeModel) {
+    public NodeView<MimeFileNioImporterNodeModel> createNodeView(
+            final int viewIndex, final MimeFileNioImporterNodeModel nodeModel) {
 
-        return new GenericNodeView<MimeFileImporterNodeModel>(nodeModel, (model) -> {
+        return new GenericNodeView<MimeFileNioImporterNodeModel>(nodeModel, (model) -> {
             String toDisplay = "File does not exist!";
             if (model.getContent() != null)
             {
@@ -332,7 +332,7 @@ ConfigurableNodeFactory<MimeFileImporterNodeModel> {
     public NodeDialogPane createNodeDialogPane(final NodeCreationConfiguration config) {
 
         final DefaultNodeSettingsPane pane = new DefaultNodeSettingsPane();
-        MimeFileImporterNodeConfiguration extConfig = createSettings(config.getPortConfig().orElseThrow(IllegalStateException::new));
+        MimeFileNioImporterNodeConfiguration extConfig = createSettings(config.getPortConfig().orElseThrow(IllegalStateException::new));
         final FlowVariableModel readFvm = pane.createFlowVariableModel(
                 extConfig.getFileChooserSettings().getKeysForFSLocation(), FSLocationVariableType.INSTANCE);
         final DialogComponentReaderFileChooser fileChooser1 = 

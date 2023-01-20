@@ -57,6 +57,12 @@
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.cluster.nodes.porttofilestore.PortToFileStoreNodeFactory">
     </node>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.io.nioimporter.MimeFileNioImporterNodeFactory"
+          hidden="false">
+    </node>
    </extension>
 
    <extension point="org.knime.product.splashExtension">
@@ -96,6 +102,14 @@
       <executor
             class="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor"
             name="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSToolExecutor"
+            name="OpenMSToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.OpenMSToolExecutor">
       </executor>
    </extension>
    <extension

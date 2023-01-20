@@ -3,6 +3,7 @@ package com.genericworkflownodes.knime.custom.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,7 @@ public class DLLRegistry {
 	 */
 	private static final NodeLogger LOGGER = NodeLogger.getLogger(DLLRegistry.class);
 
-	/*
+	/**
 	 * Default constructor
 	 */
 	private DLLRegistry() {
@@ -55,14 +56,18 @@ public class DLLRegistry {
      * @return A list of paths ({@link String}), or an empty list if no dll was
      *         found.
      */
-    public List<String> getAvailableDLLs() throws CoreException {
+    public HashMap<String, ArrayList<String>> getAllAvailableDLLFolders() throws CoreException {
 
-        Set<String> dllPaths = new HashSet<String>();
+        HashMap<String, ArrayList<String>> res = new HashMap<String,ArrayList<String>>();
 
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IConfigurationElement[] elements = reg.getConfigurationElementsFor(EXTENSION_POINT_ID);
 
+		// TODO cache this??
         for (IConfigurationElement elem : elements) {
+            Set<String> dllPaths = new HashSet<String>();
+            //System.out.println(elem.getName() + elem.getValue());
+            final String name = elem.getAttribute("name");
             final Object o = elem.createExecutableExtension("class");
             // cast is guaranteed to work based on the extension point
             // definition
@@ -79,13 +84,29 @@ public class DLLRegistry {
                             + f.toString() + "]" + e.getMessage());
                 }
 			}
+            for (File fol : ((IDLLProvider) o).getDLLFolders()) {
+                if (fol != null) {
+                    dllPaths.add(fol.toString());
+                }
+            }
+            
+            if (dllPaths.isEmpty()) {
+                res.put(name, new ArrayList<String>()); 
+            } else {
+                res.put(name, new ArrayList<String>(dllPaths));
+            }
 		}
 
-        if (dllPaths.isEmpty()) {
-            return new ArrayList<String>();
-        }
-
-        return new ArrayList<String>(dllPaths);
+       return res;
 	}
+    
+    public List<String> getAvailableDLLFoldersFor(List<String> names) throws CoreException {
+        ArrayList<String> res = new ArrayList<String>();
+        for (String n : names)
+        {
+            res.addAll(getAllAvailableDLLFolders().get(n));
+        }
+        return res;
+    }
 
 }
