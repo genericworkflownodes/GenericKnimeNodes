@@ -18,10 +18,6 @@
  */
 package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
-import static com.genericworkflownodes.knime.nodegeneration.model.meta.PluginMeta.getPackageRoot;
-import static com.genericworkflownodes.knime.nodegeneration.model.meta.PluginMeta.getPluginVersion;
-
-import java.util.List;
 import java.util.Properties;
 
 import com.genericworkflownodes.knime.nodegeneration.model.directories.FeatureSourceDirectory;
@@ -38,7 +34,11 @@ public class PluginMeta {
     protected String id;
     private String version;
     
-    private static final String BUNDLE_VERSION_REGEX = "^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$";
+    private static final String PLUGIN_VERSION_REGEX = "^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$";
+    private static final String PLUGIN_NAME_KEY = "pluginName";
+    private static final String PLUGIN_VERSION_KEY = "pluginVersion";
+	private static final String PLUGIN_PACKAGE_KEY = "pluginPackage";
+	private static final String NODE_REPOSITORY_ROOT_KEY = "nodeRepositoryRoot";
 
     /**
      * Returns the plugin name.
@@ -50,7 +50,7 @@ public class PluginMeta {
      * @return
      */
     protected static String getPluginName(Properties props, String packageName) {
-        String pluginname = props.getProperty("bundleName");
+        String pluginname = props.getProperty(PLUGIN_NAME_KEY);
         if (pluginname != null && !pluginname.isEmpty()) {
             return pluginname;
         }
@@ -79,7 +79,7 @@ public class PluginMeta {
      * @return
      */
     protected static String getPluginVersion(final Properties props) {
-        return props.getProperty("bundleVersion");
+        return props.getProperty(PLUGIN_VERSION_KEY);
     }
 
     /**
@@ -91,7 +91,7 @@ public class PluginMeta {
      * @return True if it is a valid version, false otherwise.
      */
     protected static boolean isPluginVersionValid(final String pluginVersion) {
-        return pluginVersion.matches(BUNDLE_VERSION_REGEX);
+        return pluginVersion.matches(PLUGIN_VERSION_REGEX);
     }
 
     /**
@@ -102,7 +102,7 @@ public class PluginMeta {
      * @return
      */
     protected static String getPackageRoot(final Properties props) {
-        return props.getProperty("pluginPackage");
+        return props.getProperty(PLUGIN_PACKAGE_KEY);
     }
 
     /**
@@ -126,8 +126,8 @@ public class PluginMeta {
      * @param props
      * @return
      */
-    protected static String getNodeRepositoyPath(final Properties props) {
-        return props.getProperty("nodeRepositoyRoot");
+    protected static String getNodeRepositoryPath(final Properties props) {
+        return props.getProperty(NODE_REPOSITORY_ROOT_KEY);
     }
 
     /**
@@ -138,7 +138,7 @@ public class PluginMeta {
      * @param id
      * @return true if package name is valid; false otherwise
      */
-    public static boolean isNodeRepositoyPathValid(
+    public static boolean isNodeRepositoryPathValid(
             final String nodeRepositoryPath) {
         // TODO
         return true;

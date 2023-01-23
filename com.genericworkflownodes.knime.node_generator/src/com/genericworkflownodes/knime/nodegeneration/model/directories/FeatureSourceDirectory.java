@@ -30,6 +30,41 @@ public class FeatureSourceDirectory extends Directory {
     private File licenseFile;
 
     private Properties properties = null;
+    
+    public FeatureSourceDirectory(NodesSourceDirectory nodeSourceDirectory)
+            throws PathnameIsNoDirectoryException, IOException {
+        super(nodeSourceDirectory);
+
+        try {
+            contributingPluginsDirectory = new ContributingPluginsDirectory(
+                    new File(nodeSourceDirectory, CONTRIBUTING_PLUGINS_DIRECTORY));
+        } catch (PathnameIsNoDirectoryException e) {
+        }
+
+        //this.properties = new Properties();
+
+        descriptionFile = new File(nodeSourceDirectory, DESCRIPTION_FILE);
+        if (!descriptionFile.exists()) {
+            throw new FileNotFoundException(
+                    "DESCRIPTION file not found in source directory. Expected in: "
+                            + descriptionFile.getAbsolutePath());
+        }
+
+        copyrightFile = new File(nodeSourceDirectory, COPYRIGHT_FILE);
+        if (!copyrightFile.exists()) {
+            throw new FileNotFoundException(
+                    "COPYRIGHT file not found in source directory. Expected in: "
+                            + copyrightFile.getAbsolutePath());
+        }
+
+        licenseFile = new File(nodeSourceDirectory, LICENSE_FILE);
+        if (!licenseFile.exists()) {
+            throw new FileNotFoundException(
+                    "LICENSE file not found in source directory. Expected in: "
+                            + licenseFile.getAbsolutePath());
+        }
+
+    }
 
     public FeatureSourceDirectory(File nodeSourceDirectory)
             throws PathnameIsNoDirectoryException, IOException {

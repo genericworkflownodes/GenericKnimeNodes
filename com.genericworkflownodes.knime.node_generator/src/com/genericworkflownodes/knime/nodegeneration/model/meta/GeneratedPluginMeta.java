@@ -98,13 +98,13 @@ public class GeneratedPluginMeta extends PluginMeta {
                     + getVersion() + "\" is not valid");
         }
 
-        nodeRepositoyPath = getNodeRepositoyPath(sourceDirectory
+        nodeRepositoyPath = getNodeRepositoryPath(sourceDirectory
                 .getProperties());
         if (nodeRepositoyPath == null || nodeRepositoyPath.isEmpty()) {
             throw new InvalidParameterException(
                     "No path within the node repository was specified");
         }
-        if (!isNodeRepositoyPathValid(getVersion())) {
+        if (!isNodeRepositoryPathValid(getVersion())) {
             throw new InvalidParameterException("The node repository path \""
                     + nodeRepositoyPath + "\" is not valid");
         }
