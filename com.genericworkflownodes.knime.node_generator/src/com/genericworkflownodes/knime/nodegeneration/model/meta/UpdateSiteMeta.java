@@ -35,7 +35,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.UpdateSit
  * Meta information of the generated feature. The feature will bundle all
  * generated plugins, fragments, and additionally provided plugins.
  * 
- * @author aiche, bkahlert
+ * @author jpfeuffer
  */
 public class UpdateSiteMeta /* extends PluginMeta */ {
 // does not extend PluginMeta since it does not have version and id
@@ -80,7 +80,7 @@ public class UpdateSiteMeta /* extends PluginMeta */ {
         	categories = new ArrayList<Category>();
         	String[] catnames = sourceDirectory.getProperty("categories", "").split(";");
         	for (String cat : catnames) {
-        		if (cat.isBlank())
+        		if (!cat.isBlank())
         		{
             		String desc = sourceDirectory.getProperty(cat + "_Description", "");
             		String lab = sourceDirectory.getProperty(cat + "_Label", "");
@@ -119,6 +119,7 @@ public class UpdateSiteMeta /* extends PluginMeta */ {
 	}
 
 	public static class Category {
+		//TODO check for valid Strings, IDs
 		public Category(String name, String description, String label)
 		{
 			this.name = name;
