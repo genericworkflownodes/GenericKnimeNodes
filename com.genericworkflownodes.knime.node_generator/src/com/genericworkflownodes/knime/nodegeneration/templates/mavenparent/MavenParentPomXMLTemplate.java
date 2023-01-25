@@ -28,14 +28,14 @@ public class MavenParentPomXMLTemplate extends Template {
         for (FeatureMeta feature : siteMeta.featureMetas) {
         	for (GeneratedPluginMeta plugin : feature.generatedPluginMetas) {
         		for (FragmentMeta fragment : plugin.generatedFragmentMetas) {
-        			moduleString += String.format("\t\t<module>../%s</module>\n", fragment.getId());
+        			moduleString += String.format("\t\t<module>%s</module>\n", fragment.getId());
         		}
-        		moduleString += String.format("\t\t<module>../%s</module>\n", plugin.getId());
+        		moduleString += String.format("\t\t<module>%s</module>\n", plugin.getId());
         	}
         	for (ContributingPluginMeta plugin : feature.contributingPluginMetas) {
-        		moduleString += String.format("\t\t<module>../%s</module>\n", plugin.getId());
+        		moduleString += String.format("\t\t<module>%s</module>\n", plugin.getId());
         	}
-        	moduleString += String.format("\t\t<module>../%s</module>\n", feature.getId());
+        	moduleString += String.format("\t\t<module>%s</module>\n", feature.getId());
         }
         replace("@@MODULES@@", moduleString);
     }

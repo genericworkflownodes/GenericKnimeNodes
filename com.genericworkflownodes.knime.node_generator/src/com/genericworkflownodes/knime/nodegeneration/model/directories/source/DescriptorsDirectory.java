@@ -1,6 +1,7 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories.source;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,9 +50,9 @@ public class DescriptorsDirectory extends Directory {
      *             directory.
      */
     public DescriptorsDirectory(final File sourcesDirectory)
-            throws PathnameIsNoDirectoryException, IOException,
+            throws FileNotFoundException, PathnameIsNoDirectoryException, IOException,
             InvalidNodeNameException, DuplicateNodeNameException {
-        super(sourcesDirectory);
+        super(sourcesDirectory, true);
 
         File mimeTypeFile = new File(this, "mime.types");
         mimeTypesFile = new MimeTypesFile(mimeTypeFile.getAbsolutePath());

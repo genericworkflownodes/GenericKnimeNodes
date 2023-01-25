@@ -57,7 +57,7 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
      * @throws FileNotFoundException
      */
     public GenericPluginDirectory(File directory, String packageName)
-            throws PathnameIsNoDirectoryException {
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
         super(directory);
         init(packageName);
     }
@@ -70,19 +70,25 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
                 + File.separator + "knime" + File.separator + "nodes").mkdirs();
         new File(this, "META-INF").mkdirs();
 
-        iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
+        try {
+			iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
+            srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
 
-        srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
+            packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
+                    srcDirectory, packageRootPath));
 
-        packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
-                srcDirectory, packageRootPath));
+            knimeDirectory = new NodesBuildKnimeDirectory(new File(
+                    packageRootDirectory, "knime"));
 
-        knimeDirectory = new NodesBuildKnimeDirectory(new File(
-                packageRootDirectory, "knime"));
-
-        knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
-                knimeDirectory, "nodes"));
-
+            knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
+                    knimeDirectory, "nodes"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PathnameIsNoDirectoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**

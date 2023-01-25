@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="ConsensusMapNormalizer" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_ConsensusMapNormalizer.html" category="Map Alignment" >
+<description><![CDATA[Normalizes maps of one consensusXML file]]></description>
+<manual><![CDATA[Normalizes maps of one consensusXML file]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="ConsensusMapNormalizer" description="Normalizes maps of one consensusXML file">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;ConsensusMapNormalizer&apos;">
+      <ITEM name="in" value="" type="input-file" description="input file" required="true" advanced="false" supported_formats="*.consensusXML" />
+      <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.consensusXML" />
+      <ITEM name="algorithm_type" value="robust_regression" type="string" description="The normalization algorithm that is applied." required="false" advanced="false" restrictions="robust_regression,median,quantile" />
+      <ITEM name="ratio_threshold" value="0.67" type="double" description="Only for &apos;robust_regression&apos;: the parameter is used to distinguish between non-outliers (ratio_threshold &lt; intensity ratio &lt; 1/ratio_threshold) and outliers." required="false" advanced="false" restrictions="0.001:1" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

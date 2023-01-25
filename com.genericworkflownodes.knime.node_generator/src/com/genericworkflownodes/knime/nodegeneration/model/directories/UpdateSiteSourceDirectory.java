@@ -22,7 +22,7 @@ public class UpdateSiteSourceDirectory extends Directory {
             throws PathnameIsNoDirectoryException, IOException,
             DocumentException, InvalidNodeNameException,
             DuplicateNodeNameException {
-        super(nodeSourceDirectory);
+        super(nodeSourceDirectory, true);
 
         File propertyFile = new File(nodeSourceDirectory, FEATURE_PROPERTIES_FILE);
         try {

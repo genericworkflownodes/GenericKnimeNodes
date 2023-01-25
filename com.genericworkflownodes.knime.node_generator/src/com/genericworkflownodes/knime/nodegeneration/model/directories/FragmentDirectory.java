@@ -48,7 +48,7 @@ public class FragmentDirectory extends PluginDirectory {
      * @throws FileNotFoundException
      */
     public FragmentDirectory(Directory directory, FragmentMeta fragmentMeta)
-            throws PathnameIsNoDirectoryException {
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
         super(new File(directory, fragmentMeta.getId()));
         File payloadDirectory = new File(this, "payload");
         binaryResourcesDirectory = new NodesBuildBinaryResourcesDirectory(

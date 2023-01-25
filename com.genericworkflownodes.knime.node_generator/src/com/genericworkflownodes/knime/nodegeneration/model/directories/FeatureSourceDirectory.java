@@ -33,7 +33,7 @@ public class FeatureSourceDirectory extends Directory {
     
     public FeatureSourceDirectory(NodesSourceDirectory nodeSourceDirectory)
             throws PathnameIsNoDirectoryException, IOException {
-        super(nodeSourceDirectory);
+        super(nodeSourceDirectory, true);
 
         try {
             contributingPluginsDirectory = new ContributingPluginsDirectory(
@@ -68,12 +68,13 @@ public class FeatureSourceDirectory extends Directory {
 
     public FeatureSourceDirectory(File nodeSourceDirectory)
             throws PathnameIsNoDirectoryException, IOException {
-        super(nodeSourceDirectory);
+        super(nodeSourceDirectory, true);
 
         try {
             contributingPluginsDirectory = new ContributingPluginsDirectory(
                     new File(nodeSourceDirectory, CONTRIBUTING_PLUGINS_DIRECTORY));
         } catch (PathnameIsNoDirectoryException e) {
+        } catch (FileNotFoundException e) {
         }
 
         File propertyFile = new File(nodeSourceDirectory, FEATURE_PROPERTIES_FILE);
@@ -151,7 +152,7 @@ public class FeatureSourceDirectory extends Directory {
 		ArrayList<GeneratedPluginMeta> pmetas = new ArrayList<GeneratedPluginMeta>();
 		for (File dir2 : this.listFiles())
 		{
-    		if (dir2.isDirectory() && ! dir2.getName().equals(this.getContributingPluginsDirectory().getName()))
+    		if (dir2.isDirectory() && (this.getContributingPluginsDirectory() == null || !dir2.getName().equals(this.getContributingPluginsDirectory().getName())))
     		{
     			NodesSourceDirectory pdir = new NodesSourceDirectory(dir2);
     			pmetas.add(new GeneratedPluginMeta(pdir, nodeGeneratorLastChangeDate));

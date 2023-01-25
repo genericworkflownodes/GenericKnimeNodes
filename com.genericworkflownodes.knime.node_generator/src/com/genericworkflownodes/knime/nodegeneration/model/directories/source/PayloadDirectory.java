@@ -19,6 +19,7 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories.source;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -46,8 +47,8 @@ public class PayloadDirectory extends Directory{
 
 
     public PayloadDirectory(File payloadDirectory)
-            throws PathnameIsNoDirectoryException {
-    	super(payloadDirectory);
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
+    	super(payloadDirectory, true);
     }
 
     public ArrayList<FragmentMeta> getFragmentMetas(

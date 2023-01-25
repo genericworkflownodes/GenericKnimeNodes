@@ -2,6 +2,7 @@ package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSour
 
 public class GeneratedPluginMeta extends PluginMeta {
 
+	private static final String PLUGIN_RESOURCE_PROVIDER_TARGET_KEY = "resourceProviderTarget";
     /**
      * Updates the version qualifier of the plug-in meta. Update the qualifier
      * part of the plug-in version, e.g., 0.1.0.20000101 update with 20100101 ->
@@ -45,10 +47,11 @@ public class GeneratedPluginMeta extends PluginMeta {
     }
 
     private final String name;
-    private final String nodeRepositoyPath;
+    private final String nodeRepositoryPath;
     private final String generatedPluginVersion;
     public final NodesSourceDirectory sourceDir;
     public final ArrayList<FragmentMeta> generatedFragmentMetas;
+	private final String resourceProviderTarget;
 
     /**
      * Creates a Meta info object for the generated plug-in based on the
@@ -63,6 +66,7 @@ public class GeneratedPluginMeta extends PluginMeta {
             String nodeGeneratorQualifier) {
         super(sourceDirectory);
 
+        resourceProviderTarget = getResourceProviderTarget(sourceDirectory.getProperties());
         sourceDir = sourceDirectory;
         // update the version qualifier based on the version of the node
         // generator
@@ -98,15 +102,15 @@ public class GeneratedPluginMeta extends PluginMeta {
                     + getVersion() + "\" is not valid");
         }
 
-        nodeRepositoyPath = getNodeRepositoryPath(sourceDirectory
+        nodeRepositoryPath = getNodeRepositoryPath(sourceDirectory
                 .getProperties());
-        if (nodeRepositoyPath == null || nodeRepositoyPath.isEmpty()) {
+        if (nodeRepositoryPath == null || nodeRepositoryPath.isEmpty()) {
             throw new InvalidParameterException(
                     "No path within the node repository was specified");
         }
         if (!isNodeRepositoryPathValid(getVersion())) {
             throw new InvalidParameterException("The node repository path \""
-                    + nodeRepositoyPath + "\" is not valid");
+                    + nodeRepositoryPath + "\" is not valid");
         }
         
         if (sourceDirectory.getPayloadDirectory() != null)
@@ -115,10 +119,45 @@ public class GeneratedPluginMeta extends PluginMeta {
         } else {
         	generatedFragmentMetas = new ArrayList<FragmentMeta>();
         }
-        
     }
 
-    /**
+	/**
+     * Gets if the KNIME plugin to be generated is a resource-only plugin or contains nodes.
+     * <p>
+     * TODO we could determine it based on the descriptors folder also!
+     * 
+     * @return The plugin's name.
+     */
+    private String getResourceProviderTarget(Properties properties) {
+		return properties.getProperty(PLUGIN_RESOURCE_PROVIDER_TARGET_KEY, "");
+	}
+    
+    
+	/**
+     * Gets if the KNIME plugin to be generated is a resource-only plugin or contains nodes.
+     * <p>
+     * TODO we could determine it based on the descriptors folder also!
+     * 
+     * @return The plugin's name.
+     */
+    public final boolean isResourceOnly() {
+		return !resourceProviderTarget.isEmpty();
+	}
+    
+	/**
+     * Returns the target name of this resource providing plugin.
+     * GKN ToolExecutor implementations can use that to only accept resources from specific
+     * providers. This is parsed from the resourceProviderTarget property of the
+     * plugins.properties.
+     * <p>
+     * 
+     * @return The target name which can be an arbitrary identifier.
+     */
+	public String getResourceProviderTarget() {
+		return resourceProviderTarget;
+	}
+
+	/**
      * Gets the KNIME plugin's name.
      * <p>
      * e.g. KNIME Test
@@ -149,7 +188,7 @@ public class GeneratedPluginMeta extends PluginMeta {
      *         registry.
      */
     public final String getNodeRepositoryRoot() {
-        return nodeRepositoyPath;
+        return nodeRepositoryPath;
     }
 
     /**
@@ -161,4 +200,5 @@ public class GeneratedPluginMeta extends PluginMeta {
     public final String getGeneratedPluginVersion() {
         return generatedPluginVersion;
     }
+
 }

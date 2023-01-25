@@ -1,0 +1,49 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package __PACKAGE__;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
+import com.genericworkflownodes.knime.custom.config.IDLLProvider;
+
+public class GenericPathProvider implements IDLLProvider {
+
+	@Override
+	public List<File> getDLLFolders() {
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		URL dir;
+		ArrayList<File> res = new ArrayList<File>();
+		try {
+			dir = bundle.getResource("/__PAYLOAD__/");
+			File payloadfolder = new File(FileLocator.toFileURL(dir).toURI());
+			File[] contents = payloadfolder.listFiles();
+			for (File content : contents)
+			{
+				if (content.isDirectory())
+				{
+					res.add(content);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public List<File> getDLLs() {
+		return new ArrayList<File>();
+	}
+
+}

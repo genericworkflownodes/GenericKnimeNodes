@@ -60,6 +60,8 @@ public class FeatureMeta extends PluginMeta {
     public final ArrayList<ContributingPluginMeta> contributingPluginMetas;
     public final FeatureSourceDirectory featureSourceDir;
 
+	private final String category;
+
     /**
      * Constructs the feature meta information given a singleton node source directory.
      * 
@@ -77,6 +79,7 @@ public class FeatureMeta extends PluginMeta {
             id = generatedPluginMetas.get(0).getPackageRoot() + ".feature"; // take the plugins ID and add .feature
             groupid = id;
             contributingPluginMetas = sourceDirectory.getContributingPluginsDirectory().getContributingPluginMetas();
+            category = "";
 
             description = FileUtils.readFileToString(sourceDirectory
                     .getDescriptionFile());
@@ -104,8 +107,11 @@ public class FeatureMeta extends PluginMeta {
         super(sourceDirectory);
         try {
         	featureSourceDir = sourceDirectory;
-            name = sourceDirectory.getProperty("feature_name", sourceDirectory.getName());
-            groupid = sourceDirectory.getProperty("group_id", sourceDirectory.getName());
+            name = sourceDirectory.getProperty("featureName", sourceDirectory.getName());
+            id = sourceDirectory.getProperty("featureId", sourceDirectory.getName());
+            version = sourceDirectory.getProperty("featureVersion", sourceDirectory.getName());
+            groupid = sourceDirectory.getProperty("groupId", sourceDirectory.getName());
+            category = sourceDirectory.getProperty("category", "");
 
             description = FileUtils.readFileToString(sourceDirectory
                     .getDescriptionFile());
@@ -118,7 +124,10 @@ public class FeatureMeta extends PluginMeta {
                     "Could not read meta information.\n" + e.getMessage());
         }
         generatedPluginMetas = sourceDirectory.getGeneratedSubPluginMetas(nodeGeneratorLastChangeDate);
-        contributingPluginMetas = sourceDirectory.getContributingPluginsDirectory().getContributingPluginMetas();
+        contributingPluginMetas = 
+        		sourceDirectory.getContributingPluginsDirectory() != null ?
+        				sourceDirectory.getContributingPluginsDirectory().getContributingPluginMetas()
+        				: new ArrayList<ContributingPluginMeta>();
     }
 
     /**
@@ -202,6 +211,10 @@ public class FeatureMeta extends PluginMeta {
 
 	public String getGroupid() {
 		return groupid;
+	}
+
+	public String getCategory() {
+		return category;
 	}
 
 }

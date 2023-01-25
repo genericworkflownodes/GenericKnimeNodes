@@ -49,22 +49,40 @@ public class NodesSourceDirectory extends Directory {
             throws PathnameIsNoDirectoryException, IOException,
             DocumentException, InvalidNodeNameException,
             DuplicateNodeNameException {
-        super(nodeSourceDirectory);
+        super(nodeSourceDirectory, true);
 
+        File propertyFile = new File(nodeSourceDirectory, PLUGIN_PROPERTIES_FILE);
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(propertyFile));
+            this.properties = properties;
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Could not find properties file "
+                    + propertyFile.getPath());
+        } catch (IOException e) {
+            throw new IOException("Could not load properties file", e);
+        }
+        
         try {
             descriptorsDirectory = new DescriptorsDirectory(new File(
                     nodeSourceDirectory, DESCRIPTORS_DIRECTORY));
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(
-                    "Could not find descriptors directory "
-                            + new File(nodeSourceDirectory, DESCRIPTORS_DIRECTORY)
-                                    .getPath());
+        	// TODO refactor
+        	if (properties.getProperty("resourceProviderTarget") == null)
+        	{
+                throw new FileNotFoundException(
+                        "Could not find descriptors directory "
+                                + new File(nodeSourceDirectory, DESCRIPTORS_DIRECTORY)
+                                        .getPath());
+        	}
         }
 
         try {
             payloadDirectory = new PayloadDirectory(new File(
                     nodeSourceDirectory, PAYLOAD_DIRECTORY));
         } catch (PathnameIsNoDirectoryException e) {
+        	LOGGER.warning("Payload is not a directory " + this.getName());
+        } catch (FileNotFoundException e) {
         	LOGGER.warning("No payload dir found in " + this.getName());
         }
 
@@ -79,18 +97,7 @@ public class NodesSourceDirectory extends Directory {
             contributingPluginsDirectory = new ContributingPluginsDirectory(
                     new File(nodeSourceDirectory, CONTRIBUTING_PLUGINS_DIRECTORY));
         } catch (PathnameIsNoDirectoryException e) {
-        }
-
-        File propertyFile = new File(nodeSourceDirectory, PLUGIN_PROPERTIES_FILE);
-        try {
-            Properties properties = new Properties();
-            properties.load(new FileInputStream(propertyFile));
-            this.properties = properties;
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Could not find properties file "
-                    + propertyFile.getPath());
-        } catch (IOException e) {
-            throw new IOException("Could not load properties file", e);
+        } catch (FileNotFoundException e) {	
         }
 
         descriptionFile = new File(nodeSourceDirectory, DESCRIPTION_FILE);

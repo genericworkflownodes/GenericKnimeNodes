@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="IDEvaluator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_IDEvaluator.html" category="Utilities" >
+<description><![CDATA[Computes a 'q-value vs. #PSM' plot which is saved as an image to visualize the number identifications for a certain q-value.]]></description>
+<manual><![CDATA[Computes a 'q-value vs. #PSM' plot which is saved as an image to visualize the number identifications for a certain q-value.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDEvaluator" description="Computes a &apos;q-value vs. #PSM&apos; plot which is saved as an image to visualize the number identifications for a certain q-value.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDEvaluator&apos;">
+      <ITEMLIST name="in" type="input-file" description="Input file(s)" required="false" advanced="false" supported_formats="*.idXML">
+      </ITEMLIST>
+      <ITEM name="out" value="" type="output-file" description="Output file (if given, no GUI will be displayed)" required="false" advanced="false" supported_formats="*.png,*.jpg,*.svg" />
+      <ITEM name="out_type" value="" type="string" description="The image format. Set this if you want to force a format not reflected by the &apos;out&apos; filename." required="false" advanced="false" restrictions="png,jpg,svg" />
+      <ITEM name="out_csv" value="" type="output-file" description="Optional output of points as table for manual post-processing." required="false" advanced="false" supported_formats="*.csv" />
+      <ITEM name="q_min" value="0" type="double" description="Minimal q-value in plot." required="false" advanced="false" restrictions="0:1" />
+      <ITEM name="q_max" value="0.4" type="double" description="Maximal q-value in plot." required="false" advanced="false" restrictions="0:1" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Additional parameters for FDR and image sizes.">
+        <NODE name="fdr" description="">
+          <ITEM name="use_all_hits" value="false" type="string" description="If &apos;true&apos; not only the first hit, but all are used (peptides only)" required="false" advanced="false" restrictions="true,false" />
+        </NODE>
+        <NODE name="image" description="">
+          <ITEM name="height" value="800" type="int" description="Height of raster images (e.g., PNG)." required="false" advanced="false" />
+          <ITEM name="width" value="1024" type="int" description="Width of raster images (e.g., PNG)." required="false" advanced="false" />
+        </NODE>
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

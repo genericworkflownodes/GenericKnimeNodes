@@ -19,9 +19,9 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories.source;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,8 +46,8 @@ public class ContributingPluginsDirectory extends Directory {
     private static final long serialVersionUID = -6496032916192735091L;
 
     public ContributingPluginsDirectory(File contributingPluginsDirectory)
-            throws PathnameIsNoDirectoryException {
-        super(contributingPluginsDirectory);
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
+        super(contributingPluginsDirectory, true);
     }
 
     /**
@@ -71,7 +71,7 @@ public class ContributingPluginsDirectory extends Directory {
         for (String directory : directories) {
             try {
                 contributingPluginMetas.add(ContributingPluginMeta
-                        .create(new Directory(new File(this, directory))));
+                        .create(new Directory(new File(this, directory), true)));
 
             } catch (PathnameIsNoDirectoryException e) {
                 LOGGER.log(
@@ -80,7 +80,11 @@ public class ContributingPluginsDirectory extends Directory {
                 LOGGER.log(Level.SEVERE, e.getMessage());
             } catch (InvalidPluginException e) {
                 LOGGER.warning(e.getMessage());
-            }
+            } catch (FileNotFoundException e) {
+                LOGGER.log(
+                        Level.SEVERE,
+                        "Should never occur. Using the filter we guarantee that the given directory exists");
+			}
         }
 
         return contributingPluginMetas;

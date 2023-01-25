@@ -44,6 +44,8 @@ public class UpdateSiteMeta /* extends PluginMeta */ {
     
     public final ArrayList<FeatureMeta> featureMetas;
     private final String groupId;
+    private final ArrayList<Category> categories;
+	private String artifactId;
 
     /**
      * Constructs the feature meta information given a singleton node source directory.
@@ -58,11 +60,12 @@ public class UpdateSiteMeta /* extends PluginMeta */ {
     		UpdateSiteSourceDirectory sourceDirectory,
     		String nodeGeneratorLastChangeDate)
     				throws PathnameIsNoDirectoryException,
-    					DocumentException,
-    					InvalidNodeNameException,
-    					DuplicateNodeNameException {
+    					   DocumentException,
+    					   InvalidNodeNameException,
+    					   DuplicateNodeNameException {
         try {
-            groupId = sourceDirectory.getProperty("group_id", "knimeproject.update");
+            groupId = sourceDirectory.getProperty("groupId", "com.gkn");
+            artifactId = sourceDirectory.getProperty("artifactId", "project.updatesite");
             featureMetas = new ArrayList<FeatureMeta>();
         	for (File dir : sourceDirectory.listFiles())
         	{
@@ -74,7 +77,18 @@ public class UpdateSiteMeta /* extends PluginMeta */ {
         		}
 
         	}
+        	categories = new ArrayList<Category>();
+        	String[] catnames = sourceDirectory.getProperty("categories", "").split(";");
+        	for (String cat : catnames) {
+        		if (cat.isBlank())
+        		{
+            		String desc = sourceDirectory.getProperty(cat + "_Description", "");
+            		String lab = sourceDirectory.getProperty(cat + "_Label", "");
+            		categories.add(new Category(cat, desc, lab));
+        		}
+        	}
         } catch (IOException e) {
+        	e.printStackTrace();
             throw new InvalidParameterException(
                     "Could not read meta information.\n" + e.getMessage());
         }
@@ -88,9 +102,41 @@ public class UpdateSiteMeta /* extends PluginMeta */ {
 		featureMetas = new ArrayList<FeatureMeta>();
 		featureMetas.add(featureMeta);
 		groupId = featureMeta.getGroupid();
+		artifactId = featureMeta.getId();
+		categories = null;
 	}
 
 	public String getGroupId() {
 		return groupId;
+	}
+	
+	public String getArtifactId() {
+		return artifactId;
+	}
+
+	public ArrayList<Category> getCategories() {
+		return categories;
+	}
+
+	public static class Category {
+		public Category(String name, String description, String label)
+		{
+			this.name = name;
+			this.description = description;
+			this.label = label;
+		}
+		private final String name;
+		private final String description;
+		private final String label;
+		
+		public String getName() {
+			return name;
+		}
+		public String getDescription() {
+			return description;
+		}
+		public String getLabel() {
+			return label;
+		}
 	}
 }

@@ -19,6 +19,7 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * @author jpfeuffer
@@ -35,8 +36,8 @@ public class MavenParentDirectory extends Directory {
     private File pomXml;
 
     public MavenParentDirectory(Directory directory)
-            throws PathnameIsNoDirectoryException {
-        super(directory);
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
+        super(directory, false);
         projectFile = new File(this, ".project");
         pomXml = new File(this, "pom.xml");
     }

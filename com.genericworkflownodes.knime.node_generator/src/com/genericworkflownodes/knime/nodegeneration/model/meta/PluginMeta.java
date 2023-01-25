@@ -25,14 +25,14 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSour
 
 /**
  * 
- * Meta information of a eclipse plugin.
+ * Meta information of an Eclipse plugin.
  * 
- * @author aiche, bkahlert
+ * @author aiche, bkahlert, jpfeuffer
  */
 public class PluginMeta {
 
     protected String id;
-    private String version;
+    protected String version;
     
     private static final String PLUGIN_VERSION_REGEX = "^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$";
     private static final String PLUGIN_NAME_KEY = "pluginName";
