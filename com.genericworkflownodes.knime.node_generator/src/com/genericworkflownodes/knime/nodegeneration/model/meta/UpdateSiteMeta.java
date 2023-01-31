@@ -40,8 +40,6 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.UpdateSit
 public class UpdateSiteMeta /* extends PluginMeta */ {
 // does not extend PluginMeta since it does not have version and id
 	
-    // TODO categories
-    
     public final ArrayList<FeatureMeta> featureMetas;
     private final String groupId;
     private final ArrayList<Category> categories;

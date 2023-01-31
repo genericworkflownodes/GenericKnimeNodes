@@ -9,8 +9,28 @@ import java.util.regex.Pattern;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 
 public class GeneratedPluginMeta extends PluginMeta {
+	
+	public class Dependency {
+		//TODO check for valid Strings, IDs
+		public Dependency(String pluginID, String versionRange)
+		{
+			this.pluginID = pluginID;
+			this.versionRange = versionRange;
+		}
+		private final String pluginID;
+		private final String versionRange;
+		
+		public String PluginID() {
+			return pluginID;
+		}
+		public String getVersionRange() {
+			return versionRange;
+		}
+	}
 
 	private static final String PLUGIN_RESOURCE_PROVIDER_TARGET_KEY = "resourceProviderTarget";
+	private static final String PLUGIN_EXTRA_DEPENDENCIES = "extraDependencies";
+	
     /**
      * Updates the version qualifier of the plug-in meta. Update the qualifier
      * part of the plug-in version, e.g., 0.1.0.20000101 update with 20100101 ->
@@ -51,6 +71,7 @@ public class GeneratedPluginMeta extends PluginMeta {
     private final String generatedPluginVersion;
     public final NodesSourceDirectory sourceDir;
     public final ArrayList<FragmentMeta> generatedFragmentMetas;
+    public ArrayList<Dependency> extraDependencies;
 	private final String resourceProviderTarget;
 
     /**
@@ -67,6 +88,7 @@ public class GeneratedPluginMeta extends PluginMeta {
         super(sourceDirectory);
 
         resourceProviderTarget = getResourceProviderTarget(sourceDirectory.getProperties());
+        extraDependencies = getDependencies(sourceDirectory.getProperties());
         sourceDir = sourceDirectory;
         // update the version qualifier based on the version of the node
         // generator
@@ -140,6 +162,28 @@ public class GeneratedPluginMeta extends PluginMeta {
      * 
      * @return The plugin's name.
      */
+    private ArrayList<Dependency> getDependencies(Properties properties) {
+		String[] deps = properties.getProperty(PLUGIN_EXTRA_DEPENDENCIES, "").split(";");
+		ArrayList<Dependency> result = new ArrayList<Dependency>();
+		for (String dep : deps)
+		{
+			if(!dep.isBlank())
+			{
+				String[] id_ver = dep.split(":");
+				result.add(new Dependency(id_ver[0], id_ver[1]));
+			}
+		}
+		return result;
+	}
+    
+    
+	/**
+     * Gets if the KNIME plugin to be generated is a resource-only plugin or contains nodes.
+     * <p>
+     * TODO we could determine it based on the descriptors folder also!
+     * 
+     * @return The plugin's name.
+     */
     public final boolean isResourceOnly() {
 		return !resourceProviderTarget.isEmpty();
 	}
@@ -200,5 +244,18 @@ public class GeneratedPluginMeta extends PluginMeta {
     public final String getGeneratedPluginVersion() {
         return generatedPluginVersion;
     }
+
+	public ArrayList<Dependency> getExtraDependencies() {
+		return extraDependencies;
+	}
+	
+	public String getExtraDependenciesAsConcatString() {
+		String ret = "";
+		for (Dependency dep : extraDependencies)
+		{
+			ret += ",\n " + dep.pluginID + ";bundle-version=\"" + dep.versionRange + "\"";
+		}
+		return ret;
+	}
 
 }

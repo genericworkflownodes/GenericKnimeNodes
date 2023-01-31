@@ -15,6 +15,7 @@ public class ManifestMFTemplate extends Template {
         replace("@@pluginName@@", pluginMeta.getName());
         replace("@@pluginVersion@@", pluginMeta.getGeneratedPluginVersion());
         replace("@@packageName@@", pluginMeta.getPackageRoot());
+        replace("@@dependencies@@", pluginMeta.getExtraDependenciesAsConcatString());
     }
 
 }
