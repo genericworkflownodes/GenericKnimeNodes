@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: @@fragmentId@@
 Bundle-ManifestVersion: 2
 Bundle-Name: Generic Workflow Nodes for KNIME: @@hostName@@ - @@os@@-@@arch@@ Fragment  
 Bundle-SymbolicName: @@fragmentId@@;singleton:=true
