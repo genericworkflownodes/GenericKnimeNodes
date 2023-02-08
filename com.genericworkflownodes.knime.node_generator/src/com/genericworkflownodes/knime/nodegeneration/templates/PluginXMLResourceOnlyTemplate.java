@@ -61,14 +61,14 @@ public class PluginXMLResourceOnlyTemplate {
      * @param clazz
      * @param path
      */
-    public void registerNode(String clazz, String path) {
+    public void registerDLLProviderClass(String clazz, String name) {
         LOGGER.info("registering resource provider " + clazz);
 
         Node node = doc
                 .selectSingleNode("/plugin/extension[@point='com.genericworkflownodes.knime.custom.config.DLLProvider']");
         Element elem = (Element) node;
 
-        elem.addElement("dllprovider").addAttribute("class", clazz).addAttribute("name", path);
+        elem.addElement("dllprovider").addAttribute("class", clazz).addAttribute("name", name);
     }
 
 }

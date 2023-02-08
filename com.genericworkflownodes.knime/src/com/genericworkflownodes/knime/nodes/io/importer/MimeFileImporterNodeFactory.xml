@@ -9,11 +9,11 @@
     
     <fullDescription>
         <intro>With this node you can locate a file on your file system that can serve as input
-         for another Generic Knime Node. This is different from "File Reader", in the sense that
+         for another Generic KNIME Node. This is different from "File Reader", in the sense that
           the file is not read into an internal KNIME Table, but stays on your file system.</intro>
     
     
-    <option name="Selected File">
+    <option name="Selected file">
              Specifies the full name (including its directory) of the file.
          </option>
        <option name="File extension (override)">
@@ -23,7 +23,7 @@
       </option>
     </fullDescription>
     <ports>
-     <outPort index="0" name="loaded file ">selected file file </outPort>   
+     <outPort index="0" name="Loaded file ">Selected file</outPort>   
     </ports>    
     <views>
         <view index="0" name="First lines of file">View the first 50 lines of the selected file</view>

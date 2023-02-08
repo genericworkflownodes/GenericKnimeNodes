@@ -28,13 +28,9 @@ import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.Optional;
 
-import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -44,11 +40,8 @@ import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.FlowVariableModel;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
-import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIPortObject;
-import org.knime.core.data.uri.URIPortObjectSpec;
 import org.knime.core.node.context.NodeCreationConfiguration;
 import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.filehandling.core.connections.FSCategory;
@@ -61,14 +54,10 @@ import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusCon
 import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
 import org.knime.filehandling.core.port.FileSystemPortObject;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
-import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortTypeRegistry;
 
-import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
-import com.genericworkflownodes.knime.nodes.GenericNodeView;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
@@ -193,38 +182,6 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
         }
 
     }
-
-    /*
-     * Registers the MimeType Change Listener when the Dialog is created
-     */
-    private void registerMimeTypeChangeListener(
-            final DialogComponentFileChooser fileChooser,
-            final DialogComponentOptionalString fileExtension,
-            final DialogComponentLabel fileLabel) {
-
-        // Get all the Components for which the Event Listener needs to be added
-        @SuppressWarnings("unchecked")
-        final JComboBox<String> fileBox = (JComboBox<String>) ((JPanel) fileChooser
-                .getComponentPanel().getComponent(0)).getComponent(0);
-        final JCheckBox checkbox = (JCheckBox) fileExtension.getComponentPanel().getComponent(0);
-        final JTextField opt = (JTextField) fileExtension.getComponentPanel().getComponent(1);
-        final JLabel label = (JLabel) fileLabel.getComponentPanel().getComponent(0);
-
-        // Create the MimeTypeListener
-        final MimeTypeListener mimeTypeListender = new MimeTypeListener(checkbox, opt, fileBox, label);
-        final KeyListener keyListener = (KeyListener) mimeTypeListender;
-
-        // Register the MimeType Listener as ActionListener
-        mimeTypeListender.update();
-        fileBox.addActionListener(mimeTypeListender);
-        checkbox.addActionListener(mimeTypeListender);
-        opt.addActionListener(mimeTypeListender);
-
-        // Register the MimeType Listener as Key Listener
-        opt.addKeyListener(keyListener);
-        fileBox.getEditor().getEditorComponent().addKeyListener(keyListener);
-        fileBox.addKeyListener(keyListener);
-    }
     
     /*
      * Registers the MimeType Change Listener when the Dialog is created
@@ -281,40 +238,13 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
                         EnumSet.of(FSCategory.LOCAL, FSCategory.MOUNTPOINT, FSCategory.RELATIVE)));
 
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    //@Override
-    //public MimeFileImporterNodeModel createNodeModel() {
-    //    return new MimeFileImporterNodeModel();
-    //}
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int getNrNodeViews() {
-        return 1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<MimeFileNioImporterNodeModel> createNodeView(
-            final int viewIndex, final MimeFileNioImporterNodeModel nodeModel) {
-
-        return new GenericNodeView<MimeFileNioImporterNodeModel>(nodeModel, (model) -> {
-            String toDisplay = "File does not exist!";
-            if (model.getContent() != null)
-            {
-                toDisplay = new String (model.getContent());
-            }
-            final JTextArea text = new JTextArea(toDisplay, 40, 80);
-            text.setFont(new Font("Monospaced", Font.BOLD, 12));
-            return new JScrollPane(text);
-        });
+        return 0;
     }
 
     /**
@@ -362,5 +292,12 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
         pane.addDialogComponent(fileExtension);
         pane.addDialogComponent(label);
         return pane;
+    }
+
+    @Override
+    public NodeView<MimeFileNioImporterNodeModel> createNodeView(int viewIndex,
+            MimeFileNioImporterNodeModel nodeModel) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

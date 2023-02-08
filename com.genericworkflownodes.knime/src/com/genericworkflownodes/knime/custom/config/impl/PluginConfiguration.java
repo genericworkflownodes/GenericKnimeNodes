@@ -65,7 +65,7 @@ public class PluginConfiguration implements IPluginConfiguration {
     /**
      * The tool specific properties
      */
-    private final Map<String, Properties> m_specifcToolProps;
+    private final Map<String, Properties> m_specificToolProps;
 
    /**
     * The docker machine if specified, else 'default'
@@ -133,7 +133,7 @@ public class PluginConfiguration implements IPluginConfiguration {
             }
         }
         m_toolProps = p;
-        m_specifcToolProps = toolMap;
+        m_specificToolProps = toolMap;
         m_dockerMachine = props.getProperty("dockerMachine","default");
 
         // Set the version display from the plugin.properties
@@ -199,7 +199,7 @@ public class PluginConfiguration implements IPluginConfiguration {
 
     @Override
     public Properties getToolProperty(String toolName) {
-        return m_specifcToolProps.get(toolName);
+        return m_specificToolProps.get(toolName);
     }
 
     @Override

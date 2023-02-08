@@ -62,6 +62,7 @@ import com.genericworkflownodes.knime.nodegeneration.templates.BuildPropertiesTe
 import com.genericworkflownodes.knime.nodegeneration.templates.GenericResourceProviderClassTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ManifestMFTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginActivatorTemplate;
+import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLResourceOnlyTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PluginXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.PomXMLTemplate;
 import com.genericworkflownodes.knime.nodegeneration.templates.ProjectTemplate;
@@ -154,7 +155,6 @@ public class NodeGenerator {
             nodeGeneratorCreateTestingFeature = createTestingFeature;
             nodeGeneratorLastChangeDate = lastChangeDate;
             
-
             baseBinaryDirectory = new Directory(buildDir, false);
             baseBinaryDirectory.mkdir();
             if (baseBinaryDirectory.list().length != 0) {
@@ -237,7 +237,7 @@ public class NodeGenerator {
 			
 			NodesBuildDirectory pluginBuildDir = new NodesBuildDirectory(
 					baseBinaryDirectory,
-					generatedPluginMeta.getId());
+					generatedPluginMeta);
 			
 			MvnDirectory mvnDir = new MvnDirectory(new File(pluginBuildDir, ".mvn"));
 			mvnDir.mkdir();
@@ -256,16 +256,24 @@ public class NodeGenerator {
 	        //new PomXMLTemplate(generatedPluginMeta).write(pluginBuildDir
 	        //        .getPomXml());
 	
-	        PluginXMLTemplate pluginXML = new PluginXMLTemplate();
-	
 	        if (generatedPluginMeta.isResourceOnly())
 	        {
+	        	PluginXMLResourceOnlyTemplate pluginXML = new PluginXMLResourceOnlyTemplate();
 	        	// src/[PACKAGE]/GenericResourceProvider.java
+	        	File grp = new File(pluginBuildDir.getPackageRootDirectory(),
+                        "GenericResourceProvider.java");
 		        new GenericResourceProviderClassTemplate(generatedPluginMeta)
-                	.write(new File(pluginBuildDir.getPackageRootDirectory(),
-                        "GenericResourceProvider.java"));
+                	.write(grp);
+		        
+		        pluginXML.registerDLLProviderClass(
+		        		generatedPluginMeta.getId()+".GenericResourceProvider",
+		        		generatedPluginMeta.getResourceProviderTarget());
+		        
+	            // plugin.xml
+	            pluginXML.saveTo(pluginBuildDir.getPluginXml());
+	            
 	        } else {
-
+	        	PluginXMLTemplate pluginXML = new PluginXMLTemplate();
 		        // src/[PACKAGE]/knime/plugin.properties
 		        final Properties toolProperites = srcDir.getToolProperites();
 		        new PropertiesWriter(new File(pluginBuildDir.getKnimeDirectory(),
@@ -314,13 +322,15 @@ public class NodeGenerator {
 		        
 	            // register the mime types
 	            pluginXML.registerMIMETypeEntries(srcDir.getMIMETypes());
+	            
+		        // TODO split and move to pluginXML Template class
+		        copyAndRegisterSplashIcon(pluginXML, generatedPluginMeta, pluginBuildDir);
+
+	            // plugin.xml
+	            pluginXML.saveTo(pluginBuildDir.getPluginXml());
 	        }
 	        
-	        // TODO split and move to pluginXML Template class
-	        copyAndRegisterSplashIcon(pluginXML, generatedPluginMeta, pluginBuildDir);
 
-            // plugin.xml
-            pluginXML.saveTo(pluginBuildDir.getPluginXml());
 
             // .project
             new ProjectTemplate(generatedPluginMeta.getPackageRoot())

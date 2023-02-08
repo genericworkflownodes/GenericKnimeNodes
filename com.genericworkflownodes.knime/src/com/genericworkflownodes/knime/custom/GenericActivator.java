@@ -33,7 +33,7 @@ import com.genericworkflownodes.knime.toolfinderservice.ExternalTool;
  * This class is an abstract bundle activator which holds the code necessary to
  * register a generated plugin.
  * 
- * @author aiche
+ * @author jpfeuffer
  */
 public abstract class GenericActivator extends AbstractUIPlugin {
 
@@ -72,7 +72,6 @@ public abstract class GenericActivator extends AbstractUIPlugin {
      */
     public final void initializePlugin() throws IOException {
         loadPluginProperties();
-        registerNodes();
     }
 
     /**
@@ -86,18 +85,7 @@ public abstract class GenericActivator extends AbstractUIPlugin {
     }
 
     /**
-     * Registers all nodes included in the plugin as external tools in the
-     * PluginPreferenceToolLocator.
-     * 
-     * @see com.genericworkflownodes.knime.toolfinderservice.PluginPreferenceToolLocator
-     */
-    private void registerNodes() {
-        for (ExternalTool tool : getTools()) {
-        }
-    }
-
-    /**
-     * Get the plugin specific proberties stored in the plugin.properties file.
+     * Get the plugin specific properties stored in the plugin.properties file.
      * 
      * @return The properties loaded for this plugin.
      */

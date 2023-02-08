@@ -7,11 +7,11 @@ Bundle-Version: @@pluginVersion@@
 Bundle-Activator: @@packageName@@.knime.PluginActivator
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the @@pluginName@@ Team
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
- org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
- org.knime.workbench.repository;bundle-version="[3.0.0,5.0.0)",
- org.knime.base;bundle-version="[3.0.0,5.0.0)",
- com.genericworkflownodes.knime;bundle-version="[1.0.0,2.0.0)",
- com.genericworkflownodes.knime.config;bundle-version="[1.0.0,2.0.0)"@@dependencies@@
+ org.knime.workbench.core;bundle-version="[4.0.0,6.0.0)",
+ org.knime.workbench.repository;bundle-version="[4.0.0,6.0.0)",
+ org.knime.base;bundle-version="[4.0.0,6.0.0)",
+ com.genericworkflownodes.knime;bundle-version="[1.1.0,2.0.0)",
+ com.genericworkflownodes.knime.config;bundle-version="[1.1.0,2.0.0)"@@dependencies@@
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
