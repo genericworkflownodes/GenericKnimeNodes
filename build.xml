@@ -213,7 +213,7 @@
       <arg value="${custom.plugin.generator.target}" />
       <arg value="-d" />
       <arg value="${timestamp.out}" />
-      <arg value="${generate.extra.arguments}" />
+      <arg line="${generate.extra.arguments}" />
     </java>
   </target>
 
