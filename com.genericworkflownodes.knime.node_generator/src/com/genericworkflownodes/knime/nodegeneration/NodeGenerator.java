@@ -156,8 +156,8 @@ public class NodeGenerator {
             nodeGeneratorLastChangeDate = lastChangeDate;
             
             baseBinaryDirectory = new Directory(buildDir, false);
-            boolean wasCreated = baseBinaryDirectory.mkdir();
-            if (baseBinaryDirectory.list().length != 0) {
+            boolean wasCreated = baseBinaryDirectory.mkdirs();
+            if (wasCreated && baseBinaryDirectory.list().length != 0) {
                 LOGGER.warning("The given buildDir is not empty: Will clean the directory.");
                 for (File file : baseBinaryDirectory.listFiles())
                     if (file.isDirectory())
