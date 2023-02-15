@@ -47,9 +47,9 @@ public class Main {
         parser.addArgument("-d", "--date").required(false).type(String.class).setDefault("")
         		.help("Last change date to use for the last version part (.qualifier/.SNAPSHOT). It will use the newest one of this and the"
         				+ " qualifiers in potential contributing plugins.");
-        parser.addArgument("-t", "--testingFeatures").action(Arguments.storeTrue()).type(Boolean.class).required(false)
+        parser.addArgument("-t", "--testingFeatures").action(Arguments.storeTrue()).required(false)
         		.help("Generate a testing feature for each feature?");
-        parser.addArgument("-r", "--recursive").action(Arguments.storeTrue()).type(Boolean.class).required(false)
+        parser.addArgument("-r", "--recursive").action(Arguments.storeTrue()).required(false)
         		.help("Recursively generates features for every folder in the input folder. Recurses only one level deep.");
         parser.addArgument("-u", "--createUpdateSite").action(Arguments.storeTrue()).type(Boolean.class).required(false)
 			.help("Create an update site containing all generated features.");

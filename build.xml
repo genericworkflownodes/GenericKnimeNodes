@@ -202,10 +202,13 @@
       <!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
       <!-- handle the to long classpath -->
       <env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}" />
+      <arg value="-i" />
       <arg value="${plugin.dir}" />
+      <arg value="-o" />
       <arg value="${custom.plugin.generator.target}" />
+      <arg value="-d" />
       <arg value="${timestamp.out}" />
-      <arg value="${generate.test.feature}" />
+      <arg value="${generate.extra.arguments}" />
     </java>
   </target>
 
