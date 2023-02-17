@@ -572,12 +572,16 @@ public class NodeGenerator {
 
     public void copyFolderIcon(GeneratedPluginMeta pMeta, NodesBuildDirectory buildDir) throws IOException {
     	NodesSourceDirectory srcDir = pMeta.sourceDir;
-        File categoryIcon = srcDir.getIconsDirectory().getCategoryIcon();
-        if (categoryIcon != null && categoryIcon.canRead()) {
-            // TODO: only set icon file in plugin.xml for categories if this
-            // method was called
-            FileUtils.copyFile(categoryIcon,
-            		new File(buildDir.getIconsDirectory(), "category.png"));
+    	IconsDirectory iconsDir = srcDir.getIconsDirectory();
+        if (iconsDir != null) {
+        	File categoryIcon = iconsDir.getCategoryIcon();
+        	if(categoryIcon.canRead())
+        	{
+                // TODO: only set icon file in plugin.xml for categories if this
+                // method was called
+                FileUtils.copyFile(categoryIcon,
+                		new File(buildDir.getIconsDirectory(), "category.png"));
+        	}
         }
     }
 
