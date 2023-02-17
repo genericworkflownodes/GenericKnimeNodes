@@ -625,9 +625,11 @@ public class NodeGenerator {
                 nodeName);
         nodeSourceDir.mkdirs();
 
-        File nodeIcon = pMeta.sourceDir.getIconsDirectory().getNodeIcon(
-                nodeConfiguration);
-        if (nodeIcon != null) {
+        IconsDirectory iconDir = pMeta.sourceDir.getIconsDirectory();
+        File nodeIcon;
+        if (iconDir != null) {
+        	nodeIcon = pMeta.sourceDir.getIconsDirectory().getNodeIcon(
+                    nodeConfiguration);
             FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
         } else {
             // use generic icon
