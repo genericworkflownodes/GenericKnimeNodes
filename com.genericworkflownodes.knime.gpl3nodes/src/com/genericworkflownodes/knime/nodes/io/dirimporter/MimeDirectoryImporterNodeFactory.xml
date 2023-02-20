@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="importer.png" type="Source">
+<knimeNode icon="importer.png" type="Source" deprecated="true">
     <name>Input Directory</name>
     
     <shortDescription>
-        Locate a directory where all files of a specified file type are imported.
+        (Deprecated: Use File Importer instead) Locate a directory where all files of a specified file type are imported.
     </shortDescription>
     
     <fullDescription>
         <intro>
+        	<p>(Deprecated: Use File Importer instead)</p>
+	        <p>
             With this node you can locate files in a folder (and optionally in all of its subfolders)
-            on your file system that can serve as input for other Generic Knime Nodes. This is different
+            on your file system that can serve as input for other Generic KNIME Nodes. This is different
             from "Remote Folder", in the sense that it only supports import of files of the same MIME-type
             and writes them directly to URI Ports. You can also specify regular expressions or wildcards
             that filter the found files by their filename (without extension).
+            </p>
         </intro>
     
         <option name="Directory">

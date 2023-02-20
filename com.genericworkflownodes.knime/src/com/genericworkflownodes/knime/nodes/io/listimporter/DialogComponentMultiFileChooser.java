@@ -377,7 +377,7 @@ public class DialogComponentMultiFileChooser extends DialogComponent {
         Path localPath = Paths.get(FileUtil.getFileFromURL(url).toURI());
         for (int i = 0; i < files.length; i++) {
             Path relative = localPath.relativize(Paths.get(converted[i]));
-            converted[i] = prefix + relative.toString();
+            converted[i] = prefix + relative.toString().replace("\\", "/");
         }
         return converted;
     }

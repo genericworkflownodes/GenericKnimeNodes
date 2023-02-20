@@ -50,6 +50,7 @@ import com.genericworkflownodes.util.MIMETypeHelper;
  *
  * @author roettig
  */
+@Deprecated
 public final class MimeFileImporterNodeFactory extends
 NodeFactory<MimeFileImporterNodeModel> {
 

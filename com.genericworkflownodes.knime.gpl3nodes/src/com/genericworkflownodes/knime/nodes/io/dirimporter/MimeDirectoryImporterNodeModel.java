@@ -103,10 +103,6 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
 
     private Pattern m_regExpPattern;
 
-    private int m_analyzedFiles;
-
-    private int m_currentRowID;
-
     /**
      * Constructor for the node model.
      */
@@ -152,13 +148,12 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             // If the user gave a KNIME URI in the input box, we resolve relative to that
             if (authority != null) {
                 String prefix = "knime://" + authority + "/";
-                String prefixWithDouble = "knime:////" + authority + "/";
                 URL url = FileUtil.toURL(prefix);
                 Path localPath = FileUtil.getFileFromURL(url).toPath();
                 final List<URIContent> relUris = new ArrayList<URIContent>();
                 for (URIContent uri : uris) {
                     Path relative = localPath.relativize(Paths.get(uri.getURI()));
-                    URI u = new URI("knime", authority, "/"+relative.toString(), null, null);
+                    URI u = new URI("knime", authority, "/"+relative.toString().replace("\\", "/"), null, null);
                     relUris.add(new URIContent(u, uri.getExtension()));
                 }
                 uris = relUris;
@@ -247,8 +242,6 @@ public class MimeDirectoryImporterNodeModel extends NodeModel {
             throw new IllegalStateException("Unknown filter: " + filter);
             // transform wildcard to regExp.
         }
-        m_analyzedFiles = 0;
-        m_currentRowID = 0;
         List<RemoteFile<? extends Connection>> filteredFiles = new ArrayList<RemoteFile<? extends Connection>>();
         for (RemoteFile<?> f : files) {
             try {

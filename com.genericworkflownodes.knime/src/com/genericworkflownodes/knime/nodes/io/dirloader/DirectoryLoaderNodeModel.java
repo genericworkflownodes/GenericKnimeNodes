@@ -106,7 +106,7 @@ public class DirectoryLoaderNodeModel extends NodeModel {
                 .createCloneWithValidatedValue(settings);
 
         if (tmp_directoryname == null
-                || tmp_directoryname.equals("")) {
+                || tmp_directoryname.getStringValue().equals("")) {
             throw new InvalidSettingsException("No Directory selected.");
         }
 

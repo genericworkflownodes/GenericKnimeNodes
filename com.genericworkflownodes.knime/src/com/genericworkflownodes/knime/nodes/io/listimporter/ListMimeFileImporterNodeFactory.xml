@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="listimporter.png" type="Source" deprecated="true">
+<knimeNode icon="listimporter.png" type="Source">
 	<name>Input Files</name>
 	
 	<shortDescription>
-	    (Deprecated: Use File Importer) Locate multiple files which can serve as input to another GKN
+	    Locate multiple files which can serve as input to another GKN
 	</shortDescription>
 	
 	<fullDescription>
 		<intro>
-			<p>(Deprecated: Use File Importer)</p>
 			<p>
-				With this node you can locate a set of files on your file system that can serve as input
-				for another Generic KNIME Node. This is different from "File Reader", in the sense that
-				the files are not read into an internal KNIME Table, but stay on your file system.
+				With this node you can locate a set of files on your file system (i.e., file:// and executor-local knime:// protocol paths)
+				that can serve as input for another Generic KNIME Node. This is different from "File Reader", in the sense that
+				the files are not read into an internal KNIME Table, but stay on your file system. Note: On a KNIME server you might
+				need to enable access to the server's file system.
 			</p>
 		</intro>
 		

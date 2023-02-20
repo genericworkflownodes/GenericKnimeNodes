@@ -27,7 +27,10 @@
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="true"
+          factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
