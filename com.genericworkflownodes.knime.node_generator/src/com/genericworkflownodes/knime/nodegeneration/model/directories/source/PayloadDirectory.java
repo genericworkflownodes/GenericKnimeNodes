@@ -43,7 +43,7 @@ public class PayloadDirectory extends Directory{
             .getLogger(PayloadDirectory.class.getCanonicalName());
 
     private static final Pattern payloadFormat = Pattern
-            .compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
+            .compile("^binaries_(mac|lnx|win)_([36][24]|arm64).zip$");
 
 
     public PayloadDirectory(File payloadDirectory)
@@ -55,9 +55,20 @@ public class PayloadDirectory extends Directory{
             GeneratedPluginMeta generatedPluginMeta) {
 
     	ArrayList<FragmentMeta> containedFragments = new ArrayList<FragmentMeta>();
-        String[] expectedFragments = new String[] { "binaries_mac_64.zip",
-                "binaries_lnx_64.zip", "binaries_lnx_32.zip",
-                "binaries_win_64.zip", "binaries_win_32.zip" };
+        ArrayList<String> expectedFragments = new ArrayList<String>();
+        expectedFragments.add("binaries_mac_64.zip");
+        expectedFragments.add("binaries_lnx_64.zip");
+        expectedFragments.add("binaries_lnx_32.zip");
+        expectedFragments.add("binaries_win_64.zip");
+        expectedFragments.add("binaries_win_32.zip");
+        
+        boolean macARMavailable = false;
+        File potentialMacARMpayload = new File("binaries_mac_arm64.zip");
+        if (potentialMacARMpayload.exists())
+        {
+        	expectedFragments.add("binaries_mac_arm64.zip");
+        	macARMavailable = true;
+        }
 
         for (String potentialFragment : expectedFragments) {
             // get the matching properties
@@ -69,8 +80,14 @@ public class PayloadDirectory extends Directory{
             File payload = new File(this, potentialFragment);
 
             if (payload.exists()) {
-                containedFragments.add(new FragmentMeta(generatedPluginMeta,
-                        arch, os, payload));
+            	if (potentialFragment.equals("binaries_mac_64.zip") && !macARMavailable)
+            	{
+                    containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                            arch, os, payload, true));
+            	} else {
+                    containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                            arch, os, payload, false));
+            	}
             } else {
                 // TODO this is removed for now, since maven is stricter with
             	// non-existing plugins of a feature. Could be added back with

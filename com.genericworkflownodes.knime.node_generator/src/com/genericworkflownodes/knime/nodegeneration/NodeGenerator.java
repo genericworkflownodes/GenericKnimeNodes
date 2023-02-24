@@ -245,7 +245,8 @@ public class NodeGenerator {
 			
 	        // build.properties - only useful if you re-import the generated
 	        // projects in Eclipse
-	        new BuildPropertiesTemplate().write(pluginBuildDir
+			boolean hasIcons = !generatedPluginMeta.isResourceOnly() && srcDir.getIconsDirectory() != null;
+	        new BuildPropertiesTemplate(hasIcons).write(pluginBuildDir
 	                .getBuildProperties());
 	
 	        // META-INF/MANIFEST.MF

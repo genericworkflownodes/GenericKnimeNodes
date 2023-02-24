@@ -30,7 +30,7 @@ public enum Architecture {
     /**
      * The enum values.
      */
-    X86, X86_64, UNKNOWN;
+    X86, X86_64, ARM64, UNKNOWN;
 
     /**
      * Construct an {@link Architecture} value based on the
@@ -41,9 +41,15 @@ public enum Architecture {
      */
     public static Architecture getArchitecture() {
         String dataModel = System.getProperty("sun.arch.data.model");
+        String osarch = System.getProperty("os.arch");
         Architecture thisArch = UNKNOWN;
         if ("64".equals(dataModel)) {
-            thisArch = X86_64;
+        	if (osarch.contains("arm"))
+        	{
+        		thisArch = ARM64;
+        	} else {
+        		thisArch = X86_64;
+        	}
         } else if ("32".equals(dataModel)) {
             thisArch = X86;
         }
@@ -61,7 +67,12 @@ public enum Architecture {
      */
     public static Architecture fromString(final String arch) {
         if ("64".equals(arch)) {
-            return X86_64;
+        	if (arch.contains("arm") || arch.contains("arch"))
+        	{
+        		return ARM64;
+        	} else {
+        		return X86_64;
+        	}
         } else if ("32".equals(arch)) {
             return X86;
         } else {
@@ -74,6 +85,9 @@ public enum Architecture {
         String archAsString = "";
 
         switch (this) {
+        case ARM64:
+        	archAsString = "arm64";
+        	break;
         case X86:
             archAsString = "32";
             break;
@@ -101,6 +115,9 @@ public enum Architecture {
             break;
         case X86_64:
             osgiArch = "x86_64";
+            break;
+        case ARM64:
+            osgiArch = "aarch64";
             break;
         default:
             break;
