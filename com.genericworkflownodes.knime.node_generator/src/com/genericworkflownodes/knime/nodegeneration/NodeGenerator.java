@@ -638,9 +638,10 @@ public class NodeGenerator {
 	            // use generic icon
 	            copyAsset("generic_node.png", nodeSourceDir.getAbsolutePath());
 	            nodeIcon = new File(nodeSourceDir, "generic_node.png");
+        	} else {
+        		FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
         	}
         }
-		FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
 
         /*
          * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]
