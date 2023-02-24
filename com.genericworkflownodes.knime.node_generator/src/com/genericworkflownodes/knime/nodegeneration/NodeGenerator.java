@@ -634,11 +634,13 @@ public class NodeGenerator {
         if (iconDir != null) {
         	nodeIcon = pMeta.sourceDir.getIconsDirectory().getNodeIcon(
                     nodeConfiguration);
-            FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
-        } else {
-            // use generic icon
-            copyAsset("generic_node.png", nodeSourceDir.getAbsolutePath());
-            nodeIcon = new File(nodeSourceDir, "generic_node.png");
+        	if (nodeIcon != null) {
+        		FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
+        	} else {
+	            // use generic icon
+	            copyAsset("generic_node.png", nodeSourceDir.getAbsolutePath());
+	            nodeIcon = new File(nodeSourceDir, "generic_node.png");
+        	}
         }
 
         /*
