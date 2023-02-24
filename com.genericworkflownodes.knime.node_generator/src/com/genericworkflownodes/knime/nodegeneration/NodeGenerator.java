@@ -630,18 +630,17 @@ public class NodeGenerator {
         nodeSourceDir.mkdirs();
 
         IconsDirectory iconDir = pMeta.sourceDir.getIconsDirectory();
-        File nodeIcon;
+        File nodeIcon = null;
         if (iconDir != null) {
         	nodeIcon = pMeta.sourceDir.getIconsDirectory().getNodeIcon(
                     nodeConfiguration);
-        	if (nodeIcon != null) {
-        		FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
-        	} else {
+        	if (nodeIcon == null) {
 	            // use generic icon
 	            copyAsset("generic_node.png", nodeSourceDir.getAbsolutePath());
 	            nodeIcon = new File(nodeSourceDir, "generic_node.png");
         	}
         }
+		FileUtils.copyFileToDirectory(nodeIcon, nodeSourceDir);
 
         /*
          * all files placed into src/[PACKAGE]/knime/nodes/[NODE_NAME]
