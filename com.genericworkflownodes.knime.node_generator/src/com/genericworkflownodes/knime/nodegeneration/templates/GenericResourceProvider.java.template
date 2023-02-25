@@ -15,7 +15,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.genericworkflownodes.knime.custom.config.IDLLProvider;
 
-public class GenericPathProvider implements IDLLProvider {
+public class GenericResourceProvider implements IDLLProvider {
 
 	@Override
 	public List<File> getDLLFolders() {
