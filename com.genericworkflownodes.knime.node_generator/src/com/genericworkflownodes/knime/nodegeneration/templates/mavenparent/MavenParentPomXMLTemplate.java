@@ -25,6 +25,7 @@ public class MavenParentPomXMLTemplate extends Template {
         replace("@@groupId@@", siteMeta.getGroupId());
 
         String moduleString = "";
+        // TODO maybe use our XML parser dependency here as well.
         for (FeatureMeta feature : siteMeta.featureMetas) {
         	for (GeneratedPluginMeta plugin : feature.generatedPluginMetas) {
         		for (FragmentMeta fragment : plugin.generatedFragmentMetas) {
@@ -37,6 +38,8 @@ public class MavenParentPomXMLTemplate extends Template {
         	}
         	moduleString += String.format("\t\t<module>%s</module>\n", feature.getId());
         }
+        moduleString += String.format("\t\t<module>%s</module>\n", siteMeta.getArtifactId());
+        
         replace("@@MODULES@@", moduleString);
     }
 }
