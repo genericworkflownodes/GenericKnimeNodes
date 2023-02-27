@@ -78,7 +78,7 @@ public class FeatureXMLTemplate extends Template {
                     pluginMeta.getId());
     	}
 
-        replace("@@PLUGIN@@", pluginList);
+        replace("@@PLUGINS@@", pluginList);
     }
 
     private void registerFragments(List<FragmentMeta> fragmentMetas) {
