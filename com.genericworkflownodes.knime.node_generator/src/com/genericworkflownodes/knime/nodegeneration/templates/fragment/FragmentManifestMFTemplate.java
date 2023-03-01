@@ -23,6 +23,7 @@ public class FragmentManifestMFTemplate extends Template {
         this.replace("@@fragmentVersion@@", fragmentMeta.getVersion());
 
         this.replace("@@os@@", fragmentMeta.getOs().toOsgiOs());
-        this.replace("@@arch@@", fragmentMeta.getArchStringForManifest());
+        this.replace("@@archosgi@@", fragmentMeta.getArchStringForManifest());
+        this.replace("@@arch@@", fragmentMeta.getArch().toOsgiArch());
     }
 }

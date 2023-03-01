@@ -30,25 +30,8 @@ public class FeatureXMLTemplate extends Template {
         super(NodeGenerator.class
                 .getResourceAsStream("templates/feature/feature.xml.template"));
 
-        //////// TODO should be checked at "parsing"/construction time!
-        // we will ensure that the version ends with a qualifier to make sure
-        // that the qualifier is properly updated when something changes
-        Matcher m = featureMeta.matchVersion(featureMeta.getVersion());
 
-        // return value is either "" empty string if there is no qualifier in
-        // any fragment or it is ".qualifier" with a dot in front.
-        String quali = featureMeta.findLatestQualifier(m.group(4));
-        
-        // assemble a complete version
-        String newVersion = m.group(1)
-                + (m.group(2) != null ? m.group(2) : ".0")
-                + (m.group(3) != null ? m.group(3) : ".0")
-                + quali;
-        
-        
-        //////////////////
-
-        replace("@@featureVersion@@", newVersion);
+        replace("@@featureVersion@@", featureMeta.getVersion());
         replace("@@featureName@@", featureMeta.getName());
         replace("@@featureID@@", featureMeta.getId());
 

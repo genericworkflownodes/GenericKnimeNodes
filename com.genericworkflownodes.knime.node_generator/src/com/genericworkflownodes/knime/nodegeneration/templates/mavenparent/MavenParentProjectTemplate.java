@@ -12,7 +12,7 @@ public class MavenParentProjectTemplate extends Template {
                 .getResourceAsStream("templates/mavenparent/parent.project.template"));
 
         // For now we call the parent pom artifact just project
-        this.replace("%PACKAGE_NAME%", "project");
+        this.replace("%PACKAGE_NAME%", "GKNproject");
     }
 
 }

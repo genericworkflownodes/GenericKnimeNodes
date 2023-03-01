@@ -417,12 +417,12 @@ public class NodeGenerator {
             throws NodeGeneratorException, PathnameIsNoDirectoryException, IOException 
     {
     	
-		// TODO make it work with just updateSiteMeta and collect all Metas
-		// also check for duplicates somewhere. Potentially earlier when generating updateSiteMeta.
+		// TODO check for duplicates somewhere. Potentially earlier when generating updateSiteMeta.
 		// pom should be in the baseBinaryDirectory.
         MavenParentDirectory mavenDir = new MavenParentDirectory(baseBinaryDirectory);
 
         // create project file
+        // TODO allow configuring a project name?
         new MavenParentProjectTemplate().write(mavenDir.getProjectFile());
 
         // pom.xml

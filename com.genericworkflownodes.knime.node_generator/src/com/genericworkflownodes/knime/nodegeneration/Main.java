@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.logging.Logger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator.NodeGeneratorException;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
@@ -24,15 +26,10 @@ public class Main {
             .getCanonicalName());
 
     /**
-     * 
-     * @param args
-     *            <li>#1: directory in which the plugin's sources reside;</li>
-     *            <li>#2: directory to where to put the plugins (base + payload
-     *            fragments)</li>
-     *            <li>#3: (optional) last change date, otherwise an unspecified "qualifier" is used</li>
-     *            <p>
-     *            Note: The built plugin will neither be compiled nor be
-     *            packaged to a jar file.
+     * Note: Creates Java sources for update sites, features, plugins, fragments,
+     *       based on the folder structure, contributing plugins, tool descriptors.
+     * 		 The built plugin will neither be compiled nor be packaged to a jar file.
+     *       Please run Maven tycho (with the tycho-pomless extension) afterwards to do that.
      */
     public static void main(String[] args) throws IOException {
     	
@@ -45,8 +42,11 @@ public class Main {
         parser.addArgument("-o", "--output").type(String.class)
                 .help("Output folder into which to put the generated projects.");
         parser.addArgument("-d", "--date").required(false).type(String.class).setDefault("")
-        		.help("Last change date to use for the last version part (.qualifier/.SNAPSHOT). It will use the newest one of this and the"
-        				+ " qualifiers in potential contributing plugins.");
+        		.help("Allows to change the last version part at generation instead of build time."
+        				+ "Use version format '$major.$minor.$patch.genqualifier' in your feature/plugin.properties to replace 'genqualifier' with this."
+        				+ "It will use the newest one of this and the qualifiers in potential contributing plugins. You can"
+        				+ "also use the usual 'qualifier' to be replace at tycho build time later. Or just hardcode a qualifier"
+        				+ "usually in the 'yyyyMMddHHmmss' format.");
         parser.addArgument("-t", "--testingFeatures").action(Arguments.storeTrue()).required(false)
         		.help("Generate a testing feature for each feature?");
         parser.addArgument("-r", "--recursive").action(Arguments.storeTrue()).required(false)
@@ -64,14 +64,17 @@ public class Main {
         File srcDir = new File(ns.getString("input")).getAbsoluteFile().getCanonicalFile();
         File buildDir = new File(ns.getString("output")).getAbsoluteFile().getCanonicalFile();
 
-        //TODO ACTUALLY you should have the option of an own qualifier,
-        // a qualifier replaceable by buckminster ("qualifier") or tycho ("SNAPSHOT")
-        // and no qualifier
-
         String lastChangeDate = ns.getString("date");
+        if (lastChangeDate.isEmpty())
+        {
+	        LocalDateTime now = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	        lastChangeDate = now.format(formatter);
+        }
 
         // Caution: this is in beta stage. It does not collect anything yet.
         boolean createTestingFeature = ns.getBoolean("testingFeatures").booleanValue();
+        
         boolean recursive = ns.getBoolean("recursive").booleanValue();
         boolean createUpdateSite = ns.getBoolean("createUpdateSite").booleanValue();
 

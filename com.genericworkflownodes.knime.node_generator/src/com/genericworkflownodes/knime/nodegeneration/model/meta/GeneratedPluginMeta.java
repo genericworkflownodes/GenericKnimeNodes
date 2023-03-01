@@ -32,35 +32,39 @@ public class GeneratedPluginMeta extends PluginMeta {
 	private static final String PLUGIN_EXTRA_DEPENDENCIES = "extraDependencies";
 	
     /**
-     * Updates the version qualifier of the plug-in meta. Update the qualifier
-     * part of the plug-in version, e.g., 0.1.0.20000101 update with 20100101 ->
-     * 0.1.0.20100101
+     * Updates the version qualifier of the plug-in meta.
+     * If the version consists of less than 4 parts, it will be filled with
+     * ".0"s plus the qualifier string given (prepended with a ".").
+     * E.g., version "1" with qualifier "202301011212" will become "1.0.0.202301011212".
+     * If the version has the string "genqualifier" as the fourth part, "genqualifier" will be replaced
+     * with the given qualifier.
+     * Otherwise, nothing happens.
      * 
      * @param qualifier
-     *            The potentially higher qualifier.
+     *            The qualifier to replace if the version
      */
-    protected String updateVersion(String qualifier){
+    protected String addReplaceGenQualifier(String version, String qualifier){
         final Pattern p = Pattern
                 .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
-        Matcher m = p.matcher(getVersion());
+        Matcher m = p.matcher(version);
         boolean found = m.find();
         if (!found)
         	throw new InvalidParameterException("Version " + getVersion() + " should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$");
 
-        // version has no qualifier
+        
         String newVersion = m.group(1)
                 + (m.group(2) != null ? m.group(2) : ".0")
                 + (m.group(3) != null ? m.group(3) : ".0");
-        // append qualifier
+        // append/replace (gen)qualifier
         if (m.group(4) == null
-                || qualifier.compareTo(m.group(4).substring(1)) > 0) {
-            // external qualifier
+        		|| m.group(4).equals("genqualifier")){
+            // external qualifier or current generation time
         	if (!qualifier.isEmpty())
         	{
         		newVersion += "." + qualifier;
         	}
         } else {
-            // our own
+            // the qualifier as given in the properties
             newVersion += m.group(4);
         }
         return newVersion;
@@ -90,12 +94,13 @@ public class GeneratedPluginMeta extends PluginMeta {
         resourceProviderTarget = getResourceProviderTarget(sourceDirectory.getProperties());
         extraDependencies = getDependencies(sourceDirectory.getProperties());
         sourceDir = sourceDirectory;
+        
         // update the version qualifier based on the version of the node
         // generator
         if (nodeGeneratorQualifier != null) {
-            generatedPluginVersion = updateVersion(nodeGeneratorQualifier);
+            generatedPluginVersion = addReplaceGenQualifier(getVersion(), nodeGeneratorQualifier);
         } else {
-            generatedPluginVersion = getVersion();
+        	generatedPluginVersion = getVersion();
         }
 
         if (getId() == null || getId().isEmpty()) {

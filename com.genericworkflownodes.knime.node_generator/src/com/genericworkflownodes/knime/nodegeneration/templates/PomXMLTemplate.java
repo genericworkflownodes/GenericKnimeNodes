@@ -11,21 +11,7 @@ public class PomXMLTemplate extends Template {
             throws IOException {
         super(NodeGenerator.class
                 .getResourceAsStream("templates/pom.xml.template"));
-
-        String[] versionParts = pluginMeta.getGeneratedPluginVersion().split("\\.");
-        String qualifier = "";
-        if (versionParts.length > 3)
-        {
-        	if (versionParts[3] == "qualifier")
-        	{
-        		qualifier = "-SNAPSHOT";
-        	}
-        	else
-        	{
-        		qualifier = "." + versionParts[3];
-        	}
-        }
-        replace("@@packageVersion@@", versionParts[0]+"."+versionParts[1]+"."+versionParts[2]+qualifier);
+        replace("@@packageVersion@@", pluginMeta.getGeneratedPluginVersion().replace(".qualifier", "-SNAPSHOT"));
         replace("@@packageName@@", pluginMeta.getPackageRoot());
     }
 

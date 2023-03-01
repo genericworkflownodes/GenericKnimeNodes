@@ -128,6 +128,16 @@ public class FeatureMeta extends PluginMeta {
         		sourceDirectory.getContributingPluginsDirectory() != null ?
         				sourceDirectory.getContributingPluginsDirectory().getContributingPluginMetas()
         				: new ArrayList<ContributingPluginMeta>();
+        
+        if (version.contains("genqualifier"))
+        {
+            String quali = findLatestQualifier(nodeGeneratorLastChangeDate);
+            if (!quali.isBlank()) {
+            	// Use a different replacement token "genqualifier"
+            	// so people can decide if it will be replaced at generation time or build time.
+                version.replace("genqualifier", quali);
+            }
+        }
     }
 
     /**
@@ -189,9 +199,11 @@ public class FeatureMeta extends PluginMeta {
         if (generatorQualifier != null)
             highestQualifier = generatorQualifier;
 
-        for (GeneratedPluginMeta fMeta : this.generatedPluginMetas) {
-            Matcher m = matchVersion(fMeta.getVersion());
+        for (GeneratedPluginMeta pMeta : this.generatedPluginMetas) {
+            Matcher m = matchVersion(pMeta.getVersion());
             if (m.group(4) != null
+            		&& !m.group(4).equals("qualifier")
+            		&& !m.group(4).equals("SNAPSHOT")
                     && m.group(4).compareTo(highestQualifier) > 0) {
                 highestQualifier = m.group(4);
             }
@@ -200,10 +212,11 @@ public class FeatureMeta extends PluginMeta {
         for (ContributingPluginMeta cMeta : this.contributingPluginMetas) {
             Matcher m = matchVersion(cMeta.getVersion());
             if (m.group(4) != null
+            		&& !m.group(4).equals("qualifier")
+            		&& !m.group(4).equals("SNAPSHOT")
                     && m.group(4).compareTo(highestQualifier) > 0) {
                 highestQualifier = m.group(4);
             }
-
         }
 
         return highestQualifier;
