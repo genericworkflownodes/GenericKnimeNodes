@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -64,6 +62,22 @@ public class CategoryXMLTemplate {
     }
 
 
+    /**
+     * Adds the GKN feature with the current version to the update site
+     */
+    public void registerGKNFeature() {
+        Node node = doc
+                .selectSingleNode("/site");
+
+        Element elem = (Element) node;
+        
+        // TODO can we somehow put the version of this plugin in here
+        //  so we don't need to update?
+        elem.addElement("feature")
+        	.addAttribute("id", "com.genericworkflownodes.knime.feature")
+            .addAttribute("version", "1.1.0");
+    }
+    
     /**
      * Register feature
      * 
