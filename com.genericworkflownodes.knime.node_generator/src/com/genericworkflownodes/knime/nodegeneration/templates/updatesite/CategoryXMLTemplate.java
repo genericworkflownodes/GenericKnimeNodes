@@ -48,6 +48,7 @@ public class CategoryXMLTemplate {
         reader.setDocumentFactory(new DOMDocumentFactory());
 
         doc = reader.read(new FileInputStream(temp));
+        registerGKNFeature();
     }
 
     /**
