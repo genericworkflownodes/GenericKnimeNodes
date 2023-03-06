@@ -75,8 +75,8 @@ public class CategoryXMLTemplate {
         // TODO can we somehow put the version of this plugin in here
         //  so we don't need to update?
         elem.addElement("feature")
-        	.addAttribute("id", "com.genericworkflownodes.knime.feature")
-            .addAttribute("version", "1.1.0");
+        	.addAttribute("id", "com.genericworkflownodes.knime.feature");
+            //.addAttribute("version", "1.1.0"); //We might need the actual qualifier. Somehow this does not work.
     }
     
     /**
