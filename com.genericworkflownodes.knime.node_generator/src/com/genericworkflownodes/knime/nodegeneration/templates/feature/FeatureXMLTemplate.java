@@ -1,9 +1,9 @@
 package com.genericworkflownodes.knime.nodegeneration.templates.feature;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -43,10 +43,12 @@ public class FeatureXMLTemplate extends Template {
                 StringEscapeUtils.escapeXml(featureMeta.getLicense()));
 
         registerGeneratedPlugins(featureMeta.generatedPluginMetas);
+        ArrayList<FragmentMeta> fragMetas = new ArrayList<FragmentMeta>();
 		for (GeneratedPluginMeta pluginMeta : featureMeta.generatedPluginMetas)
         {
-        	registerFragments(pluginMeta.generatedFragmentMetas);
+        	fragMetas.addAll(pluginMeta.generatedFragmentMetas);
         }
+		registerFragments(fragMetas);
         registerContributingPlugins(featureMeta.contributingPluginMetas);
     }
 
