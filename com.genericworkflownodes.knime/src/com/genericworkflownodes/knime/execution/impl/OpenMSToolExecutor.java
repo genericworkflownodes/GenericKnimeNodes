@@ -67,6 +67,10 @@ public class OpenMSToolExecutor extends LocalToolExecutor {
                     break;
                 }
             }
+            else if (path.endsWith("share"))
+            {
+              addEnv.put("OPENMS_DATA_PATH", path + System.getProperty("file.separator") + "OpenMS");
+            }
         }
         addEnvironmentVariables(addEnv, true);
         super.prepareExecution(nodeConfiguration, pluginConfiguration);
