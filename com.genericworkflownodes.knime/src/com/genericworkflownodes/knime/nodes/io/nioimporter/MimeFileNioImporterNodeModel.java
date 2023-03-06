@@ -43,6 +43,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.util.ContextProperties;
 import org.knime.core.util.FileUtil;
 import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
 import org.knime.filehandling.core.connections.FSConnection;
@@ -59,6 +61,7 @@ import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.ReadPa
 import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusConsumer;
 import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
 
+import com.genericworkflownodes.knime.generic_node.ExecutionFailedException;
 import com.genericworkflownodes.util.MIMETypeHelper;
 
 /**
@@ -206,18 +209,20 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
         try (final ReadPathAccessor accessor = m_config.getFileChooserSettings().createReadPathAccessor()) {
             final List<FSPath> fsPaths = accessor.getFSPaths(m_statusConsumer);
             for (final FSPath p : fsPaths) {
-                URI u;
                 FSType fs = p.toFSLocation().getFSType();
-                if ( fs == FSType.LOCAL_FS)
+                // We let the URIExporter convert first because it nicely groups all KNIME file systems under the knime:// scheme
+                NoConfigURIExporterFactory fs_urifactory = (NoConfigURIExporterFactory) m_config.getFileChooserSettings().getConnection().getURIExporterFactory(URIExporterIDs.DEFAULT);
+                URI u = fs_urifactory.getExporter().toUri(p);
+                
+                if (fs == FSType.LOCAL_FS)
                 {
-                    u = p.toUri();
+                    if (!u.getScheme().equals("file"))
+                    {
+                        throw new ExecutionFailedException("Local filesystem Path was not translated to a file:// URL. Something is wrong.");
+                    }
                 }
                 else 
                 {
-                    // We let the URIExporter convert first because it nicely groups all KNIME filesystems under the knime:// scheme
-                    NoConfigURIExporterFactory fs_urifactory = (NoConfigURIExporterFactory) m_config.getFileChooserSettings().getConnection().getURIExporterFactory(URIExporterIDs.DEFAULT);
-                    u = fs_urifactory.getExporter().toUri(p);
-                    
                     // We can then use the old (i.e., check for deprecation from time to time) FileUtil.resolveToPath to check if this KNIME URL
                     //  is convertible to a local file path (e.g., because the mountpoint and/or the workflow for which this URL stands for
                     //  is a local one. This will work nicely because we also use FileUtil.getFileFromURL in our GenericKnimeNodeModel.transferIncomingPorts2Config
@@ -226,9 +231,13 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
                     // Checking for file:// should be unnecessary since we do it in the if-case above. Just in case.
                     if (!((u.getScheme().equals("knime") || u.getScheme().equals("file")) && FileUtil.resolveToPath(u.toURL()) != null))
                     {
-                        // TODO try with resources
+                        //TODO try with resources
                         FSConnection fsc = DefaultFSConnectionFactory.createRelativeToConnection(RelativeTo.WORKFLOW_DATA);
-                        FSPath tgt = fsc.getFileSystem().getPath(p.getFileName().toString());
+                        String foldername = "FileImporter" + NodeContext.getContext().getNodeContainer().getID();
+                        Path folder = fsc.getFileSystem().getPath(foldername);
+                        folder.toFile().mkdirs();
+                        String oldFileName = p.getFileName().toString();
+                        FSPath tgt = fsc.getFileSystem().getPath(foldername, oldFileName);
                         //TODO add suffix for possible duplicates
                         //TODO decide about replacing or use UID from the beginning
                         Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);

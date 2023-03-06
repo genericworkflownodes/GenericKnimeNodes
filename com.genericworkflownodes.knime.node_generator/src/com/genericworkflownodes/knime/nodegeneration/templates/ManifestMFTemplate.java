@@ -10,7 +10,7 @@ public class ManifestMFTemplate extends Template {
     public ManifestMFTemplate(GeneratedPluginMeta pluginMeta)
             throws IOException {
         super(NodeGenerator.class
-                .getResourceAsStream("templates/MANIFEST.MF.template"));
+                .getResourceAsStream(pluginMeta.isResourceOnly() ? "templates/MANIFEST.MF-ResourceOnly.template" : "templates/MANIFEST.MF.template"));
 
         replace("@@pluginName@@", pluginMeta.getName());
         replace("@@pluginVersion@@", pluginMeta.getGeneratedPluginVersion());
