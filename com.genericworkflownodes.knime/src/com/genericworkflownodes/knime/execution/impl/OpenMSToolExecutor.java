@@ -18,6 +18,9 @@
  */
 package com.genericworkflownodes.knime.execution.impl;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,8 +50,10 @@ public class OpenMSToolExecutor extends LocalToolExecutor {
     @Override
     public void prepareExecution(final INodeConfiguration nodeConfiguration,
             final IPluginConfiguration pluginConfiguration) throws Exception {
+        findExecutable(nodeConfiguration, pluginConfiguration);
         ArrayList<String> requiredLibBundles = new ArrayList<String>();
         requiredLibBundles.add("OpenMS");
+        String sep = System.getProperty("file.separator");
         
         Map<String, String> addEnv = new HashMap<String, String>();
         for (String path : DLLRegistry.getDLLRegistry()
@@ -60,7 +65,10 @@ public class OpenMSToolExecutor extends LocalToolExecutor {
                     addEnv.put("Path", path);
                     break;
                 case MAC:
-                    addEnv.put("DYLD_LIBRARY_PATH", path);
+                    File liblink = new File(m_executable.getParent()+sep+".."+sep+"lib");
+                    File tgt = new File(path);
+                    Files.createSymbolicLink(liblink.toPath(), tgt.toPath());
+                    //addEnv.put("DYLD_LIBRARY_PATH", path);
                     break;
                 default: //LINUX, SOLARIS etc.
                     addEnv.put("LD_LIBRARY_PATH", path);

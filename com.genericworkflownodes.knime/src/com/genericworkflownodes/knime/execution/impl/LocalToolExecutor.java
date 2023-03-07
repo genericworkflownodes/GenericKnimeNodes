@@ -430,10 +430,9 @@ public class LocalToolExecutor implements IToolExecutor {
     }
 
     /**
-     * Initializes the environment variables of the given ProcessBuilder.
-     * 
-     * @note If the used binaries where not shipped with the plugin, this method
-     *       will do nothing.
+     * Initializes the environment variables of the given ProcessBuilder
+     * with the ones collected in the corresponding member of the ToolExecutor:
+     * m_environmentVariables.
      * 
      * @param builder
      *            The builder that should be initialized.
@@ -455,7 +454,11 @@ public class LocalToolExecutor implements IToolExecutor {
     @Override
     public void prepareExecution(final INodeConfiguration nodeConfiguration,
             final IPluginConfiguration pluginConfiguration) throws Exception {
-        findExecutable(nodeConfiguration, pluginConfiguration);
+        // in case it was not set yet
+        if (m_executable == null)
+        {
+            findExecutable(nodeConfiguration, pluginConfiguration);
+        }
         Map<String, String> nodeEnv = pluginConfiguration.getBinaryManager()
                 .getProcessEnvironment(nodeConfiguration.getExecutableName());
         String pathWithJava = "";
