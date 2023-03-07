@@ -324,10 +324,11 @@ public class LocalToolExecutor implements IToolExecutor {
 
             // emit command
             LOGGER.debug("Executing: " + StringUtils.join(commands, " "));
-
+            
             // build process
             final ProcessBuilder builder = new ProcessBuilder(commands);
             setupProcessEnvironment(builder);
+            LOGGER.debug("With environment: " + m_environmentVariables.toString());
 
             File logFile;
             File errLogFile;
