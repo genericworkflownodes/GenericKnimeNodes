@@ -16,21 +16,21 @@ import org.osgi.framework.FrameworkUtil;
 import com.genericworkflownodes.knime.custom.config.IDLLProvider;
 
 public class GenericResourceProvider implements IDLLProvider {
-
+	
 	@Override
-	public List<File> getDLLFolders() {
+	public List<Path> getDLLFolders() {
 		Bundle bundle = FrameworkUtil.getBundle(getClass());
 		URL dir;
-		ArrayList<File> res = new ArrayList<File>();
+		ArrayList<Path> res = new ArrayList<Path>();
 		try {
 			dir = bundle.getResource("/__PAYLOAD__/");
-			File payloadfolder = new File(FileLocator.toFileURL(dir).toURI());
-			File[] contents = payloadfolder.listFiles();
+			Path payloadfolder = Paths.get(FileLocator.toFileURL(dir).toURI());
+			File[] contents = payloadfolder.toFile().listFiles();
 			for (File content : contents)
 			{
 				if (content.isDirectory())
 				{
-					res.add(content);
+					res.add(content.toPath());
 				}
 			}
 		} catch (IOException e) {

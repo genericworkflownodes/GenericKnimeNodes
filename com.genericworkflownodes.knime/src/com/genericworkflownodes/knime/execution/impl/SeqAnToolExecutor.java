@@ -1,6 +1,7 @@
 package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
@@ -49,7 +50,7 @@ public class SeqAnToolExecutor extends LocalToolExecutor {
         // Get the dlls from the DLLRegistry.
         StringBuilder lib_paths = new StringBuilder();
         try {
-            for (String lib_path : DLLRegistry.getDLLRegistry()
+            for (Path lib_path : DLLRegistry.getDLLRegistry()
                     .getAvailableDLLFoldersFor(requiredLibBundles)) {
                 lib_paths.append(lib_path).append(File.pathSeparator);
             }

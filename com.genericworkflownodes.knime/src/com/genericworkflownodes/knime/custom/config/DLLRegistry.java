@@ -2,6 +2,7 @@ package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,16 +57,16 @@ public class DLLRegistry {
      * @return A list of paths ({@link String}), or an empty list if no dll was
      *         found.
      */
-    public HashMap<String, ArrayList<String>> getAllAvailableDLLFolders() throws CoreException {
+    public HashMap<String, ArrayList<Path>> getAllAvailableDLLFolders() throws CoreException {
 
-        HashMap<String, ArrayList<String>> res = new HashMap<String,ArrayList<String>>();
+        HashMap<String, ArrayList<Path>> res = new HashMap<String,ArrayList<Path>>();
 
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IConfigurationElement[] elements = reg.getConfigurationElementsFor(EXTENSION_POINT_ID);
 
 		// TODO cache this??
         for (IConfigurationElement elem : elements) {
-            Set<String> dllPaths = new HashSet<String>();
+            Set<Path> dllPaths = new HashSet<Path>();
             //System.out.println(elem.getName() + elem.getValue());
             final String name = elem.getAttribute("name");
             final Object o = elem.createExecutableExtension("class");
@@ -73,10 +74,9 @@ public class DLLRegistry {
             // definition
             for (File f : ((IDLLProvider) o).getDLLs()) {
                 try {
-                    String path = f.getCanonicalFile().getParent();
+                    Path path = f.getCanonicalFile().toPath().getParent();
 
-                    if (path != null && !path.isEmpty()
-                            && !dllPaths.contains(path)) {
+                    if (path != null && !dllPaths.contains(path)) {
                         dllPaths.add(path);
                     }
                 } catch (IOException e) {
@@ -84,24 +84,24 @@ public class DLLRegistry {
                             + f.toString() + "]" + e.getMessage());
                 }
 			}
-            for (File fol : ((IDLLProvider) o).getDLLFolders()) {
+            for (Path fol : ((IDLLProvider) o).getDLLFolders()) {
                 if (fol != null) {
-                    dllPaths.add(fol.toString());
+                    dllPaths.add(fol);
                 }
             }
             
             if (dllPaths.isEmpty()) {
-                res.put(name, new ArrayList<String>()); 
+                res.put(name, new ArrayList<Path>()); 
             } else {
-                res.put(name, new ArrayList<String>(dllPaths));
+                res.put(name, new ArrayList<Path>(dllPaths));
             }
 		}
 
        return res;
 	}
     
-    public List<String> getAvailableDLLFoldersFor(List<String> names) throws CoreException {
-        ArrayList<String> res = new ArrayList<String>();
+    public List<Path> getAvailableDLLFoldersFor(List<String> names) throws CoreException {
+        ArrayList<Path> res = new ArrayList<Path>();
         for (String n : names)
         {
             res.addAll(getAllAvailableDLLFolders().get(n));

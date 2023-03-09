@@ -19,8 +19,10 @@
 package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,25 +55,46 @@ public class OpenMSToolExecutor extends LocalToolExecutor {
         findExecutable(nodeConfiguration, pluginConfiguration);
         ArrayList<String> requiredLibBundles = new ArrayList<String>();
         requiredLibBundles.add("OpenMS");
-        String sep = System.getProperty("file.separator");
         
         Map<String, String> addEnv = new HashMap<String, String>();
-        for (String path : DLLRegistry.getDLLRegistry()
+        for (Path path : DLLRegistry.getDLLRegistry()
                 .getAvailableDLLFoldersFor(requiredLibBundles)) {
+            // TODO handle multiple providers. Currently it only "uses" the last registered entry.
             if (path.endsWith("lib")) {
                 switch (PlatformUtils.getOS()) {
                 case WINDOWS:
-                    addEnv.put("PATH", path);
-                    addEnv.put("Path", path);
+                    addEnv.put("PATH", path.toString());
+                    addEnv.put("Path", path.toString());
                     break;
                 case MAC:
-                    File liblink = new File(m_executable.getParent()+sep+".."+sep+"lib");
-                    File tgt = new File(path);
-                    Files.createSymbolicLink(liblink.toPath(), tgt.toPath());
-                    //addEnv.put("DYLD_LIBRARY_PATH", path);
+                    try {
+                        // TODO how to add multiple sources for dylibs without DYLD_LIBRARY_PATH and without hardcoding multiple RPATHs?
+                        // We probably need to use install_name_tool --add_rpath, but this feels so hacky.
+                        Path liblink = m_executable.toPath().getParent().resolve("../lib");
+                        if (liblink.toFile().exists())
+                        {
+                            liblink.toFile().delete();
+                            
+                        }
+                        Path tgt = path;
+                        LOGGER.debug("Trying to create link from " + liblink.toString() + " to " + tgt.toString());
+                        Files.createSymbolicLink(liblink, tgt);
+                        // DYLD_LIBRARY_PATH is removed from the environments in child process in non-debug mode since macOS Big Sur.
+                        //addEnv.put("DYLD_LIBRARY_PATH", path);
+                    } catch(IOException e) {
+                        LOGGER.debug("Failed IO");
+                        e.printStackTrace();
+                    } catch(UnsupportedOperationException e) {
+                        LOGGER.debug("Failed UnsupportedOp");
+                        e.printStackTrace();
+                    } catch(SecurityException e) {
+                        LOGGER.debug("Failed Security");
+                        e.printStackTrace();
+                    }
+
                     break;
                 default: //LINUX, SOLARIS etc.
-                    addEnv.put("LD_LIBRARY_PATH", path);
+                    addEnv.put("LD_LIBRARY_PATH", path.toString());
                     break;
                 }
             }

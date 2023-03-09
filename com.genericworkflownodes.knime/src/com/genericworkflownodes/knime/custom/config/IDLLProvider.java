@@ -1,6 +1,7 @@
 package com.genericworkflownodes.knime.custom.config;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -23,8 +24,8 @@ public interface IDLLProvider {
      * Returns a list of all folders containing DLLs or other
      * shared resources contained in the bundle.
      *
-     * @return A {@link List} of DLL Folders as {@link File} objects
+     * @return A {@link List} of DLL Folders as {@link Path} objects
      *  in the current bundle.
      */
-    List<File> getDLLFolders();
+    List<Path> getDLLFolders();
 }
