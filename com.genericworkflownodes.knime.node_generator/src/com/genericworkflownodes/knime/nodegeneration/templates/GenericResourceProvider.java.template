@@ -26,7 +26,7 @@ public class GenericResourceProvider implements IDLLProvider {
 		ArrayList<Path> res = new ArrayList<Path>();
 		try {
 			dir = bundle.getResource("/__PAYLOAD__/");
-			Path payloadfolder = Paths.get(FileLocator.toFileURL(dir).toURI());
+			Path payloadfolder = Paths.get(FileLocator.toFileURL(dir).getPath());
 			File[] contents = payloadfolder.toFile().listFiles();
 			for (File content : contents)
 			{
@@ -36,8 +36,6 @@ public class GenericResourceProvider implements IDLLProvider {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 		return res;

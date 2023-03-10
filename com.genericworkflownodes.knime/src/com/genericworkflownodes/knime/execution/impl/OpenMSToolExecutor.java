@@ -71,15 +71,14 @@ public class OpenMSToolExecutor extends LocalToolExecutor {
                         // TODO how to add multiple sources for dylibs without DYLD_LIBRARY_PATH and without hardcoding multiple RPATHs?
                         // We probably need to use install_name_tool --add_rpath, but this feels so hacky.
                         Path liblink = m_executable.toPath().getParent().resolve("../lib");
-                        if (liblink.toFile().exists())
+                        if (liblink.toFile().exists() || Files.isSymbolicLink(liblink)) // might be a dangling softlink if user moved KNIME
                         {
                             liblink.toFile().delete();
-                            
                         }
                         Path tgt = path;
                         LOGGER.debug("Trying to create link from " + liblink.toString() + " to " + tgt.toString());
                         Files.createSymbolicLink(liblink, tgt);
-                        // DYLD_LIBRARY_PATH is removed from the environments in child process in non-debug mode since macOS Big Sur.
+                        // DYLD_LIBRARY_PATH is removed from the environments in child processes in non-debug mode since macOS Big Sur.
                         //addEnv.put("DYLD_LIBRARY_PATH", path);
                     } catch(IOException e) {
                         LOGGER.debug("Failed IO");
