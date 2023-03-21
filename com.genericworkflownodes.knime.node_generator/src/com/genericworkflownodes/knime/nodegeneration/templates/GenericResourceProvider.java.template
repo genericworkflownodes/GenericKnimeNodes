@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,7 +27,10 @@ public class GenericResourceProvider implements IDLLProvider {
 		ArrayList<Path> res = new ArrayList<Path>();
 		try {
 			dir = bundle.getResource("/__PAYLOAD__/");
-			Path payloadfolder = Paths.get(FileLocator.toFileURL(dir).getPath());
+			URL resolvedUrl = FileLocator.toFileURL(dir);
+			// We need to use the 3-arg constructor of URI in order to properly escape file system chars.
+			URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
+			Path payloadfolder = Paths.get(resolvedUri);
 			File[] contents = payloadfolder.toFile().listFiles();
 			for (File content : contents)
 			{
@@ -36,6 +40,8 @@ public class GenericResourceProvider implements IDLLProvider {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 		return res;
