@@ -5,7 +5,6 @@ Bundle-Name: Generic Workflow Nodes for KNIME: @@pluginName@@
 Bundle-SymbolicName: @@packageName@@;singleton:=true
 Bundle-Version: @@pluginVersion@@
 Bundle-Activator: @@packageName@@.knime.PluginActivator
-Bundle-ClassPath: target/classes/
 Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, ZIB (GKN-Team) and the @@pluginName@@ Team
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.6.0,4.0.0)",
  org.knime.workbench.core;bundle-version="[4.0.0,6.0.0)",

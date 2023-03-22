@@ -1,4 +1,7 @@
-bin.includes = target/classes/,\
+source.. = src/
+output.. = target/classes/
+bin.includes = .,\
                META-INF/,\
-               plugin.xml
+               plugin.xml,\
+               target/classes/
                
