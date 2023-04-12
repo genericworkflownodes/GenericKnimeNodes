@@ -66,6 +66,12 @@
           factory-class="com.genericworkflownodes.knime.nodes.io.nioimporter.MimeFileNioImporterNodeFactory"
           hidden="false">
     </node>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.io.nioexporter.FileExporterNodeFactory"
+          hidden="false">
+    </node>
    </extension>
 
    <extension point="org.knime.product.splashExtension">

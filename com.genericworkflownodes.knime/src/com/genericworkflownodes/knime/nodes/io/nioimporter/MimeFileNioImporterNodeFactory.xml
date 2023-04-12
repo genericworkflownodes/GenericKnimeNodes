@@ -16,8 +16,8 @@
 		  With this node you can locate and potentially import one or multiple files on any file system that can serve as input
           for another Generic KNIME Node. This is different from the KNIME "File Reader", in the sense that
           the file is not read into an internal KNIME Table, but stays on your file system.
-          For non-local files (i.e., everything except for Local and workflow-relative files)
-          the file is first copied into the workflow data area. The files will be deleted on
+          For non-local files (i.e., everything except for local and workflow-relative files)
+          the file is first copied into the workflow data area. Imported external files will be deleted on
           a reset of the node. Therefore, if you want to save the workflow with the input data, make sure
           not to reset the inputs. If you need a more persistent solution, use KNIME's File Transfer node
 		</p>

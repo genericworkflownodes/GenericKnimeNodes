@@ -82,7 +82,7 @@ public class ParameterDialog extends JPanel {
             .getLogger(ParameterDialog.class);
 
     /**
-     * TreeModelListener for netbeans.swing.Outline .
+     * TreeModelListener for netbeans.swing.Outline
      *
      * @author aiche
      */

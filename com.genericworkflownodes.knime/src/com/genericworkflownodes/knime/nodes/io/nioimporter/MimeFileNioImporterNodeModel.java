@@ -44,19 +44,15 @@ import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.util.ContextProperties;
 import org.knime.core.util.FileUtil;
 import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
 import org.knime.filehandling.core.connections.FSConnection;
-import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.connections.FSFiles;
 import org.knime.filehandling.core.connections.FSPath;
 import org.knime.filehandling.core.connections.RelativeTo;
 import org.knime.filehandling.core.connections.meta.FSType;
-import org.knime.filehandling.core.connections.uriexport.URIExporterConfig;
-import org.knime.filehandling.core.connections.uriexport.URIExporterFactory;
 import org.knime.filehandling.core.connections.uriexport.URIExporterIDs;
 import org.knime.filehandling.core.connections.uriexport.noconfig.NoConfigURIExporterFactory;
-import org.knime.filehandling.core.data.location.FSLocationValueMetaData;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.ReadPathAccessor;
 import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusConsumer;
 import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
@@ -77,13 +73,14 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
      */
     private byte[] data;
 
+    @SuppressWarnings("unused")
     private final boolean m_hasInputPorts;
     
     private final NodeModelStatusConsumer m_statusConsumer;
     
     private final MimeFileNioImporterNodeConfiguration m_config;
     
-    private List<FSLocation> files;
+    private List<FSPath> imported_files;
     
     /**
      * Getter for data member.
@@ -112,6 +109,10 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
+        for (FSPath f : imported_files)
+        {
+            FSFiles.deleteSafely(f);
+        }
     }
 
     /**
@@ -238,14 +239,16 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
                         folder.toFile().mkdirs();
                         String oldFileName = p.getFileName().toString();
                         FSPath tgt = fsc.getFileSystem().getPath(foldername, oldFileName);
-                        //TODO add suffix for possible duplicates
+                        //TODO add suffix for possible duplicates? Could happen when you recurse into subfolders.
                         //TODO decide about replacing or use UID from the beginning
                         Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);
                         // default exporter is fine, since we just need to handle KNIME relative paths.
                         final NoConfigURIExporterFactory wfdatarel_urifactory = (NoConfigURIExporterFactory) fsc.getURIExporterFactory(URIExporterIDs.DEFAULT);
                         u = wfdatarel_urifactory.getExporter().toUri(tgt);
+                        imported_files.add(tgt);
                     }
                 }
+                
                 uris.add(new URIContent(u,
                         (m_config.overwriteFileExtension().isActive() ? 
                                 m_config.overwriteFileExtension().getStringValue() :

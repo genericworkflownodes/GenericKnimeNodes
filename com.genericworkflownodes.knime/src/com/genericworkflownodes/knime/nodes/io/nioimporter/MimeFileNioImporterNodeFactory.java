@@ -18,7 +18,6 @@
  */
 package com.genericworkflownodes.knime.nodes.io.nioimporter;
 
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -29,7 +28,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -54,6 +52,7 @@ import org.knime.filehandling.core.defaultnodesettings.status.NodeModelStatusCon
 import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.MessageType;
 import org.knime.filehandling.core.port.FileSystemPortObject;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+//import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
 import org.knime.core.node.port.PortTypeRegistry;
@@ -69,52 +68,6 @@ public final class MimeFileNioImporterNodeFactory extends
 ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
     
     private static final String FS_PORT_ID = "File System Connection";
-
-    /**
-     *  Represents the MIMETypeListener that allows Live preview of the MIMe Type that
-     *  the user is going to select on the Dialog of the Importer Node
-     */
-    private final static class MimeTypeListener implements ActionListener, KeyListener {
-
-        private final JCheckBox checkbox;
-        private final JTextField opt;
-        private final JComboBox<String> fileBox;
-        private final JLabel label;
-
-        private  MimeTypeListener(JCheckBox checkBox, JTextField opt, JComboBox<String> fileBox, JLabel label) {
-            this.checkbox = checkBox;
-            this.opt = opt;
-            this.fileBox = fileBox;
-            this.label = label;
-        }
-
-        // Updates the label of the Dialog with the MIME type
-        private void update() {
-            // Determine the MIME Type
-            final Optional<String> mime = checkbox.isSelected() ? MIMETypeHelper.getMIMEtypeByExtension(opt.getText())
-                    : MIMETypeHelper.getMIMEtype((String) fileBox.getEditor().getItem());
-            final String ext = checkbox.isSelected() ? opt.getText() :
-                FilenameUtils.getExtension((String)fileBox.getEditor().getItem());
-            this.label.setText("MIME Type: " + mime.orElse("unregistered ('" + ext + "')"));
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            this.update();
-        }
-        @Override
-        public void keyPressed(KeyEvent e) {
-            this.update();
-        }
-        @Override
-        public void keyReleased(KeyEvent e) {
-            this.update();
-        }
-        @Override
-        public void keyTyped(KeyEvent e) {
-            this.update();
-        }
-    }
     
     /**
      *  Represents the MIMETypeListener that allows Live preview of the MIMe Type that
@@ -282,6 +235,12 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
 
         // The Label for Displaying the MIME Type
         final DialogComponentLabel label = new DialogComponentLabel("MIME Type: ");
+        
+        // Checkbox for local overwrite
+        /*final DialogComponentBoolean overwrite = 
+                new DialogComponentBoolean(
+                    extConfig.overwriteLocalFiles(),
+                    "Override local files?");*/
 
         // Registration of the ChangeListener of the MIME Type
         // TODO should we still support this?
@@ -291,6 +250,7 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
         pane.addDialogComponent(fileChooser1);
         pane.addDialogComponent(fileExtension);
         pane.addDialogComponent(label);
+        //pane.addDialogComponent(overwrite);
         return pane;
     }
 

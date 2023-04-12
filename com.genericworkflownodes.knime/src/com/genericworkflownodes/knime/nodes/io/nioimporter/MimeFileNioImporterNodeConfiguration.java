@@ -26,6 +26,7 @@ package com.genericworkflownodes.knime.nodes.io.nioimporter;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+//import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
 
@@ -35,11 +36,16 @@ final class MimeFileNioImporterNodeConfiguration {
 
     private SettingsModelOptionalString m_overwriteFileExtension;
     
+    /*private static final String CFG_OVERWRITE_LOCAL_FILES = "OVERWRITE_LOCAL_FILES";
+    
+    private SettingsModelBoolean m_overwriteLocalFiles;*/
+    
     private final SettingsModelReaderFileChooser m_fileChooserSettings;
 
     MimeFileNioImporterNodeConfiguration(final SettingsModelReaderFileChooser fileChooserSettings) {
         m_fileChooserSettings = fileChooserSettings;
         m_overwriteFileExtension = new SettingsModelOptionalString(CFG_OVERWRITE_EXT, "", false);
+        //m_overwriteLocalFiles = new SettingsModelBoolean(CFG_OVERWRITE_LOCAL_FILES, false);
     }
     
     SettingsModelOptionalString overwriteFileExtension() {
@@ -49,6 +55,14 @@ final class MimeFileNioImporterNodeConfiguration {
     void overwriteFileExtension(final String overwriteFileExtension) {
         m_overwriteFileExtension.setStringValue(overwriteFileExtension);
     }
+    
+    /*SettingsModelBoolean overwriteLocalFiles() {
+        return m_overwriteLocalFiles;
+    }
+
+    void overwriteLocalFiles(final boolean overwriteLocalFiles) {
+        m_overwriteLocalFiles.setBooleanValue(overwriteLocalFiles);
+    }*/
 
     SettingsModelReaderFileChooser getFileChooserSettings() {
         return m_fileChooserSettings;
@@ -75,6 +89,7 @@ final class MimeFileNioImporterNodeConfiguration {
     void validateSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_fileChooserSettings.validateSettings(settings);
         m_overwriteFileExtension.validateSettings(settings);
+       // m_overwriteLocalFiles.validateSettings(settings);
     }
 
 }
