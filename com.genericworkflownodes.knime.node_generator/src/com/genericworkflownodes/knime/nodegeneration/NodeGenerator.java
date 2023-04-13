@@ -330,8 +330,6 @@ public class NodeGenerator {
 	            // plugin.xml
 	            pluginXML.saveTo(pluginBuildDir.getPluginXml());
 	        }
-	        
-
 
             // .project
             new ProjectTemplate(generatedPluginMeta.getPackageRoot())
@@ -340,8 +338,8 @@ public class NodeGenerator {
             // src/[PACKAGE]/knime/nodes/binres/*.ini *.zip
             generatePayloadFragments(generatedPluginMeta);
 
-            // copy assets
-            copyAsset(".classpath", pluginBuildDir.getAbsolutePath());
+            // .classpath
+            copyAssetAs("classpath.template", pluginBuildDir.getClasspathFile());
 	        
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
@@ -570,6 +568,17 @@ public class NodeGenerator {
         IOUtils.copy(in, fostream);
         fostream.close();
     }
+    
+    private void copyAssetAs(String assetResourcePath, File targetFile)
+            throws IOException {
+        InputStream in = NodeGenerator.class.getResourceAsStream("assets/"
+                + assetResourcePath);
+
+        FileOutputStream fostream = new FileOutputStream(targetFile);
+        IOUtils.copy(in, fostream);
+        fostream.close();
+    }
+
 
     public void copyFolderIcon(GeneratedPluginMeta pMeta, NodesBuildDirectory buildDir) throws IOException {
     	NodesSourceDirectory srcDir = pMeta.sourceDir;
