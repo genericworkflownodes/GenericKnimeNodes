@@ -15,6 +15,7 @@ import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.writer.DialogComponentWriterFileChooser;
+import org.knime.filehandling.core.defaultnodesettings.filechooser.writer.FolderStatusMessageReporter;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.writer.SettingsModelWriterFileChooser;
 import org.knime.filehandling.core.util.GBCBuilder;
 
@@ -28,7 +29,7 @@ final class FileExporterNodeDialog extends NodeDialogPane {
         writerModel.setCreateMissingFolders(true);
         final FlowVariableModel fvm =
             createFlowVariableModel(writerModel.getKeysForFSLocation(), FSLocationVariableType.INSTANCE);
-        m_writer = new DialogComponentWriterFileChooser(writerModel, connectionInputPortGrpName, fvm);
+        m_writer = new DialogComponentWriterFileChooser(writerModel, connectionInputPortGrpName, fvm, FolderStatusMessageReporter::new);
         addTab("Settings", createPanel());
     }
 

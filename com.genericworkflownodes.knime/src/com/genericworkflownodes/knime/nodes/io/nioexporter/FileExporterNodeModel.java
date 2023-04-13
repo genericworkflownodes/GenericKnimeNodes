@@ -87,16 +87,19 @@ final class FileExporterNodeModel extends NodeModel {
                 }
             }
 
-            // since the remainder is rather costly we do the overwrite check here, before copying
+            final FileOverwritePolicy fileOverwritePolicy = writerModel.getFileOverwritePolicy();
+            
+            // since the remainder is rather costly we do the overwrite check here, before copying anything
             for (URIContent uc : uriPort.getURIContents()) {
                 //For now we assume that all URIs are local (usually in the KNIME tmp folder)
                 Path source = Paths.get(uc.getURI());
+                
                 //We need to convert filename to String, otherwise they may come from different filesystems,
-                // (e.g. if you want to save a local file to a KNIME server)
+                // (e.g., if you want to save a local file to a KNIME server)
                 Path target = outpath.resolve(source.getFileName().toString());
-                final FileOverwritePolicy fileOverwritePolicy = writerModel.getFileOverwritePolicy();
+                
                 if (fileOverwritePolicy == FileOverwritePolicy.FAIL && FSFiles.exists(target)) {
-                    throw new IOException("Output file '" + outpath.toString()
+                    throw new IOException("Output file '" + target.toString()
                         + "' exists and must not be overwritten due to user settings.");
                 }
             }
@@ -105,24 +108,27 @@ final class FileExporterNodeModel extends NodeModel {
             for (URIContent uc : uriPort.getURIContents()) {
                 //For now we assume that all URIs are local (usually in the KNIME tmp folder)
                 Path source = Paths.get(uc.getURI());
+                
                 //We need to convert filename to String, otherwise they may come from different filesystems,
-                // (e.g. if you want to save a local file to a KNIME server)
+                // (e.g., if you want to save a local file to a KNIME server)
                 Path target = outpath.resolve(source.getFileName().toString());
+                
                 // Since we checked already, that none of the currently existing files will be overwritten,
                 //  we will add suffixes by default, in case filenames *in the port* overwrite each other.
                 // TODO Warning, this will lead to unexpected behavior when files with the same name are 
                 //  created by another process, after the first check has been performed.
-                if (FSFiles.exists(target)) {
+                if (fileOverwritePolicy == FileOverwritePolicy.FAIL && FSFiles.exists(target)) {
                     LOGGER.warn("While trying to write to " + target.toString() + ": File suddenly exists. Either multiple files in your FilePort"
-                            + "had the same filename or another process created the file after the initial existence check. File will be copied with a suffix.");
+                            + " had the same filename or another process created the file after the initial existence check. File will be copied with a suffix.");
                     target = createReplacementFile(target, overwriteCounter);
                 }
                 try {
-                    Files.copy(source, target);
+                    Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     LOGGER.error(e.toString());
                     throw e;
                 }
+                overwriteCounter += 1;
                 
             }
         }
