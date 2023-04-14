@@ -17,9 +17,10 @@
           for another Generic KNIME Node. This is different from the KNIME "File Reader", in the sense that
           the file is not read into an internal KNIME Table, but stays on your file system.
           For non-local files (i.e., everything except for local and workflow-relative files)
-          the file is first copied into the workflow data area. Imported external files will be deleted on
-          a reset of the node. Therefore, if you want to save the workflow with the input data, make sure
-          not to reset the inputs. If you need a more persistent solution, use KNIME's File Transfer node
+          the file is first copied into the workflow data area. Imported external files will NOT be deleted on
+          a reset of the node (due to potentially dangerous behavior when sending an exported workflow).
+          Therefore, consider deleting files in the workflow data area manually after they are not
+          needed anymore.
 		</p>
 
            <p>
@@ -95,6 +96,10 @@
                </i><a href="https://docs.knime.com/latest/analytics_platform_file_handling_guide/index.html#path">
                <i>path flow variable.</i></a>
 		</option>
+		
+		<option name="Existing local files action">
+		  The action to perform, if a file with the same filename as a file to be imported exists already in the workflow data area.
+        </option>
     
         <option name="File extension (override)">
 		  By default, the importer will determine the file type by the extension of the file, but 

@@ -22,8 +22,10 @@ package com.genericworkflownodes.knime.nodes.io.nioimporter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -41,6 +43,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.context.ports.PortsConfiguration;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
@@ -80,8 +83,6 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
     
     private final MimeFileNioImporterNodeConfiguration m_config;
     
-    private List<FSPath> imported_files;
-    
     /**
      * Getter for data member.
      *
@@ -109,10 +110,16 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        for (FSPath f : imported_files)
+        /*for (String f : m_importedFiles.getStringArrayValue())
         {
-            FSFiles.deleteSafely(f);
+            try {
+                FSFiles.deleteSafely(Paths.get(new URI(f)));
+            } catch (URISyntaxException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
+        m_importedFiles.setStringArrayValue(new String[1]);*/
     }
 
     /**
@@ -120,6 +127,7 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
+        //m_importedFiles.saveSettingsTo(settings);
         m_config.saveSettingsForModel(settings);
     }
 
@@ -130,6 +138,7 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_config.loadSettingsForModel(settings);
+        //m_importedFiles.loadSettingsFrom(settings);
     }
 
     /**
@@ -200,7 +209,7 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
         };
     }
     
-    // TODO safe tgt as member and delete at reset
+    
     @Override
     protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
             throws Exception {
@@ -209,6 +218,7 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
         
         try (final ReadPathAccessor accessor = m_config.getFileChooserSettings().createReadPathAccessor()) {
             final List<FSPath> fsPaths = accessor.getFSPaths(m_statusConsumer);
+            ArrayList<String> impFiles = new ArrayList<String>();
             for (final FSPath p : fsPaths) {
                 FSType fs = p.toFSLocation().getFSType();
                 // We let the URIExporter convert first because it nicely groups all KNIME file systems under the knime:// scheme
@@ -241,11 +251,25 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
                         FSPath tgt = fsc.getFileSystem().getPath(foldername, oldFileName);
                         //TODO add suffix for possible duplicates? Could happen when you recurse into subfolders.
                         //TODO decide about replacing or use UID from the beginning
-                        Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);
+                        if (tgt.toFile().exists())
+                        {
+                            if (m_config.overwriteLocal().getStringValue().equals("skip"))
+                            {
+                                this.getLogger().info(tgt.toString()+ "exists. Skipping import.");
+                            } else if (m_config.overwriteLocal().getStringValue().equals("fail")) {
+                                throw new IOException("File to import exists already at " + tgt.toString() + " but override is disabled in user settings.");
+                            } else {
+                                Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);
+                            }
+                        } else {
+                            Files.copy(p, tgt);
+                        }
+                        
                         // default exporter is fine, since we just need to handle KNIME relative paths.
                         final NoConfigURIExporterFactory wfdatarel_urifactory = (NoConfigURIExporterFactory) fsc.getURIExporterFactory(URIExporterIDs.DEFAULT);
                         u = wfdatarel_urifactory.getExporter().toUri(tgt);
-                        imported_files.add(tgt);
+                        impFiles.add(tgt.toUri().toString());
+                        //m_importedFiles.setStringArrayValue((String[]) impFiles.toArray());
                     }
                 }
                 

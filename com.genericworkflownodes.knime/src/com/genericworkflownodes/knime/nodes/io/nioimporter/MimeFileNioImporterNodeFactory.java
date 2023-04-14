@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Marc Röttig.
+ * Copyright (c) 2023, Julianus Pfeuffer and the GKN team.
  *
  * This file is part of GenericKnimeNodes.
  *
@@ -55,6 +55,7 @@ import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 //import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentOptionalString;
+import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.port.PortTypeRegistry;
 
 import com.genericworkflownodes.util.MIMETypeHelper;
@@ -223,7 +224,13 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
                         extConfig.getFileChooserSettings(),
                         "list_files_history",
                         readFvm);
-            
+        
+        final DialogComponentStringSelection overwrite = 
+                new DialogComponentStringSelection(
+                    extConfig.overwriteLocal(),
+                    "Existing local files action",
+                    "skip", "fail", "override");
+        
         // The Dialog components for selecting the file and setting the file extension
         //final DialogComponentFileChooser fileChooser = new DialogComponentFileChooser(
         //        MimeFileImporterNodeModel.filename(),
@@ -248,6 +255,7 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
 
         // Add all the Dialog components
         pane.addDialogComponent(fileChooser1);
+        pane.addDialogComponent(overwrite);
         pane.addDialogComponent(fileExtension);
         pane.addDialogComponent(label);
         //pane.addDialogComponent(overwrite);

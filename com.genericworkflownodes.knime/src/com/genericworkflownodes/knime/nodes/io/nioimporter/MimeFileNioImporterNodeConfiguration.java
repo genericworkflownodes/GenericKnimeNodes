@@ -28,6 +28,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 //import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelOptionalString;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
 
 final class MimeFileNioImporterNodeConfiguration {
@@ -36,16 +37,17 @@ final class MimeFileNioImporterNodeConfiguration {
 
     private SettingsModelOptionalString m_overwriteFileExtension;
     
-    /*private static final String CFG_OVERWRITE_LOCAL_FILES = "OVERWRITE_LOCAL_FILES";
-    
-    private SettingsModelBoolean m_overwriteLocalFiles;*/
+    private static final String CFG_OVERWRITE_LOCAL = "OVERWRITE_LOCAL";
+
+    private SettingsModelString m_overwriteLocal;
+
     
     private final SettingsModelReaderFileChooser m_fileChooserSettings;
 
     MimeFileNioImporterNodeConfiguration(final SettingsModelReaderFileChooser fileChooserSettings) {
         m_fileChooserSettings = fileChooserSettings;
         m_overwriteFileExtension = new SettingsModelOptionalString(CFG_OVERWRITE_EXT, "", false);
-        //m_overwriteLocalFiles = new SettingsModelBoolean(CFG_OVERWRITE_LOCAL_FILES, false);
+        m_overwriteLocal = new SettingsModelString(CFG_OVERWRITE_LOCAL, "skip");
     }
     
     SettingsModelOptionalString overwriteFileExtension() {
@@ -63,6 +65,23 @@ final class MimeFileNioImporterNodeConfiguration {
     void overwriteLocalFiles(final boolean overwriteLocalFiles) {
         m_overwriteLocalFiles.setBooleanValue(overwriteLocalFiles);
     }*/
+    
+    /*SettingsModelStringArray importedFiles() {
+        return m_importedFiles;
+    }
+
+    void importedFiles(final String[] importedFiles) {
+        m_importedFiles.setStringArrayValue(importedFiles);
+    }*/
+    
+    SettingsModelString overwriteLocal() {
+        return m_overwriteLocal;
+    }
+
+    void overwriteLocal(final String overwriteLocal) {
+        m_overwriteLocal.setStringValue(overwriteLocal);
+    }
+    
 
     SettingsModelReaderFileChooser getFileChooserSettings() {
         return m_fileChooserSettings;
@@ -70,26 +89,30 @@ final class MimeFileNioImporterNodeConfiguration {
 
     void loadSettingsForDialog(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_fileChooserSettings.loadSettingsFrom(settings);
+        m_overwriteFileExtension.loadSettingsFrom(settings);
+        m_overwriteLocal.loadSettingsFrom(settings);
     }
 
     void loadSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_fileChooserSettings.loadSettingsFrom(settings);
         loadSettingsForDialog(settings);
     }
 
     void saveSettingsForDialog(final NodeSettingsWO settings) {
         m_fileChooserSettings.saveSettingsTo(settings);
+        m_overwriteFileExtension.saveSettingsTo(settings);
+        m_overwriteLocal.saveSettingsTo(settings);
     }
 
     void saveSettingsForModel(final NodeSettingsWO settings) {
+        
         saveSettingsForDialog(settings);
-        m_fileChooserSettings.saveSettingsTo(settings);
     }
 
     void validateSettingsForModel(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_fileChooserSettings.validateSettings(settings);
         m_overwriteFileExtension.validateSettings(settings);
        // m_overwriteLocalFiles.validateSettings(settings);
+        //m_importedFiles.validateSettings(settings);
     }
 
 }
