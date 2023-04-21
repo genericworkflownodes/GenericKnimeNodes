@@ -39,10 +39,12 @@ import org.knime.core.node.FlowVariableModel;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeView;
+import org.knime.core.data.uri.IURIPortObject;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.node.context.NodeCreationConfiguration;
 import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.filehandling.core.connections.FSCategory;
+import org.knime.filehandling.core.connections.FSPath;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 import org.knime.filehandling.core.defaultnodesettings.EnumConfig;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.DialogComponentReaderFileChooser;
@@ -172,7 +174,7 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
         final PortsConfigurationBuilder builder = new PortsConfigurationBuilder();
         builder.addOptionalInputPortGroup(FS_PORT_ID, FileSystemPortObject.TYPE);
         // TODO decide between URI Port and FileStoreURIPort
-        builder.addFixedOutputPortGroup("loaded file", PortTypeRegistry.getInstance().getPortType(URIPortObject.class));
+        builder.addFixedOutputPortGroup("loaded files", PortTypeRegistry.getInstance().getPortType(IURIPortObject.class));
         return Optional.of(builder);
     }
     
@@ -217,48 +219,32 @@ ConfigurableNodeFactory<MimeFileNioImporterNodeModel> {
 
         final DefaultNodeSettingsPane pane = new DefaultNodeSettingsPane();
         MimeFileNioImporterNodeConfiguration extConfig = createSettings(config.getPortConfig().orElseThrow(IllegalStateException::new));
+        
         final FlowVariableModel readFvm = pane.createFlowVariableModel(
                 extConfig.getFileChooserSettings().getKeysForFSLocation(), FSLocationVariableType.INSTANCE);
+        
         final DialogComponentReaderFileChooser fileChooser1 = 
                 new DialogComponentReaderFileChooser(
                         extConfig.getFileChooserSettings(),
                         "list_files_history",
                         readFvm);
         
-        final DialogComponentStringSelection overwrite = 
-                new DialogComponentStringSelection(
-                    extConfig.overwriteLocal(),
-                    "Existing local files action",
-                    "skip", "fail", "override");
         
-        // The Dialog components for selecting the file and setting the file extension
-        //final DialogComponentFileChooser fileChooser = new DialogComponentFileChooser(
-        //        MimeFileImporterNodeModel.filename(),
-        //        "MimeFileImporterNodeDialog");
+        // The Label for Displaying the MIME Type
+        final DialogComponentLabel label = new DialogComponentLabel("MIME Type: ");
+        
         final DialogComponentOptionalString fileExtension = 
                 new DialogComponentOptionalString(
                     extConfig.overwriteFileExtension(),
                     "File extension (override)");
 
-        // The Label for Displaying the MIME Type
-        final DialogComponentLabel label = new DialogComponentLabel("MIME Type: ");
-        
-        // Checkbox for local overwrite
-        /*final DialogComponentBoolean overwrite = 
-                new DialogComponentBoolean(
-                    extConfig.overwriteLocalFiles(),
-                    "Override local files?");*/
-
         // Registration of the ChangeListener of the MIME Type
-        // TODO should we still support this?
         this.registerMimeTypeChangeListener(fileChooser1, fileExtension, label);
 
         // Add all the Dialog components
         pane.addDialogComponent(fileChooser1);
-        pane.addDialogComponent(overwrite);
         pane.addDialogComponent(fileExtension);
         pane.addDialogComponent(label);
-        //pane.addDialogComponent(overwrite);
         return pane;
     }
 

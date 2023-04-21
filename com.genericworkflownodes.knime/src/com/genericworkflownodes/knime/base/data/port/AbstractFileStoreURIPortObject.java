@@ -146,6 +146,28 @@ public abstract class AbstractFileStoreURIPortObject extends
         // give the file object to the client so he can work with it
         return child;
     }
+    
+    /**
+     * Adds the given file to the {@link FileStoreURIPortObject}.
+     *
+     * @param filename
+     *            The relative path that should be stored inside the file-store,
+     *            e.g., outfile.txt or subfolder/outfile.txt.
+     * @return A {@link File} object pointing to the registered file.
+     */
+    public File registerFile(String filename, String ext) {
+        // register the URIContent
+        File child = new File(getFileStoreRootDirectory(), filename);
+        URIContent uric = new URIContent(child.toURI(), ext);
+
+        // update content and spec accordingly
+        m_uriContents.add(uric);
+        m_uriPortObjectSpec = URIPortObjectSpec.create(m_uriContents);
+        m_relPaths.add(filename);
+
+        // give the file object to the client so he can work with it
+        return child;
+    }
 
     @Override
     public String getSummary() {

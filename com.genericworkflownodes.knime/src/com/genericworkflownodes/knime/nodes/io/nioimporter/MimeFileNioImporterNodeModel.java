@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.knime.core.data.filestore.FileStore;
 import org.knime.core.data.uri.URIContent;
 import org.knime.core.data.uri.URIPortObject;
 import org.knime.core.data.uri.URIPortObjectSpec;
@@ -48,6 +49,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.util.FileUtil;
+import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
 import org.knime.filehandling.core.connections.FSConnection;
 import org.knime.filehandling.core.connections.FSFiles;
@@ -62,6 +64,8 @@ import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.Mess
 
 import com.genericworkflownodes.knime.generic_node.ExecutionFailedException;
 import com.genericworkflownodes.util.MIMETypeHelper;
+import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
+import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 
 /**
  * This is the model implementation of MimeFileImporter.
@@ -70,7 +74,6 @@ import com.genericworkflownodes.util.MIMETypeHelper;
  */
 final class MimeFileNioImporterNodeModel extends NodeModel {    
     
-
     /**
      * Data member.
      */
@@ -82,6 +85,10 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
     private final NodeModelStatusConsumer m_statusConsumer;
     
     private final MimeFileNioImporterNodeConfiguration m_config;
+    
+    private static final String CFG_IMPORTED_FILES = "IMPORTED_FILES";
+
+    private SettingsModelStringArray m_importedFiles;
     
     /**
      * Getter for data member.
@@ -110,16 +117,6 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        /*for (String f : m_importedFiles.getStringArrayValue())
-        {
-            try {
-                FSFiles.deleteSafely(Paths.get(new URI(f)));
-            } catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        m_importedFiles.setStringArrayValue(new String[1]);*/
     }
 
     /**
@@ -178,7 +175,6 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
 
         // Determine the file extension
         String fileExtension = "";
-        
         if (m_config.overwriteFileExtension().isActive())
         {
             fileExtension = m_config.overwriteFileExtension().getStringValue();
@@ -191,7 +187,7 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
         else
         {
             try {
-                Path firstFilePath = m_config.getFileChooserSettings().createReadPathAccessor().getPaths(new NodeModelStatusConsumer(EnumSet.of(MessageType.ERROR, MessageType.WARNING))).get(0);
+                FSPath firstFilePath = m_config.getFileChooserSettings().createReadPathAccessor().getFSPaths(new NodeModelStatusConsumer(EnumSet.of(MessageType.ERROR, MessageType.WARNING))).get(0);
                 fileExtension = MIMETypeHelper.getMIMEtypeExtension(firstFilePath.toString()).orElse(null);
                 if (fileExtension == null)
                 {
@@ -204,7 +200,6 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
             }
         }
         return new PortObjectSpec[] {
-                //TODO if not local, it will be a FileStoreURIPortObject
                 new URIPortObjectSpec(fileExtension)
         };
     }
@@ -218,7 +213,9 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
         
         try (final ReadPathAccessor accessor = m_config.getFileChooserSettings().createReadPathAccessor()) {
             final List<FSPath> fsPaths = accessor.getFSPaths(m_statusConsumer);
-            ArrayList<String> impFiles = new ArrayList<String>();
+            List<String> impFiles = new ArrayList<String>();
+            FileStore filestore = null;
+            FileStoreURIPortObject po = null;
             for (final FSPath p : fsPaths) {
                 FSType fs = p.toFSLocation().getFSType();
                 // We let the URIExporter convert first because it nicely groups all KNIME file systems under the knime:// scheme
@@ -242,49 +239,45 @@ final class MimeFileNioImporterNodeModel extends NodeModel {
                     // Checking for file:// should be unnecessary since we do it in the if-case above. Just in case.
                     if (!((u.getScheme().equals("knime") || u.getScheme().equals("file")) && FileUtil.resolveToPath(u.toURL()) != null))
                     {
-                        //TODO try with resources
-                        FSConnection fsc = DefaultFSConnectionFactory.createRelativeToConnection(RelativeTo.WORKFLOW_DATA);
                         String foldername = "FileImporter" + NodeContext.getContext().getNodeContainer().getID();
-                        Path folder = fsc.getFileSystem().getPath(foldername);
-                        folder.toFile().mkdirs();
                         String oldFileName = p.getFileName().toString();
-                        FSPath tgt = fsc.getFileSystem().getPath(foldername, oldFileName);
                         //TODO add suffix for possible duplicates? Could happen when you recurse into subfolders.
                         //TODO decide about replacing or use UID from the beginning
-                        if (tgt.toFile().exists())
+                        if (filestore == null)
                         {
-                            if (m_config.overwriteLocal().getStringValue().equals("skip"))
-                            {
-                                this.getLogger().info(tgt.toString()+ "exists. Skipping import.");
-                            } else if (m_config.overwriteLocal().getStringValue().equals("fail")) {
-                                throw new IOException("File to import exists already at " + tgt.toString() + " but override is disabled in user settings.");
-                            } else {
-                                Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);
-                            }
-                        } else {
-                            Files.copy(p, tgt);
+                            filestore = exec.createFileStore(foldername);
+                            filestore.getFile().mkdirs();
+                            po = new FileStoreURIPortObject(filestore);
                         }
                         
-                        // default exporter is fine, since we just need to handle KNIME relative paths.
-                        final NoConfigURIExporterFactory wfdatarel_urifactory = (NoConfigURIExporterFactory) fsc.getURIExporterFactory(URIExporterIDs.DEFAULT);
-                        u = wfdatarel_urifactory.getExporter().toUri(tgt);
-                        impFiles.add(tgt.toUri().toString());
-                        //m_importedFiles.setStringArrayValue((String[]) impFiles.toArray());
+                        Path tgt = Paths.get(filestore.getFile().toString(), oldFileName);
+                        Files.copy(p, tgt, StandardCopyOption.REPLACE_EXISTING);
+                        if (m_config.overwriteFileExtension().isActive()) {
+                            po.registerFile(oldFileName, m_config.overwriteFileExtension().getStringValue());
+                        } else {
+                            po.registerFile(oldFileName);
+                        }
+                        
+                        u = tgt.toUri();
                     }
                 }
-                
                 uris.add(new URIContent(u,
                         (m_config.overwriteFileExtension().isActive() ? 
                                 m_config.overwriteFileExtension().getStringValue() :
                                 MIMETypeHelper.getMIMEtypeExtension(p.toAbsolutePath().toString()).orElse(FilenameUtils.getExtension(p.toAbsolutePath().toString())))));
 
             }
+            
+            if (filestore == null) {
+                return new PortObject[] { new URIPortObject(uris) };
+            } else {
+                return new PortObject[] { po };
+            }
         
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
+            return new PortObject[] { };
         }
-
-        return new PortObject[] { new URIPortObject(uris) };
     }
 }
