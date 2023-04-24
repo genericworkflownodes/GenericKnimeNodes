@@ -1,6 +1,8 @@
 package com.genericworkflownodes.knime.execution.impl;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.knime.core.node.NodeLogger;
@@ -39,26 +41,29 @@ public class SeqAnToolExecutor extends LocalToolExecutor {
         super();
     }
 
+    // TODO somehow create an abstract class DLLLoadingToolExecutor to merge with the OpenMSToolExecutor
     @Override
     protected void setupProcessEnvironment(ProcessBuilder builder) {
-
+        ArrayList<String> requiredLibBundles = new ArrayList<String>();
+        requiredLibBundles.add("SeqAn");
+        
         // Get the dlls from the DLLRegistry.
         StringBuilder lib_paths = new StringBuilder();
         try {
-            for (String lib_path : DLLRegistry.getDLLRegistry()
-                    .getAvailableDLLs()) {
+            for (Path lib_path : DLLRegistry.getDLLRegistry()
+                    .getAvailableDLLFoldersFor(requiredLibBundles)) {
                 lib_paths.append(lib_path).append(File.pathSeparator);
             }
         } catch (CoreException e) {
             LOGGER.error("Could not extract lib search paths.", e);
             return;
         }
-
+    
         if (lib_paths.length() != 0) {
             String lib_paths_str = lib_paths.toString();
             LOGGER.debug("Adding lib paths: " + lib_paths_str);
             addLibsToPathEnvironment(lib_paths_str, PATH_ENVIRONMENT);
-
+    
             if (System.getProperty("os.name").startsWith("Windows")) {
                 addLibsToPathEnvironment(lib_paths_str,
                         PATH_ENVIRONMENT_WINDOWS);

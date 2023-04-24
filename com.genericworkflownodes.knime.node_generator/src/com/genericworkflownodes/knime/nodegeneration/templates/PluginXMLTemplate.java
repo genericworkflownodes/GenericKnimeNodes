@@ -26,7 +26,7 @@ public class PluginXMLTemplate {
             .getLogger(PluginXMLTemplate.class.getCanonicalName());
 
     private final Document doc;
-    private final Set<String> registeredPrefixed = new HashSet<String>();
+    private final Set<String> registeredPrefixes = new HashSet<String>();
 
     /**
      * Constructs a new copy of a template plugin.xml and returns its
@@ -106,13 +106,13 @@ public class PluginXMLTemplate {
             return;
         }
 
-        if (registeredPrefixed.contains(path)) {
+        if (registeredPrefixes.contains(path)) {
             return;
         }
 
         LOGGER.info("Registering path prefix: " + path);
 
-        registeredPrefixed.add(path);
+        registeredPrefixes.add(path);
 
         String categoryName = Utils.getPathSuffix(path);
         String categoryPath = Utils.getPathPrefix(path);
@@ -146,6 +146,32 @@ public class PluginXMLTemplate {
 
         elem.addElement("node").addAttribute("factory-class", clazz).addAttribute("category-path", path);
     }
+    
+    
+    /**
+     * Registers the given node (clazz, path) in the plugin.xml file.
+     * 
+     * @param clazz
+     * @param path
+     */
+    public void registerResourceExtension(String extensionPointName, GeneratedPluginMeta pmeta) {
+    	
+        LOGGER.info("registering Resource provider plugin" + pmeta.getPackageRoot());
+
+        Node node = doc
+                .selectSingleNode("/plugin/extension[@point='com.genericworkflownodes.knime.custom.config.DLLProvider']");
+        Element elem = (Element) node;
+
+        /*
+         <dllprovider
+            class="de.openms.lib.OpenMSPathProvider"
+            name="OpenMS"></dllprovider>
+         */
+        elem.addElement("dllprovider")
+        	.addAttribute("class", pmeta.getPackageRoot() + "GenericPathProvider")
+        	.addAttribute("name", pmeta.getResourceProviderTarget());
+    }
+    
 
     public void registerMIMETypeEntries(List<MIMETypeEntry> mimeTypes) {
         // <mimetype name="mzML">
@@ -160,13 +186,16 @@ public class PluginXMLTemplate {
         Element mimeTypesExtensionPoint = (Element) node;
 
         for (MIMETypeEntry mimeTypeEntry : mimeTypes) {
-            Element mimeTypeElement = mimeTypesExtensionPoint.addElement(
-                    "mimetype").addAttribute("name", mimeTypeEntry.getType());
+            Element mimeTypeElement = 
+            		mimeTypesExtensionPoint
+            			.addElement("mimetype")
+            			.addAttribute("name", mimeTypeEntry.getType());
 
             // register fileExtensions
             for (String fileExtension : mimeTypeEntry.getExtensions()) {
-                mimeTypeElement.addElement("fileextension").addAttribute(
-                        "name", fileExtension);
+                mimeTypeElement
+                	.addElement("fileextension")
+                	.addAttribute("name", fileExtension);
             }
         }
 

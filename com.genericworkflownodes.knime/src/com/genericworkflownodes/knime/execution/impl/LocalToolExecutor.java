@@ -18,12 +18,9 @@
  */
 package com.genericworkflownodes.knime.execution.impl;
 
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -38,7 +35,6 @@ import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.ThreadUtils;
-import org.knime.core.util.ThreadUtils.ThreadWithContext;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.knime.base.node.util.exttool.*;
@@ -59,110 +55,6 @@ import com.genericworkflownodes.util.StringUtils;
  * @author aiche
  */
 public class LocalToolExecutor implements IToolExecutor {
-    
-    private class StreamGobbler extends ThreadWithContext
-    {
-        InputStream is;
-        String type;
-        
-        @Override
-        protected void runWithContext()
-        {
-            try
-            {
-                //HACK since org.knime.base.node.util.exttool.ViewUpdateNotice.ViewType is a private enum
-                Class<?> enumClass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice$ViewType");
-                //Constructor<?> ctor = enumClass.getDeclaredConstructor();
-
-                //Enum enumInstance = (Enum) ctor.newInstance();
-                //Class e = enumInstance.getClass();
-                /*Class<?> noticeclass = Class.forName("org.knime.base.node.util.exttool.ViewUpdateNotice");
-                Field f = noticeclass.getDeclaredField("$ViewType");
-                f.setAccessible(true);
-                Class e =  (Class) f.get(this);*/
-                Object[] enumElements = enumClass.getEnumConstants();
-                Object streamtype;
-                if (type == "OUT")
-                {
-                    streamtype = enumElements[0];
-                }
-                else
-                {
-                    streamtype = enumElements[1];
-                }
-                Constructor<ViewUpdateNotice> ctor = ViewUpdateNotice.class.getDeclaredConstructor(enumClass);
-                ctor.setAccessible(true);
-
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String line=null;
-                if (type == "OUT")
-                {
-                    while ( (line = br.readLine()) != null)
-                    {
-                        // TODO this is rather inefficient. Unfortunately adding just a line is not possible with the API
-                        // However, I think we need to set this member. 
-                        m_model.setStdOut(m_stdOut);
-                        m_stdOut.add(line);
-                        ViewUpdateNotice v = ctor.newInstance(streamtype);
-                        v.setNewLine(line);
-                        m_model.update(new Observable(),v);
-                    }
-                }
-                else
-                {
-                    while ( (line = br.readLine()) != null)
-                    {
-                        // TODO this is rather inefficient. Unfortunately adding just a line is not possible with the API
-                        // However, I think we need to set this member. 
-                        m_model.setStdErr(m_stdErr);
-                        m_stdErr.add(line);
-                        ViewUpdateNotice v = ctor.newInstance(streamtype);
-                        v.setNewLine(line);
-                        m_model.update(new Observable(),v);
-                    }
-                }
-            }
-            catch (IOException ioe)
-            {
-               ioe.printStackTrace();  
-            } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        
-        StreamGobbler(InputStream is, String type)
-        {
-            this.is = is;
-            this.type = type;
-        }
-    }
     
     public class MyTailerOutListener extends TailerListenerAdapter {
         private Constructor<ViewUpdateNotice> ctor;
@@ -284,7 +176,7 @@ public class LocalToolExecutor implements IToolExecutor {
      * Observer pattern and synchronize the fields stdErr and stdOut
      * with the ExtToolOutputNodeModel that the GKNModel extends.
      */
-    private GenericKnimeNodeModel m_model;
+    protected GenericKnimeNodeModel m_model;
 
     /**
      * @return the m_environmentVariables
@@ -336,8 +228,26 @@ public class LocalToolExecutor implements IToolExecutor {
      * @param newEnvironmentVariables
      *            The environment variables that will be added.
      */
-    private void addEnvironmentVariables(
-            final Map<String, String> newEnvironmentVariables) {
+    protected void addEnvironmentVariables(
+            final Map<String, String> newEnvironmentVariables, boolean mergePath) {
+        if (mergePath)
+        {
+            String newPATH = newEnvironmentVariables.get("PATH");
+            if (newPATH != null)
+            {
+                m_environmentVariables.merge("PATH", newPATH,
+                        (oldp, newp) -> {return oldp.isEmpty() ? newp : newp + File.pathSeparator + oldp;} );
+                newEnvironmentVariables.remove("PATH");
+            }
+            String newPath = newEnvironmentVariables.get("Path");
+            if (newPath != null)
+            {
+                m_environmentVariables.merge("Path", newPath,
+                        (oldp, newp) -> {return oldp.isEmpty() ? newp : newp + File.pathSeparator + oldp;} );
+                newEnvironmentVariables.remove("Path");
+            }
+            // TODO merge other paths, like (DY)LD_LIBRARY_PATH?
+        }
         m_environmentVariables.putAll(newEnvironmentVariables);
     }
     
@@ -414,10 +324,11 @@ public class LocalToolExecutor implements IToolExecutor {
 
             // emit command
             LOGGER.debug("Executing: " + StringUtils.join(commands, " "));
-
+            
             // build process
             final ProcessBuilder builder = new ProcessBuilder(commands);
             setupProcessEnvironment(builder);
+            LOGGER.debug("With environment: " + m_environmentVariables.toString());
 
             File logFile;
             File errLogFile;
@@ -519,10 +430,9 @@ public class LocalToolExecutor implements IToolExecutor {
     }
 
     /**
-     * Initializes the environment variables of the given ProcessBuilder.
-     * 
-     * @note If the used binaries where not shipped with the plugin, this method
-     *       will do nothing.
+     * Initializes the environment variables of the given ProcessBuilder
+     * with the ones collected in the corresponding member of the ToolExecutor:
+     * m_environmentVariables.
      * 
      * @param builder
      *            The builder that should be initialized.
@@ -544,9 +454,13 @@ public class LocalToolExecutor implements IToolExecutor {
     @Override
     public void prepareExecution(final INodeConfiguration nodeConfiguration,
             final IPluginConfiguration pluginConfiguration) throws Exception {
-        findExecutable(nodeConfiguration, pluginConfiguration);
+        // in case it was not set yet
+        if (m_executable == null)
+        {
+            findExecutable(nodeConfiguration, pluginConfiguration);
+        }
         Map<String, String> nodeEnv = pluginConfiguration.getBinaryManager()
-        .getProcessEnvironment(nodeConfiguration.getExecutableName());
+                .getProcessEnvironment(nodeConfiguration.getExecutableName());
         String pathWithJava = "";
         if (nodeEnv.containsKey("PATH")) {
             pathWithJava = nodeEnv.get("PATH") + File.pathSeparator;
@@ -563,7 +477,7 @@ public class LocalToolExecutor implements IToolExecutor {
             nodeEnv.put("Path", pathWithJava);
         }
         
-        addEnvironmentVariables(nodeEnv);
+        addEnvironmentVariables(nodeEnv, true);
         
         m_commands = m_generator.generateCommands(nodeConfiguration,
                 pluginConfiguration, m_workingDirectory);

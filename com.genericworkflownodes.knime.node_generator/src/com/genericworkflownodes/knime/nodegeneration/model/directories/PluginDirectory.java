@@ -19,6 +19,7 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * @author aiche, bkahlert
@@ -36,16 +37,18 @@ public class PluginDirectory extends Directory {
     private File manifestMf;
     private File projectFile;
     private File pomXml;
+	private File classpathFile;
 
     public PluginDirectory(File directory)
-            throws PathnameIsNoDirectoryException {
-        super(directory);
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
+        super(directory, false);
 
         buildProperties = new File(this, "build.properties");
         pluginXml = new File(this, "plugin.xml");
         File metaInf = new File(this, "META-INF");
         manifestMf = new File(metaInf, "MANIFEST.MF");
         projectFile = new File(this, ".project");
+        classpathFile = new File(this, ".classpath");
         pomXml = new File(this, "pom.xml");
     }
 
@@ -84,9 +87,18 @@ public class PluginDirectory extends Directory {
     public File getProjectFile() {
         return projectFile;
     }
+    
+    /**
+     * Returns the .classPath file.
+     * 
+     * @return
+     */
+    public File getClasspathFile() {
+        return classpathFile;
+    }
 
     /**
-     * Returns the .project file.
+     * Returns the pom.xml file.
      * 
      * @return
      */

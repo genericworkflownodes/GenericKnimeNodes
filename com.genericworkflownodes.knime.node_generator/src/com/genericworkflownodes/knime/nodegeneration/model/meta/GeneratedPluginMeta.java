@@ -1,6 +1,7 @@
 package com.genericworkflownodes.knime.nodegeneration.model.meta;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,149 +9,74 @@ import java.util.regex.Pattern;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.NodesSourceDirectory;
 
 public class GeneratedPluginMeta extends PluginMeta {
+	
+	public class Dependency {
+		//TODO check for valid Strings, IDs
+		public Dependency(String pluginID, String versionRange)
+		{
+			this.pluginID = pluginID;
+			this.versionRange = versionRange;
+		}
+		private final String pluginID;
+		private final String versionRange;
+		
+		public String PluginID() {
+			return pluginID;
+		}
+		public String getVersionRange() {
+			return versionRange;
+		}
+	}
 
-    private static final String PLUGIN_VERSION_REGEX = "^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$";
-
+	private static final String PLUGIN_RESOURCE_PROVIDER_TARGET_KEY = "resourceProviderTarget";
+	private static final String PLUGIN_EXTRA_DEPENDENCIES = "extraDependencies";
+	
     /**
-     * Returns the plugin name.
-     * <p>
-     * If no configuration could be found, the name is created based on the
-     * given package name. e.g. org.roettig.foo will result in foo
-     * 
-     * @param packageName
-     * @return
-     */
-    private static String getPluginName(Properties props, String packageName) {
-        String pluginname = props.getProperty("pluginName");
-        if (pluginname != null && !pluginname.isEmpty()) {
-            return pluginname;
-        }
-
-        int idx = packageName.lastIndexOf(".");
-        if (idx == -1) {
-            return packageName;
-        }
-        return packageName.substring(idx + 1);
-    }
-
-    /**
-     * Checks if the plugin name is valid.
-     * 
-     * @param obj
-     * @param id
-     */
-    private static boolean isPluginNameValid(final String pluginName) {
-        return pluginName != null && pluginName.matches("^\\w+$");
-    }
-
-    /**
-     * Returns the plugin version.
-     * 
-     * @param packageName
-     * @return
-     */
-    private static String getPluginVersion(final Properties props) {
-        return props.getProperty("pluginVersion");
-    }
-
-    /**
-     * Checks whether a given package version is a proper OSGI version, i.e., it
-     * should match ^\d+(\.\d+(\.\d+(.[a-zA-Z0-9]+)?)?)?$.
-     * 
-     * @param pluginVersion
-     *            The plugin version as string which should be tested.
-     * @return True if it is a valid version, false otherwise.
-     */
-    private static boolean isPluginVersionValid(final String pluginVersion) {
-        return pluginVersion.matches(PLUGIN_VERSION_REGEX);
-    }
-
-    /**
-     * Returns the package name the generated plugin uses. (e.g.
-     * org.roettig.foo).
-     * 
-     * @param props
-     * @return
-     */
-    private static String getPackageRoot(final Properties props) {
-        return props.getProperty("pluginPackage");
-    }
-
-    /**
-     * Checks whether a given package name is valid.
-     * 
-     * @param packageName
-     * @param id
-     * @return true if package name is valid; false otherwise
-     */
-    public static boolean isValidPackageRoot(final String packageName) {
-        return packageName != null
-                && packageName
-                        .matches("^([A-Za-z_]{1}[A-Za-z0-9_]*(\\.[A-Za-z_]{1}[A-Za-z0-9_]*)*)$");
-    }
-
-    /**
-     * Returns the package name the generated plugin uses. (e.g.
-     * org.roettig.foo).
-     * 
-     * @param props
-     * @return
-     */
-    private static String getNodeRepositoyPath(final Properties props) {
-        return props.getProperty("nodeRepositoyRoot");
-    }
-
-    /**
-     * Checks whether a given package name is valid.
-     * 
-     * @param nodeRepositoryPath
-     * @param id
-     * @return true if package name is valid; false otherwise
-     */
-    public static boolean isNodeRepositoyPathValid(
-            final String nodeRepositoryPath) {
-        // TODO
-        return true;
-    }
-
-    /**
-     * Updates the version qualifier of the plug-in meta. Update the qualifier
-     * part of the plug-in version, e.g., 0.1.0.20000101 update with 20100101 ->
-     * 0.1.0.20100101
+     * Updates the version qualifier of the plug-in meta.
+     * If the version consists of less than 4 parts, it will be filled with
+     * ".0"s plus the qualifier string given (prepended with a ".").
+     * E.g., version "1" with qualifier "202301011212" will become "1.0.0.202301011212".
+     * If the version has the string "genqualifier" as the fourth part, "genqualifier" will be replaced
+     * with the given qualifier.
+     * Otherwise, nothing happens.
      * 
      * @param qualifier
-     *            The potentially higher qualifier.
+     *            The qualifier to replace if the version
      */
-    protected String updateVersion(String qualifier){
+    protected String addReplaceGenQualifier(String version, String qualifier){
         final Pattern p = Pattern
                 .compile("^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9]+)?$");
-        Matcher m = p.matcher(getVersion());
+        Matcher m = p.matcher(version);
         boolean found = m.find();
         if (!found)
         	throw new InvalidParameterException("Version " + getVersion() + " should be compliant to the pattern ^(\\d+)(\\.\\d+)?(\\.\\d+)?(.[a-zA-Z0-9-_]+)?$");
 
-        // version has no qualifier
+        
         String newVersion = m.group(1)
                 + (m.group(2) != null ? m.group(2) : ".0")
                 + (m.group(3) != null ? m.group(3) : ".0");
-        // append qualifier
+        // append/replace (gen)qualifier
         if (m.group(4) == null
-                || qualifier.compareTo(m.group(4).substring(1)) > 0) {
-            // external qualifier
+        		|| m.group(4).equals("genqualifier")){
+            // external qualifier or current generation time
         	if (!qualifier.isEmpty())
         	{
         		newVersion += "." + qualifier;
         	}
         } else {
-            // our own
+            // the qualifier as given in the properties
             newVersion += m.group(4);
         }
         return newVersion;
     }
 
     private final String name;
-    private final String nodeRepositoyPath;
+    private final String nodeRepositoryPath;
     private final String generatedPluginVersion;
+    public final NodesSourceDirectory sourceDir;
+    public final ArrayList<FragmentMeta> generatedFragmentMetas;
+    public ArrayList<Dependency> extraDependencies;
+	private final String resourceProviderTarget;
 
     /**
      * Creates a Meta info object for the generated plug-in based on the
@@ -163,15 +89,18 @@ public class GeneratedPluginMeta extends PluginMeta {
      */
     public GeneratedPluginMeta(NodesSourceDirectory sourceDirectory,
             String nodeGeneratorQualifier) {
-        super(getPackageRoot(sourceDirectory.getProperties()),
-                getPluginVersion(sourceDirectory.getProperties()));
+        super(sourceDirectory);
 
+        resourceProviderTarget = getResourceProviderTarget(sourceDirectory.getProperties());
+        extraDependencies = getDependencies(sourceDirectory.getProperties());
+        sourceDir = sourceDirectory;
+        
         // update the version qualifier based on the version of the node
         // generator
         if (nodeGeneratorQualifier != null) {
-            generatedPluginVersion = updateVersion(nodeGeneratorQualifier);
+            generatedPluginVersion = addReplaceGenQualifier(getVersion(), nodeGeneratorQualifier);
         } else {
-            generatedPluginVersion = getVersion();
+        	generatedPluginVersion = getVersion();
         }
 
         if (getId() == null || getId().isEmpty()) {
@@ -200,19 +129,89 @@ public class GeneratedPluginMeta extends PluginMeta {
                     + getVersion() + "\" is not valid");
         }
 
-        nodeRepositoyPath = getNodeRepositoyPath(sourceDirectory
-                .getProperties());
-        if (nodeRepositoyPath == null || nodeRepositoyPath.isEmpty()) {
-            throw new InvalidParameterException(
-                    "No path within the node repository was specified");
+        if (!isResourceOnly())
+        {
+            nodeRepositoryPath = getNodeRepositoryPath(sourceDirectory
+                    .getProperties());
+            if (nodeRepositoryPath == null || nodeRepositoryPath.isEmpty()) {
+                throw new InvalidParameterException(
+                        "No path within the node repository was specified");
+            }
+            if (!isNodeRepositoryPathValid(getVersion())) {
+                throw new InvalidParameterException("The node repository path \""
+                        + nodeRepositoryPath + "\" is not valid");
+            }
+        } else {
+        	nodeRepositoryPath = "";
         }
-        if (!isNodeRepositoyPathValid(getVersion())) {
-            throw new InvalidParameterException("The node repository path \""
-                    + nodeRepositoyPath + "\" is not valid");
+        
+        if (sourceDirectory.getPayloadDirectory() != null)
+        {
+        	generatedFragmentMetas = sourceDirectory.getPayloadDirectory().getFragmentMetas(this);
+        } else {
+        	generatedFragmentMetas = new ArrayList<FragmentMeta>();
         }
     }
 
-    /**
+	/**
+     * Gets if the KNIME plugin to be generated is a resource-only plugin or contains nodes.
+     * <p>
+     * TODO we could determine it based on the descriptors folder also!
+     * 
+     * @return The plugin's name.
+     */
+    private String getResourceProviderTarget(Properties properties) {
+		return properties.getProperty(PLUGIN_RESOURCE_PROVIDER_TARGET_KEY, "");
+	}
+    
+    
+	/**
+     * Gets if the KNIME plugin to be generated is a resource-only plugin or contains nodes.
+     * <p>
+     * TODO we could determine it based on the descriptors folder also!
+     * 
+     * @return The plugin's name.
+     */
+    private ArrayList<Dependency> getDependencies(Properties properties) {
+		String[] deps = properties.getProperty(PLUGIN_EXTRA_DEPENDENCIES, "").split(";");
+		ArrayList<Dependency> result = new ArrayList<Dependency>();
+		for (String dep : deps)
+		{
+			if(!dep.isBlank())
+			{
+				String[] id_ver = dep.split(":");
+				result.add(new Dependency(id_ver[0], id_ver[1]));
+			}
+		}
+		return result;
+	}
+    
+    
+	/**
+     * Gets if the KNIME plugin to be generated is a resource-only plugin or contains nodes.
+     * <p>
+     * TODO we could determine it based on the descriptors folder also!
+     * 
+     * @return The plugin's name.
+     */
+    public final boolean isResourceOnly() {
+		return !resourceProviderTarget.isEmpty();
+	}
+    
+	/**
+     * Returns the target name of this resource providing plugin.
+     * GKN ToolExecutor implementations can use that to only accept resources from specific
+     * providers. This is parsed from the resourceProviderTarget property of the
+     * plugins.properties.
+     * <p>
+     * 
+     * @return The target name which can be an arbitrary identifier.
+     */
+	public String getResourceProviderTarget() {
+		return resourceProviderTarget;
+	}
+
+	/**
      * Gets the KNIME plugin's name.
      * <p>
      * e.g. KNIME Test
@@ -243,7 +242,7 @@ public class GeneratedPluginMeta extends PluginMeta {
      *         registry.
      */
     public final String getNodeRepositoryRoot() {
-        return nodeRepositoyPath;
+        return nodeRepositoryPath;
     }
 
     /**
@@ -255,4 +254,18 @@ public class GeneratedPluginMeta extends PluginMeta {
     public final String getGeneratedPluginVersion() {
         return generatedPluginVersion;
     }
+
+	public ArrayList<Dependency> getExtraDependencies() {
+		return extraDependencies;
+	}
+	
+	public String getExtraDependenciesAsConcatString() {
+		String ret = "";
+		for (Dependency dep : extraDependencies)
+		{
+			ret += ",\n " + dep.pluginID + ";bundle-version=\"" + dep.versionRange + "\"";
+		}
+		return ret;
+	}
+
 }

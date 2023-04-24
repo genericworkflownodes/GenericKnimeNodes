@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="IDPosteriorErrorProbability" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_IDPosteriorErrorProbability.html" category="ID Processing" >
+<description><![CDATA[Estimates probabilities for incorrectly assigned peptide sequences and a set of search engine scores using a mixture model.]]></description>
+<manual><![CDATA[Estimates probabilities for incorrectly assigned peptide sequences and a set of search engine scores using a mixture model.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDPosteriorErrorProbability" description="Estimates probabilities for incorrectly assigned peptide sequences and a set of search engine scores using a mixture model.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDPosteriorErrorProbability&apos;">
+      <ITEM name="in" value="" type="input-file" description="input file " required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="output-file" description="output file " required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="smallest_e_value" value="1e-19" type="double" description="This value gives a lower bound to E-Values. It should not be 0, as transformation in a real number (log of E-value) is not possible for certain values then." required="false" advanced="true" />
+      <ITEM name="split_charge" value="false" type="string" description="The search engine scores are split by charge if this flag is set. Thus, for each charge state a new model will be computed." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="top_hits_only" value="false" type="string" description="If set only the top hits of every PeptideIdentification will be used" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="fdr_for_targets_smaller" value="0.05" type="double" description="Only used, when top_hits_only set. Additionally, target_decoy information should be available. The score_type must be q-value from an previous False Discovery Rate run." required="false" advanced="true" />
+      <ITEM name="ignore_bad_data" value="false" type="string" description="If set errors will be written but ignored. Useful for pipelines with many datasets where only a few are bad, but the pipeline should run through." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="prob_correct" value="false" type="string" description="If set scores will be calculated as 1-ErrorProbabilities and can be interpreted as probabilities for correct identifications." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="fit_algorithm" description="Algorithm parameter subsection">
+        <ITEM name="number_of_bins" value="100" type="int" description="Number of bins used for visualization. Only needed if each iteration step of the EM-Algorithm will be visualized" required="false" advanced="true" />
+        <ITEM name="output_plots" value="false" type="string" description="If true every step of the EM-algorithm will be written to a file as a gnuplot formula" required="false" advanced="true" restrictions="true,false" />
+        <ITEM name="incorrectly_assigned" value="Gumbel" type="string" description="for &apos;Gumbel&apos;, the Gumbel distribution is used to plot incorrectly assigned sequences. For &apos;Gauss&apos;, the Gauss distribution is used." required="false" advanced="true" restrictions="Gumbel,Gauss" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

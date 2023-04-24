@@ -42,7 +42,7 @@ public class IconsDirectory extends Directory {
     public IconsDirectory(final File sourcesDirectory)
             throws PathnameIsNoDirectoryException, IOException,
             InvalidNodeNameException, DuplicateNodeNameException {
-        super(sourcesDirectory);
+        super(sourcesDirectory, true);
 
         File categoryFile = new File(this, "category.png");
         this.categoryFile = (categoryFile.canRead()) ? categoryFile : null;

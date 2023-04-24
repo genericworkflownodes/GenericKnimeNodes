@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="QCCalculator" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_QCCalculator.html" category="Utilities" >
+<description><![CDATA[Calculates basic quality parameters from MS experiments and subsequent analysis data as identification or feature detection.]]></description>
+<manual><![CDATA[Calculates basic quality parameters from MS experiments and subsequent analysis data as identification or feature detection.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="QCCalculator" description="Calculates basic quality parameters from MS experiments and subsequent analysis data as identification or feature detection.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;QCCalculator&apos;">
+      <ITEM name="in" value="" type="input-file" description="raw data input file (this is relevant if you want to look at MS1, MS2 and precursor peak information)" required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="Your qcML file." required="true" advanced="false" supported_formats="*.qcML" />
+      <ITEM name="id" value="" type="input-file" description="Input idXML file containing the identifications. Your identifications will be exported in an easy-to-read format" required="false" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="feature" value="" type="input-file" description="feature input file (this is relevant for most QC issues)" required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="consensus" value="" type="input-file" description="consensus input file (this is only used for charge state deconvoluted output. Use the consensusXML output form the DeCharger)" required="false" advanced="false" supported_formats="*.consensusXML" />
+      <ITEM name="remove_duplicate_features" value="false" type="string" description="This flag should be set, if you work with a set of merged features." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

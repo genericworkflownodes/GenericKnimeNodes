@@ -27,7 +27,10 @@
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="true"
+          factory-class="com.genericworkflownodes.knime.nodes.io.importer.MimeFileImporterNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.outputfile.OutputFileNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/Util" factory-class="com.genericworkflownodes.knime.nodes.io.viewer.MimeFileViewerNodeFactory"/>
     <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.listimporter.ListMimeFileImporterNodeFactory"/>
@@ -56,6 +59,18 @@
           category-path="/community/GenericKnimeNodes/GenericKNIMENodeCluster"
           deprecated="false"
           factory-class="com.genericworkflownodes.knime.cluster.nodes.porttofilestore.PortToFileStoreNodeFactory">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.io.nioimporter.MimeFileNioImporterNodeFactory"
+          hidden="false">
+    </node>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="false"
+          factory-class="com.genericworkflownodes.knime.nodes.io.nioexporter.FileExporterNodeFactory"
+          hidden="false">
     </node>
    </extension>
 
@@ -96,6 +111,14 @@
       <executor
             class="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor"
             name="com.genericworkflownodes.knime.execution.impl.SeqAnToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSToolExecutor"
+            name="OpenMSToolExecutor">
+      </executor>
+      <executor
+            class="com.genericworkflownodes.knime.execution.impl.OpenMSToolExecutor"
+            name="com.genericworkflownodes.knime.execution.impl.OpenMSToolExecutor">
       </executor>
    </extension>
    <extension

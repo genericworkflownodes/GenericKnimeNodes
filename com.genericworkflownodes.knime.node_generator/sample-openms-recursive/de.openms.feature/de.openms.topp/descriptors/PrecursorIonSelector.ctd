@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="PrecursorIonSelector" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_PrecursorIonSelector.html" category="Targeted Experiments" >
+<description><![CDATA[PrecursorIonSelector]]></description>
+<manual><![CDATA[PrecursorIonSelector]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="PrecursorIonSelector" description="PrecursorIonSelector">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;PrecursorIonSelector&apos;">
+      <ITEM name="in" value="" type="input-file" description="Input feature map file (featureXML)" required="true" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="out" value="" type="output-file" description="modified feature map" required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="next_feat" value="" type="output-file" description="feature map (featureXML) file with the selected precursors" required="false" advanced="false" supported_formats="*.featureXML" />
+      <ITEM name="ids" value="" type="string" description="file containing results of identification (idXML)" required="true" advanced="false" />
+      <ITEM name="num_precursors" value="1" type="int" description="number of precursors to be selected" required="false" advanced="false" />
+      <ITEM name="raw_data" value="" type="input-file" description="Input profile data." required="false" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="load_preprocessing" value="false" type="string" description="The preprocessed db is loaded from file, not calculated." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="store_preprocessing" value="false" type="string" description="The preprocessed db is stored." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="simulation" value="false" type="string" description="Simulate the whole LC-MS/MS run." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="sim_results" value="" type="string" description="File containing the results of the simulation run" required="false" advanced="false" />
+      <ITEM name="db_path" value="" type="input-file" description="db file" required="false" advanced="false" supported_formats="*.fasta" />
+      <ITEM name="rt_model" value="" type="string" description="SVM Model for RTPredict" required="false" advanced="false" />
+      <ITEM name="dt_model" value="" type="string" description="SVM Model for PTPredict" required="false" advanced="false" />
+      <ITEM name="solver" value="GLPK" type="string" description="LP solver type" required="false" advanced="true" restrictions="GLPK,COINOR" />
+      <ITEMLIST name="fixed_modifications" type="string" description="the modifications i.e. Carboxymethyl (C)" required="false" advanced="false">
+      </ITEMLIST>
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Settings for the compound list creation and rescoring.">
+        <ITEM name="type" value="IPS" type="string" description="Strategy for precursor ion selection." required="false" advanced="false" restrictions="ILP_IPS,IPS,SPS,Upshift,Downshift,DEX" />
+        <ITEM name="max_iteration" value="100" type="int" description="Maximal number of iterations." required="false" advanced="false" restrictions="1:" />
+        <ITEM name="rt_bin_capacity" value="10" type="int" description="Maximal number of precursors per rt bin." required="false" advanced="false" restrictions="1:" />
+        <ITEM name="step_size" value="1" type="int" description="Maximal number of precursors per iteration." required="false" advanced="false" restrictions="1:" />
+        <ITEM name="peptide_min_prob" value="0.2" type="double" description="Minimal peptide probability." required="false" advanced="false" />
+        <ITEM name="sequential_spectrum_order" value="false" type="string" description="If true, precursors are selected sequentially with respect to their RT." required="false" advanced="false" restrictions="true,false" />
+        <NODE name="MIPFormulation" description="">
+          <NODE name="thresholds" description="">
+            <ITEM name="min_protein_probability" value="0.2" type="double" description="Minimal protein probability for a protein to be considered in the ILP" required="false" advanced="false" restrictions="0:1" />
+            <ITEM name="min_protein_id_probability" value="0.95" type="double" description="Minimal protein probability for a protein to be considered identified." required="false" advanced="false" restrictions="0:1" />
+            <ITEM name="min_pt_weight" value="0.5" type="double" description="Minimal pt weight of a precursor" required="false" advanced="false" restrictions="0:1" />
+            <ITEM name="min_mz" value="500" type="double" description="Minimal mz to be considered in protein based LP formulation." required="false" advanced="false" restrictions="0:" />
+            <ITEM name="max_mz" value="5000" type="double" description="Minimal mz to be considered in protein based LP formulation." required="false" advanced="false" restrictions="0:" />
+            <ITEM name="min_pred_pep_prob" value="0.5" type="double" description="Minimal predicted peptide probability of a precursor" required="false" advanced="false" restrictions="0:1" />
+            <ITEM name="min_rt_weight" value="0.5" type="double" description="Minimal rt weight of a precursor" required="false" advanced="false" restrictions="0:1" />
+            <ITEM name="use_peptide_rule" value="false" type="string" description="Use peptide rule instead of minimal protein id probability" required="false" advanced="false" restrictions="true,false" />
+            <ITEM name="min_peptide_ids" value="2" type="int" description="If use_peptide_rule is true, this parameter sets the minimal number of peptide ids for a protein id" required="false" advanced="false" restrictions="1:" />
+            <ITEM name="min_peptide_probability" value="0.95" type="double" description="If use_peptide_rule is true, this parameter sets the minimal probability for a peptide to be safely identified" required="false" advanced="false" restrictions="0:1" />
+          </NODE>
+          <NODE name="combined_ilp" description="">
+            <ITEM name="k1" value="0.2" type="double" description="combined ilp: weight for z_i" required="false" advanced="false" restrictions="0:" />
+            <ITEM name="k2" value="0.2" type="double" description="combined ilp: weight for x_j,s*int_j,s" required="false" advanced="false" restrictions="0:" />
+            <ITEM name="k3" value="0.4" type="double" description="combined ilp: weight for -x_j,s*w_j,s" required="false" advanced="false" restrictions="0:" />
+            <ITEM name="scale_matching_probs" value="true" type="string" description="flag if detectability * rt_weight shall be scaled to cover all [0,1]" required="false" advanced="false" restrictions="true,false" />
+          </NODE>
+        </NODE>
+        <NODE name="Preprocessing" description="">
+          <ITEM name="precursor_mass_tolerance" value="10" type="double" description="Precursor mass tolerance which is used to query the peptide database for peptides" required="false" advanced="false" restrictions="0:" />
+          <ITEM name="precursor_mass_tolerance_unit" value="ppm" type="string" description="Precursor mass tolerance unit." required="false" advanced="false" restrictions="ppm,Da" />
+          <ITEM name="preprocessed_db_path" value="" type="string" description="Path where the preprocessed database should be stored" required="false" advanced="false" />
+          <ITEM name="preprocessed_db_pred_rt_path" value="" type="string" description="Path where the predicted rts of the preprocessed database should be stored" required="false" advanced="false" />
+          <ITEM name="preprocessed_db_pred_dt_path" value="" type="string" description="Path where the predicted rts of the preprocessed database should be stored" required="false" advanced="false" />
+          <ITEM name="max_peptides_per_run" value="100000" type="int" description="Number of peptides for that the pt and rt are parallely predicted." required="false" advanced="false" restrictions="1:" />
+          <ITEM name="missed_cleavages" value="1" type="int" description="Number of allowed missed cleavages." required="false" advanced="false" restrictions="0:" />
+          <ITEM name="taxonomy" value="" type="string" description="Taxonomy" required="false" advanced="false" />
+          <ITEM name="tmp_dir" value="" type="string" description="Absolute path to tmp data directory used to store files needed for rt and dt prediction." required="false" advanced="false" />
+          <ITEM name="store_peptide_sequences" value="false" type="string" description="Flag if peptide sequences should be stored." required="false" advanced="false" />
+          <NODE name="rt_settings" description="">
+            <ITEM name="min_rt" value="960" type="double" description="Minimal RT in the experiment (in seconds)" required="false" advanced="false" restrictions="1:" />
+            <ITEM name="max_rt" value="3840" type="double" description="Maximal RT in the experiment (in seconds)" required="false" advanced="false" />
+            <ITEM name="rt_step_size" value="30" type="double" description="Time between two consecutive spectra (in seconds)" required="false" advanced="false" />
+            <ITEM name="gauss_mean" value="-1" type="double" description="mean of the gauss curve" required="false" advanced="false" />
+            <ITEM name="gauss_sigma" value="3" type="double" description="std of the gauss curve" required="false" advanced="false" />
+          </NODE>
+        </NODE>
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

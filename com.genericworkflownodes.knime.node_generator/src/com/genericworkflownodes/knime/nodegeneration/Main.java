@@ -4,9 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.logging.Logger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.genericworkflownodes.knime.nodegeneration.NodeGenerator.NodeGeneratorException;
+import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.util.SanityCheck;
+
+import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.impl.Arguments;
+import net.sourceforge.argparse4j.impl.action.StoreTrueArgumentAction;
+import net.sourceforge.argparse4j.inf.ArgumentAction;
+import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.Namespace;
 
 public class Main {
 
@@ -15,77 +26,67 @@ public class Main {
             .getCanonicalName());
 
     /**
-     * 
-     * @param args
-     *            <li>#1: directory in which the plugin's sources reside;</li>
-     *            <li>#2: directory to where to put the plugins (base + payload
-     *            fragments)</li>
-     *            <li>#3: (optional) last change date, otherwise an unspecified "qualifier" is used</li>
-     *            <p>
-     *            Note: The built plugin will neither be compiled nor be
-     *            packaged to a jar file.
+     * Note: Creates Java sources for update sites, features, plugins, fragments,
+     *       based on the folder structure, contributing plugins, tool descriptors.
+     * 		 The built plugin will neither be compiled nor be packaged to a jar file.
+     *       Please run Maven tycho (with the tycho-pomless extension) afterwards to do that.
      */
     public static void main(String[] args) throws IOException {
-        File srcDir = new File((args.length > 0) ? args[0] : ".")
-                .getAbsoluteFile().getCanonicalFile();
-
-        // perform some sanity checks before continuing
-        final SanityCheck sanityCheck = new SanityCheck(
-                srcDir.getAbsolutePath());
-        final Collection<String> warnings = sanityCheck.getWarnings();
-        final Collection<String> errors = sanityCheck.getErrors();
-        final String newLine = System.getProperty("line.separator");
-        if (!warnings.isEmpty()) {
-            final StringBuilder builder = new StringBuilder(
-                    "Warning! You MIGHT need to fix the following issues:");
-            for (final String warning : warnings) {
-                builder.append(newLine).append("* ").append(warning);
-            }
-            builder.append(newLine);
-            System.err.println(builder);
+    	
+        ArgumentParser parser = ArgumentParsers.newFor("GenericKNIMENodes project generator").build()
+                .defaultHelp(true)
+                .description("Generate tycho-enabled Eclipse RCP projects for use with the GenericKNIMENodes KNIME extension"
+                		+ " from a directory layout.");
+        parser.addArgument("-i", "--input").type(String.class)
+                .help("Input folder with specific directory layout.");
+        parser.addArgument("-o", "--output").type(String.class)
+                .help("Output folder into which to put the generated projects.");
+        parser.addArgument("-d", "--date").required(false).type(String.class).setDefault("")
+        		.help("Allows to change the last version part at generation instead of build time."
+        				+ "Use version format '$major.$minor.$patch.genqualifier' in your feature/plugin.properties to replace 'genqualifier' with this."
+        				+ "It will use the newest one of this and the qualifiers in potential contributing plugins. You can"
+        				+ "also use the usual 'qualifier' to be replace at tycho build time later. Or just hardcode a qualifier"
+        				+ "usually in the 'yyyyMMddHHmmss' format.");
+        parser.addArgument("-t", "--testingFeatures").action(Arguments.storeTrue()).required(false)
+        		.help("Generate a testing feature for each feature?");
+        parser.addArgument("-r", "--recursive").action(Arguments.storeTrue()).required(false)
+        		.help("Recursively generates features for every folder in the input folder. Recurses only one level deep.");
+        parser.addArgument("-u", "--createUpdateSite").action(Arguments.storeTrue()).type(Boolean.class).required(false)
+			.help("Create an update site containing all generated features.");
+        Namespace ns = null;
+        try {
+            ns = parser.parseArgs(args);
+        } catch (ArgumentParserException e) {
+            parser.handleError(e);
+            System.exit(1);
         }
-        if (!errors.isEmpty()) {
-            final StringBuilder builder = new StringBuilder(
-                    "Severe error! Node generation cannot continue until the following problems are fixed:");
-            for (final String error : errors) {
-                builder.append(newLine).append("* ").append(error);
-            }
-            builder.append(newLine);
-            System.err.println(builder);
-            // we cannot continue, so abort now
-            System.exit(-1);
-        }
-
-        File buildDir = (args.length > 1) ? new File(args[1]).getAbsoluteFile()
-                .getCanonicalFile() : null;
-        if (buildDir != null) {
-            buildDir.mkdirs();
-        }
-
-        //TODO ACTUALLY you should have the option of an own qualifier,
-        // a qualifier replaceable by buckminster ("qualifier") or tycho ("SNAPSHOT")
-        // and no qualifier
         
-        // check if we have a third argument -> last change date
-        String lastChangeDate = "";
-        if (args.length > 2) {
-            lastChangeDate = args[2];
+        File srcDir = new File(ns.getString("input")).getAbsoluteFile().getCanonicalFile();
+        File buildDir = new File(ns.getString("output")).getAbsoluteFile().getCanonicalFile();
+
+        String lastChangeDate = ns.getString("date");
+        if (lastChangeDate.isEmpty())
+        {
+	        LocalDateTime now = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	        lastChangeDate = now.format(formatter);
         }
 
-        // check for a fourth argument if you want to generate a testing feature
         // Caution: this is in beta stage. It does not collect anything yet.
-        // see
-        boolean createTestingFeature = false;
-        if (args.length > 3) {
-            createTestingFeature = args[3].equals("enabled");
-        }
+        boolean createTestingFeature = ns.getBoolean("testingFeatures").booleanValue();
+        
+        boolean recursive = ns.getBoolean("recursive").booleanValue();
+        boolean createUpdateSite = ns.getBoolean("createUpdateSite").booleanValue();
 
         try {
-            NodeGenerator nodeGenerator = new NodeGenerator(srcDir, buildDir,
-                    lastChangeDate, createTestingFeature);
+            NodeGenerator nodeGenerator = 
+            		new NodeGenerator(srcDir, buildDir, lastChangeDate, createTestingFeature, recursive, createUpdateSite);
             nodeGenerator.generate();
         } catch (NodeGeneratorException e) {
             e.printStackTrace();
-        }
+        } catch (PathnameIsNoDirectoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }

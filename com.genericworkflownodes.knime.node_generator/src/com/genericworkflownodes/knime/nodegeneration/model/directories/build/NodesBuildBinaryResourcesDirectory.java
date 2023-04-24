@@ -2,6 +2,7 @@ package com.genericworkflownodes.knime.nodegeneration.model.directories.build;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,8 +21,8 @@ public class NodesBuildBinaryResourcesDirectory extends Directory {
     private static final long serialVersionUID = 5024903143191264115L;
 
     public NodesBuildBinaryResourcesDirectory(File knimeDirectory)
-            throws PathnameIsNoDirectoryException {
-        super(knimeDirectory);
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
+        super(knimeDirectory, false);
     }
 
     /**

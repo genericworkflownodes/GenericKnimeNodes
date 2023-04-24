@@ -36,6 +36,7 @@ public class FragmentMeta extends PluginMeta {
     private final Architecture arch;
     private final OperatingSystem os;
     private final File payloadFile;
+    private final boolean emulateARM;
 
     /**
      * Constructs the fragment meta information given a base id, the
@@ -47,14 +48,15 @@ public class FragmentMeta extends PluginMeta {
      */
     public FragmentMeta(GeneratedPluginMeta hostPluginMeta,
             Architecture architecture, OperatingSystem operatingSystem,
-            File pFile) {
+            File pFile, boolean emulateARM) {
         super(String.format("%s.%s.%s", hostPluginMeta.getId(),
                 operatingSystem.toOsgiOs(), architecture.toOsgiArch()),
                 hostPluginMeta.getGeneratedPluginVersion());
-        hostMeta = hostPluginMeta;
-        arch = architecture;
-        os = operatingSystem;
-        payloadFile = pFile;
+        this.hostMeta = hostPluginMeta;
+        this.arch = architecture;
+        this.os = operatingSystem;
+        this.payloadFile = pFile;
+        this.emulateARM = emulateARM;
     }
 
     /**
@@ -73,6 +75,23 @@ public class FragmentMeta extends PluginMeta {
      */
     public Architecture getArch() {
         return arch;
+    }
+    
+    
+    /**
+     * Returns the architecture of this fragment as needed for a MANIFEST.MF
+     * Allows for OR connections of multiple architectures as in the case
+     * for a mac fragment used for emulating ARM.
+     * 
+     * @return
+     */
+    public String getArchStringForManifest() {
+    	if (emulateARM) {
+    		return "| (osgi.arch=" + arch.toOsgiArch() + ") (osgi.arch=aarch64)";
+    	} else {
+    		return "osgi.arch=" + arch.toOsgiArch();
+    	}
+        
     }
 
     /**

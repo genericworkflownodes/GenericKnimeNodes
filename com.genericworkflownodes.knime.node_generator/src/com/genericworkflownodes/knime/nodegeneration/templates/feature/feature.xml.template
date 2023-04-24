@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="@@packageName@@.feature"
-      label="@@pluginName@@"
-      version="@@pluginVersion@@">
+      id="@@featureID@@"
+      label="@@featureName@@"
+      version="@@featureVersion@@">
 
     <description>
     @@description@@
@@ -16,7 +16,7 @@
     @@license@@
     </license>
 
-@@PLUGIN@@
+@@PLUGINS@@
 @@FRAGMENTS@@
 @@CONTRIBUTING_PLUGINS@@
 </feature>

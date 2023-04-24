@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2014, Stephan Aiche.
+ * Copyright (c) 2023, Julianus Pfeuffer and the OpenMS Team.
  *
  * This file is part of GenericKnimeNodes.
  *

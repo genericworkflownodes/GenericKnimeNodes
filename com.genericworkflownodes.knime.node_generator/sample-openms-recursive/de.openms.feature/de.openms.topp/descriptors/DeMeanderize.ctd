@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="DeMeanderize" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_DeMeanderize.html" category="Utilities" >
+<description><![CDATA[Orders the spectra of MALDI spotting plates correctly.]]></description>
+<manual><![CDATA[Orders the spectra of MALDI spotting plates correctly.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="DeMeanderize" description="Orders the spectra of MALDI spotting plates correctly.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;DeMeanderize&apos;">
+      <ITEM name="in" value="" type="input-file" description="Input experiment file, containing the wrongly sorted spectra." required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="Output experiment file with correctly sorted spectra." required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="num_spots_per_row" value="48" type="int" description="Number of spots in one column, until next row is spotted." required="false" advanced="false" restrictions="1:" />
+      <ITEM name="RT_distance" value="1" type="double" description="RT distance between two spots which is used to calculated pseudo RT." required="false" advanced="true" restrictions="0:" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

@@ -19,14 +19,13 @@
 package com.genericworkflownodes.knime.nodegeneration.model.directories.source;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory;
-import com.genericworkflownodes.knime.nodegeneration.model.directories.Directory.PathnameIsNoDirectoryException;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.FragmentMeta;
 import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 import com.genericworkflownodes.knime.os.Architecture;
@@ -37,32 +36,39 @@ import com.genericworkflownodes.knime.os.OperatingSystem;
  * 
  * @author bkahlert, aiche
  */
-public class PayloadDirectory {
-    private static final Logger LOGGER = Logger
+public class PayloadDirectory extends Directory{
+	private static final long serialVersionUID = 834321069639260384L;
+
+	private static final Logger LOGGER = Logger
             .getLogger(PayloadDirectory.class.getCanonicalName());
 
     private static final Pattern payloadFormat = Pattern
-            .compile("^binaries_(mac|lnx|win)_([36][24]).zip$");
+            .compile("^binaries_(mac|lnx|win)_([36][24]|arm64).zip$");
 
-    private final List<FragmentMeta> containedFragments;
-    private Directory payloadDirectory = null;
 
     public PayloadDirectory(File payloadDirectory)
-            throws PathnameIsNoDirectoryException {
-        containedFragments = new ArrayList<FragmentMeta>();
-        try {
-            this.payloadDirectory = new Directory(payloadDirectory);
-        } catch (Exception e) {
-            LOGGER.warning("No payload directory available.");
-        }
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
+    	super(payloadDirectory, true);
     }
 
-    public List<FragmentMeta> getFragmentMetas(
+    public ArrayList<FragmentMeta> getFragmentMetas(
             GeneratedPluginMeta generatedPluginMeta) {
 
-        String[] expectedFragments = new String[] { "binaries_mac_64.zip",
-                "binaries_lnx_64.zip", "binaries_lnx_32.zip",
-                "binaries_win_64.zip", "binaries_win_32.zip" };
+    	ArrayList<FragmentMeta> containedFragments = new ArrayList<FragmentMeta>();
+        ArrayList<String> expectedFragments = new ArrayList<String>();
+        expectedFragments.add("binaries_mac_64.zip");
+        expectedFragments.add("binaries_lnx_64.zip");
+        expectedFragments.add("binaries_lnx_32.zip");
+        expectedFragments.add("binaries_win_64.zip");
+        expectedFragments.add("binaries_win_32.zip");
+        
+        boolean macARMavailable = false;
+        File potentialMacARMpayload = new File("binaries_mac_arm64.zip");
+        if (potentialMacARMpayload.exists())
+        {
+        	expectedFragments.add("binaries_mac_arm64.zip");
+        	macARMavailable = true;
+        }
 
         for (String potentialFragment : expectedFragments) {
             // get the matching properties
@@ -71,11 +77,17 @@ public class PayloadDirectory {
             OperatingSystem os = OperatingSystem.fromString(m.group(1));
             Architecture arch = Architecture.fromString(m.group(2));
 
-            File payload = new File(payloadDirectory, potentialFragment);
+            File payload = new File(this, potentialFragment);
 
             if (payload.exists()) {
-                containedFragments.add(new FragmentMeta(generatedPluginMeta,
-                        arch, os, payload));
+            	if (potentialFragment.equals("binaries_mac_64.zip") && !macARMavailable)
+            	{
+                    containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                            arch, os, payload, true));
+            	} else {
+                    containedFragments.add(new FragmentMeta(generatedPluginMeta,
+                            arch, os, payload, false));
+            	}
             } else {
                 // TODO this is removed for now, since maven is stricter with
             	// non-existing plugins of a feature. Could be added back with

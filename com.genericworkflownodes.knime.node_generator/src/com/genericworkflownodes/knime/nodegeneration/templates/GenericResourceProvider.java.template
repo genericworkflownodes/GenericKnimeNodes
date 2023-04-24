@@ -1,0 +1,55 @@
+// THIS CODE WAS GENERATED WITH THE GENERIC WORKFLOW NODES FOR KNIME NODE GENERATOR
+// DO NOT MODIFY
+package __PACKAGE__;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
+import com.genericworkflownodes.knime.custom.config.IDLLProvider;
+
+public class GenericResourceProvider implements IDLLProvider {
+	
+	@Override
+	public List<Path> getDLLFolders() {
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		URL dir;
+		ArrayList<Path> res = new ArrayList<Path>();
+		try {
+			dir = bundle.getResource("/__PAYLOAD__/");
+			URL resolvedUrl = FileLocator.toFileURL(dir);
+			// We need to use the 3-arg constructor of URI in order to properly escape file system chars.
+			URI resolvedUri = new URI(resolvedUrl.getProtocol(), resolvedUrl.getPath(), null);
+			Path payloadfolder = Paths.get(resolvedUri);
+			File[] contents = payloadfolder.toFile().listFiles();
+			for (File content : contents)
+			{
+				if (content.isDirectory())
+				{
+					res.add(content.toPath());
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public List<File> getDLLs() {
+		return new ArrayList<File>();
+	}
+
+}

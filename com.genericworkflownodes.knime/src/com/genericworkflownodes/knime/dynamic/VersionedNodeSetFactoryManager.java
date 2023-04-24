@@ -22,6 +22,10 @@ import org.knime.core.node.config.ConfigRO;
 
 public class VersionedNodeSetFactoryManager implements NodeSetFactory {
 
+    /**
+     * For caching the factories.
+     * TODO check 
+     */
     List<GenericNodeSetFactory> m_factories = null;
     Map<String, GenericNodeSetFactory> m_idToFac = new HashMap<>();
     
@@ -38,7 +42,7 @@ public class VersionedNodeSetFactoryManager implements NodeSetFactory {
             .getLogger(VersionedNodeSetFactoryManager.class);
     
     /*
-     * Searchs through the eclipse extension point registry for registered
+     * Searches through the eclipse extension point registry for registered
      * {@link VersionedNodeSetFactory}s.
      */
     public synchronized List<GenericNodeSetFactory> getAvailableVersionedNodeSetFactories() {

@@ -42,6 +42,11 @@ import com.genericworkflownodes.knime.port.Port;
 import com.genericworkflownodes.knime.schemas.SimpleErrorHandler;
 
 @Deprecated
+/**
+ * @deprecated CTD to Galaxy conversion is not supported with this Java framework anymore. Please check https://github.com/WorkflowConversion for other ways.
+ * @author jpfeuffer
+ *
+ */
 public class GalaxyNodeConfigurationReader implements INodeConfigurationReader {
     protected Document doc;
     protected NodeConfiguration config = new NodeConfiguration();

@@ -26,6 +26,7 @@ import com.genericworkflownodes.knime.nodegeneration.model.directories.build.Nod
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildKnimeNodesDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildPackageRootDirectory;
 import com.genericworkflownodes.knime.nodegeneration.model.directories.build.NodesBuildSrcDirectory;
+import com.genericworkflownodes.knime.nodegeneration.model.meta.GeneratedPluginMeta;
 
 /**
  * Abstract representation of plugin project (e.g., the base plugin or the
@@ -56,33 +57,48 @@ public abstract class GenericPluginDirectory extends PluginDirectory {
      *            The name of the top-level package inside the plugin.
      * @throws FileNotFoundException
      */
-    public GenericPluginDirectory(File directory, String packageName)
-            throws PathnameIsNoDirectoryException {
+    public GenericPluginDirectory(File directory, GeneratedPluginMeta meta)
+            throws PathnameIsNoDirectoryException, FileNotFoundException {
         super(directory);
-        init(packageName);
+        init(meta);
     }
 
-    private void init(String packageName) throws PathnameIsNoDirectoryException {
-        String packageRootPath = packageName.replace('.', File.separatorChar);
+    private void init(GeneratedPluginMeta meta) throws PathnameIsNoDirectoryException {
+        String packageRootPath = meta.getId().replace('.', File.separatorChar);
 
-        new File(this, "icons").mkdirs();
-        new File(this, "src" + File.separator + packageRootPath
-                + File.separator + "knime" + File.separator + "nodes").mkdirs();
+        new File(this, "src" + File.separator + packageRootPath).mkdirs();
         new File(this, "META-INF").mkdirs();
+        
+        if (!meta.isResourceOnly())
+        {
+        	new File(this, "icons").mkdirs();
+            new File(this, "src" + File.separator + packageRootPath
+                    + File.separator + "knime" + File.separator + "nodes").mkdirs();
+        }
 
-        iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
+        try {
+			
+            srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
 
-        srcDirectory = new NodesBuildSrcDirectory(new File(this, "src"));
+            packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
+                    srcDirectory, packageRootPath));
 
-        packageRootDirectory = new NodesBuildPackageRootDirectory(new File(
-                srcDirectory, packageRootPath));
+            if (!meta.isResourceOnly())
+            {
+            iconsDirectory = new NodesBuildIconsDirectory(new File(this, "icons"));
+            knimeDirectory = new NodesBuildKnimeDirectory(new File(
+                    packageRootDirectory, "knime"));
 
-        knimeDirectory = new NodesBuildKnimeDirectory(new File(
-                packageRootDirectory, "knime"));
-
-        knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
-                knimeDirectory, "nodes"));
-
+            knimeNodesDirectory = new NodesBuildKnimeNodesDirectory(new File(
+                    knimeDirectory, "nodes"));
+            }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PathnameIsNoDirectoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**

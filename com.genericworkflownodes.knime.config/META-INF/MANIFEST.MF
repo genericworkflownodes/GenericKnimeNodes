@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GenericKnimeNodes-Config
 Bundle-SymbolicName: com.genericworkflownodes.knime.config;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-ClassPath: genericnodes.config.jar,
  lib/commons-lang-2.6.jar,
  lib/dom4j-2.1.3.jar,

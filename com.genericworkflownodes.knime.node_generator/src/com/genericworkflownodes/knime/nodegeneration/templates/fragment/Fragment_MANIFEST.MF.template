@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: @@fragmentId@@
 Bundle-ManifestVersion: 2
 Bundle-Name: Generic Workflow Nodes for KNIME: @@hostName@@ - @@os@@-@@arch@@ Fragment  
 Bundle-SymbolicName: @@fragmentId@@;singleton:=true
 Bundle-Version: @@fragmentVersion@@
-Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, and the @@hostName@@ Team
+Bundle-Vendor: Freie Universitaet Berlin, Universitaet Tuebingen, ZIB (GKN-Team) and the @@hostName@@ Team
 Fragment-Host: @@hostId@@;bundle-version="@@hostVersion@@"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Eclipse-PlatformFilter: (& (osgi.arch=@@arch@@) (osgi.os=@@os@@))
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Eclipse-PlatformFilter: (& (@@archosgi@@) (osgi.os=@@os@@))
 Eclipse-BundleShape: dir

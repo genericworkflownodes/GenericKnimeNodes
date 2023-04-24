@@ -23,8 +23,12 @@ public class Directory extends File {
      * @param directory
      * @throws FileNotFoundException
      */
-    public Directory(File directory) throws PathnameIsNoDirectoryException {
+    public Directory(File directory, boolean mustExist) throws PathnameIsNoDirectoryException, FileNotFoundException {
         super(directory.getAbsolutePath());
+        if (mustExist && !directory.exists())
+        {
+        	throw new FileNotFoundException(directory.getAbsolutePath());
+        }
 
         if (directory.exists() && !directory.isDirectory()) {
             throw new PathnameIsNoDirectoryException(directory);

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="NoiseFilterSGolay" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_NoiseFilterSGolay.html" category="Signal processing and preprocessing" >
+<description><![CDATA[Removes noise from profile spectra by using a Savitzky Golay filter. Requires uniform (equidistant) data.]]></description>
+<manual><![CDATA[Removes noise from profile spectra by using a Savitzky Golay filter. Requires uniform (equidistant) data.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="NoiseFilterSGolay" description="Removes noise from profile spectra by using a Savitzky Golay filter. Requires uniform (equidistant) data.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;NoiseFilterSGolay&apos;">
+      <ITEM name="in" value="" type="input-file" description="input raw data file " required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="out" value="" type="output-file" description="output raw data file " required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="algorithm" description="Algorithm parameters section">
+        <ITEM name="frame_length" value="11" type="int" description="The number of subsequent data points used for smoothing.#br#This number has to be uneven. If it is not, 1 will be added." required="false" advanced="false" />
+        <ITEM name="polynomial_order" value="4" type="int" description="Order or the polynomial that is fitted." required="false" advanced="false" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

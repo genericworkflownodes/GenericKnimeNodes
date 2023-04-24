@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
 
@@ -29,6 +30,9 @@ public class NodesSourceDirectory extends Directory {
     public static final String PAYLOAD_DIRECTORY = "payload";
     public static final String DESCRIPTORS_DIRECTORY = "descriptors";
     
+	private static final Logger LOGGER = Logger
+            .getLogger(NodesSourceDirectory.class.getCanonicalName());
+    
     private static final long serialVersionUID = -2772836144406225644L;
     private DescriptorsDirectory descriptorsDirectory = null;
     private PayloadDirectory payloadDirectory = null;
@@ -45,37 +49,7 @@ public class NodesSourceDirectory extends Directory {
             throws PathnameIsNoDirectoryException, IOException,
             DocumentException, InvalidNodeNameException,
             DuplicateNodeNameException {
-        super(nodeSourceDirectory);
-
-        try {
-            descriptorsDirectory = new DescriptorsDirectory(new File(
-                    nodeSourceDirectory, DESCRIPTORS_DIRECTORY));
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(
-                    "Could not find descriptors directory "
-                            + new File(nodeSourceDirectory, DESCRIPTORS_DIRECTORY)
-                                    .getPath());
-        }
-
-        try {
-            payloadDirectory = new PayloadDirectory(new File(
-                    nodeSourceDirectory, PAYLOAD_DIRECTORY));
-        } catch (PathnameIsNoDirectoryException e) {
-
-        }
-
-        try {
-            iconsDirectory = new IconsDirectory(new File(nodeSourceDirectory,
-                    ICONS_DIRECTORY));
-        } catch (FileNotFoundException e) {
-
-        }
-
-        try {
-            contributingPluginsDirectory = new ContributingPluginsDirectory(
-                    new File(nodeSourceDirectory, CONTRIBUTING_PLUGINS_DIRECTORY));
-        } catch (PathnameIsNoDirectoryException e) {
-        }
+        super(nodeSourceDirectory, true);
 
         File propertyFile = new File(nodeSourceDirectory, PLUGIN_PROPERTIES_FILE);
         try {
@@ -87,6 +61,43 @@ public class NodesSourceDirectory extends Directory {
                     + propertyFile.getPath());
         } catch (IOException e) {
             throw new IOException("Could not load properties file", e);
+        }
+        
+        try {
+            descriptorsDirectory = new DescriptorsDirectory(new File(
+                    nodeSourceDirectory, DESCRIPTORS_DIRECTORY));
+        } catch (FileNotFoundException e) {
+        	// TODO refactor
+        	if (properties.getProperty("resourceProviderTarget") == null)
+        	{
+                throw new FileNotFoundException(
+                        "Could not find descriptors directory "
+                                + new File(nodeSourceDirectory, DESCRIPTORS_DIRECTORY)
+                                        .getPath());
+        	}
+        }
+
+        try {
+            payloadDirectory = new PayloadDirectory(new File(
+                    nodeSourceDirectory, PAYLOAD_DIRECTORY));
+        } catch (PathnameIsNoDirectoryException e) {
+        	LOGGER.warning("Payload is not a directory " + this.getName());
+        } catch (FileNotFoundException e) {
+        	LOGGER.warning("No payload dir found in " + this.getName());
+        }
+
+        try {
+            iconsDirectory = new IconsDirectory(new File(nodeSourceDirectory,
+                    ICONS_DIRECTORY));
+        } catch (FileNotFoundException e) {
+        	LOGGER.info("No icons dir found in " + this.getName());
+        }
+
+        try {
+            contributingPluginsDirectory = new ContributingPluginsDirectory(
+                    new File(nodeSourceDirectory, CONTRIBUTING_PLUGINS_DIRECTORY));
+        } catch (PathnameIsNoDirectoryException e) {
+        } catch (FileNotFoundException e) {	
         }
 
         descriptionFile = new File(nodeSourceDirectory, DESCRIPTION_FILE);

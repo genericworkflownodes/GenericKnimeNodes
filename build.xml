@@ -198,14 +198,22 @@
 
   <target name="custom.plugin.generate_sources" description="run node generator" depends="nodegenerator.build,git.timestamp">
     <echo message="${toString:nodegenerator.exec.classpath}" />
+    <condition property="generate.extra.arguments" value="">
+      <not>
+        <isset property="generate.extra.arguments" />
+      </not>
+    </condition>
     <java classname="com.genericworkflownodes.knime.nodegeneration.Main" failonerror="true" fork="true">
       <!-- we use the detour via env.CLASSPATH here since WinXP machines otherwise couldn't -->
       <!-- handle the to long classpath -->
       <env key="CLASSPATH" path="${env.CLASSPATH}:${toString:nodegenerator.exec.classpath}" />
+      <arg value="-i" />
       <arg value="${plugin.dir}" />
+      <arg value="-o" />
       <arg value="${custom.plugin.generator.target}" />
+      <arg value="-d" />
       <arg value="${timestamp.out}" />
-      <arg value="${generate.test.feature}" />
+      <arg line="${generate.extra.arguments}" />
     </java>
   </target>
 

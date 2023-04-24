@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="IDFilter" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_IDFilter.html" category="ID Processing" >
+<description><![CDATA[Filters results from protein or peptide identification engines based on different criteria.]]></description>
+<manual><![CDATA[Filters results from protein or peptide identification engines based on different criteria.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="IDFilter" description="Filters results from protein or peptide identification engines based on different criteria.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;IDFilter&apos;">
+      <ITEM name="in" value="" type="input-file" description="input file " required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="out" value="" type="output-file" description="output file " required="true" advanced="false" supported_formats="*.idXML" />
+      <ITEM name="min_length" value="0" type="int" description="Keep only peptide hits with a length greater or equal this value. Value 0 will have no filter effect." required="false" advanced="false" restrictions="0:" />
+      <ITEM name="max_length" value="0" type="int" description="Keep only peptide hits with a length less or equal this value. Value 0 will have no filter effect. Value is overridden by min_length, i.e. if max_length &lt; min_length, max_length will be ignored." required="false" advanced="false" restrictions=":0" />
+      <ITEM name="min_charge" value="1" type="int" description="Keep only peptide hits for tandem spectra with charge greater or equal this value." required="false" advanced="false" restrictions="1:" />
+      <ITEM name="var_mods" value="false" type="string" description="Keep only peptide hits with variable modifications (fixed modifications from SearchParameters will be ignored)." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="unique" value="false" type="string" description="If a peptide hit occurs more than once per PSM, only one instance is kept." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="unique_per_protein" value="false" type="string" description="Only peptides matching exactly one protein are kept. Remember that isoforms count as different proteins!" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="keep_unreferenced_protein_hits" value="false" type="string" description="Proteins not referenced by a peptide are retained in the idXML." required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="score" description="Filtering by peptide/protein score. To enable any of the filters below, just change their default value. All active filters will be applied in order.">
+        <ITEM name="pep" value="0" type="double" description="The score which should be reached by a peptide hit to be kept. The score is dependent on the most recent(!) preprocessing - it could be Mascot scores (if a MascotAdapter was applied before), or an FDR (if FalseDiscoveryRate was applied before), etc." required="false" advanced="false" />
+        <ITEM name="prot" value="0" type="double" description="The score which should be reached by a protein hit to be kept." required="false" advanced="false" />
+      </NODE>
+      <NODE name="thresh" description="Filtering by significance threshold">
+        <ITEM name="pep" value="0" type="double" description="Keep a peptide hit only if its score is above this fraction of the peptide significance threshold." required="false" advanced="false" />
+        <ITEM name="prot" value="0" type="double" description="Keep a protein hit only if its score is above this fraction of the protein significance threshold." required="false" advanced="false" />
+      </NODE>
+      <NODE name="whitelist" description="Filtering by whitelisting (only instances also present in a whitelist file can pass)">
+        <ITEM name="proteins" value="" type="input-file" description="filename of a FASTA file containing protein sequences.#br#All peptides that are not a substring of a sequence in this file are removed#br#All proteins whose accession is not present in this file are removed." required="false" advanced="false" supported_formats="*.fasta" />
+        <ITEM name="by_seq_only" value="false" type="string" description="Match peptides with FASTA file by sequence instead of accession and disable protein filtering." required="false" advanced="false" restrictions="true,false" />
+      </NODE>
+      <NODE name="blacklist" description="Filtering by blacklisting (only instances not present in a blacklist file can pass)">
+        <ITEM name="peptides" value="" type="input-file" description="Peptides having the same sequence as any peptide in this file will be filtered out#br#" required="false" advanced="false" supported_formats="*.idXML" />
+      </NODE>
+      <NODE name="rt" description="Filtering by RT predicted by &apos;RTPredict&apos;">
+        <ITEM name="p_value" value="0" type="double" description="Retention time filtering by the p-value predicted by RTPredict." required="false" advanced="false" restrictions="0:1" />
+        <ITEM name="p_value_1st_dim" value="0" type="double" description="Retention time filtering by the p-value predicted by RTPredict for first dimension." required="false" advanced="false" restrictions="0:1" />
+      </NODE>
+      <NODE name="mz" description="Filtering by mz">
+        <ITEM name="error" value="-1" type="double" description="Filtering by deviation to theoretical mass (disabled for negative values)." required="false" advanced="false" />
+        <ITEM name="unit" value="ppm" type="string" description="Absolute or relativ error." required="false" advanced="false" restrictions="Da,ppm" />
+      </NODE>
+      <NODE name="best" description="Filtering best hits per spectrum (for peptides) or from proteins">
+        <ITEM name="n_peptide_hits" value="0" type="int" description="Keep only the &apos;n&apos; highest scoring peptide hits per spectrum (for n&gt;0)." required="false" advanced="false" restrictions="0:" />
+        <ITEM name="n_protein_hits" value="0" type="int" description="Keep only the &apos;n&apos; highest scoring protein hits (for n&gt;0)." required="false" advanced="false" restrictions="0:" />
+        <ITEM name="strict" value="false" type="string" description="Keep only the highest scoring peptide hit.#br#Similar to n_peptide_hits=1, but if there are two or more highest scoring hits, none are kept." required="false" advanced="false" restrictions="true,false" />
+        <ITEM name="n_to_m_peptide_hits" value=":" type="string" description="peptide hit rank range to extracts" required="false" advanced="true" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

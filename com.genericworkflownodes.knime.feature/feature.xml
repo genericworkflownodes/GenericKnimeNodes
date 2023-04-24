@@ -2,7 +2,7 @@
 <feature
       id="com.genericworkflownodes.knime.feature"
       label="Generic Workflow Nodes for KNIME"
-      version="1.0.0.qualifier"
+      version="1.1.0.qualifier"
       provider-name="Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team">
 
    <description url="http://www.genericworkflownodes.com">
@@ -697,13 +697,13 @@
          id="com.genericworkflownodes.knime"
          download-size="0"
          install-size="0"
-         version="1.0.0.qualifier"/>
+         version="1.1.0.qualifier"/>
 
    <plugin
          id="com.genericworkflownodes.knime.config"
          download-size="0"
          install-size="0"
-         version="1.0.0.qualifier"/>
+         version="1.1.0.qualifier"/>
 
    <plugin
          id="com.genericworkflownodes.knime.gpl3nodes"

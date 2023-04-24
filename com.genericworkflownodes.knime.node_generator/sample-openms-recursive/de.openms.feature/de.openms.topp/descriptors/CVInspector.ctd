@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="CVInspector" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/UTILS_CVInspector.html" category="Utilities" >
+<description><![CDATA[A tool for visualization and validation of PSI mapping and CV files.]]></description>
+<manual><![CDATA[A tool for visualization and validation of PSI mapping and CV files.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="CVInspector" description="A tool for visualization and validation of PSI mapping and CV files.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;CVInspector&apos;">
+      <ITEMLIST name="cv_files" type="input-file" description="List of ontology files in OBO format." required="true" advanced="false" supported_formats="*.obo">
+      </ITEMLIST>
+      <ITEMLIST name="cv_names" type="string" description="List of identifiers (one for each ontology file)." required="true" advanced="false">
+      </ITEMLIST>
+      <ITEM name="mapping_file" value="" type="input-file" description="Mapping file in CVMapping (XML) format." required="false" advanced="false" supported_formats="*.XML" />
+      <ITEMLIST name="ignore_cv" type="string" description="A list of CV identifiers which should be ignored." required="false" advanced="false">
+        <LISTITEM value="UO"/>
+        <LISTITEM value="PATO"/>
+        <LISTITEM value="BTO"/>
+      </ITEMLIST>
+      <ITEM name="html" value="" type="output-file" description="Writes an HTML version of the mapping file with annotated CV terms" required="false" advanced="false" supported_formats="*.HTML" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>

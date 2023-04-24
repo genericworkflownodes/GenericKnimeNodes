@@ -21,7 +21,10 @@
    </extension>
 
    <extension point="org.knime.workbench.repository.nodes">
-    <node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory"/>
+    <node
+          category-path="/community/GenericKnimeNodes/IO"
+          deprecated="true"
+          factory-class="com.genericworkflownodes.knime.nodes.io.dirimporter.MimeDirectoryImporterNodeFactory"/>
 	<node category-path="/community/GenericKnimeNodes/IO" factory-class="com.genericworkflownodes.knime.nodes.io.index.IndexLoaderNodeFactory"/>
     <node
           category-path="/community/GenericKnimeNodes/Flow"

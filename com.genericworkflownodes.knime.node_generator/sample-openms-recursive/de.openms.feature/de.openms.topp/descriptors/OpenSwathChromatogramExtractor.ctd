@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tool version="1.11.0" name="OpenSwathChromatogramExtractor" docurl="http://ftp.mi.fu-berlin.de/OpenMS/release-documentation/html/TOPP_OpenSwathChromatogramExtractor.html" category="Targeted Experiments" >
+<description><![CDATA[Extract chromatograms (XIC) from a MS2 map file.]]></description>
+<manual><![CDATA[Extract chromatograms (XIC) from a MS2 map file.]]></manual>
+<PARAMETERS version="1.6.2" xsi:noNamespaceSchemaLocation="http://open-ms.sourceforge.net/schemas/Param_1_6_2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NODE name="OpenSwathChromatogramExtractor" description="Extract chromatograms (XIC) from a MS2 map file.">
+    <ITEM name="version" value="1.11.0" type="string" description="Version of the tool that generated this parameters file." required="false" advanced="true" />
+    <NODE name="1" description="Instance &apos;1&apos; section for &apos;OpenSwathChromatogramExtractor&apos;">
+      <ITEMLIST name="in" type="input-file" description="Input files separated by blank" required="true" advanced="false" supported_formats="*.mzML">
+      </ITEMLIST>
+      <ITEM name="tr" value="" type="input-file" description="transition file (&apos;TraML&apos; or &apos;csv&apos;)" required="true" advanced="false" supported_formats="*.csv,*.traML" />
+      <ITEM name="rt_norm" value="" type="input-file" description="RT normalization file (how to map the RTs of this run to the ones stored in the library)" required="false" advanced="false" supported_formats="*.trafoXML" />
+      <ITEM name="out" value="" type="output-file" description="output file" required="true" advanced="false" supported_formats="*.mzML" />
+      <ITEM name="min_upper_edge_dist" value="0" type="double" description="Minimal distance to the edge to still consider a precursor, in Thomson" required="false" advanced="false" />
+      <ITEM name="extraction_window" value="0.05" type="double" description="Extraction window used (in Thomson, to use ppm see -ppm flag)" required="false" advanced="false" restrictions="0:" />
+      <ITEM name="rt_extraction_window" value="-1" type="double" description="Only extract RT around this value (-1 means extract over the whole range, a value of 500 means to extract around +/- 500 s of the expected elution)." required="false" advanced="false" />
+      <ITEM name="is_swath" value="false" type="string" description="Set this flag if the data is SWATH data" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="ppm" value="false" type="string" description="extraction_window is in ppm" required="false" advanced="false" restrictions="true,false" />
+      <ITEM name="extraction_function" value="tophat" type="string" description="Function used to extract the signal" required="false" advanced="false" restrictions="tophat,bartlett" />
+      <ITEM name="log" value="" type="string" description="Name of log file (created only when specified)" required="false" advanced="true" />
+      <ITEM name="debug" value="0" type="int" description="Sets the debug level" required="false" advanced="true" />
+      <ITEM name="threads" value="1" type="int" description="Sets the number of threads allowed to be used by the TOPP tool" required="false" advanced="false" />
+      <ITEM name="no_progress" value="false" type="string" description="Disables progress logging to command line" required="false" advanced="true" restrictions="true,false" />
+      <ITEM name="test" value="false" type="string" description="Enables the test mode (needed for internal use only)" required="false" advanced="true" restrictions="true,false" />
+      <NODE name="model" description="Options to control the modeling of retention time transformations from data">
+        <ITEM name="type" value="linear" type="string" description="Type of model" required="false" advanced="false" restrictions="linear,b_spline,interpolated" />
+        <ITEM name="symmetric_regression" value="false" type="string" description="Only for &apos;linear&apos; model: Perform linear regression on &apos;y - x&apos; vs. &apos;y + x&apos;, instead of on &apos;y&apos; vs. &apos;x&apos;." required="false" advanced="false" restrictions="true,false" />
+        <ITEM name="num_breakpoints" value="5" type="int" description="Only for &apos;b_spline&apos; model: Number of breakpoints of the cubic spline in the smoothing step. The breakpoints are spaced uniformly on the retention time interval. More breakpoints mean less smoothing. Reduce this number if the transformation has an unexpected shape." required="false" advanced="false" restrictions="2:" />
+        <ITEM name="interpolation_type" value="cspline" type="string" description="Only for &apos;interpolated&apos; model: Type of interpolation to apply." required="false" advanced="false" />
+      </NODE>
+    </NODE>
+  </NODE>
+</PARAMETERS>
+</tool>
