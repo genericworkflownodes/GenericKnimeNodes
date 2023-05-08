@@ -76,14 +76,13 @@ final class FileExporterNodeModel extends NodeModel {
         try (final WritePathAccessor accessor = writerModel.createWritePathAccessor()) {
             final FSPath outpath = accessor.getOutputPath(m_statusConsumer);
             m_statusConsumer.setWarningsIfRequired(this::setWarningMessage);
-            // create parent directories
-            final FSPath parentPath = (FSPath) outpath.getParent();
-            if (parentPath != null && !FSFiles.exists(parentPath)) {
+            // create directory?
+            if (outpath != null && !FSFiles.exists(outpath)) {
                 if (m_settings.getWriterModel().isCreateMissingFolders()) {
-                    FSFiles.createDirectories(parentPath);
+                    FSFiles.createDirectories(outpath);
                 } else {
                     throw new IOException(String.format(
-                        "The directory '%s' does not exist and must not be created due to user settings.", parentPath));
+                        "The directory '%s' does not exist and must not be created due to user settings.", outpath));
                 }
             }
 
