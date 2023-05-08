@@ -48,13 +48,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.util.FileUtil;
 import org.knime.core.util.pathresolve.ResolverUtil;
-import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
-import org.knime.filehandling.core.connections.FSConnection;
-import org.knime.filehandling.core.connections.FSFiles;
 import org.knime.filehandling.core.connections.FSPath;
-import org.knime.filehandling.core.connections.RelativeTo;
 import org.knime.filehandling.core.connections.meta.FSType;
 import org.knime.filehandling.core.connections.uriexport.URIExporterIDs;
 import org.knime.filehandling.core.connections.uriexport.noconfig.NoConfigURIExporterFactory;
@@ -64,7 +59,6 @@ import org.knime.filehandling.core.defaultnodesettings.status.StatusMessage.Mess
 
 import com.genericworkflownodes.knime.generic_node.ExecutionFailedException;
 import com.genericworkflownodes.util.MIMETypeHelper;
-import com.genericworkflownodes.knime.base.data.port.AbstractFileStoreURIPortObject;
 import com.genericworkflownodes.knime.base.data.port.FileStoreURIPortObject;
 
 /**
