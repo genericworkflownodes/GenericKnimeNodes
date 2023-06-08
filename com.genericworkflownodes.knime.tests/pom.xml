@@ -27,7 +27,7 @@
 		<version>${tycho.version}</version>
 		<configuration>
 			<argLine>${tycho.test.jvmArgs}</argLine>
-			<useUIHarness>true</useUIHarness>
+			<useUIHarness>false</useUIHarness>
 			<useUIThread>${custom.UIThread}</useUIThread> 
 		</configuration>
 	</plugin>
