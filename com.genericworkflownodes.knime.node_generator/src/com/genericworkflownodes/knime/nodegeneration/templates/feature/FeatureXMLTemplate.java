@@ -71,12 +71,15 @@ public class FeatureXMLTemplate extends Template {
         for (FragmentMeta fragmentMeta : fragmentMetas) {
             fragmentList += String.format(
                     "\t<plugin id=\"%s\"\n" + "\t\tos=\"%s\"\n"
-                            + "\t\tarch=\"%s\"\n" + "\t\tdownload-size=\"0\"\n"
+                            + "%s"
+                    		+ "\t\tdownload-size=\"0\"\n"
                             + "\t\tinstall-size=\"0\"\n"
                             + "\t\tversion=\"0.0.0\"\n"
                             + "\t\tfragment=\"true\"/>\n\n",
                     fragmentMeta.getId(), fragmentMeta.getOs().toOsgiOs(),
-                    fragmentMeta.getArch().toOsgiArch());
+                    // For macOS we currently just label as "all architectures" and hope
+                    // for Rosetta emulation on Silicon macs.
+                    !(fragmentMeta.getOs().toOsgiOs()=="macosx") ? "\t\tarch=\""+fragmentMeta.getArch().toOsgiArch()+"\"\n" : "");
         }
 
         replace("@@FRAGMENTS@@", fragmentList);
