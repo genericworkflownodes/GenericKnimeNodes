@@ -1,6 +1,8 @@
 # Generic KNIME Nodes
 is a project aimed at the automatic generation of KNIME nodes for generic (command line) tools. It consists of functionality for KNIME developers (extension points, interfaces, ...), tool developers (automatic wrapping of tools into KNIME nodes based on the [Common Tool Description](https://github.com/WorkflowConversion/CTDSchema/tree/master); either by generating source code or recently automatically at KNIME startup, including an alternative plugin versioning approach) and KNIME users (intuitive configuration dialogs and node descriptions for any tool you can imagine plus additional nodes for the interaction with standard KNIME nodes).
 
+If you want to use the GenericKnimeNodes please go to https://hub.knime.com/gkn-team/extensions/com.genericworkflownodes.knime.feature/latest
+
 ## The GenericKnimeNodes KNIME plugin
 It provides the source code for the KNIME plugin `com.genericworkflownodes.knime` providing basic functionality for further plugins depending on the Generic Workflow Nodes for KNIME mechanism. **NOTE:** For this functionality, at least KNIME 2.7.2 is required and you need to install 
 the [KNIME File Handling Nodes](https://www.knime.com/file-handling). This functionality includes additional nodes for reading, writing, looping over and converting tables to and from files. For developers it provides extension points for:
