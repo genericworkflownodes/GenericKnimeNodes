@@ -6,7 +6,7 @@
 	<properties>
 		<knime.version>5.4</knime.version>
 		<java.majorversion>17</java.majorversion>
-		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
+		<knime.update.site>http://update.knime.com/analytics-platform/${knime.version}/</knime.update.site>
 		<tycho.version>3.0.1</tycho.version>
 		<tycho.extras.version>3.0.1</tycho.extras.version>
 		<tycho.test.jvmArgs>-Xmx1024m</tycho.test.jvmArgs>
