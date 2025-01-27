@@ -4,7 +4,7 @@
   <artifactId>com.genericworkflownodes.maven</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<knime.version>4.6</knime.version>
+		<knime.version>5.4</knime.version>
 		<java.majorversion>17</java.majorversion>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
 		<tycho.version>3.0.1</tycho.version>

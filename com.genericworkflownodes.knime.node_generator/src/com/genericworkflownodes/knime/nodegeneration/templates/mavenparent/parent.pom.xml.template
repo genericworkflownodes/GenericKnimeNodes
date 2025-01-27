@@ -5,7 +5,7 @@
   <!-- For now we fix the version of the parent pom to 0.0.1 since it has nothing to do with the plugin versions -->
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<knime.version>4.7</knime.version>
+		<knime.version>5.4</knime.version>
 		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
 		<gkn.update.site>https://abibuilder.cs.uni-tuebingen.de/archive/gkn/updateSite/${knime.version}/</gkn.update.site>
 		<tycho.version>3.0.1</tycho.version>
