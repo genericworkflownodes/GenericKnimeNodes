@@ -76,7 +76,7 @@ public class CategoryXMLTemplate {
         //  so we don't need to update?
         elem.addElement("feature")
         	.addAttribute("id", "com.genericworkflownodes.knime.feature");
-            //.addAttribute("version", "1.1.0"); //We might need the actual qualifier. Somehow this does not work.
+            //.addAttribute("version", "1.2.0"); //We might need the actual qualifier. Somehow this does not work.
     }
     
     /**
