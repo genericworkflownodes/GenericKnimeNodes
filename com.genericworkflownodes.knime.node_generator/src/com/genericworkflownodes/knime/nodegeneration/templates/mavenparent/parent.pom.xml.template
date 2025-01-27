@@ -5,8 +5,8 @@
   <!-- For now we fix the version of the parent pom to 0.0.1 since it has nothing to do with the plugin versions -->
   <version>0.0.1-SNAPSHOT</version>
 	<properties>
-		<knime.version>4.7</knime.version>
-		<knime.update.site>http://update.knime.org/analytics-platform/${knime.version}/</knime.update.site>
+		<knime.version>5.4</knime.version>
+		<!-- <knime.update.site>http://update.knime.com/analytics-platform/${knime.version}/</knime.update.site> -->
 		<gkn.update.site>https://abibuilder.cs.uni-tuebingen.de/archive/gkn/updateSite/${knime.version}/</gkn.update.site>
 		<tycho.version>3.0.1</tycho.version>
 		<tycho.extras.version>3.0.1</tycho.extras.version>
@@ -14,6 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+	<!--
 	<repositories>
 		<repository>
 			<id>knime</id>
@@ -26,6 +27,7 @@
 			<url>${gkn.update.site}</url>
 		</repository>
 	</repositories>
+	-->
 	<build>
 		<plugins>
 			<!--
