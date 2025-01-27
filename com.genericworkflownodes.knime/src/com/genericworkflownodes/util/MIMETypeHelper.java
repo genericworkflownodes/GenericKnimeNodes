@@ -20,8 +20,10 @@ package com.genericworkflownodes.util;
 
 import java.io.File;
 import java.util.Optional;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
+import org.knime.core.node.NodeLogger;
+
+import com.genericworkflownodes.knime.GenericNodesPlugin;
 
 import org.knime.base.filehandling.mime.MIMEMap;
 import org.knime.base.filehandling.mime.MIMETypeEntry;
@@ -32,6 +34,13 @@ import org.knime.base.filehandling.mime.MIMETypeEntry;
  * @author aiche
  */
 public final class MIMETypeHelper {
+
+    /**
+     * The central static logger.
+     */
+    private static final NodeLogger LOGGER = NodeLogger
+            .getLogger(MIMETypeHelper.class);
+
 
     /**
      * Utility class should have private c'tor.
@@ -62,7 +71,7 @@ public final class MIMETypeHelper {
         String foundExtension = "";
         
         
-        Logger.getLogger(org.knime.base.filehandling.mime.MIMEMap.class.getName()).setLevel(Level.OFF);
+        LOGGER.setLevel(NodeLogger.LEVEL.OFF);
 
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
             for (String ext : entry.getExtensions()) {
@@ -104,7 +113,7 @@ public final class MIMETypeHelper {
         // Ensure Lowercase comparison
         extension = extension.toLowerCase();
 
-        Logger.getLogger(org.knime.base.filehandling.mime.MIMEMap.class.getName()).setLevel(Level.OFF);
+        LOGGER.setLevel(NodeLogger.LEVEL.OFF);
         
         // check existing mimetypes
         for (MIMETypeEntry entry : MIMEMap.getAllTypes()) {
@@ -133,7 +142,7 @@ public final class MIMETypeHelper {
         // Ensure lowercase comparison
         filename = filename.toLowerCase();
 
-        Logger.getLogger(org.knime.base.filehandling.mime.MIMEMap.class.getName()).setLevel(Level.OFF);
+        LOGGER.setLevel(NodeLogger.LEVEL.OFF);
         
         // check existing mimetypes
         String type = null;
